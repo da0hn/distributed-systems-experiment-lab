@@ -93,6 +93,31 @@ skew entre nós.
 Proibir `Instant.now()` parece exagero. Não é: é o que permite adiantar o relógio de
 um nó em 300 ms num experimento e observar o resultado.
 
+## Questões em aberto
+
+### 1. As regras 4, 5, 6 e 7 dependem de um padrão de pacote que ainda não existe
+
+As regras estão escritas em padrões (`..resource..`, `shared..`, `shared..random..`),
+mas o pacote raiz Java ainda não foi escolhido — nenhum `pom.xml` existe. Enquanto o
+padrão não for fixado, as regras não são exprimíveis em código.
+
+Duas dependem de mais que nomenclatura:
+
+- **Regra 4** (`..resource..` não importa `..allocation..`) exige que o nome do
+  serviço apareça no pacote de forma inequívoca. Um pacote genérico como
+  `...lab.service.domain` torna a regra impossível de escrever.
+- **Regra 6** (Control Plane não importa Lab Plane) exige que o plano seja
+  identificável. Ou o pacote o carrega, ou o teste precisa listar as classes uma a
+  uma — e uma lista manual apodrece. Ver a questão 1 do ADR-0005.
+
+### 2. A regra 8 precisa de um adaptador de relógio antes de existir
+
+A regra proíbe `Instant.now()` fora de "um adaptador de relógio". Esse adaptador não
+foi especificado: onde ele vive, qual é sua interface, e como um experimento adianta
+o relógio de um nó sem adiantar o dos outros.
+
+Sem isso, a regra 8 é inaplicável — ela proibiria o uso sem oferecer o substituto.
+
 ## Consequências
 
 ### Positivas

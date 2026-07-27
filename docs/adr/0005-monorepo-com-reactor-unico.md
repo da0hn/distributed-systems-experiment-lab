@@ -74,6 +74,40 @@ Esta regra vale mesmo quando os serviços rodam na mesma instância PostgreSQL d
 o desenvolvimento local. Um schema por serviço, com usuário próprio e permissão
 negada nos schemas alheios — a restrição é imposta pelo banco, não pela disciplina.
 
+## Questões em aberto
+
+Estas questões surgiram ao criar o esqueleto de diretórios do monorepo.
+
+### 1. O plano fica visível na estrutura de diretórios?
+
+A árvore acima mostra `services/` plano — cinco serviços, mesmo nível. Mas eles não
+são equivalentes. Três pertencem ao **Control Plane** (`resource-service`,
+`allocation-service`, `registry-service`) e dois ao **Lab Plane** (`chaos-service`,
+`experiment-service`). A regra 6 do ADR-0006 proíbe o Control Plane de importar o Lab
+Plane.
+
+Uma regra que a estrutura não mostra é uma regra que só existe no teste. As opções
+são:
+
+- manter `services/` plano e deixar a separação só nos pacotes Java e no ArchUnit
+- agrupar: `services/control-plane/...` e `services/lab-plane/...`
+- separar na raiz: `services/` para o Control Plane e `lab/` para o Lab Plane
+
+A terceira opção é a mais forte semanticamente — ela deixa claro que o Lab Plane não é
+"mais um serviço". O custo é que o reactor passa a ter duas árvores de módulos.
+
+**Estado:** o esqueleto foi criado com `services/` plano, seguindo esta decisão como
+escrita. A mudança é barata enquanto não houver código.
+
+### 2. Qual é o pacote raiz Java?
+
+Nenhum `pom.xml` existe ainda, e o `groupId` não foi escolhido. Isso não é detalhe de
+nomenclatura: as regras 4, 5 e 7 do ADR-0006 são expressas em **padrões de pacote**
+(`..resource..`, `shared..`, `shared..random..`). O padrão de pacote precisa tornar
+essas regras exprimíveis sem ambiguidade.
+
+Decisão adiada para o ADR do parent POM.
+
 ## Consequências
 
 ### Positivas

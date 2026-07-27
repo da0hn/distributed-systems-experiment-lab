@@ -66,8 +66,8 @@ passa para `## Decisão` ou `## Consequências`.
 | 0002 | Aceito.                                                                        |
 | 0003 | **Próximo a debater.** Duas questões em aberto registradas no arquivo.          |
 | 0004 | Aguardando. Uma questão em aberto: o veredito binário foi superado pelo 0002.   |
-| 0005 | Aguardando.                                                                    |
-| 0006 | Aguardando.                                                                    |
+| 0005 | Aguardando. Duas questões em aberto, levantadas ao criar o esqueleto.           |
+| 0006 | Aguardando. Duas questões em aberto, dependentes do padrão de pacote.           |
 | 0007 | Aguardando.                                                                    |
 
 **Dívida declarada:** a origem Lease Expiry (ADR-0002) exige `expires_at` em
