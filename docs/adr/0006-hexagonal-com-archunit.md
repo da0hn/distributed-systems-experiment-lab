@@ -1,0 +1,169 @@
+# ADR-0006: Arquitetura hexagonal com ArchUnit como guarda executável
+
+- **Estado:** Proposto
+- **Data:** 2026-07-26
+- **Etapa do roadmap:** 1
+- **Relacionado:** ADR-0003, ADR-0004, ADR-0005
+
+## Contexto
+
+O ADR-0005 coloca todos os módulos num reactor Maven único. Isso remove a barreira
+física entre serviços: qualquer classe pode importar qualquer outra e a build
+continua verde.
+
+O ADR-0003 exige que estratégias de concorrência sejam trocáveis por configuração.
+Isso só funciona se o domínio depender de uma interface, nunca de uma implementação.
+
+O ADR-0004 exige que toda aleatoriedade venha de uma fonte semeada. Uma chamada
+esquecida a `Math.random()` quebra a reprodutibilidade em silêncio.
+
+## Problema
+
+Regras de arquitetura escritas em documento não são cumpridas. Elas são cumpridas na
+primeira semana e violadas na terceira, quando a pressa aparece e ninguém lembra da
+regra.
+
+Um documento de arquitetura descreve a intenção. O código descreve o fato. Quando os
+dois divergem, o código vence.
+
+A pergunta é: como fazer uma regra de arquitetura falhar a build?
+
+## Decisão
+
+### Camadas
+
+Cada serviço tem quatro camadas, com dependência em uma direção só.
+
+```
+api            → controllers, DTOs de entrada e saída, tradução HTTP
+application    → casos de uso, orquestração, transação
+domain         → agregados, invariante, portas (interfaces)
+infrastructure → adaptadores: JPA, mensageria, HTTP externo, relógio
+```
+
+Direção da dependência:
+
+```mermaid
+flowchart LR
+    API[api] --> APP[application]
+    APP --> DOM[domain]
+    INF[infrastructure] --> DOM
+    APP -.->|apenas portas| DOM
+
+    style DOM fill:#1e3a5f,stroke:#60a5fa,color:#e5e7eb
+    style INF fill:#3f2a1e,stroke:#fb923c,color:#e5e7eb
+```
+
+O `domain` não aponta para ninguém. Ele é o centro. `infrastructure` implementa as
+portas declaradas em `domain`, e a inversão de dependência acontece na composição
+(Spring), não no código de domínio.
+
+### O domínio é Java puro
+
+O pacote `domain` não importa Spring, JPA, Jackson, nem nada de framework. A
+invariante do ADR-0001 é testável com um `new` e um `assert`, sem contexto de
+aplicação, sem banco, em milissegundos.
+
+Isso não é purismo. É consequência direta do ADR-0004: um experimento precisa
+comparar estratégias, e a estratégia só pode ser trocada se o domínio não souber qual
+está em uso.
+
+### As regras são testes ArchUnit
+
+As regras rodam com `mvn test`. Uma violação quebra a build.
+
+| # | Regra | Motivo |
+|---|---|---|
+| 1 | `..domain..` não importa `org.springframework..` | domínio testável sem framework |
+| 2 | `..domain..` não importa `jakarta.persistence..` | domínio independente de persistência |
+| 3 | `..domain..` não importa `..infrastructure..` | inversão de dependência |
+| 4 | `..resource..` não importa `..allocation..` (e vice-versa) | serviço não importa serviço — substitui a barreira perdida no ADR-0005 |
+| 5 | `shared..` não importa nada de `..services..` | o compartilhado não conhece o específico |
+| 6 | Lab Plane não é importado pelo Control Plane | o instrumento não contamina o sistema sob teste |
+| 7 | Ninguém usa `java.util.Random`, `Math.random`, `ThreadLocalRandom` fora de `shared..random..` | reprodutibilidade do ADR-0004 |
+| 8 | Ninguém usa `Instant.now()`, `LocalDateTime.now()`, `System.currentTimeMillis()` fora de um adaptador de relógio | o tempo é injetável; ver ADR-0002, origem Lease Expiry |
+| 9 | Classes `@Entity` só existem em `..infrastructure..` | agregado de domínio ≠ entidade de persistência |
+
+### A regra 8 merece destaque
+
+O ADR-0002 define o relógio como uma **origem de escrita**. Se o tempo não for
+injetável, dois cenários ficam impossíveis de testar: expiração de lease e clock
+skew entre nós.
+
+Proibir `Instant.now()` parece exagero. Não é: é o que permite adiantar o relógio de
+um nó em 300 ms num experimento e observar o resultado.
+
+## Consequências
+
+### Positivas
+
+- A arquitetura para de depender de disciplina. Uma violação falha a build no mesmo
+  commit em que foi introduzida.
+- As regras 7 e 8 protegem propriedades do laboratório que nenhum teste funcional
+  detectaria. Um `Math.random()` esquecido não quebra nenhum teste — só a
+  reprodutibilidade, meses depois.
+- A regra 4 recupera a barreira que o monorepo removeu. Sem ela, o ADR-0005 é uma
+  decisão ruim.
+- Testes de domínio rodam em milissegundos, sem Testcontainers. Isso muda o ritmo de
+  desenvolvimento da Etapa 1.
+
+### Negativas
+
+- Separar agregado de domínio de entidade JPA (regra 9) exige mapeamento manual entre
+  os dois. Isso é código repetitivo e sem graça.
+
+  Este é o custo real e recorrente desta decisão. É aceito porque a alternativa — uma
+  classe que é agregado e entidade ao mesmo tempo — faz o comportamento de lazy
+  loading e de cache de primeiro nível vazar para dentro da lógica de invariante,
+  exatamente onde o laboratório precisa de clareza total.
+
+- Regras ArchUnit produzem mensagens de erro ruins quando violadas por engano. Cada
+  regra precisa de um `because(...)` explicando o motivo, senão vira obstáculo
+  incompreensível.
+- Proibir `Instant.now()` incomoda em código trivial, como um log. A regra permite
+  exceções declaradas explicitamente, e cada exceção precisa de comentário.
+
+### Neutras
+
+- Spring Modulith é usado apenas para verificação de módulos e documentação, não como
+  mecanismo de comunicação interna. Eventos entre serviços são de verdade, pelo
+  broker.
+
+## Alternativas consideradas
+
+### Alternativa A — arquitetura em camadas convencional (controller/service/repository)
+
+O padrão majoritário em Spring Boot.
+
+**Descartada.** A entidade JPA vira o modelo de domínio, e a lógica de invariante
+fica misturada com o comportamento do ORM. Trocar a estratégia de concorrência
+(ADR-0003) exigiria alterar a entidade. O laboratório perderia sua funcionalidade
+central.
+
+### Alternativa B — hexagonal sem ArchUnit
+
+Documentar as regras e confiar em revisão.
+
+**Descartada.** Não existe revisão neste projeto — é um laboratório de uma pessoa.
+Sem verificação automática, a regra 4 seria violada na primeira vez que fosse
+conveniente importar uma classe do serviço vizinho.
+
+### Alternativa C — módulos Maven separados por camada
+
+Um módulo Maven para `domain`, outro para `infrastructure`, com dependência declarada
+no `pom.xml`.
+
+**Considerada com seriedade, descartada por custo.** É a forma mais forte de impor a
+regra: uma violação vira erro de compilação, não erro de teste. Mas multiplica o
+número de módulos por quatro (vinte módulos para cinco serviços), e cada módulo tem
+seu `pom.xml` para manter.
+
+ArchUnit dá 90% do benefício por 10% do custo. A diferença — falhar na compilação em
+vez de falhar no teste — não vale dezesseis `pom.xml` adicionais.
+
+## Quando esta decisão deixa de valer
+
+Reveja a regra 9 (separação agregado/entidade) se o mapeamento manual consumir mais
+tempo que a lógica de invariante que ele protege. O sinal concreto: um agregado cujo
+mapeador tem mais linhas que o próprio agregado, sem que o agregado tenha
+comportamento.
