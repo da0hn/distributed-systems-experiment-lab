@@ -159,7 +159,8 @@ entra na etapa em que seu contexto já existe:
 
 ## Questões em aberto
 
-Duas questões surgiram durante o debate do ADR-0001 e ainda não têm decisão.
+Duas questões surgiram durante o debate do ADR-0001. Uma terceira surgiu depois, ao
+revisar o que os ADRs dizem sobre os serviços. Nenhuma tem decisão.
 
 ### 1. Um campo ou dois?
 
@@ -181,6 +182,26 @@ acima.
 Nível de isolamento é propriedade da transação, não do recurso. Mas o PostgreSQL
 permite defini-lo por transação, então ele **poderia** virar uma décima estratégia.
 Contra: ele muda a semântica de toda a transação, não só da verificação da invariante.
+
+### 3. As quatro estratégias da Etapa 1 pressupõem uma transação local
+
+`NONE`, `ATOMIC_UPDATE`, `OPTIMISTIC` e `PESSIMISTIC` são mecanismos de **um banco
+só**. Um `UPDATE ... WHERE available >= n`, uma coluna `version` e um `SELECT ... FOR
+UPDATE` protegem porque leitura e escrita acontecem na mesma transação, no mesmo
+PostgreSQL.
+
+A tabela de ordem de implementação diz que essas quatro "só precisam do banco". Isso
+só é verdade se `resource` e `allocation` viverem no **mesmo** schema. O ADR-0005
+proíbe um serviço de ler a tabela de outro, e nenhum ADR decidiu se os dois agregados
+pertencem ao mesmo serviço. Ver a questão 3 do ADR-0005.
+
+Se a decomposição colocar `resource` e `allocation` em serviços distintos desde a
+Etapa 1, as quatro estratégias ficam inaplicáveis e a matriz de proteção deste ADR não
+pode ser testada como escrita. A alternativa seria começar por saga com compensação —
+o que antecipa a Etapa 5 e remove o caso simples que serve de base de comparação.
+
+**Esta questão bloqueia a Etapa 1 inteira.** Ela precisa de resposta antes das duas
+anteriores, porque decide se a matriz é executável.
 
 ## Consequências
 

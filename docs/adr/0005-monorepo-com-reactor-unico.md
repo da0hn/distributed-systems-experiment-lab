@@ -108,6 +108,53 @@ essas regras exprimíveis sem ambiguidade.
 
 Decisão adiada para o ADR do parent POM.
 
+### 3. Nenhum ADR decide a decomposição em serviços
+
+A árvore acima lista cinco serviços. **Esse número nunca foi decidido.** Ele aparece
+aqui como um dado, e este ADR não é o lugar de decidi-lo — o assunto desta decisão é
+build e repositório, não fronteira de serviço.
+
+Nenhum ADR responde:
+
+- por que cinco, e não um módulo único, ou três, ou sete
+- qual serviço é dono de qual tabela
+- qual expõe qual contrato REST, e qual publica qual evento
+- em que etapa cada um passa a existir
+
+O ADR-0001 define dois agregados (`resource`, `allocation`) e o ADR-0002 define quatro
+origens de escrita. A passagem de "dois agregados e quatro origens" para "cinco
+serviços" não está escrita em lugar nenhum.
+
+#### A colisão com o ADR-0001
+
+Esta é a parte grave. O ADR-0001 verifica a invariante com uma leitura em `allocation`,
+uma comparação com `resource.capacity` e uma escrita — **em uma transação**. A seção
+*Nenhum serviço compartilha banco*, acima, proíbe exatamente isso quando `resource` e
+`allocation` pertencem a serviços diferentes.
+
+As duas decisões não podem estar certas ao mesmo tempo. As leituras possíveis são:
+
+- **A — um dono para os dois agregados.** `resource-service` possui `resource` **e**
+  `allocation`, num schema só. A invariante permanece verificável por ACID. Nesse caso
+  `allocation-service` é dono do *workflow* de alocação, não do dado, e o nome atual
+  engana.
+- **B — dois donos desde o início.** A invariante vira distribuída na Etapa 1. Isso
+  torna inaplicáveis as quatro estratégias da Etapa 1 do ADR-0003 (`NONE`,
+  `ATOMIC_UPDATE`, `OPTIMISTIC`, `PESSIMISTIC`) — todas são mecanismos de um banco só.
+  A Etapa 1 passaria a exigir saga, que é a Etapa 5.
+- **C — separação gradual.** Um dono nas etapas 1 a 3, com a invariante local; a
+  divisão em dois serviços chega junto com o Outbox (ADR-0007) e a saga (Etapa 5). O
+  laboratório mede então a diferença entre os dois arranjos, com o mesmo experimento.
+
+A opção C preserva o valor experimental: não é possível medir o custo de distribuir
+sem ter o resultado não distribuído para comparar. Esse é o mesmo argumento do grupo de
+controle usado no motor de workflow.
+
+**Estado:** o esqueleto criou os cinco diretórios, vazios. Nenhum contém código, e a
+mudança continua barata. A decisão pertence a um ADR próprio, sobre decomposição em
+serviços, que precisa vir **antes** do parent POM — o número de módulos do reactor
+depende dela.
+
 ## Consequências
 
 ### Positivas

@@ -1,6 +1,6 @@
 # ADR-0002: Quatro origens de escrita com semânticas distintas
 
-- **Estado:** Aceito
+- **Estado:** Proposto
 - **Data:** 2026-07-26
 - **Etapa do roadmap:** 0
 - **Relacionado:** ADR-0001, ADR-0003, ADR-0004
@@ -195,12 +195,13 @@ que seu contexto já existe:
 
 ### Dívida declarada
 
-A origem **Lease Expiry** exige um campo `expires_at` em `allocation`. O ADR-0001,
-já aceito, modela `allocation { id, resource_id, amount, status }` sem esse campo.
+A origem **Lease Expiry** exige um campo `expires_at` em `allocation`. O ADR-0001 modela
+`allocation { id, resource_id, amount, status }` sem esse campo.
 
-O campo **não** é adicionado agora. Ele ficaria sem uso por quatro etapas, e a
-convenção do `README.md` proíbe editar um ADR aceito. Quando a Etapa 5 chegar, um ADR
-novo adiciona `expires_at` e marca o ADR-0001 como `Substituído`.
+O campo **não** é adicionado agora. Ele ficaria sem uso por quatro etapas. Quando a
+Etapa 5 chegar, um ADR novo adiciona `expires_at` e marca o ADR-0001 como `Substituído`
+— ou, se o ADR-0001 ainda estiver `Proposto` nessa altura, o campo entra nele
+diretamente, já que a convenção do `README.md` só proíbe editar um ADR **aceito**.
 
 Até lá, a origem Lease Expiry está **decidida mas não implementável**. Esta é uma
 dívida consciente, registrada aqui para não ser descoberta como surpresa.

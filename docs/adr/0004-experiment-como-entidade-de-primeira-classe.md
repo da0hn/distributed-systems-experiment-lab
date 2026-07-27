@@ -85,8 +85,8 @@ Isso transforma o histórico do repositório num caderno de laboratório.
 
 ### 1. O veredito binário está desatualizado — o ADR-0002 o alterou
 
-O exemplo acima declara `"assertions": ["invariant.violations == 0"]`. O ADR-0002, já
-aceito, decidiu que a invariante do ADR-0001 tem **dois eixos de leitura**, porque o
+O exemplo acima declara `"assertions": ["invariant.violations == 0"]`. O ADR-0002
+decidiu que a invariante do ADR-0001 tem **dois eixos de leitura**, porque o
 relato de capacidade do Agent pode violá-la sem nenhuma concorrência.
 
 | Eixo | Pergunta | Asserção | Pode ser violado? |
@@ -106,6 +106,39 @@ Este ADR precisa ser corrigido antes de ser aceito. Três pontos exigem decisão
 - **O que significa uma asserção de liveness que falha?** Pode ser bug de
   convergência, ou pode ser limiar apertado demais. As duas causas produzem o mesmo
   sintoma, e o relatório precisa conseguir distingui-las.
+
+### 2. O instrumento não consegue medir leitura desatualizada
+
+As asserções deste ADR são consultas sobre o **estado final** e sobre métricas
+agregadas. Uma leitura desatualizada não existe no estado final: por definição, ela é
+um valor que era falso no instante em que foi lido e virou verdadeiro depois. Quando o
+experimento termina, não sobrou evidência dela em lugar nenhum.
+
+O ADR-0001 lista "CQRS e defasagem de leitura" entre os seis temas que dependem do
+domínio — ou seja, entre os que este laboratório existe para estudar. Mas os ADRs
+0001, 0002, 0003 e 0007 tratam apenas do eixo de **escrita**: quem escreve, com que
+semântica, protegido por qual mecanismo. Nenhum decide o que é uma leitura no
+laboratório, nem como uma leitura errada vira um veredito.
+
+Três coisas ficam sem definição:
+
+- **Quem lê.** As quatro origens do ADR-0002 são origens de escrita. Não existe um ator
+  leitor com contrato próprio, e sem ele não há de quem observar a defasagem.
+- **Como uma leitura desatualizada é capturada.** Ela precisa ser registrada no instante
+  em que acontece, com o valor lido e o valor verdadeiro na mesma marca de tempo. Isso
+  é um mecanismo de amostragem, não uma consulta ao estado final — e nenhum existe.
+- **Qual é a asserção.** `safety.violations == 0` não serve: nenhuma invariante foi
+  violada. O sistema respondeu um valor obsoleto e correto no passado. A pergunta certa
+  é sobre a distribuição da defasagem (`staleness.p99 < N`), o que exige o mecanismo de
+  amostragem acima.
+
+**Consequência prática:** enquanto isso não for decidido, todo experimento que envolva
+CQRS, réplica de leitura ou projeção assíncrona produzirá um relatório que só mede
+escrita. O laboratório concluiria "nenhuma violação" num cenário em que o usuário viu
+dados errados o tempo todo — o pior tipo de falso negativo num instrumento de medida.
+
+Isso pede um ADR próprio, ainda não numerado, sobre o eixo de leitura. Ele não bloqueia
+a Etapa 1, mas bloqueia qualquer experimento de CQRS.
 
 ## Consequências
 

@@ -1,6 +1,6 @@
 # ADR-0001: Domínio genérico de recursos com invariante única
 
-- **Estado:** Aceito
+- **Estado:** Proposto
 - **Data:** 2026-07-26
 - **Etapa do roadmap:** 0
 - **Relacionado:** ADR-0002, ADR-0003, ADR-0004

@@ -118,6 +118,39 @@ o relógio de um nó sem adiantar o dos outros.
 
 Sem isso, a regra 8 é inaplicável — ela proibiria o uso sem oferecer o substituto.
 
+### 3. A regra 6 colide com o que o Chaos Service precisa fazer
+
+A regra 6 diz que o Control Plane nunca importa o Lab Plane. O ADR-0004 diz que o
+Chaos Service duplica, reordena e atrasa mensagens com probabilidade semeada. As duas
+frases só coexistem se o caos for injetado **fora** do processo do Control Plane, e
+nenhum ADR decidiu onde.
+
+Os lugares possíveis, com o custo de cada um:
+
+- **Interceptor dentro do serviço** — um `MessagePostProcessor` ou um wrapper do
+  `RabbitTemplate` que consulta o Chaos Service. É o mais fácil de escrever e o mais
+  fiel à semente, porque a decisão de duplicar nasce no mesmo processo que gerou o
+  evento. **Viola a regra 6 de forma direta:** o código do sistema sob teste passa a
+  conter código do instrumento, e um bug do instrumento vira um resultado de
+  consistência.
+- **Proxy no caminho do broker** — o Chaos Service consome de uma exchange e republica
+  em outra, aplicando reordenação e duplicata. Preserva a regra 6, mas insere um salto
+  de rede a mais em todo evento, e o próprio proxy vira uma fonte de latência que entra
+  na medida de convergência do ADR-0004.
+- **Falha na camada de rede (Toxiproxy ou equivalente)** — o Control Plane não sabe que
+  o caos existe. Preserva a regra 6 integralmente, mas só produz atraso, partição e
+  queda de conexão. **Não produz duplicata nem reordenação semântica**, que são
+  exatamente os dois casos que o Grupo 2 do ADR-0003 precisa exercitar.
+
+Nenhuma das três é gratuita. A primeira compra fidelidade com contaminação; a segunda
+compra isolamento com latência; a terceira compra pureza perdendo os cenários que
+importam. A escolha provavelmente é uma combinação, e ela precisa estar escrita antes
+da Etapa 3 — que é quando `IDEMPOTENCY_KEY`, `UNIQUE_CONSTRAINT` e `SEQUENCE_GUARD`
+passam a depender do caos para ter o que filtrar.
+
+Esta questão pertence a um ADR próprio do Chaos Service, ainda não numerado. Ela fica
+registrada aqui porque é a **regra 6 deste ADR** que ela contradiz.
+
 ## Consequências
 
 ### Positivas
