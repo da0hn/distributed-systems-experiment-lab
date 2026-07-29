@@ -56,7 +56,9 @@ O motivo do arquivamento e o que sobreviveu estão em
 
 ## Índice
 
-**Nenhum ADR foi escrito na série corrente.**
+| ADR                                                | Título                                                       | Estado     |
+|----------------------------------------------------|--------------------------------------------------------------|------------|
+| [0001](0001-o-passo-como-unidade-de-execucao.md)  | O passo como unidade de execução, observação e injeção de falha | `Proposto` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele **não decide nada** — é a análise que define quais decisões
 precisam ser tomadas e em que ordem.
@@ -96,7 +98,7 @@ Os números **não** estão atribuídos. Um número é atribuído quando o ADR �
 
 | Ordem | Decisão                                                                       | Por que precisa vir aqui                                                |
 |-------|-------------------------------------------------------------------------------|--------------------------------------------------------------------------|
-| 1     | **O passo como unidade de execução, observação e injeção de falha**           | toda outra decisão herda a forma que esta escolher (plano, seção 2)     |
+| 1     | **O passo como unidade de execução, observação e injeção de falha** — ADR-0001 | toda outra decisão herda a forma que esta escolher (plano, seção 2)     |
 | 2     | **O domínio mínimo: contador com oráculo exato mais predicado de capacidade** | define o que é medido; o oráculo exato é o que torna o MVP verificável  |
 | 3     | **Estratégias de concorrência como dado, não como branch**                    | sem isso o experimento de comparação não existe                         |
 | 4     | **O log de observações: forma, ordem e onde vive**                            | é o substrato da timeline agora e do replay depois                      |
