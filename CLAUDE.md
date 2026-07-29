@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guia para o Claude Code (claude.ai/code) ao trabalhar neste repositório.
 
 ## Não existe código neste repositório
 
@@ -8,14 +8,22 @@ Não há `pom.xml`, nenhuma classe Java, nenhum `docker-compose.yml`. **Não há
 build, de teste ou de execução.** Se você tentar `mvn test`, `docker compose up` ou
 qualquer coisa parecida, vai falhar — e o motivo não é configuração faltando.
 
-O repositório contém apenas ADRs e um esqueleto de diretórios vazios (`.gitkeep`). Isso
-é deliberado: a decisão vem antes do código. Um ADR escrito depois da implementação não
-é uma decisão, é uma justificativa.
+O repositório contém documentos de planejamento, ADRs e um esqueleto de diretórios
+vazios. Isso é deliberado: a decisão vem antes do código. Um ADR escrito depois da
+implementação não é uma decisão, é uma justificativa.
 
-Quando o código existir, a stack decidida no `README.md` é Java 21, Spring Boot 3.x,
-Maven em reactor único, PostgreSQL, RabbitMQ. O pacote raiz Java ainda **não foi
-escolhido** — essa decisão acompanha o parent POM, que por sua vez depende do ADR-0011
-(número de módulos do reactor).
+Quando o código existir, a stack é Java 25, Spring Boot 4.x, PostgreSQL, Docker. O
+RabbitMQ entra na etapa 5. O pacote raiz Java, o build e o número de módulos ainda
+**não foram escolhidos** — é a decisão 8 da fila em `docs/adr/README.md`.
+
+## O que este projeto é
+
+Uma plataforma experimental para reproduzir, observar e comparar problemas conhecidos
+de sistemas distribuídos. Não é uma aplicação de negócio: não existe pedido, pagamento,
+cliente ou estoque. O escopo cobre 42 fenômenos, de lost update a cascading failure.
+
+O documento que define tudo é [`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md).
+Leia-o antes de propor qualquer coisa.
 
 ## O trabalho aqui é escrever e debater ADRs
 
@@ -30,6 +38,16 @@ descartada ou pendência é escrita na seção `## Questões em aberto` do próp
 ADR, **no mesmo turno em que é levantada** — antes de responder ou perguntar qualquer
 coisa. Uma objeção que fica só no chat desaparece no próximo compact, em silêncio.
 
+### Um ADR por vez, nunca em lote
+
+A primeira série do repositório rascunhou seis ADRs de uma vez, em paralelo. Escritos
+sem se ver, produziram três contradições entre si e nenhum chegou a ser debatido. O
+custo foi inteiramente perdido.
+
+**Não rascunhe ADRs antecipadamente.** A fila de decisões em `docs/adr/README.md` lista
+o que precisa ser decidido e em que ordem, **sem números atribuídos** — o número é
+atribuído quando o ADR é escrito.
+
 ### Estados e aceitação
 
 Nenhum ADR é aceito por omissão, e nenhum é aceito sem aprovação explícita do usuário.
@@ -40,13 +58,23 @@ Um ADR **aceito** nunca é editado nem apagado. Para mudar a decisão, escreva u
 e marque o antigo como `Substituído por ADR-NNNN`. Enquanto estiver `Proposto`, editar é
 permitido.
 
-Mantenha a tabela **"Onde o debate parou"** em `docs/adr/README.md` sincronizada. Ela é o
-estado do projeto.
+### Duas séries de ADR
+
+A numeração foi reiniciada em 2026-07-28. Um mesmo número existe em duas séries.
+
+| Forma de citar | Onde vive | O que é |
+|---|---|---|
+| `ADR-0001` | `docs/adr/` | série corrente |
+| `arquivo/0001` | `docs/adr/arquivo/` | primeira série, arquivada, nenhum aceito |
+
+**Sempre use o prefixo `arquivo/` ao citar a série antiga.** Sem ele a referência é
+ambígua. Os documentos do arquivo **nunca são editados** — eles registram o que se
+pensava naquela data.
 
 ### Convenções de ADR
 
-- Numeração sequencial de quatro dígitos, nunca reutilizada. Arquivo:
-  `NNNN-titulo-em-kebab-case.md`. Template em `docs/adr/0000-template.md`.
+- Numeração sequencial de quatro dígitos, nunca reutilizada dentro da série corrente.
+  Arquivo: `NNNN-titulo-em-kebab-case.md`. Template em `docs/adr/0000-template.md`.
 - Português do Brasil, com acentuação correta. Frases curtas. Voz ativa. Uma ideia por
   frase. Linhas quebradas manualmente em ~88 colunas.
 - A seção `## Alternativas consideradas` costuma valer mais que a `## Decisão`. Cada
@@ -56,76 +84,96 @@ estado do projeto.
 - `## Quando esta decisão deixa de valer` precisa de um sinal concreto e observável, não
   de uma intenção vaga.
 - Sem emojis. Sem linguagem de marketing.
+- Nem toda decisão merece ADR. Só as que têm alternativas plausíveis, impacto
+  arquitetural duradouro, criam restrição futura ou representam um trade-off.
 
 ## Arquitetura conceitual
 
-Ler só um ADR não basta; estas quatro ideias atravessam vários.
+Ler só um ADR não basta; estas cinco ideias atravessam todo o projeto.
 
-**Uma única invariante.** `Σ(alocações ativas) ≤ capacidade` e `capacidade disponível ≥ 0`.
-Nenhuma outra regra de negócio existe. Toda complexidade do repositório é infraestrutura
-de consistência, não domínio (ADR-0001).
+**Uma operação é uma sequência de passos.** Barreiras determinísticas, fault injection
+em pontos nomeados e a timeline são a mesma exigência: existe uma fronteira observável
+e controlável entre passos consecutivos. O runtime executa os passos e, em cada
+fronteira, consulta o escalonador, consulta o injetor de falha e emite uma observação.
+O que é sintético é apenas o agendamento — o SQL, a transação e o isolamento são reais.
+Esta é a decisão 1 da fila, e todo o resto herda a forma que ela escolher.
 
-**Dois modelos de verificação.** `MATERIALIZED` (contador na linha do recurso) produz
-lost update; `DERIVED` (soma das alocações) produz write skew, que lock de linha não
-alcança. A mesma invariante gera duas famílias de anomalia. O resultado mais valioso do
-laboratório vive aqui: `DERIVED` + `OPTIMISTIC` é uma **proteção presente e inerte** —
-a anotação está lá, nenhuma exceção é lançada, e a invariante quebra (ADR-0001, ADR-0003).
+**Dois planos.** O Control Plane é o sistema sob teste; o Lab Plane é o instrumento que
+o mede. Confundir os dois invalida qualquer conclusão — um bug no instrumento vira um
+falso resultado de consistência. Nas primeiras etapas os dois vivem na **mesma JVM**, o
+que torna a separação por teste executável mais necessária, não menos. O runtime chama a
+operação; a operação nunca chama o runtime.
 
-**Dois planos.** O Control Plane é o sistema sob teste; o Lab Plane é o instrumento que o
-mede. Confundir os dois invalida qualquer conclusão — um bug no instrumento vira um falso
-resultado de consistência. A regra 6 do ADR-0006 impõe isso com ArchUnit.
+**Cinco grupos, classificados pela causa.** Intercalação, Entrega, Escrita parcial,
+Saturação, Posse no tempo. A classificação é pela fonte de não determinismo, não pela
+tecnologia, porque é a causa que determina o que a plataforma precisa saber controlar.
 
-**O grupo de controle é obrigatório.** A estratégia `NONE` não é um estado provisório: se
-`NONE` não violar a invariante, o experimento não tem carga suficiente e o resultado das
-outras estratégias não significa nada. O mesmo padrão reaparece em outros ADRs
-(`target: AUTHORITATIVE` no 0013, executor síncrono no 0009).
+**O veredito tem dois formatos.** Booleano (a invariante foi violada?) para os grupos A,
+B, C e E. **Curva** para o grupo D — backpressure não tem estado errado, tem uma fila
+crescendo e um limiar que alguém precisa declarar. Se a plataforma for construída só
+para o primeiro formato, o grupo D não cabe, e isso só aparece tarde.
 
-**O veredito tem dois eixos.** Safety (`safety.violations == 0`, nunca pode ser violado)
-e liveness (`convergence.seconds < N`, é o objeto da medida). A distinção existe porque um
-fato externo legítimo — a capacidade encolheu — viola a invariante sem nenhuma
-concorrência. Rejeitar um comando é legítimo; rejeitar um fato observado não é (ADR-0002).
+**O grupo de controle é obrigatório.** A estratégia `NONE` não é um estado provisório:
+se `NONE` não violar a invariante, o experimento não tem carga suficiente e o resultado
+das outras estratégias não significa nada. O mesmo padrão reaparece na exigência de que
+uma anomalia produzida com barreiras apareça **também** sem elas, sob carga alta — sem
+isso o runtime está fabricando o fenômeno, não reproduzindo.
+
+## Regra pedagógica
+
+> Nunca introduza primeiro a solução. Introduza primeiro o problema.
+
+Para estudar Outbox, não comece implementando Outbox. Construa o experimento em que o
+commit e a publicação são operações independentes, provoque a falha entre elas, observe
+a inconsistência — e só então introduza o Outbox e rode o mesmo experimento.
+
+```
+PROBLEMA → CAUSA → SOLUÇÃO → TRADE-OFF
+```
+
+Vale para os 42 fenômenos, sem exceção.
 
 ## Regras estruturais que valem sempre
 
-- **`shared/` nunca contém domínio.** Só envelope de evento, correlação, tipos de erro de
-  transporte e a fonte de aleatoriedade semeada. Entidade, invariante ou DTO de serviço lá
-  transformaria o laboratório num monólito distribuído (ADR-0005).
-- **`experiments/` guarda definições; `docs/experiments/` guarda resultados.** Os dois
-  entram no Git — juntos, o histórico vira um caderno de laboratório (ADR-0004).
+- **Nenhuma tecnologia entra por estar disponível.** Cada uma entra quando um
+  experimento não puder ser executado sem ela. Antes de propor Valkey, RabbitMQ ou
+  OpenTelemetry, diga qual limitação concreta da stack atual ela resolve.
 - **Nenhuma aleatoriedade não semeada.** `Math.random()`, `java.util.Random` e
   `ThreadLocalRandom` são proibidos fora do componente de aleatoriedade semeada. Uma
-  chamada esquecida quebra a reprodutibilidade em silêncio, meses depois (ADR-0004,
-  ADR-0006 regra 7).
+  chamada esquecida quebra a reprodutibilidade em silêncio, meses depois.
 - **O tempo é injetável.** `Instant.now()`, `LocalDateTime.now()` e
-  `System.currentTimeMillis()` só em adaptador de relógio. O relógio é uma origem de
-  escrita, e sem isso expiração de lease e clock skew ficam impossíveis de testar
-  (ADR-0006 regra 8).
-- **O domínio é Java puro.** Sem Spring, sem JPA, sem Jackson. A invariante é testável com
-  um `new` e um `assert`, em milissegundos (ADR-0006).
+  `System.currentTimeMillis()` só em adaptador de relógio. Sem isso, expiração de lease
+  e clock skew ficam impossíveis de testar.
+- **Nenhuma sincronização de JVM no sistema sob teste.** `synchronized`,
+  `ReentrantLock` e `AtomicInteger` mascaram exatamente os fenômenos do grupo A. A
+  exceção é a estratégia `JVM_LOCK`, que existe **como experimento** para provar que
+  ela falha com duas instâncias.
+- **Cada worker tem sua própria conexão.** Se o pool serializar dois workers, o
+  experimento produz um falso negativo silencioso.
+- **`experiments/` guarda definições; `docs/experiments/` guarda resultados.** Os dois
+  entram no Git — juntos, o histórico vira um caderno de laboratório. (A fonte de
+  verdade entre arquivo versionado e Experiment Designer na UI ainda é uma tensão
+  aberta: plano, seção 11.)
 
-## Estado atual do debate
+## Estado atual
 
-13 ADRs, **todos `Proposto`, nenhum aceito.** Os ADRs 0001 e 0002 chegaram a ser aceitos e
-foram reabertos quando objeções posteriores os atingiram.
+**Nenhum ADR na série corrente.** O planejamento está escrito, a fila de decisões está
+definida, e nada foi decidido.
 
-Os ADRs 0008 a 0013 foram rascunhados de uma vez, em paralelo, e **nenhum foi debatido**.
-Escritos sem se ver, produziram tensões entre si que estão listadas em
-`docs/adr/README.md`, seção "Tensões entre os rascunhos".
+O próximo passo é a **decisão 1 da fila: o passo como unidade de execução, observação e
+injeção de falha**. Enquanto ela não existir, nenhuma linha de código é escrita.
 
-**O ADR-0011 (decomposição em serviços) é o próximo a debater e destrava os demais.** A
-colisão que ele resolve: o ADR-0001 verifica a invariante numa transação que toca
-`resource` e `allocation`; o ADR-0005 proíbe um serviço de ler a tabela de outro. As duas
-só coexistem se os dois agregados pertencerem ao mesmo serviço. Isso decide se as
-estratégias da Etapa 1 (`ATOMIC_UPDATE`, `OPTIMISTIC`, `PESSIMISTIC` — todas mecanismos de
-um banco só) são sequer aplicáveis.
-
-**Os cinco serviços do esqueleto nunca foram decididos.** Os nomes em `services/` são uma
-hipótese de trabalho. Não os trate como decisão.
+A árvore de diretórios atual (`services/` com cinco pastas, `deploy/`,
+`platform/observability/`) deriva das decisões **arquivadas** e não corresponde ao
+plano — o MVP é uma aplicação e um banco. A limpeza acompanha a decisão 7 da fila.
 
 ## Ao trabalhar aqui
 
 - Questione decisões quando fizer sentido, e explique trade-offs. O usuário pediu
   explicitamente mentoria arquitetural, não geração de código.
+- Ao surgir uma decisão relevante: apresente o problema, apresente as alternativas,
+  explique os trade-offs, recomende uma — e espere que a decisão seja consciente. Não
+  decida em silêncio, e não projete a solução final antecipadamente.
 - Prefira registrar uma questão em aberto a inventar uma decisão para fechar uma lacuna.
   No processo deste repositório, a primeira vale mais que a segunda.
 - Ao mexer em arquivos, faça `git add` apenas dos arquivos relacionados e gere um único

@@ -1,45 +1,71 @@
-# Distributed Consistency Lab
+# Distributed Systems Experiment Lab
 
-Um laboratório para estudar **consistência em sistemas distribuídos**.
+Uma plataforma experimental para **reproduzir, observar e comparar** problemas conhecidos de sistemas distribuídos.
 
-Isto não é uma aplicação de negócio. É um instrumento de medida. O domínio existe apenas para que uma invariante possa ser violada de formas
-diferentes, sob condições controladas, e para que cada violação seja observável, reproduzível e explicável.
+Isto não é uma aplicação de negócio. Não existe pedido, pagamento, cliente ou estoque. O laboratório é um instrumento de medida: um engenheiro
+configura um experimento, executa, injeta condições adversas e observa em tempo real como o sistema reage.
 
-## A invariante
+> Execute 100 operações concorrentes sobre o mesmo recurso com optimistic locking,
+> 5 workers, latência aleatória entre 50 e 500 ms e 10% de duplicação de mensagens.
 
-O laboratório inteiro gira em torno de uma única regra ([ADR-0001](docs/adr/0001-dominio-generico-com-invariante-unica.md)):
+No fim, o laboratório precisa **explicar objetivamente** o que aconteceu.
+
+## O princípio que orienta tudo
+
+> Nunca introduza primeiro a solução. Introduza primeiro o problema.
+
+Para estudar Transactional Outbox, o laboratório **não** começa implementando Outbox. Ele constrói um experimento em que o commit no banco e a
+publicação da mensagem são duas operações independentes, provoca a falha entre elas, observa a inconsistência — e só então introduz o Outbox e roda o
+mesmo experimento de novo.
 
 ```
-Para todo Resource:
-    Σ(alocações ativas) ≤ capacidade
-    capacidade disponível ≥ 0
+PROBLEMA → CAUSA → SOLUÇÃO → TRADE-OFF
 ```
 
-Nenhuma outra regra de negócio existe. Toda complexidade do repositório é infraestrutura de consistência, não regra de domínio.
+Isso vale para os 42 fenômenos do escopo, sem exceção.
 
-### O veredito tem dois eixos
+## A abstração central: uma operação é uma sequência de passos
 
-O [ADR-0002](docs/adr/0002-quatro-origens-de-escrita.md) separou o que antes era uma pergunta binária:
+Três exigências do laboratório convergem para o mesmo mecanismo:
 
-| Eixo         | Pergunta                                                     | Asserção                  | Pode ser violado?    |
-|--------------|--------------------------------------------------------------|---------------------------|----------------------|
-| **Safety**   | O sistema **aceitou** uma escrita que quebrou a invariante?  | `safety.violations == 0`  | nunca                |
-| **Liveness** | Depois de quebrada por fato externo, o sistema **converge**? | `convergence.seconds < N` | é o objeto da medida |
+| Exigência                          | O que ela precisa                                         |
+|------------------------------------|-----------------------------------------------------------|
+| Barreiras determinísticas          | pausar o Worker-1 **entre** READ e WRITE                  |
+| Fault injection em pontos nomeados | falhar em `AFTER_COMMIT`, `BEFORE_PUBLISH`, `BEFORE_ACK`… |
+| Timeline                           | um registro por passo, com worker, recurso e versão       |
 
-A distinção existe porque um relato legítimo do mundo real — a capacidade de um nó encolheu — pode violar a invariante sem nenhuma concorrência.
-Rejeitar um comando é legítimo; rejeitar um fato observado não é.
+Nenhuma delas é atendível se uma operação for um método Java comum. Por isso uma operação é declarada como uma **sequência de passos**, executada pelo
+runtime do laboratório. Em cada fronteira entre dois passos o runtime consulta o escalonador, consulta o injetor de falha e emite uma observação.
 
-## As quatro origens de escrita
+```
+operação increment:
+  READ     → SELECT value, version FROM resource WHERE id = ?
+  COMPUTE  → value + 1
+  WRITE    → UPDATE resource SET value = ?, version = version + 1 WHERE ...
+  COMMIT
+```
 
-Quatro atores escrevem no mesmo estado, com semânticas diferentes. Cada um produz uma família de falha própria
-([ADR-0002](docs/adr/0002-quatro-origens-de-escrita.md)):
+O que é sintético é apenas o **agendamento**. O nível de isolamento, o lock de linha e o `40001` de serialização vêm do PostgreSQL real. O runtime não
+simula o banco — ele decide *quando* cada transação dá o próximo passo.
 
-| Origem           | Transporte                           | Semântica                           | Falha característica                    |
-|------------------|--------------------------------------|-------------------------------------|-----------------------------------------|
-| **Operator**     | REST síncrono, com `Idempotency-Key` | comando imperativo do usuário       | `lost update` clássico                  |
-| **Agent**        | evento assíncrono (heartbeat)        | relato de fato observado no passado | fato fora de ordem; violação retroativa |
-| **Reconciler**   | job periódico                        | leitura ampla, depois escrita       | `write skew`                            |
-| **Lease Expiry** | disparo por relógio                  | o tempo como escritor               | corrida entre expirar e renovar         |
+Detalhes e a objeção honesta a essa escolha estão em
+[`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md), seção 2.
+
+## Os cinco grupos de fenômenos
+
+Os 42 cenários são classificados pela **fonte de não determinismo que produz a anomalia** — não pela tecnologia envolvida. A causa determina o que a
+plataforma precisa saber controlar para reproduzir o fenômeno.
+
+| Grupo                   | Fonte da anomalia                                           | O que a plataforma controla                     | Veredito                |
+|-------------------------|-------------------------------------------------------------|-------------------------------------------------|-------------------------|
+| **A — Intercalação**    | dois fluxos tocam o mesmo estado no mesmo banco             | barreiras entre passos; nível de isolamento     | booleano                |
+| **B — Entrega**         | o canal não garante uma vez, em ordem, no prazo             | interceptação do canal com semente              | booleano                |
+| **C — Escrita parcial** | uma mudança atravessa dois sistemas que não commitam juntos | falha em ponto nomeado; amostragem no tempo     | booleano + convergência |
+| **D — Saturação**       | nada está incorreto; o sistema não dá conta                 | taxa, latência artificial, profundidade de fila | **curva**               |
+| **E — Posse no tempo**  | quem tem o direito de escrever, e até quando                | relógio injetável; mais de um processo          | booleano                |
+
+O grupo D é o que quebra o modelo de veredito do resto: backpressure não tem estado errado, tem uma fila de 40 mil mensagens e alguém que precisa
+decidir se isso é falha. Os dois formatos de veredito existem desde o desenho por causa disso.
 
 ## Os dois planos
 
@@ -48,153 +74,129 @@ um falso resultado de consistência.
 
 ```mermaid
 flowchart TB
+    UI["Interface web<br/>designer · timeline · workers · comparação"]
+
     subgraph LAB["Lab Plane — o instrumento"]
-        EXP[experiment-service]
-        CHA[chaos-service]
+        DEF["Experiment<br/>definição · seed · hipótese · asserções"]
+        RUN["Runtime<br/>workers · passos · barreiras"]
+        FI["Fault injection<br/>pontos nomeados"]
+        OBS["Observation log<br/>append-only · ordenado"]
+        VER["Veredito<br/>oráculo · métricas"]
     end
 
-    subgraph CTL["Control Plane — o sistema sob teste"]
-        RES[resource-service]
-        ALO[allocation-service]
-        REG[registry-service]
+    subgraph SUT["Control Plane — o sistema sob teste"]
+        OPD["Operação<br/>sequência de passos declarada"]
+        STR["Estratégia<br/>NONE · ATOMIC · OPTIMISTIC · PESSIMISTIC"]
+        REP["Acesso ao banco<br/>SQL · transação · isolamento"]
     end
 
-    EXP -->|gera carga| CTL
-    CHA -->|injeta falha| CTL
-    CTL -.->|métricas, traces, eventos| EXP
+    PG[("PostgreSQL")]
+    UI -->|inicia execução| DEF
+    DEF --> RUN
+    RUN -->|executa passo a passo| OPD
+    OPD --> STR
+    STR --> REP
+    REP --> PG
+    RUN -.->|consulta em cada fronteira| FI
+    RUN -->|emite| OBS
+    OBS -->|stream| UI
+    OBS --> VER
+    PG -.->|estado final| VER
+    VER -->|relatório| UI
     style LAB fill: #3f2a1e, stroke: #fb923c, color: #e5e7eb
-    style CTL fill: #1e3a5f, stroke: #60a5fa, color: #e5e7eb
+    style SUT fill: #1e3a5f, stroke: #60a5fa, color: #e5e7eb
 ```
 
-A regra 6 do [ADR-0006](docs/adr/0006-hexagonal-com-archunit.md) impõe a separação com um teste ArchUnit: **o Control Plane nunca importa o Lab
-Plane**. A seta de volta é observação, não dependência.
+A seta que **não** existe é a mais importante: nenhuma caixa do Control Plane aponta para dentro do Lab Plane. O runtime chama a operação; a operação
+nunca chama o runtime. É o que permite injeção de falha dentro do processo sem contaminar o sistema medido.
 
-## Estrutura do repositório
+Nas primeiras etapas os dois planos vivem na **mesma JVM**. A separação precisa ser imposta por teste executável, justamente por isso.
 
-```
-distributed-consistency-lab/
-├── docs/
-│   ├── adr/                          decisões de arquitetura — leia daqui primeiro
-│   ├── diagrams/                     diagramas Mermaid mantidos junto ao código
-│   └── experiments/                  relatórios de execução, um por rodada
-├── experiments/                      definições de experimento em JSON (ADR-0004)
-├── services/
-│   ├── resource-service/             Control Plane — capacidade e invariante
-│   ├── allocation-service/           Control Plane — alocações e saga
-│   ├── registry-service/             Control Plane — agentes e heartbeat
-│   ├── chaos-service/                Lab Plane — injeção de falha semeada
-│   └── experiment-service/           Lab Plane — carga, asserções, relatório
-├── shared/
-│   └── lab-messaging-contract/       envelope de evento e correlação — só técnico
-├── frontend/                         visualização da árvore causal (Etapa 7)
-├── platform/                         ambiente local
-│   ├── compose/                      profiles do Docker Compose (ADR-0010)
-│   ├── postgres/init/                schemas e usuários, um por serviço
-│   ├── rabbitmq/                     exchanges, filas, DLQ
-│   └── observability/                prometheus, grafana, loki, tempo, otel-collector
-├── deploy/                           homelab (Etapa 10)
-│   ├── helm/
-│   ├── argocd/
-│   └── manifests/
-├── infra/tofu/                       OpenTofu — provisionamento
-└── tools/                            scripts de apoio
-```
+## O MVP — cinco experimentos, um processo, um banco
 
-Duas distinções importantes na tabela acima:
+Todos no grupo A. Nenhum exige broker, segundo processo ou serviço adicional.
 
-- **`experiments/` guarda as definições; `docs/experiments/` guarda os resultados.**
-  A definição é a entrada versionada e reexecutável. O relatório é a saída, com a semente, as métricas e o veredito. Os dois entram no Git — juntos, o
-  histórico do repositório vira um caderno de laboratório.
-- **`shared/` nunca contém domínio.** Só o envelope de evento, correlação, tipos de erro de transporte e a fonte de aleatoriedade semeada. Entidade,
-  invariante ou DTO de serviço em `shared/` transformaria o laboratório num monólito distribuído
-  ([ADR-0005](docs/adr/0005-monorepo-com-reactor-unico.md), Alternativa C).
+| #  | Experimento                   | O que ele prova                                                    |
+|----|-------------------------------|--------------------------------------------------------------------|
+| E1 | `lost-update-none`            | o laboratório **detecta**. É o grupo de controle: precisa falhar   |
+| E2 | `lost-update-deterministic`   | o laboratório **constrói**. Exatamente uma perda, em toda execução |
+| E3 | `lost-update-strategies`      | a estratégia é um dado, não uma branch. Quatro comparadas          |
+| E4 | `optimistic-under-contention` | o primeiro resultado que é **curva**, não veredito                 |
+| E5 | `write-skew-inert-protection` | a proteção pode estar presente e **não proteger nada**             |
 
-### Dentro de um serviço
+O E5 é o resultado que mais justifica o laboratório existir: sob um modelo de verificação derivado, inserir uma alocação não incrementa a `version` do
+recurso. A anotação está lá, nenhuma exceção é lançada, e a invariante quebra em silêncio. Nenhum teste de unidade o detecta.
 
-Cada serviço segue as quatro camadas do
-[ADR-0006](docs/adr/0006-hexagonal-com-archunit.md), com dependência em uma direção só:
-
-```
-api            → controllers, DTOs de entrada e saída, tradução HTTP
-application    → casos de uso, orquestração, transação
-domain         → agregados, invariante, portas (interfaces)
-infrastructure → adaptadores: JPA, mensageria, HTTP externo, relógio
-```
-
-O `domain` não aponta para ninguém. Ele não importa Spring, JPA nem Jackson. A invariante é testável com um `new` e um `assert`, em milissegundos, sem
-contexto de aplicação e sem banco.
-
-## Stack
-
-| Camada          | Escolha                                                               |
-|-----------------|-----------------------------------------------------------------------|
-| Linguagem       | Java 21                                                               |
-| Framework       | Spring Boot 3.x; Spring Modulith apenas para verificação de módulos   |
-| Build           | Maven, reactor único                                                  |
-| Persistência    | PostgreSQL — um schema por serviço, sem acesso cruzado                |
-| Mensageria      | RabbitMQ nas etapas iniciais, Kafka depois                            |
-| Observabilidade | OpenTelemetry, Prometheus, Grafana, Loki, Tempo                       |
-| Testes          | JUnit 5, Testcontainers, contract tests, ArchUnit                     |
-| Empacotamento   | Docker, Kubernetes, Helm, ArgoCD                                      |
-| Infraestrutura  | Terraform / OpenTofu                                                  |
-| Frontend        | React, TypeScript, Vite, Tailwind, React Flow ou D3, WebSocket ou SSE |
+**E1 é obrigado a falhar.** Se ele não falhar, a carga é insuficiente e nenhum resultado dos outros quatro significa nada. É a regra que separa um
+laboratório de uma demonstração.
 
 ## Roadmap
 
-As etapas abaixo são as que os ADRs já ancoram. A numeração intermediária ainda não foi fixada — ela é decidida quando o ADR correspondente for
-escrito.
+Doze etapas. Cada uma responde uma pergunta concreta e introduz **exatamente uma**
+dificuldade nova. Nenhuma etapa tem infraestrutura como entregável.
 
-| Etapa | Tema                                                      | ADRs                   |
-|-------|-----------------------------------------------------------|------------------------|
-| 0     | Domínio, origens de escrita, monorepo, plataforma local   | 0001, 0002, 0005, 0010 |
-| 1     | Estratégias de concorrência e guardas de arquitetura      | 0003, 0006             |
-| 2     | Transactional Outbox e relay                              | 0007                   |
-| 3     | Inbox, deduplicação, ordenação, DLQ                       | 0007, 0003 (Grupo 2)   |
-| 4     | Experimentos reproduzíveis com semente                    | 0004                   |
-| 5     | Motor de workflow, saga, lease expiry, múltiplas réplicas | 0008, 0009             |
-| 7     | Frontend da árvore causal                                 | —                      |
-| 10    | Deploy no homelab                                         | —                      |
+| #  | Pergunta                                                                | Grupo       |
+|----|-------------------------------------------------------------------------|-------------|
+| 1  | Como demonstrar visualmente um lost update, e **provar** que aconteceu? | A           |
+| 2  | Qual estratégia corrige, e a que custo?                                 | A           |
+| 3  | Por que a proteção pode estar presente e inerte?                        | A           |
+| 4  | O que quebra quando o worker deixa de ser uma thread?                   | A→E         |
+| 5  | O que muda quando a operação vira uma mensagem?                         | B           |
+| 6  | O que acontece se o processo morre entre o commit e o publish?          | C           |
+| 7  | Como garantir que o efeito lógico aconteça uma vez só?                  | C           |
+| 8  | Para onde vai a mensagem que nunca dá certo?                            | B/D         |
+| 9  | Como medir o que o usuário viu, e não o que ficou gravado?              | C           |
+| 10 | Quando um sistema correto deixa de servir?                              | D           |
+| 11 | Quem tem o direito de escrever, e até quando?                           | E           |
+| 12 | Como transformar um bug de concorrência num teste repetível?            | transversal |
+
+As etapas 1 a 3 são o MVP. **A etapa 4 não tem data:** ela acontece quando o experimento de lock de JVM ficar vermelho com duas instâncias. Se ele
+nunca for escrito, a etapa 4 nunca chega — e isso é informação, não atraso.
+
+## Stack
+
+| Camada                   | Escolha                 | Quando entra                         |
+|--------------------------|-------------------------|--------------------------------------|
+| Linguagem                | Java 25                 | etapa 1                              |
+| Framework                | Spring Boot 4.x         | etapa 1                              |
+| Persistência             | PostgreSQL              | etapa 1                              |
+| Frontend                 | interface web unificada | etapa 1                              |
+| Empacotamento            | Docker                  | etapa 1                              |
+| Mensageria               | RabbitMQ                | etapa 5                              |
+| Cache e lock distribuído | Valkey                  | etapa 11, **se** provado necessário  |
+| Observabilidade externa  | OpenTelemetry e afins   | quando a timeline própria não bastar |
+| Orquestração             | Kubernetes              | sem gatilho previsto                 |
+
+Nenhuma tecnologia entra por estar disponível. Cada uma entra quando um experimento não puder ser executado sem ela. Kafka não está no escopo.
+
+O PostgreSQL não é só armazenamento — ele é **ferramenta do laboratório**. Níveis de isolamento, locks, constraints e deadlocks são objeto de estudo,
+não detalhe de infraestrutura.
 
 ## Estado atual
 
-**Nada foi implementado.** O repositório contém apenas ADRs e este esqueleto.
+**Nada foi implementado.** Não existe `pom.xml`, classe Java ou `docker-compose.yml`.
 
-Os ADRs 0008 a 0013 foram rascunhados de uma vez, em paralelo, e **nenhum foi debatido**.
-Eles entram na fila como qualquer outro. Um rascunho não é uma decisão — a diferença
-importa aqui mais que em outros lugares, porque seis documentos escritos sem se ver já
-produziram três pontos de atrito entre si, listados em [`docs/adr/README.md`](docs/adr/README.md).
+| Item                   | Estado                                                     |
+|------------------------|------------------------------------------------------------|
+| Plano do laboratório   | [escrito](docs/plano-do-laboratorio.md), não é decisão     |
+| ADRs da série corrente | **nenhum escrito**                                         |
+| Primeira série de ADRs | [arquivada](docs/adr/arquivo/README.md), nenhum foi aceito |
+| Código                 | nenhum                                                     |
 
-Isso é deliberado. A decisão vem antes do código, e cada decisão é debatida uma a uma. Um ADR escrito depois da implementação não é uma decisão — é
-uma justificativa.
+O repositório teve uma primeira série de 13 ADRs, construída sobre outra pergunta central: *quanto custa proteger uma invariante de capacidade sob
+concorrência?* Nenhum foi aceito. Todos foram arquivados em [`docs/adr/arquivo/`](docs/adr/arquivo/README.md)
+e continuam lá pelas seções de alternativas descartadas, que não caducaram junto com as decisões.
 
-O estado do debate está em [`docs/adr/README.md`](docs/adr/README.md), na tabela **"Onde o debate parou"**.
-
-> **Aviso.** **Nenhum ADR está aceito.** Todos os sete estão `Proposto`, incluindo o
-> 0001 e o 0002, que voltaram atrás depois que objeções posteriores os atingiram. Tudo
-> neste README descreve uma hipótese de trabalho, não uma decisão em vigor.
->
-> Esta estrutura de diretórios deriva dos ADRs 0005 e 0006. Ela é provisória. Nenhum
-> `pom.xml` foi criado, e o pacote raiz Java ainda não foi escolhido — essa decisão
-> acompanha o parent POM.
->
-> **A decomposição em cinco serviços também não foi decidida.** Os nomes e as
-> responsabilidades listados acima são uma hipótese de trabalho, não uma decisão: nenhum
-> ADR explica por que cinco, nem qual serviço é dono de qual tabela. A pergunta é
-> pesada, porque a fronteira de serviço é a fronteira transacional — separar `resource`
-> de `allocation` torna a invariante distribuída e muda o que a Etapa 1 consegue medir.
-> O ADR-0011 resolve isso.
->
-> **Duas lacunas foram declaradas e ainda não têm ADR.** O Chaos Service não tem lugar
-> definido — interceptar dentro do processo contamina o sistema sob teste, interceptar
-> no broker entra na medida de latência, interceptar na rede não produz duplicata
-> semântica (ADR-0012). E o laboratório, como está desenhado, **só mede escrita**: uma
-> leitura desatualizada não sobrevive até o estado final, então nenhuma asserção do
-> ADR-0004 a alcança (ADR-0013).
+> **Aviso sobre a árvore de diretórios.** As pastas em `services/`, `deploy/` e
+> `platform/observability/` derivam das decisões arquivadas. Elas descrevem uma
+> arquitetura de cinco serviços que **não é a do plano atual** — o MVP é uma aplicação
+> e um banco. A limpeza acontece junto com o ADR de arquitetura mínima.
 
 ## Como este repositório é lido
 
-Comece pelos ADRs, na ordem numérica. Cada um responde a três perguntas: qual era o problema, o que foi decidido, e **o que foi descartado e por
-quê**. A seção *Alternativas consideradas* costuma valer mais que a seção *Decisão* — ela guarda o raciocínio que o código sozinho nunca mostra.
+1. [`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md) — taxonomia, dependências pedagógicas, roadmap, MVP, arquitetura mínima e decisões
+   adiadas.
+2. [`docs/adr/README.md`](docs/adr/README.md) — o processo de decisão e a fila do que precisa ser decidido, em ordem.
+3. [`docs/adr/arquivo/README.md`](docs/adr/arquivo/README.md) — por que a primeira série foi arquivada e o que sobreviveu dela.
 
-O processo de debate, incluindo a regra de que nenhuma objeção pode existir apenas na conversa, está documentado em [
-`docs/adr/README.md`](docs/adr/README.md).
+A decisão vem antes do código. Um ADR escrito depois da implementação não é uma decisão — é uma justificativa.
