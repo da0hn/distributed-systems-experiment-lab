@@ -1,2 +1,5 @@
 .idea
 *.iml
+
+# Configuração local de máquina (allowlist de permissões, output style).
+.claude/settings.local.json

@@ -1,0 +1,24 @@
+# Marcador do ai-memory (https://github.com/akitaonrails/ai-memory).
+#
+# Fixa a identidade deste repositório na memória de longo prazo. Sem o
+# marcador o projeto era resolvido por `basename(cwd)`: renomear a pasta ou
+# abrir um `git worktree` orfanaria o histórico em silêncio, e a sessão
+# seguinte começaria com a memória vazia sem nenhum sinal de erro.
+#
+# Os valores abaixo são os que o servidor já usa hoje — confirmados em
+# GET /api/v1/projects. Não os altere sem migrar as páginas existentes.
+workspace = "default"
+project = "distributed-consistency-lab"
+
+# Injeta um brief compilado a cada SessionStart — inclusive após `/clear`,
+# que refaz o SessionStart. O brief carrega o corpo das páginas `pinned`,
+# `_rules/` e `_slots/` deste projeto, mais os títulos das recém-atualizadas.
+#
+# O `CLAUDE.md` já é sempre carregado. O brief existe para o que ele não
+# cobre: estado de processo que atravessa sessões. Páginas que o dupliquem
+# são desperdício de contexto.
+#
+# `max_chars` é orçamento em caracteres (não tokens), limitado a 500..20000.
+[briefing]
+inject_on_session_start = "true"
+max_chars = 6000
