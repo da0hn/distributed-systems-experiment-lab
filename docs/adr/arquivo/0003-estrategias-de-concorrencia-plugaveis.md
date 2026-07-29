@@ -24,14 +24,14 @@ entidade, um `SELECT ... FOR UPDATE` no repositório, um índice único na migra
 Se o mecanismo estiver espalhado, trocá-lo exige alterar código e reiniciar com uma
 build diferente. A comparação vira um exercício de branches, não um experimento.
 
-A pergunta é: como tornar o mecanismo de concorrência um **dado de configuração**, e
-não uma característica do código?
+A pergunta é: como tornar o mecanismo de concorrência um **dado de configuração**, e não
+uma característica do código?
 
 ## Decisão
 
 O `Resource` declara uma estratégia de concorrência. A estratégia é um **atributo do
-recurso**, gravado no banco, escolhido no momento da criação. Um experimento pode
-criar dois recursos com estratégias diferentes e submetê-los à mesma carga.
+recurso**, gravado no banco, escolhido no momento da criação. Um experimento pode criar
+dois recursos com estratégias diferentes e submetê-los à mesma carga.
 
 O laboratório implementa **nove estratégias**, em dois grupos.
 
@@ -59,9 +59,9 @@ O laboratório implementa **nove estratégias**, em dois grupos.
 `NONE` não é um erro nem um estado provisório. É o **grupo de controle**. Sem ela, o
 laboratório não consegue provar que houve um problema para resolver.
 
-O resultado esperado de todo experimento é: `NONE` viola a invariante, a estratégia
-sob teste não viola. Se `NONE` **não** violar, o experimento não tem carga suficiente
-e o resultado das outras estratégias não significa nada.
+O resultado esperado de todo experimento é: `NONE` viola a invariante, a estratégia sob
+teste não viola. Se `NONE` **não** violar, o experimento não tem carga suficiente e o
+resultado das outras estratégias não significa nada.
 
 ### `ATOMIC_UPDATE` separa atomicidade de idempotência
 
@@ -76,13 +76,13 @@ Esta consulta é correta sob qualquer nível de concorrência, sem `@Version`, s
 
 Ela **não é idempotente**. O ADR-0007 estabelece que tudo no laboratório opera sob
 *at-least-once*. Se o mesmo comando for reentregue, o decremento acontece duas vezes.
-Nenhum erro é lançado. A invariante formal (`available >= 0`) continua satisfeita —
-o que quebra é a correspondência entre `available` e as alocações que existem de fato.
+Nenhum erro é lançado. A invariante formal (`available >= 0`) continua satisfeita — o
+que quebra é a correspondência entre `available` e as alocações que existem de fato.
 
 Esse resultado é o motivo de `ATOMIC_UPDATE` estar na lista. Ele demonstra que
 **atomicidade e idempotência são eixos ortogonais**. Optimistic lock tem o mesmo
-defeito: ele detecta escrita concorrente, mas se a mesma mensagem for reprocessada
-após o commit, a versão já avançou e o segundo decremento é aceito.
+defeito: ele detecta escrita concorrente, mas se a mesma mensagem for reprocessada após
+o commit, a versão já avançou e o segundo decremento é aceito.
 
 Nenhuma estratégia do Grupo 1 resolve reentrega. Isso é competência do Grupo 2.
 
@@ -101,29 +101,29 @@ ADR-0004.
 | `PARTITION_KEY` | protege | protege |
 | Grupo 2 (todas) | ortogonal — não resolve concorrência | ortogonal |
 
-⭐ **`DERIVED` + `OPTIMISTIC` não protege nada.** Inserir uma `allocation` não
-incrementa a `version` do `resource`. Não existe linha compartilhada para versionar. A
-anotação está presente, nenhuma exceção é lançada, e a invariante quebra. É a
-**proteção presente e inerte** — o resultado mais valioso do laboratório.
+⭐ **`DERIVED` + `OPTIMISTIC` não protege nada.** Inserir uma `allocation` não incrementa
+a `version` do `resource`. Não existe linha compartilhada para versionar. A anotação
+está presente, nenhuma exceção é lançada, e a invariante quebra. É a **proteção presente
+e inerte** — o resultado mais valioso do laboratório.
 
 ### O limite de todas as nove estratégias
 
 O ADR-0002 decidiu que o Agent reporta capacidade total, e que essa capacidade pode
-encolher abaixo do que já está alocado. Quando isso acontece, a invariante do ADR-0001
-é violada **sem nenhuma concorrência**.
+encolher abaixo do que já está alocado. Quando isso acontece, a invariante do ADR-0001 é
+violada **sem nenhuma concorrência**.
 
-Nenhuma estratégia desta lista resolve esse caso. Não há corrida para serializar, não
-há duplicata para filtrar, não há ordem para restaurar. Existe apenas um fato
-verdadeiro que torna o passado inválido.
+Nenhuma estratégia desta lista resolve esse caso. Não há corrida para serializar, não há
+duplicata para filtrar, não há ordem para restaurar. Existe apenas um fato verdadeiro
+que torna o passado inválido.
 
 Isso não é uma lacuna do ADR-0003. É o resultado que delimita seu escopo: **exclusão
-mútua e consistência não são a mesma coisa**. As nove estratégias protegem o momento
-da escrita. A convergência depois de um fato externo é competência do Reconciler e do
+mútua e consistência não são a mesma coisa**. As nove estratégias protegem o momento da
+escrita. A convergência depois de um fato externo é competência do Reconciler e do
 estado `OVERCOMMITTED`, não de lock.
 
-`SEQUENCE_GUARD` continua sendo necessário para o Agent, mas por outro motivo: um
-relato antigo de capacidade maior, chegando depois de um recente, restauraria
-capacidade que não existe mais.
+`SEQUENCE_GUARD` continua sendo necessário para o Agent, mas por outro motivo: um relato
+antigo de capacidade maior, chegando depois de um recente, restauraria capacidade que
+não existe mais.
 
 ### Onde a estratégia vive
 
@@ -143,8 +143,7 @@ infrastructure/concurrency/
   ...
 ```
 
-O ADR-0006 define a guarda ArchUnit que impede o domínio de importar a
-infraestrutura.
+O ADR-0006 define a guarda ArchUnit que impede o domínio de importar a infraestrutura.
 
 ### Ordem de implementação
 
@@ -179,26 +178,26 @@ O ADR-0001 estabelece que a proteção correta para o modelo `DERIVED` é o nív
 isolamento `SERIALIZABLE`, com retry no SQLSTATE `40001`. Isso não aparece na lista
 acima.
 
-Nível de isolamento é propriedade da transação, não do recurso. Mas o PostgreSQL
-permite defini-lo por transação, então ele **poderia** virar uma décima estratégia.
-Contra: ele muda a semântica de toda a transação, não só da verificação da invariante.
+Nível de isolamento é propriedade da transação, não do recurso. Mas o PostgreSQL permite
+defini-lo por transação, então ele **poderia** virar uma décima estratégia. Contra: ele
+muda a semântica de toda a transação, não só da verificação da invariante.
 
 ### 3. As quatro estratégias da Etapa 1 pressupõem uma transação local
 
-`NONE`, `ATOMIC_UPDATE`, `OPTIMISTIC` e `PESSIMISTIC` são mecanismos de **um banco
-só**. Um `UPDATE ... WHERE available >= n`, uma coluna `version` e um `SELECT ... FOR
+`NONE`, `ATOMIC_UPDATE`, `OPTIMISTIC` e `PESSIMISTIC` são mecanismos de **um banco só**.
+Um `UPDATE ... WHERE available >= n`, uma coluna `version` e um `SELECT ... FOR
 UPDATE` protegem porque leitura e escrita acontecem na mesma transação, no mesmo
 PostgreSQL.
 
-A tabela de ordem de implementação diz que essas quatro "só precisam do banco". Isso
-só é verdade se `resource` e `allocation` viverem no **mesmo** schema. O ADR-0005
-proíbe um serviço de ler a tabela de outro, e nenhum ADR decidiu se os dois agregados
-pertencem ao mesmo serviço. Ver a questão 3 do ADR-0005.
+A tabela de ordem de implementação diz que essas quatro "só precisam do banco". Isso só
+é verdade se `resource` e `allocation` viverem no **mesmo** schema. O ADR-0005 proíbe um
+serviço de ler a tabela de outro, e nenhum ADR decidiu se os dois agregados pertencem ao
+mesmo serviço. Ver a questão 3 do ADR-0005.
 
-Se a decomposição colocar `resource` e `allocation` em serviços distintos desde a
-Etapa 1, as quatro estratégias ficam inaplicáveis e a matriz de proteção deste ADR não
-pode ser testada como escrita. A alternativa seria começar por saga com compensação —
-o que antecipa a Etapa 5 e remove o caso simples que serve de base de comparação.
+Se a decomposição colocar `resource` e `allocation` em serviços distintos desde a Etapa
+1, as quatro estratégias ficam inaplicáveis e a matriz de proteção deste ADR não pode
+ser testada como escrita. A alternativa seria começar por saga com compensação — o que
+antecipa a Etapa 5 e remove o caso simples que serve de base de comparação.
 
 **Esta questão bloqueia a Etapa 1 inteira.** Ela precisa de resposta antes das duas
 anteriores, porque decide se a matriz é executável.
@@ -208,13 +207,13 @@ anteriores, porque decide se a matriz é executável.
 ### Positivas
 
 - Trocar a estratégia é mudar um campo. Nenhuma build nova. Nenhum deploy novo.
-- Duas estratégias podem coexistir no mesmo processo, ao mesmo tempo, sob a mesma
-  carga. Isso elimina a variável "o ambiente estava diferente".
+- Duas estratégias podem coexistir no mesmo processo, ao mesmo tempo, sob a mesma carga.
+  Isso elimina a variável "o ambiente estava diferente".
 - A matriz vira uma suíte de testes. Cada célula "não protege contra" é um experimento
   com falha esperada. Um experimento que **deveria** falhar e passa indica erro no
   laboratório.
-- A separação em dois grupos torna explícito que lock e idempotência resolvem
-  problemas diferentes. Essa confusão é comum e cara.
+- A separação em dois grupos torna explícito que lock e idempotência resolvem problemas
+  diferentes. Essa confusão é comum e cara.
 
 ### Negativas
 
@@ -222,8 +221,8 @@ anteriores, porque decide se a matriz é executável.
   menos legível que um `SELECT ... FOR UPDATE` explícito. Este custo é aceito de
   propósito: o laboratório troca legibilidade local por comparabilidade.
 - Algumas estratégias não são puramente de código. `UNIQUE_CONSTRAINT` exige um índice
-  no banco. `PARTITION_KEY` exige configuração do broker. A abstração vaza. Isso
-  precisa ser documentado por estratégia, não escondido.
+  no banco. `PARTITION_KEY` exige configuração do broker. A abstração vaza. Isso precisa
+  ser documentado por estratégia, não escondido.
 - Nove adaptadores é bastante superfície para manter. A ordem de implementação
   incremental mitiga, mas não elimina.
 
@@ -256,11 +255,10 @@ O cliente escolhe a estratégia a cada chamada.
 
 **Descartada.** A estratégia é uma propriedade do dado protegido, não da chamada. Duas
 chamadas concorrentes com estratégias diferentes sobre o mesmo recurso produzem um
-resultado sem significado — a proteção mais fraca vence, e o experimento não mede
-nada.
+resultado sem significado — a proteção mais fraca vence, e o experimento não mede nada.
 
 ## Quando esta decisão deixa de valer
 
-Reveja esta decisão se o custo de manter nove adaptadores superar o valor da
-comparação. O sinal concreto: uma estratégia que fica seis meses sem aparecer em
-nenhum experimento. Ela deve ser removida, não mantida por simetria.
+Reveja esta decisão se o custo de manter nove adaptadores superar o valor da comparação.
+O sinal concreto: uma estratégia que fica seis meses sem aparecer em nenhum experimento.
+Ela deve ser removida, não mantida por simetria.

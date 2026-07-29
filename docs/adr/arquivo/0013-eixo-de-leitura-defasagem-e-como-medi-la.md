@@ -10,19 +10,18 @@
 O ADR-0001 lista "CQRS e defasagem de leitura" entre os seis temas que dependem do
 domínio — ou seja, entre os que este laboratório existe para estudar.
 
-Nenhum ADR decidiu como esse tema é medido. Os ADRs 0001, 0002, 0003 e 0007 tratam
-do eixo de **escrita**: quem escreve, com que semântica, protegido por qual mecanismo.
+Nenhum ADR decidiu como esse tema é medido. Os ADRs 0001, 0002, 0003 e 0007 tratam do
+eixo de **escrita**: quem escreve, com que semântica, protegido por qual mecanismo.
 
-O ADR-0002 define quatro origens, e as quatro são de escrita. Não existe ator leitor
-com contrato próprio.
+O ADR-0002 define quatro origens, e as quatro são de escrita. Não existe ator leitor com
+contrato próprio.
 
 O ADR-0004 define o veredito executável. As asserções dele são consultas sobre o
 **estado final** e sobre métricas agregadas. Toda origem do ADR-0002 deixa rastro no
 estado final: uma alocação a mais, um contador errado, um `Resource` em
 `OVERCOMMITTED`.
 
-A questão 2 do ADR-0004 registra que uma leitura desatualizada não deixa rastro
-nenhum.
+A questão 2 do ADR-0004 registra que uma leitura desatualizada não deixa rastro nenhum.
 
 ## Problema
 
@@ -36,27 +35,27 @@ O resultado é um **falso negativo estrutural do instrumento**. O laboratório c
 Cinco forças estão em conflito.
 
 **Força 1 — a verdade não pode ser consultada no instante da leitura.** Consultar a
-verdade tem latência própria, e a verdade muda enquanto a consulta acontece. Uma
-segunda leitura, feita depois da primeira, sempre parece mais fresca — o erro de medida
-tem sinal conhecido e é somado à defasagem que se quer medir.
+verdade tem latência própria, e a verdade muda enquanto a consulta acontece. Uma segunda
+leitura, feita depois da primeira, sempre parece mais fresca — o erro de medida tem
+sinal conhecido e é somado à defasagem que se quer medir.
 
-**Força 2 — o relógio não é confiável entre processos.** Se o leitor e o escritor
-vivem em processos diferentes, o clock skew entre eles entra na medida. O ADR-0002 já
-declara que não existe um "agora" global.
+**Força 2 — o relógio não é confiável entre processos.** Se o leitor e o escritor vivem
+em processos diferentes, o clock skew entre eles entra na medida. O ADR-0002 já declara
+que não existe um "agora" global.
 
-**Força 3 — amostrar toda leitura muda o sistema medido.** Registrar cada leitura
-custa latência no caminho crítico e produz um volume que domina o relatório.
+**Força 3 — amostrar toda leitura muda o sistema medido.** Registrar cada leitura custa
+latência no caminho crítico e produz um volume que domina o relatório.
 
 **Força 4 — nem toda medida tolera amostragem.** Defasagem é uma distribuição, e
-distribuição sobrevive a uma amostra. Uma violação de read-your-writes é um evento
-raro e binário: perdê-la na amostra é o mesmo falso negativo que este ADR existe para
+distribuição sobrevive a uma amostra. Uma violação de read-your-writes é um evento raro
+e binário: perdê-la na amostra é o mesmo falso negativo que este ADR existe para
 eliminar.
 
 **Força 5 — hoje não há de onde a defasagem vir.** Não existe réplica de leitura nem
 projeção CQRS decidida. Sem um estado derivado, não há nada para ficar atrasado.
 
-A pergunta é: quem lê, como a defasagem é capturada no instante em que acontece, e
-qual asserção a transforma em veredito.
+A pergunta é: quem lê, como a defasagem é capturada no instante em que acontece, e qual
+asserção a transforma em veredito.
 
 ## Decisão
 
@@ -71,9 +70,8 @@ do ADR-0002.
 
 O eixo de classificação daquele ADR é *como cada origem quebra a invariante ao
 escrever*. O Observer não escreve nada e não quebra invariante nenhuma. Colocá-lo
-naquela tabela exigiria uma coluna "falha característica" vazia, e sugeriria que as
-nove estratégias do ADR-0003 o protegem — nenhuma delas reduz defasagem em um
-milissegundo.
+naquela tabela exigiria uma coluna "falha característica" vazia, e sugeriria que as nove
+estratégias do ADR-0003 o protegem — nenhuma delas reduz defasagem em um milissegundo.
 
 | | Origens de escrita (ADR-0002) | Observer (este ADR) |
 |---|---|---|
@@ -85,13 +83,13 @@ milissegundo.
 
 **O Observer vive no Lab Plane.** Ele é um papel do gerador de carga do
 `experiment-service`, que já representa o Operator. Ele chama a mesma API pública de
-leitura que qualquer cliente chamaria. A regra 6 do ADR-0006 continua valendo: o
-Control Plane expõe a leitura e não sabe que está sendo observado.
+leitura que qualquer cliente chamaria. A regra 6 do ADR-0006 continua valendo: o Control
+Plane expõe a leitura e não sabe que está sendo observado.
 
 **O Observer nunca consulta a verdade.** Ele registra apenas o que a resposta lhe
 entregou. A verdade é **reconstruída depois do experimento**, a partir do histórico de
-versões (ver item 2). Isso elimina a Força 1 por construção: não existe segunda
-leitura, então não existe latência de segunda leitura na medida.
+versões (ver item 2). Isso elimina a Força 1 por construção: não existe segunda leitura,
+então não existe latência de segunda leitura na medida.
 
 **Toda resposta de leitura carrega um envelope.** Simétrico ao envelope de evento do
 ADR-0007, e como ele, técnico e genérico — cabe em `shared/` sem violar a proibição do
@@ -127,8 +125,8 @@ crítico e fora do banco do Control Plane.
 | `previousReadVersion` | Observer | leitura anterior da mesma sessão |
 
 **A verdade é reconstruída, não consultada.** A tabela `outbox` do ADR-0007 já é um log
-append-only de versões: toda mudança de estado gravou, na mesma transação, um evento
-com `aggregateVersion` e `occurredAt`. Depois que o experimento termina, o histórico de
+append-only de versões: toda mudança de estado gravou, na mesma transação, um evento com
+`aggregateVersion` e `occurredAt`. Depois que o experimento termina, o histórico de
 versões de cada agregado sai de uma consulta a essa tabela. A verdade no instante `t` é
 a maior versão cujo commit precede `t`.
 
@@ -139,20 +137,20 @@ staleness.versionLag  = versãoVerdadeiraEm(servedAt) − readVersion
 staleness.millis      = servedAt − commitDe(readVersion + 1)
 ```
 
-A primeira é exata, inteira e **independente de relógio**. A segunda responde "há
-quanto tempo o valor que o leitor viu deixou de ser verdadeiro" e depende de dois
-relógios: o do processo que atendeu a leitura e o do processo que fez o commit.
+A primeira é exata, inteira e **independente de relógio**. A segunda responde "há quanto
+tempo o valor que o leitor viu deixou de ser verdadeiro" e depende de dois relógios: o
+do processo que atendeu a leitura e o do processo que fez o commit.
 
-**A regra 8 do ADR-0006 ajuda, e é o que torna a segunda medida utilizável.** Sem ela,
-o skew entre processos é ruído incontrolável. Com ela, o relógio é um adaptador
-injetável: o experimento declara o desvio de cada nó, o adaptador reporta `clockId`
+**A regra 8 do ADR-0006 ajuda, e é o que torna a segunda medida utilizável.** Sem ela, o
+skew entre processos é ruído incontrolável. Com ela, o relógio é um adaptador injetável:
+o experimento declara o desvio de cada nó, o adaptador reporta `clockId`
 junto com o instante, e o desvio declarado é subtraído da medida. Skew deixa de ser
-ruído e vira **parâmetro do experimento** — que é exatamente o cenário de clock skew
-que a regra 8 foi escrita para viabilizar.
+ruído e vira **parâmetro do experimento** — que é exatamente o cenário de clock skew que
+a regra 8 foi escrita para viabilizar.
 
-Resta o skew não declarado. Regra dura: **`staleness.millis` só é reportado quando
-todos os `clockId` da amostra pertencem ao mesmo domínio de relógio.** No Docker
-Compose local, todos os contêineres derivam do relógio do host e o domínio é único. Em
+Resta o skew não declarado. Regra dura: **`staleness.millis` só é reportado quando todos
+os `clockId` da amostra pertencem ao mesmo domínio de relógio.** No Docker Compose
+local, todos os contêineres derivam do relógio do host e o domínio é único. Em
 Kubernetes com múltiplos nós, não é — e nesse caso o relatório emite apenas
 `versionLag` e registra a omissão. Uma medida temporal com skew desconhecido é pior que
 nenhuma: ela parece precisa.
@@ -168,8 +166,8 @@ Kubernetes sem perder o eixo inteiro.
 | **Probabilística semeada** | leituras de sessões que nunca escreveram | `readSampleRate`, declarada no experimento | mede uma distribuição; uma amostra basta |
 | **Dirigida** | toda leitura de sessão que já escreveu | 100% | mede eventos raros e binários; perder um é falso negativo |
 
-A probabilidade vem da fonte de aleatoriedade semeada de `shared/random`, protegida
-pela regra 7 do ADR-0006. Mesma semente, mesmas leituras amostradas.
+A probabilidade vem da fonte de aleatoriedade semeada de `shared/random`, protegida pela
+regra 7 do ADR-0006. Mesma semente, mesmas leituras amostradas.
 
 A amostragem dirigida é cara por leitura e barata no total, porque o Observer controla
 quantas sessões escrevem. `writeThenReadRatio` declara essa fração no experimento.
@@ -220,10 +218,10 @@ estimado por 12 pontos. O relatório precisa dizer isso. Um experimento que prec
 | **monotonic reads** | `readVersion(t2) < readVersion(t1)`, mesma sessão, `t2 > t1` | 2 réplicas do modelo de leitura com defasagens diferentes, sem afinidade de sessão |
 | **eventual convergence** | existe leitura com `versionLag > 0` após `quiesceSeconds` sem nenhuma escrita | relay travado por mensagem envenenada, ou projeção que perdeu um evento e não tem recuperação |
 
-**Monotonic reads é vacuamente satisfeito com uma réplica só.** Com um único
-consumidor, a versão aplicada nunca retrocede. A asserção fica verde sem provar nada.
-Ela só tem conteúdo quando o modelo de leitura tem duas réplicas — o que depende da
-Etapa 5. Ver a questão 3.
+**Monotonic reads é vacuamente satisfeito com uma réplica só.** Com um único consumidor,
+a versão aplicada nunca retrocede. A asserção fica verde sem provar nada. Ela só tem
+conteúdo quando o modelo de leitura tem duas réplicas — o que depende da Etapa 5. Ver a
+questão 3.
 
 #### Read-your-writes não é defasagem alta
 
@@ -407,8 +405,8 @@ do período do experimento. O ADR-0007 já registra que um expurgo agressivo apa
 evidência.
 
 - **Reusar a `outbox`.** Custo zero: a tabela existe e já é gravada na transação da
-  escrita. Em troca, a política de expurgo passa a ter dois donos com objetivos opostos
-  — operação quer apagar, medida quer guardar — e a evidência some sem aviso.
+  escrita. Em troca, a política de expurgo passa a ter dois donos com objetivos
+  opostos — operação quer apagar, medida quer guardar — e a evidência some sem aviso.
 - **Log de versões dedicado, append-only.** Explícito e imune ao expurgo. Em troca, é
   uma segunda escrita na transação crítica, que é exatamente o caminho cuja latência e
   contenção o laboratório está medindo. O instrumento entraria na medida.
@@ -420,8 +418,8 @@ diferentes, componentes que falham diferentes, observabilidade diferente. Mas os
 se parecem o bastante para confundir a leitura de um relatório.
 
 Qualificar o nome do ADR-0002 (`convergence.state.seconds`) resolveria. Mas editar o
-ADR-0002 não é competência deste ADR. Fica registrado que, quando os dois forem aceitos, um dos
-nomes precisa de qualificador.
+ADR-0002 não é competência deste ADR. Fica registrado que, quando os dois forem aceitos,
+um dos nomes precisa de qualificador.
 
 ### 6. O que define uma sessão de leitura
 
@@ -468,8 +466,8 @@ depende do arranjo de réplicas, que é da Etapa 5.
 - `staleness.millis` é condicional. Ele desaparece do relatório em ambiente com mais de
   um domínio de relógio, e desaparecer é confuso para quem lê. A alternativa — reportar
   um número com skew desconhecido — é pior, mas o custo de legibilidade é real.
-- A amostragem probabilística torna `p99` uma estimativa. O relatório precisa carregar
-  o tamanho da amostra e quem o lê precisa entender o que isso significa.
+- A amostragem probabilística torna `p99` uma estimativa. O relatório precisa carregar o
+  tamanho da amostra e quem o lê precisa entender o que isso significa.
 - A amostragem dirigida a 100% muda o perfil de carga: sessões que escrevem passam a ter
   toda leitura registrada. O custo é do Lab Plane, mas o Observer é o mesmo processo que
   gera a carga, e um Observer sobrecarregado gera carga irregular.
@@ -495,9 +493,9 @@ valores na hora.
 
 **Descartada.** A segunda leitura tem latência própria e acontece **depois** da
 primeira. O erro de medida tem sinal conhecido: a verdade lida sempre parece mais
-fresca, então a defasagem medida é sistematicamente maior que a real, pelo tempo de
-ida e volta da segunda chamada. Uma violação de poucos milissegundos ficaria
-indistinguível do erro do instrumento.
+fresca, então a defasagem medida é sistematicamente maior que a real, pelo tempo de ida
+e volta da segunda chamada. Uma violação de poucos milissegundos ficaria indistinguível
+do erro do instrumento.
 
 Além disso, ela dobra a carga de leitura sobre o sistema sob teste, e a carga extra cai
 justamente sobre o caminho autoritativo — o mesmo cuja contenção o ADR-0003 mede.
@@ -511,8 +509,8 @@ coisas medidas. A 200 rps por 60 segundos, o volume de amostras domina o relató
 custo de escrevê-las compete com a carga.
 
 A amostragem semeada preserva a forma da distribuição a um custo conhecido, e o único
-caso que amostra nenhuma tolera — os eventos raros e binários — está coberto pelo
-regime dirigido a 100%. A decisão não é "amostrar ou não": é amostrar **o que tolera**
+caso que amostra nenhuma tolera — os eventos raros e binários — está coberto pelo regime
+dirigido a 100%. A decisão não é "amostrar ou não": é amostrar **o que tolera**
 e não amostrar **o que não tolera**.
 
 ### Alternativa C — medir a defasagem apenas em tempo, sem versão

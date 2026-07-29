@@ -3,7 +3,8 @@
 - **Estado:** Proposto
 - **Data:** 2026-07-26
 - **Etapa do roadmap:** 5
-- **Relacionado:** ADR-0002, ADR-0003, ADR-0004, ADR-0006, ADR-0007, ADR-0008, ADR-0011, ADR-0012
+- **Relacionado:** ADR-0002, ADR-0003, ADR-0004, ADR-0006, ADR-0007, ADR-0008, ADR-0011,
+  ADR-0012
 
 ## Contexto
 
@@ -11,19 +12,19 @@ O ADR-0008 define o motor de workflow: o modelo da saga, o estado persistido, a
 profundidade máxima 2, a compensação e a recuperação após falha. Ele decide **o que**
 um passo significa e **quando** o passo seguinte pode começar.
 
-Ele não decide **como** o passo é executado. Chamar um método na mesma thread e
-publicar uma mensagem que outro processo consome levam ao mesmo lugar no diagrama de
-estados. Não levam ao mesmo lugar no mundo real.
+Ele não decide **como** o passo é executado. Chamar um método na mesma thread e publicar
+uma mensagem que outro processo consome levam ao mesmo lugar no diagrama de estados. Não
+levam ao mesmo lugar no mundo real.
 
 O ADR-0003 já resolveu um problema da mesma forma para a concorrência: a estratégia é
 uma porta no domínio, os mecanismos são adaptadores na infraestrutura, e a escolha é um
-dado de configuração. Isso permite comparar dois mecanismos sob carga idêntica, no
-mesmo processo, com a mesma semente.
+dado de configuração. Isso permite comparar dois mecanismos sob carga idêntica, no mesmo
+processo, com a mesma semente.
 
-O ADR-0007 estabelece que toda integração por mensagem no laboratório é
-*at-least-once*, com latência mediana adicional de 100 ms imposta pelo polling do
-relay. O ADR-0004 estabelece que um experimento compara duas configurações sob a mesma
-semente, e que a variável trocada precisa ser explícita.
+O ADR-0007 estabelece que toda integração por mensagem no laboratório é *at-least-once*,
+com latência mediana adicional de 100 ms imposta pelo polling do relay. O ADR-0004
+estabelece que um experimento compara duas configurações sob a mesma semente, e que a
+variável trocada precisa ser explícita.
 
 ## Problema
 
@@ -32,9 +33,9 @@ método, **passa**. Ela passa porque a transação do banco esconde toda falha p
 o segundo passo falhar, o primeiro nunca existiu.
 
 Quando a mesma saga é reescrita com os passos ligados por mensagem, ela quebra. Quebra
-por reentrega, por reordenação, por estado intermediário visível a terceiros e por
-falha do processo entre dois passos. Nenhuma dessas falhas foi introduzida pela lógica
-da saga. Todas foram introduzidas pelo modo de executá-la.
+por reentrega, por reordenação, por estado intermediário visível a terceiros e por falha
+do processo entre dois passos. Nenhuma dessas falhas foi introduzida pela lógica da
+saga. Todas foram introduzidas pelo modo de executá-la.
 
 As forças em conflito:
 
@@ -59,11 +60,11 @@ O motor de workflow conhece uma única porta, `StepExecutor`. O laboratório imp
 | `ASYNC_MESSAGE` | evento gravado no Outbox, consumido por um listener | modo realista |
 
 O par foi avaliado antes de ser adotado, e é o par reservado no índice. Ele é o certo
-por um motivo específico: os dois executam **a mesma definição de saga, byte por
-byte**. Nenhuma outra dupla candidata mantém isso. Trocar orquestração por coreografia
-troca o modelo de estado da saga, não o modo de executar um passo — e sagas diferentes
-não são comparáveis (ver Alternativa E). A objeção legítima ao par escolhido é o
-oposto: ele troca variáveis demais de uma vez. Isso está registrado na questão 2.
+por um motivo específico: os dois executam **a mesma definição de saga, byte por byte**.
+Nenhuma outra dupla candidata mantém isso. Trocar orquestração por coreografia troca o
+modelo de estado da saga, não o modo de executar um passo — e sagas diferentes não são
+comparáveis (ver Alternativa E). A objeção legítima ao par escolhido é o oposto: ele
+troca variáveis demais de uma vez. Isso está registrado na questão 2.
 
 `SYNC_IN_PROCESS` cumpre para o motor de workflow o mesmo papel que `NONE` cumpre para
 as estratégias de concorrência do ADR-0003 — com uma diferença que precisa ser dita em
@@ -157,10 +158,10 @@ As três candidatas têm consequências diferentes, e nenhuma sozinha resolve.
 A decisão é em **dois níveis**, com vinculação única:
 
 1. A definição da saga declara um `defaultExecutor`. É o que vale fora de experimento.
-2. O `Experiment` do ADR-0004 declara `executor`, que **sobrescreve** o padrão para
-   toda instância de saga iniciada durante aquela execução.
-3. A escolha é resolvida **uma vez**, no instante em que a instância de saga é criada,
-   e gravada na própria instância (`saga_instance.executor`). Dali em diante ela é
+2. O `Experiment` do ADR-0004 declara `executor`, que **sobrescreve** o padrão para toda
+   instância de saga iniciada durante aquela execução.
+3. A escolha é resolvida **uma vez**, no instante em que a instância de saga é criada, e
+   gravada na própria instância (`saga_instance.executor`). Dali em diante ela é
    imutável para aquela instância.
 
 O passo 3 não é detalhe. Ele existe por três motivos:
@@ -175,8 +176,8 @@ O passo 3 não é detalhe. Ele existe por três motivos:
   comparação seja válida, e é o que elimina a variável "o ambiente estava diferente".
 
 O executor **não** é atributo do `Resource`. A estratégia de concorrência é propriedade
-do dado protegido; o executor é propriedade do fluxo que atravessa vários dados. Colar
-o executor no recurso reproduz o defeito da Alternativa C do ADR-0003: dois valores
+do dado protegido; o executor é propriedade do fluxo que atravessa vários dados. Colar o
+executor no recurso reproduz o defeito da Alternativa C do ADR-0003: dois valores
 concorrentes para a mesma decisão, e um resultado sem significado.
 
 ```json
@@ -336,11 +337,11 @@ Por isso duas regras são obrigatórias, e não recomendações:
 
 - Todo experimento que declara uma saga é executado sob **os dois** executores. Um
   relatório com uma execução só é incompleto.
-- A execução assíncrona precisa asseverar `saga.compensation.executed > 0`. Se for
-  zero, o experimento não teve carga nem caos suficientes, e o verde da execução
-  síncrona não significa nada. É o mesmo raciocínio da obrigatoriedade de `NONE` no
-  ADR-0003, aplicado ao contrário: lá o controle precisa falhar, aqui o experimento
-  precisa exercitar.
+- A execução assíncrona precisa asseverar `saga.compensation.executed > 0`. Se for zero,
+  o experimento não teve carga nem caos suficientes, e o verde da execução síncrona não
+  significa nada. É o mesmo raciocínio da obrigatoriedade de `NONE` no ADR-0003,
+  aplicado ao contrário: lá o controle precisa falhar, aqui o experimento precisa
+  exercitar.
 
 Um corolário desagradável e concreto: um experimento que declara `chaos` não vazio com
 `executor: SYNC_IN_PROCESS` é, em silêncio, um experimento **sem caos**. O relatório
@@ -349,8 +350,7 @@ sinalizado como anomalia do instrumento, não como resultado.
 
 ### Timeout e retry: onde fica a fronteira
 
-A fronteira é ambígua por natureza, então é traçada por competência, não por
-mecanismo.
+A fronteira é ambígua por natureza, então é traçada por competência, não por mecanismo.
 
 | Competência | Dono | Motivo |
 |---|---|---|
@@ -379,12 +379,12 @@ O deadline é assimétrico e a assimetria é declarada:
   ADR-0006). Vencido o prazo, o passo é abandonado e a saga compensa. Se o resultado
   chegar depois, ele é descartado e contado em `saga.step.outcome.late`. Este é o
   **passo zumbi**, e é uma família de falha inteira.
-- `SYNC_IN_PROCESS` — não há o que interromper com segurança no meio de uma transação.
-  O deadline vira uma verificação depois do fato: o executor registra
+- `SYNC_IN_PROCESS` — não há o que interromper com segurança no meio de uma transação. O
+  deadline vira uma verificação depois do fato: o executor registra
   `saga.step.overran = true` e segue. Nenhum passo zumbi é produzido, jamais.
 
-Ou seja: o executor síncrono não consegue produzir a família de falha mais cara da
-Etapa 5. Isso não é defeito dele. É a razão de ele ser o controle.
+Ou seja: o executor síncrono não consegue produzir a família de falha mais cara da Etapa
+5. Isso não é defeito dele. É a razão de ele ser o controle.
 
 ## Questões em aberto
 
@@ -397,25 +397,25 @@ perde metade da sua decisão.
 
 Os dois lados:
 
-- **Manter a saga dentro de um serviço** preserva o grupo de controle, mas produz a
-  saga menos interessante do laboratório. Uma saga que não atravessa fronteira
-  transacional não precisa de compensação — precisa de `ROLLBACK`.
+- **Manter a saga dentro de um serviço** preserva o grupo de controle, mas produz a saga
+  menos interessante do laboratório. Uma saga que não atravessa fronteira transacional
+  não precisa de compensação — precisa de `ROLLBACK`.
 - **Aceitar a saga entre serviços** produz o cenário realista, mas deixa a Etapa 5 com
   um executor só, sem controle, exatamente onde o controle é mais necessário.
 
-Existe um meio-termo que não foi decidido: um executor síncrono **entre processos**,
-que chama o serviço vizinho por HTTP e bloqueia esperando a resposta. Ele preserva a
-ordem e a pilha, mas perde a transação partilhada. Ele não é o `SYNC_IN_PROCESS` deste
-ADR — é um terceiro executor, com propriedades próprias, e chamá-lo pelo mesmo nome
-falsificaria a tabela comparativa.
+Existe um meio-termo que não foi decidido: um executor síncrono **entre processos**, que
+chama o serviço vizinho por HTTP e bloqueia esperando a resposta. Ele preserva a ordem e
+a pilha, mas perde a transação partilhada. Ele não é o `SYNC_IN_PROCESS` deste ADR — é
+um terceiro executor, com propriedades próprias, e chamá-lo pelo mesmo nome falsificaria
+a tabela comparativa.
 
 **Esta questão bloqueia a Etapa 5.** Ela depende do ADR-0011 e não pode ser respondida
 aqui.
 
 ### 2. O par escolhido troca variáveis demais de uma vez
 
-O laboratório prega trocar uma variável por experimento. Este ADR troca pelo menos
-seis ao mesmo tempo: atomicidade, ordem, semântica de entrega, visibilidade do estado
+O laboratório prega trocar uma variável por experimento. Este ADR troca pelo menos seis
+ao mesmo tempo: atomicidade, ordem, semântica de entrega, visibilidade do estado
 intermediário, durabilidade sob crash e latência.
 
 Quando um resultado diferir entre os dois executores, atribuí-lo a uma causa exigirá
@@ -458,8 +458,8 @@ onde ele mora, e o ADR-0004 está `Proposto`.
   definição de saga, cada uma com seu executor. Custo: acopla o ADR-0004 ao vocabulário
   do ADR-0008.
 - **Como campo de topo `executor`** é mais simples de escrever e de ler no relatório.
-  Custo: finge que uma execução tem um executor só, e essa mentira aparece no dia em
-  que um experimento comparar duas sagas.
+  Custo: finge que uma execução tem um executor só, e essa mentira aparece no dia em que
+  um experimento comparar duas sagas.
 
 ### 5. Um deadline que significa duas coisas ainda é o mesmo deadline?
 
@@ -470,9 +470,9 @@ exatamente o tipo de divergência que este ADR tenta evitar em todos os outros p
 - **Simetrizar:** rodar cada passo síncrono num executor de threads com `Future.get`
   sob prazo. Contra: sair da thread significa sair da transação, e a transação
   partilhada é a única razão de o executor síncrono existir.
-- **Aceitar a assimetria:** documentá-la e usar nomes distintos nas métricas
-  (`overran` versus `timedOut`). Contra: quem ler o relatório vai comparar os dois
-  números de qualquer forma.
+- **Aceitar a assimetria:** documentá-la e usar nomes distintos nas métricas (`overran`
+  versus `timedOut`). Contra: quem ler o relatório vai comparar os dois números de
+  qualquer forma.
 
 ## Consequências
 
@@ -486,12 +486,12 @@ exatamente o tipo de divergência que este ADR tenta evitar em todos os outros p
 - A Etapa 5 pode começar pelo executor síncrono. O motor do ADR-0008 fica correto e
   depurável antes de a mensageria entrar, e a passagem para assíncrono vira um
   experimento em vez de uma reescrita.
-- A regra "o executor nunca devolve o resultado do passo" força o motor a ser
-  assíncrono no desenho desde o primeiro dia, mesmo quando o executor é síncrono. Um
-  motor escrito com retorno direto nunca sobreviveria à troca.
+- A regra "o executor nunca devolve o resultado do passo" força o motor a ser assíncrono
+  no desenho desde o primeiro dia, mesmo quando o executor é síncrono. Um motor escrito
+  com retorno direto nunca sobreviveria à troca.
 - A tabela comparativa vira suíte de asserções. Cada linha em que o síncrono garante
-  algo que o assíncrono não garante é um experimento com resultado esperado
-  divergente. Uma linha em que os dois concordam é um experimento sem carga.
+  algo que o assíncrono não garante é um experimento com resultado esperado divergente.
+  Uma linha em que os dois concordam é um experimento sem carga.
 
 ### Negativas
 
@@ -499,14 +499,13 @@ exatamente o tipo de divergência que este ADR tenta evitar em todos os outros p
   deles custa o dobro para localizar, porque a primeira pergunta passa a ser "é do
   executor?".
 - **A ilusão de correção é criada de propósito.** O executor síncrono existe para
-  produzir um verde enganoso. Isso é caro em disciplina: sem as duas regras
-  obrigatórias da seção "A armadilha", ele vira uma armadilha de verdade em vez de um
-  instrumento.
+  produzir um verde enganoso. Isso é caro em disciplina: sem as duas regras obrigatórias
+  da seção "A armadilha", ele vira uma armadilha de verdade em vez de um instrumento.
 - **O caos quase não alcança o executor síncrono.** Metade do trabalho do ADR-0012 fica
   inerte sob `SYNC_IN_PROCESS`, e isso precisa ser visível no relatório em vez de
   silencioso.
-- **A porta obriga um salto de indireção em todo passo.** Ler o motor deixa de mostrar
-  o que o passo faz. Este custo é o mesmo que o ADR-0003 aceitou, e pela mesma razão:
+- **A porta obriga um salto de indireção em todo passo.** Ler o motor deixa de mostrar o
+  que o passo faz. Este custo é o mesmo que o ADR-0003 aceitou, e pela mesma razão:
   o laboratório troca legibilidade local por comparabilidade.
 
 ### Neutras
@@ -524,21 +523,20 @@ exatamente o tipo de divergência que este ADR tenta evitar em todos os outros p
 
 Ir direto ao modo realista. Toda saga é executada por mensagem, desde o primeiro dia.
 
-**Descartada.** Sem grupo de controle, nenhuma diferença observada pode ser atribuída
-ao modo de execução — só se pode afirmar que a saga assíncrona falha, nunca que ela
-falha *por ser* assíncrona. Além disso, a Etapa 5 começaria sem nenhum caminho
-depurável, e um defeito do motor do ADR-0008 seria indistinguível de um defeito de
-entrega do ADR-0007.
+**Descartada.** Sem grupo de controle, nenhuma diferença observada pode ser atribuída ao
+modo de execução — só se pode afirmar que a saga assíncrona falha, nunca que ela falha
+*por ser* assíncrona. Além disso, a Etapa 5 começaria sem nenhum caminho depurável, e um
+defeito do motor do ADR-0008 seria indistinguível de um defeito de entrega do ADR-0007.
 
 ### Alternativa B — executor escolhido por perfil do Spring
 
 Um perfil por executor, escolhido na inicialização do serviço.
 
 **Descartada.** É o mesmo defeito da Alternativa B do ADR-0003. Impede que os dois
-executores coexistam numa mesma execução, então toda comparação exigiria duas
-execuções, em momentos diferentes, sob condições de máquina diferentes. Pior aqui do
-que no ADR-0003: a saga assíncrona é sensível à carga do broker, que é justamente a
-variável que duas execuções separadas não conseguem manter igual.
+executores coexistam numa mesma execução, então toda comparação exigiria duas execuções,
+em momentos diferentes, sob condições de máquina diferentes. Pior aqui do que no
+ADR-0003: a saga assíncrona é sensível à carga do broker, que é justamente a variável
+que duas execuções separadas não conseguem manter igual.
 
 ### Alternativa C — executor escolhido por requisição, num cabeçalho HTTP
 
@@ -568,9 +566,9 @@ contra passos que reagem a eventos uns dos outros, sem motor.
 **Descartada.** É outro eixo, e é competência do ADR-0008, que decide o motor. O par
 também falharia no requisito central: na coreografia não existe definição de saga
 central, então não existe "a mesma saga" para submeter aos dois modos. A comparação
-mediria duas modelagens diferentes, e nenhuma conclusão poderia ser atribuída ao modo
-de execução. O par escolhido é o único em que a definição da saga é literalmente o
-mesmo artefato nos dois lados.
+mediria duas modelagens diferentes, e nenhuma conclusão poderia ser atribuída ao modo de
+execução. O par escolhido é o único em que a definição da saga é literalmente o mesmo
+artefato nos dois lados.
 
 ## Quando esta decisão deixa de valer
 

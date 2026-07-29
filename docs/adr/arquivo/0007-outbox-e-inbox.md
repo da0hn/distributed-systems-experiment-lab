@@ -39,12 +39,12 @@ flowchart TB
     style B5 fill:#4c1d1d,stroke:#f87171,color:#e5e7eb
 ```
 
-A ordem 1 perde eventos. A ordem 2 inventa eventos. Perder é ruim; inventar é pior —
-o consumidor age sobre um fato que não aconteceu.
+A ordem 1 perde eventos. A ordem 2 inventa eventos. Perder é ruim; inventar é pior — o
+consumidor age sobre um fato que não aconteceu.
 
 Uma transação XA (two-phase commit) resolveria, mas o RabbitMQ não a suporta de forma
-prática, e o custo de disponibilidade do 2PC é alto: o coordenador é ponto único e
-uma falha durante o `prepare` bloqueia participantes.
+prática, e o custo de disponibilidade do 2PC é alto: o coordenador é ponto único e uma
+falha durante o `prepare` bloqueia participantes.
 
 ## Decisão
 
@@ -52,8 +52,8 @@ O laboratório usa **Transactional Outbox** na publicação e **Inbox** no consu
 
 ### Outbox
 
-O evento é gravado numa tabela `outbox`, **na mesma transação** que altera o estado.
-Uma escrita, um sistema, uma transação. O dual-write desaparece.
+O evento é gravado numa tabela `outbox`, **na mesma transação** que altera o estado. Uma
+escrita, um sistema, uma transação. O dual-write desaparece.
 
 ```mermaid
 sequenceDiagram
@@ -77,8 +77,8 @@ sequenceDiagram
 ```
 
 Um processo separado — o **relay** — lê a tabela e publica. Ele usa
-`SELECT ... FOR UPDATE SKIP LOCKED` para permitir várias réplicas sem que duas peguem
-a mesma linha.
+`SELECT ... FOR UPDATE SKIP LOCKED` para permitir várias réplicas sem que duas peguem a
+mesma linha.
 
 **O relay entrega at-least-once, nunca exactly-once.** Entre o `publish` e o
 `UPDATE outbox` existe uma janela. Se o processo morrer nela, o evento é publicado de
@@ -94,8 +94,8 @@ at-least-once delivery  +  idempotent processing
 = efeito observável de exactly-once
 ```
 
-**Exactly-once fim a fim não existe.** O que existe é entrega repetida com efeito
-único. Essa distinção é o centro do tema, e o laboratório a torna visível: a métrica
+**Exactly-once fim a fim não existe.** O que existe é entrega repetida com efeito único.
+Essa distinção é o centro do tema, e o laboratório a torna visível: a métrica
 `inbox.duplicates.discarded` mostra quantas vezes o mesmo evento chegou.
 
 ### Deduplicação não é ordenação
@@ -108,8 +108,8 @@ Estes são dois problemas diferentes, e confundi-los é o erro mais comum da ár
 | **Ordenação** | Este fato é mais novo que o estado atual? | `SEQUENCE_GUARD` (ADR-0003) | evento fora de ordem |
 
 O Inbox descarta um heartbeat duplicado. Ele **não** descarta um heartbeat antigo que
-chegou depois de um recente — o `eventId` é diferente, então passa. Ver ADR-0002,
-origem Agent.
+chegou depois de um recente — o `eventId` é diferente, então passa. Ver ADR-0002, origem
+Agent.
 
 ### Envelope de evento
 
@@ -134,29 +134,28 @@ qualquer efeito. Isso é o que o frontend da Etapa 7 desenha.
 
 ### Positivas
 
-- Nenhum evento é perdido e nenhum é inventado. A garantia é estrutural, não
-  dependente de retry bem configurado.
-- O relay em múltiplas réplicas conecta metade dos temas do laboratório: sem
-  proteção há publicação duplicada; as saídas são `FOR UPDATE SKIP LOCKED`, eleição
-  de líder (`SINGLE_WRITER`) ou partição por hash (`PARTITION_KEY`) — as mesmas
-  estratégias do ADR-0003, agora aplicadas ao próprio laboratório.
+- Nenhum evento é perdido e nenhum é inventado. A garantia é estrutural, não dependente
+  de retry bem configurado.
+- O relay em múltiplas réplicas conecta metade dos temas do laboratório: sem proteção há
+  publicação duplicada; as saídas são `FOR UPDATE SKIP LOCKED`, eleição de líder
+  (`SINGLE_WRITER`) ou partição por hash (`PARTITION_KEY`) — as mesmas estratégias do
+  ADR-0003, agora aplicadas ao próprio laboratório.
 - A tabela `outbox` é o registro auditável do que o serviço decidiu publicar,
   independente do broker.
 
 ### Negativas
 
-- **Latência adicional.** O evento só sai no próximo ciclo de polling. Com intervalo
-  de 200 ms, a latência mediana adicionada é 100 ms. Isso é visível no laboratório e
-  deve ser medido, não escondido.
+- **Latência adicional.** O evento só sai no próximo ciclo de polling. Com intervalo de
+  200 ms, a latência mediana adicionada é 100 ms. Isso é visível no laboratório e deve
+  ser medido, não escondido.
 - **A tabela `outbox` cresce.** Ela precisa de expurgo. Um expurgo agressivo demais
   apaga a evidência que um experimento precisaria. Este conflito é real e será
   documentado quando a política de retenção for definida.
-- **A tabela `inbox` também cresce**, e o crescimento é pior: ela não pode ser
-  expurgada livremente. Apagar um `eventId` reabre a janela de duplicação para
-  aquele evento. A janela de retenção precisa ser maior que o prazo máximo de
-  retentativa do produtor.
-- Duas tabelas de infraestrutura por serviço, mais um processo de fundo por serviço.
-  O custo operacional é real.
+- **A tabela `inbox` também cresce**, e o crescimento é pior: ela não pode ser expurgada
+  livremente. Apagar um `eventId` reabre a janela de duplicação para aquele evento. A
+  janela de retenção precisa ser maior que o prazo máximo de retentativa do produtor.
+- Duas tabelas de infraestrutura por serviço, mais um processo de fundo por serviço. O
+  custo operacional é real.
 
 ### Neutras
 
@@ -170,18 +169,16 @@ qualquer efeito. Isso é o que o frontend da Etapa 7 desenha.
 
 Publicar no broker após o commit, com retentativa em caso de falha.
 
-**Descartada.** O retry não resolve o caso em que o processo morre. O evento é
-perdido em silêncio, e nenhuma métrica revela isso — o serviço não sabe que devia ter
-publicado.
+**Descartada.** O retry não resolve o caso em que o processo morre. O evento é perdido
+em silêncio, e nenhuma métrica revela isso — o serviço não sabe que devia ter publicado.
 
 ### Alternativa B — Transação XA (two-phase commit)
 
 Coordenar banco e broker numa transação distribuída.
 
-**Descartada.** O RabbitMQ não suporta XA de forma prática. Além disso, o 2PC troca
-o problema de consistência por um problema de disponibilidade: uma falha do
-coordenador entre o `prepare` e o `commit` deixa participantes bloqueados,
-segurando locks.
+**Descartada.** O RabbitMQ não suporta XA de forma prática. Além disso, o 2PC troca o
+problema de consistência por um problema de disponibilidade: uma falha do coordenador
+entre o `prepare` e o `commit` deixa participantes bloqueados, segurando locks.
 
 Vale registrar: o 2PC **resolve** o dual-write. Ele não é errado. Ele é caro. A
 indústria abandonou o 2PC entre serviços porque a indisponibilidade que ele introduz
@@ -189,26 +186,25 @@ custa mais que a consistência eventual que o Outbox aceita.
 
 ### Alternativa C — Listen-to-Yourself
 
-O serviço publica o evento primeiro e só altera o próprio estado ao consumi-lo de
-volta.
+O serviço publica o evento primeiro e só altera o próprio estado ao consumi-lo de volta.
 
 **Descartada, mas com respeito.** É uma solução elegante: existe uma escrita só, e o
-estado deriva do fluxo de eventos. O problema é o efeito no cliente síncrono do
-Operator (ADR-0002): a resposta HTTP não pode confirmar a alocação, porque no momento
-da resposta o estado ainda não mudou. O laboratório precisa do caminho síncrono para
-estudar `lost update` com resposta imediata.
+estado deriva do fluxo de eventos. O problema é o efeito no cliente síncrono do Operator
+(ADR-0002): a resposta HTTP não pode confirmar a alocação, porque no momento da resposta
+o estado ainda não mudou. O laboratório precisa do caminho síncrono para estudar
+`lost update` com resposta imediata.
 
 ### Alternativa D — Change Data Capture com Debezium
 
 Ler o WAL do PostgreSQL e publicar as mudanças.
 
-**Adiada.** É mais eficiente que polling e elimina a latência do ciclo. Mas exige
-Kafka Connect e configuração de replicação lógica, e o mecanismo fica escondido
-dentro do Debezium — o oposto do que o laboratório quer na Etapa 2. Bom candidato a
-uma etapa posterior, comparando as duas abordagens sob o mesmo experimento.
+**Adiada.** É mais eficiente que polling e elimina a latência do ciclo. Mas exige Kafka
+Connect e configuração de replicação lógica, e o mecanismo fica escondido dentro do
+Debezium — o oposto do que o laboratório quer na Etapa 2. Bom candidato a uma etapa
+posterior, comparando as duas abordagens sob o mesmo experimento.
 
 ## Quando esta decisão deixa de valer
 
-Reveja o polling se a latência adicionada dominar as medições de convergência. O
-sinal concreto: um experimento cujo resultado muda ao alterar apenas o intervalo de
-polling do relay. Isso indica que o instrumento está medindo a si mesmo.
+Reveja o polling se a latência adicionada dominar as medições de convergência. O sinal
+concreto: um experimento cujo resultado muda ao alterar apenas o intervalo de polling do
+relay. Isso indica que o instrumento está medindo a si mesmo.

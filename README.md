@@ -1,9 +1,11 @@
 # Distributed Systems Experiment Lab
 
-Uma plataforma experimental para **reproduzir, observar e comparar** problemas conhecidos de sistemas distribuídos.
+Uma plataforma experimental para **reproduzir, observar e comparar** problemas
+conhecidos de sistemas distribuídos.
 
-Isto não é uma aplicação de negócio. Não existe pedido, pagamento, cliente ou estoque. O laboratório é um instrumento de medida: um engenheiro
-configura um experimento, executa, injeta condições adversas e observa em tempo real como o sistema reage.
+Isto não é uma aplicação de negócio. Não existe pedido, pagamento, cliente ou estoque. O
+laboratório é um instrumento de medida: um engenheiro configura um experimento, executa,
+injeta condições adversas e observa em tempo real como o sistema reage.
 
 > Execute 100 operações concorrentes sobre o mesmo recurso com optimistic locking,
 > 5 workers, latência aleatória entre 50 e 500 ms e 10% de duplicação de mensagens.
@@ -14,9 +16,10 @@ No fim, o laboratório precisa **explicar objetivamente** o que aconteceu.
 
 > Nunca introduza primeiro a solução. Introduza primeiro o problema.
 
-Para estudar Transactional Outbox, o laboratório **não** começa implementando Outbox. Ele constrói um experimento em que o commit no banco e a
-publicação da mensagem são duas operações independentes, provoca a falha entre elas, observa a inconsistência — e só então introduz o Outbox e roda o
-mesmo experimento de novo.
+Para estudar Transactional Outbox, o laboratório **não** começa implementando Outbox.
+Ele constrói um experimento em que o commit no banco e a publicação da mensagem são duas
+operações independentes, provoca a falha entre elas, observa a inconsistência — e só
+então introduz o Outbox e roda o mesmo experimento de novo.
 
 ```
 PROBLEMA → CAUSA → SOLUÇÃO → TRADE-OFF
@@ -34,8 +37,10 @@ Três exigências do laboratório convergem para o mesmo mecanismo:
 | Fault injection em pontos nomeados | falhar em `AFTER_COMMIT`, `BEFORE_PUBLISH`, `BEFORE_ACK`… |
 | Timeline                           | um registro por passo, com worker, recurso e versão       |
 
-Nenhuma delas é atendível se uma operação for um método Java comum. Por isso uma operação é declarada como uma **sequência de passos**, executada pelo
-runtime do laboratório. Em cada fronteira entre dois passos o runtime consulta o escalonador, consulta o injetor de falha e emite uma observação.
+Nenhuma delas é atendível se uma operação for um método Java comum. Por isso uma
+operação é declarada como uma **sequência de passos**, executada pelo runtime do
+laboratório. Em cada fronteira entre dois passos o runtime consulta o escalonador,
+consulta o injetor de falha e emite uma observação.
 
 ```
 operação increment:
@@ -45,16 +50,18 @@ operação increment:
   COMMIT
 ```
 
-O que é sintético é apenas o **agendamento**. O nível de isolamento, o lock de linha e o `40001` de serialização vêm do PostgreSQL real. O runtime não
-simula o banco — ele decide *quando* cada transação dá o próximo passo.
+O que é sintético é apenas o **agendamento**. O nível de isolamento, o lock de linha e o
+`40001` de serialização vêm do PostgreSQL real. O runtime não simula o banco — ele
+decide *quando* cada transação dá o próximo passo.
 
 Detalhes e a objeção honesta a essa escolha estão em
 [`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md), seção 2.
 
 ## Os cinco grupos de fenômenos
 
-Os 42 cenários são classificados pela **fonte de não determinismo que produz a anomalia** — não pela tecnologia envolvida. A causa determina o que a
-plataforma precisa saber controlar para reproduzir o fenômeno.
+Os 42 cenários são classificados pela **fonte de não determinismo que produz a
+anomalia** — não pela tecnologia envolvida. A causa determina o que a plataforma precisa
+saber controlar para reproduzir o fenômeno.
 
 | Grupo                   | Fonte da anomalia                                           | O que a plataforma controla                     | Veredito                |
 |-------------------------|-------------------------------------------------------------|-------------------------------------------------|-------------------------|
@@ -64,13 +71,15 @@ plataforma precisa saber controlar para reproduzir o fenômeno.
 | **D — Saturação**       | nada está incorreto; o sistema não dá conta                 | taxa, latência artificial, profundidade de fila | **curva**               |
 | **E — Posse no tempo**  | quem tem o direito de escrever, e até quando                | relógio injetável; mais de um processo          | booleano                |
 
-O grupo D é o que quebra o modelo de veredito do resto: backpressure não tem estado errado, tem uma fila de 40 mil mensagens e alguém que precisa
-decidir se isso é falha. Os dois formatos de veredito existem desde o desenho por causa disso.
+O grupo D é o que quebra o modelo de veredito do resto: backpressure não tem estado
+errado, tem uma fila de 40 mil mensagens e alguém que precisa decidir se isso é falha.
+Os dois formatos de veredito existem desde o desenho por causa disso.
 
 ## Os dois planos
 
-O repositório separa **o sistema sob teste** do **instrumento que o mede**. Confundir os dois invalida qualquer conclusão: um bug no instrumento vira
-um falso resultado de consistência.
+O repositório separa **o sistema sob teste** do **instrumento que o mede**. Confundir os
+dois invalida qualquer conclusão: um bug no instrumento vira um falso resultado de
+consistência.
 
 ```mermaid
 flowchart TB
@@ -107,10 +116,12 @@ flowchart TB
     style SUT fill: #1e3a5f, stroke: #60a5fa, color: #e5e7eb
 ```
 
-A seta que **não** existe é a mais importante: nenhuma caixa do Control Plane aponta para dentro do Lab Plane. O runtime chama a operação; a operação
-nunca chama o runtime. É o que permite injeção de falha dentro do processo sem contaminar o sistema medido.
+A seta que **não** existe é a mais importante: nenhuma caixa do Control Plane aponta
+para dentro do Lab Plane. O runtime chama a operação; a operação nunca chama o runtime.
+É o que permite injeção de falha dentro do processo sem contaminar o sistema medido.
 
-Nas primeiras etapas os dois planos vivem na **mesma JVM**. A separação precisa ser imposta por teste executável, justamente por isso.
+Nas primeiras etapas os dois planos vivem na **mesma JVM**. A separação precisa ser
+imposta por teste executável, justamente por isso.
 
 ## O MVP — cinco experimentos, um processo, um banco
 
@@ -124,11 +135,14 @@ Todos no grupo A. Nenhum exige broker, segundo processo ou serviço adicional.
 | E4 | `optimistic-under-contention` | o primeiro resultado que é **curva**, não veredito                 |
 | E5 | `write-skew-inert-protection` | a proteção pode estar presente e **não proteger nada**             |
 
-O E5 é o resultado que mais justifica o laboratório existir: sob um modelo de verificação derivado, inserir uma alocação não incrementa a `version` do
-recurso. A anotação está lá, nenhuma exceção é lançada, e a invariante quebra em silêncio. Nenhum teste de unidade o detecta.
+O E5 é o resultado que mais justifica o laboratório existir: sob um modelo de
+verificação derivado, inserir uma alocação não incrementa a `version` do recurso. A
+anotação está lá, nenhuma exceção é lançada, e a invariante quebra em silêncio. Nenhum
+teste de unidade o detecta.
 
-**E1 é obrigado a falhar.** Se ele não falhar, a carga é insuficiente e nenhum resultado dos outros quatro significa nada. É a regra que separa um
-laboratório de uma demonstração.
+**E1 é obrigado a falhar.** Se ele não falhar, a carga é insuficiente e nenhum resultado
+dos outros quatro significa nada. É a regra que separa um laboratório de uma
+demonstração.
 
 ## Roadmap
 
@@ -150,8 +164,9 @@ dificuldade nova. Nenhuma etapa tem infraestrutura como entregável.
 | 11 | Quem tem o direito de escrever, e até quando?                           | E           |
 | 12 | Como transformar um bug de concorrência num teste repetível?            | transversal |
 
-As etapas 1 a 3 são o MVP. **A etapa 4 não tem data:** ela acontece quando o experimento de lock de JVM ficar vermelho com duas instâncias. Se ele
-nunca for escrito, a etapa 4 nunca chega — e isso é informação, não atraso.
+As etapas 1 a 3 são o MVP. **A etapa 4 não tem data:** ela acontece quando o experimento
+de lock de JVM ficar vermelho com duas instâncias. Se ele nunca for escrito, a etapa 4
+nunca chega — e isso é informação, não atraso.
 
 ## Stack
 
@@ -168,30 +183,37 @@ nunca for escrito, a etapa 4 nunca chega — e isso é informação, não atraso
 | CI/CD                    | GitHub Actions e GHCR   | dia zero do primeiro módulo          |
 | Orquestração             | Kubernetes (K3s)        | dia zero — **destino de entrega**    |
 
-Nenhuma tecnologia entra por estar disponível. Cada uma entra quando um experimento não puder ser executado sem ela. Kafka não está no escopo.
+Nenhuma tecnologia entra por estar disponível. Cada uma entra quando um experimento não
+puder ser executado sem ela. Kafka não está no escopo.
 
-O Kubernetes é a exceção aparente, e a distinção importa: ele **hospeda** o laboratório, mas não entra em nenhum experimento. Nenhum dos 42 fenômenos é
-reproduzido por um recurso do cluster.
+O Kubernetes é a exceção aparente, e a distinção importa: ele **hospeda** o laboratório,
+mas não entra em nenhum experimento. Nenhum dos 42 fenômenos é reproduzido por um
+recurso do cluster.
 
 ## Entrega
 
 O laboratório roda no homelab descrito em
-[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure), como primeira carga de trabalho da Camada 8. O contrato de entrega está
-fixado na ADR 0017 daquele repositório:
+[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure), como
+primeira carga de trabalho da Camada 8. O contrato de entrega está fixado na ADR 0017
+daquele repositório:
 
-- CI/CD **exclusivamente** no GitHub Actions, em runner hospedado — Testcontainers exige um daemon Docker que o CI interno do homelab não expõe, e este
-  repositório é público, o que torna inaceitável dar acesso ao daemon do nó a um autor de PR.
+- CI/CD **exclusivamente** no GitHub Actions, em runner hospedado — Testcontainers exige
+  um daemon Docker que o CI interno do homelab não expõe, e este repositório é público,
+  o que torna inaceitável dar acesso ao daemon do nó a um autor de PR.
 - Imagem no GHCR, autenticada por `GITHUB_TOKEN` efêmero. Tag = SHA do commit, nunca
   `latest`.
 - Manifests Kustomize em `deploy/`, **neste** repositório. O workflow da `master` faz
   `kustomize edit set image` e commita; o ArgoCD do homelab puxa por polling (~3 min).
-- Nenhum Secret vive aqui. Eles ficam cifrados com SOPS/KSOPS no homelab e são referenciados por nome.
+- Nenhum Secret vive aqui. Eles ficam cifrados com SOPS/KSOPS no homelab e são
+  referenciados por nome.
 
-A conciliação entre esse contrato e o plano deste repositório — inclusive o que colide — está em
+A conciliação entre esse contrato e o plano deste repositório — inclusive o que colide —
+está em
 [`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md), seção 12.
 
-O PostgreSQL não é só armazenamento — ele é **ferramenta do laboratório**. Níveis de isolamento, locks, constraints e deadlocks são objeto de estudo,
-não detalhe de infraestrutura.
+O PostgreSQL não é só armazenamento — ele é **ferramenta do laboratório**. Níveis de
+isolamento, locks, constraints e deadlocks são objeto de estudo, não detalhe de
+infraestrutura.
 
 ## Estado atual
 
@@ -204,9 +226,11 @@ não detalhe de infraestrutura.
 | Primeira série de ADRs | [arquivada](docs/adr/arquivo/README.md), nenhum foi aceito |
 | Código                 | nenhum                                                     |
 
-O repositório teve uma primeira série de 13 ADRs, construída sobre outra pergunta central: *quanto custa proteger uma invariante de capacidade sob
-concorrência?* Nenhum foi aceito. Todos foram arquivados em [`docs/adr/arquivo/`](docs/adr/arquivo/README.md)
-e continuam lá pelas seções de alternativas descartadas, que não caducaram junto com as decisões.
+O repositório teve uma primeira série de 13 ADRs, construída sobre outra pergunta
+central: *quanto custa proteger uma invariante de capacidade sob concorrência?* Nenhum
+foi aceito. Todos foram arquivados em [`docs/adr/arquivo/`](docs/adr/arquivo/README.md)
+e continuam lá pelas seções de alternativas descartadas, que não caducaram junto com as
+decisões.
 
 > **Aviso sobre a entrega.** O homelab já tem um `Application` do ArgoCD apontando para
 > o diretório `deploy/` deste repositório, com `prune: true` e `selfHeal: true`. Esse
@@ -217,9 +241,12 @@ e continuam lá pelas seções de alternativas descartadas, que não caducaram j
 
 ## Como este repositório é lido
 
-1. [`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md) — taxonomia, dependências pedagógicas, roadmap, MVP, arquitetura mínima e decisões
-   adiadas.
-2. [`docs/adr/README.md`](docs/adr/README.md) — o processo de decisão e a fila do que precisa ser decidido, em ordem.
-3. [`docs/adr/arquivo/README.md`](docs/adr/arquivo/README.md) — por que a primeira série foi arquivada e o que sobreviveu dela.
+1. [`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md) — taxonomia,
+   dependências pedagógicas, roadmap, MVP, arquitetura mínima e decisões adiadas.
+2. [`docs/adr/README.md`](docs/adr/README.md) — o processo de decisão e a fila do que
+   precisa ser decidido, em ordem.
+3. [`docs/adr/arquivo/README.md`](docs/adr/arquivo/README.md) — por que a primeira série
+   foi arquivada e o que sobreviveu dela.
 
-A decisão vem antes do código. Um ADR escrito depois da implementação não é uma decisão — é uma justificativa.
+A decisão vem antes do código. Um ADR escrito depois da implementação não é uma
+decisão — é uma justificativa.

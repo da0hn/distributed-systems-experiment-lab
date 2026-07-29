@@ -10,15 +10,15 @@
 O laboratório terá cinco serviços Java, um módulo compartilhado, um frontend e
 diretórios de plataforma, infraestrutura e deployment.
 
-Todos os serviços evoluem juntos, mantidos por uma pessoa. Nenhum serviço tem
-consumidor externo. Nenhum serviço tem ciclo de release independente.
+Todos os serviços evoluem juntos, mantidos por uma pessoa. Nenhum serviço tem consumidor
+externo. Nenhum serviço tem ciclo de release independente.
 
 ## Problema
 
 Duas perguntas precisam de resposta.
 
-**Primeira: um repositório ou vários?** Vários repositórios são a organização típica
-de microsserviços em empresas. Um repositório é típico de times pequenos.
+**Primeira: um repositório ou vários?** Vários repositórios são a organização típica de
+microsserviços em empresas. Um repositório é típico de times pequenos.
 
 **Segunda: o que pode ser compartilhado entre serviços?** Compartilhar código reduz
 duplicação. Compartilhar código de domínio destrói a autonomia dos serviços — o
@@ -44,8 +44,8 @@ distributed-consistency-lab/
     └── lab-messaging-contract/
 ```
 
-Um `mvn test` na raiz compila e testa tudo. Uma mudança em `shared/` quebra a build
-de quem depende dela **imediatamente**, não no próximo release.
+Um `mvn test` na raiz compila e testa tudo. Uma mudança em `shared/` quebra a build de
+quem depende dela **imediatamente**, não no próximo release.
 
 ### `shared/` contém apenas infraestrutura técnica
 
@@ -67,12 +67,12 @@ O módulo compartilhado **nunca** contém:
 
 ### Nenhum serviço compartilha banco
 
-Cada serviço tem seu próprio schema. Nenhum serviço lê a tabela de outro. A
-comunicação é por API ou por evento.
+Cada serviço tem seu próprio schema. Nenhum serviço lê a tabela de outro. A comunicação
+é por API ou por evento.
 
-Esta regra vale mesmo quando os serviços rodam na mesma instância PostgreSQL durante
-o desenvolvimento local. Um schema por serviço, com usuário próprio e permissão
-negada nos schemas alheios — a restrição é imposta pelo banco, não pela disciplina.
+Esta regra vale mesmo quando os serviços rodam na mesma instância PostgreSQL durante o
+desenvolvimento local. Um schema por serviço, com usuário próprio e permissão negada nos
+schemas alheios — a restrição é imposta pelo banco, não pela disciplina.
 
 ## Questões em aberto
 
@@ -80,14 +80,13 @@ Estas questões surgiram ao criar o esqueleto de diretórios do monorepo.
 
 ### 1. O plano fica visível na estrutura de diretórios?
 
-A árvore acima mostra `services/` plano — cinco serviços, mesmo nível. Mas eles não
-são equivalentes. Três pertencem ao **Control Plane** (`resource-service`,
+A árvore acima mostra `services/` plano — cinco serviços, mesmo nível. Mas eles não são
+equivalentes. Três pertencem ao **Control Plane** (`resource-service`,
 `allocation-service`, `registry-service`) e dois ao **Lab Plane** (`chaos-service`,
 `experiment-service`). A regra 6 do ADR-0006 proíbe o Control Plane de importar o Lab
 Plane.
 
-Uma regra que a estrutura não mostra é uma regra que só existe no teste. As opções
-são:
+Uma regra que a estrutura não mostra é uma regra que só existe no teste. As opções são:
 
 - manter `services/` plano e deixar a separação só nos pacotes Java e no ArchUnit
 - agrupar: `services/control-plane/...` e `services/lab-plane/...`
@@ -140,14 +139,14 @@ As duas decisões não podem estar certas ao mesmo tempo. As leituras possíveis
   engana.
 - **B — dois donos desde o início.** A invariante vira distribuída na Etapa 1. Isso
   torna inaplicáveis as quatro estratégias da Etapa 1 do ADR-0003 (`NONE`,
-  `ATOMIC_UPDATE`, `OPTIMISTIC`, `PESSIMISTIC`) — todas são mecanismos de um banco só.
-  A Etapa 1 passaria a exigir saga, que é a Etapa 5.
-- **C — separação gradual.** Um dono nas etapas 1 a 3, com a invariante local; a
-  divisão em dois serviços chega junto com o Outbox (ADR-0007) e a saga (Etapa 5). O
-  laboratório mede então a diferença entre os dois arranjos, com o mesmo experimento.
+  `ATOMIC_UPDATE`, `OPTIMISTIC`, `PESSIMISTIC`) — todas são mecanismos de um banco só. A
+  Etapa 1 passaria a exigir saga, que é a Etapa 5.
+- **C — separação gradual.** Um dono nas etapas 1 a 3, com a invariante local; a divisão
+  em dois serviços chega junto com o Outbox (ADR-0007) e a saga (Etapa 5). O laboratório
+  mede então a diferença entre os dois arranjos, com o mesmo experimento.
 
-A opção C preserva o valor experimental: não é possível medir o custo de distribuir
-sem ter o resultado não distribuído para comparar. Esse é o mesmo argumento do grupo de
+A opção C preserva o valor experimental: não é possível medir o custo de distribuir sem
+ter o resultado não distribuído para comparar. Esse é o mesmo argumento do grupo de
 controle usado no motor de workflow.
 
 **Estado:** o esqueleto criou os cinco diretórios, vazios. Nenhum contém código, e a
@@ -159,8 +158,8 @@ depende dela.
 
 ### Positivas
 
-- Refatoração atômica. Mudar o envelope de evento e todos os consumidores num só
-  commit é possível.
+- Refatoração atômica. Mudar o envelope de evento e todos os consumidores num só commit
+  é possível.
 - Nenhum versionamento de artefato interno. Não existe "qual versão de
   `lab-messaging-contract` o `resource-service` usa" — existe uma só, a do commit.
 - A build da raiz é a verificação de integração mais barata que existe.
@@ -169,12 +168,12 @@ depende dela.
 
 ### Negativas
 
-- O reactor único **esconde acoplamento**. Como tudo compila junto, é fácil um
-  serviço importar a classe de outro sem perceber. Em repositórios separados, isso
-  seria impossível por construção.
+- O reactor único **esconde acoplamento**. Como tudo compila junto, é fácil um serviço
+  importar a classe de outro sem perceber. Em repositórios separados, isso seria
+  impossível por construção.
 
-  **Mitigação obrigatória:** as regras ArchUnit do ADR-0006 substituem a barreira
-  física perdida. Sem elas, esta decisão é ruim.
+  **Mitigação obrigatória:** as regras ArchUnit do ADR-0006 substituem a barreira física
+  perdida. Sem elas, esta decisão é ruim.
 
 - A build fica mais lenta conforme o laboratório cresce. Aceito: cinco serviços não
   chegam perto do ponto em que isso importa.
@@ -194,10 +193,10 @@ depende dela.
 O modelo de microsserviços em empresas grandes: cada serviço com seu repositório,
 pipeline e ciclo de release.
 
-**Descartada.** O custo é alto e o retorno em conhecimento sobre *consistência* é
-zero. Cada mudança no envelope de evento exigiria: publicar uma versão nova do
-contrato, abrir cinco pull requests, e coordenar a ordem de merge. Isso ensina sobre
-gestão de dependências, não sobre sistemas distribuídos.
+**Descartada.** O custo é alto e o retorno em conhecimento sobre *consistência* é zero.
+Cada mudança no envelope de evento exigiria: publicar uma versão nova do contrato, abrir
+cinco pull requests, e coordenar a ordem de merge. Isso ensina sobre gestão de
+dependências, não sobre sistemas distribuídos.
 
 Se o objetivo do laboratório fosse estudar evolução de contrato entre times, esta
 alternativa seria a correta.
@@ -206,26 +205,25 @@ alternativa seria a correta.
 
 Um repositório, mas cada serviço com `pom.xml` isolado, sem parent comum.
 
-**Descartada.** Perde a verificação de integração barata sem ganhar autonomia real
-— os módulos continuam no mesmo repositório, então a barreira física não existe de
-qualquer forma. É o pior dos dois modelos.
+**Descartada.** Perde a verificação de integração barata sem ganhar autonomia real — os
+módulos continuam no mesmo repositório, então a barreira física não existe de qualquer
+forma. É o pior dos dois modelos.
 
 ### Alternativa C — `shared/` com o domínio comum
 
 Colocar `Resource` e a invariante em `shared/`, já que vários serviços a mencionam.
 
-**Descartada com firmeza.** Esta é a decisão que transforma microsserviços num
-monólito distribuído. Se dois serviços compartilham o modelo de domínio, eles
-compartilham o ciclo de mudança. Uma alteração na invariante exige deploy coordenado
-de ambos. O sistema fica com o custo operacional de microsserviços e o acoplamento de
-um monólito.
+**Descartada com firmeza.** Esta é a decisão que transforma microsserviços num monólito
+distribuído. Se dois serviços compartilham o modelo de domínio, eles compartilham o
+ciclo de mudança. Uma alteração na invariante exige deploy coordenado de ambos. O
+sistema fica com o custo operacional de microsserviços e o acoplamento de um monólito.
 
-Quando dois serviços precisam falar sobre o mesmo conceito, cada um mantém sua
-própria representação. A tradução entre elas é um **Anti-Corruption Layer** explícito,
-e a duplicação é intencional.
+Quando dois serviços precisam falar sobre o mesmo conceito, cada um mantém sua própria
+representação. A tradução entre elas é um **Anti-Corruption Layer** explícito, e a
+duplicação é intencional.
 
 ## Quando esta decisão deixa de valer
 
-Reveja esta decisão se o laboratório passar a ter mais de uma pessoa mantendo
-serviços diferentes com cadências diferentes. O sinal concreto: dois commits no mesmo
-dia que tocam serviços distintos e conflitam.
+Reveja esta decisão se o laboratório passar a ter mais de uma pessoa mantendo serviços
+diferentes com cadências diferentes. O sinal concreto: dois commits no mesmo dia que
+tocam serviços distintos e conflitam.

@@ -8,12 +8,12 @@
 ## Contexto
 
 O Distributed Consistency Lab não é uma aplicação de negócio. O objetivo é estudar
-consistência em sistemas distribuídos. O laboratório precisa de um domínio para
-existir, mas o domínio não é o objeto de estudo.
+consistência em sistemas distribuídos. O laboratório precisa de um domínio para existir,
+mas o domínio não é o objeto de estudo.
 
-A maioria dos temas do laboratório é independente do domínio. Outbox, inbox, retry,
-DLQ, deduplicação, observabilidade, chaos e Kubernetes funcionam igual em qualquer
-domínio. Apenas seis temas dependem do domínio:
+A maioria dos temas do laboratório é independente do domínio. Outbox, inbox, retry, DLQ,
+deduplicação, observabilidade, chaos e Kubernetes funcionam igual em qualquer domínio.
+Apenas seis temas dependem do domínio:
 
 - contenção de escrita
 - ordenação de fatos
@@ -26,9 +26,9 @@ domínio. Apenas seis temas dependem do domínio:
 
 Duas forças estão em conflito.
 
-**Força 1 — um domínio de negócio real custa caro.** Um domínio como venda de
-ingressos traz regras de preço, promoção, reembolso e fiscal. Essas regras consomem
-tempo de implementação. Elas não ensinam nada sobre consistência.
+**Força 1 — um domínio de negócio real custa caro.** Um domínio como venda de ingressos
+traz regras de preço, promoção, reembolso e fiscal. Essas regras consomem tempo de
+implementação. Elas não ensinam nada sobre consistência.
 
 **Força 2 — um domínio sem regra nenhuma não serve.** Concorrência só é observável
 quando existe uma invariante que pode ser violada. Um campo com `@Version` num objeto
@@ -41,8 +41,8 @@ A pergunta é: qual é o menor domínio que ainda produz bugs de consistência r
 
 O domínio é a **gestão de recursos distribuídos**.
 
-Um `Resource` tem uma capacidade. Alocações consomem capacidade. O laboratório
-mantém **uma única invariante**:
+Um `Resource` tem uma capacidade. Alocações consomem capacidade. O laboratório mantém
+**uma única invariante**:
 
 ```
 Para todo Resource:
@@ -117,15 +117,14 @@ Cada modelo produz uma família de anomalia diferente:
 | Custo de ler a capacidade | O(1) | O(n) alocações |
 
 O modelo `DERIVED` é o único que produz **write skew** no sentido estrito: a condição
-violada é sobre um *conjunto*, não sobre um registro. Essa é a única família de
-anomalia que lock de linha não alcança. As saídas reais são três, cada uma com custo
-próprio:
+violada é sobre um *conjunto*, não sobre um registro. Essa é a única família de anomalia
+que lock de linha não alcança. As saídas reais são três, cada uma com custo próprio:
 
 1. **`SERIALIZABLE`** — o SSI do PostgreSQL detecta a dependência rw e aborta uma das
    transações com SQLSTATE `40001`. Exige retry na aplicação.
 2. **Materializar o conflito** — `SELECT ... FROM resource WHERE id = ? FOR UPDATE`
-   antes da soma, criando artificialmente uma linha compartilhada para travar.
-   Funciona sob `READ COMMITTED`. Serializa todas as escritas daquele recurso.
+   antes da soma, criando artificialmente uma linha compartilhada para travar. Funciona
+   sob `READ COMMITTED`. Serializa todas as escritas daquele recurso.
 3. **Voltar ao modelo `MATERIALIZED`** — é o que sistemas reais fazem.
 
 Isso revela por que sistemas de produção denormalizam contadores mesmo sabendo que é
@@ -155,24 +154,24 @@ resultado não óbvio. Cada célula é um experimento do ADR-0004.
 - A mesma invariante produz **duas famílias de anomalia** conforme o modelo de
   verificação: lost update em `MATERIALIZED`, write skew em `DERIVED`. Isso dobra o
   espaço de experimentos sem adicionar regra de negócio.
-- O tempo de implementação vai para infraestrutura de consistência, não para regra
-  de negócio.
+- O tempo de implementação vai para infraestrutura de consistência, não para regra de
+  negócio.
 - O domínio é entendível em uma frase. Isso reduz o custo de explicar qualquer
   experimento.
-- O custo marginal do segundo modelo é baixo: as duas tabelas existem de qualquer
-  forma. O modelo `MATERIALIZED` precisa de `allocation` para auditoria e para o
-  Reconciler detectar drift.
+- O custo marginal do segundo modelo é baixo: as duas tabelas existem de qualquer forma.
+  O modelo `MATERIALIZED` precisa de `allocation` para auditoria e para o Reconciler
+  detectar drift.
 
 ### Negativas
 
-- **A matriz de teste dobra.** Todo cenário passa a ter duas execuções. Isso é
-  mitigado pelo ADR-0004, que torna um experimento um arquivo JSON — mas o tempo de
-  execução da suíte cresce de verdade.
+- **A matriz de teste dobra.** Todo cenário passa a ter duas execuções. Isso é mitigado
+  pelo ADR-0004, que torna um experimento um arquivo JSON — mas o tempo de execução da
+  suíte cresce de verdade.
 - **Dois adaptadores de repositório na Etapa 1.** O caso de uso não pode conhecer o
   modelo: ele chama uma porta, e o adaptador escolhido decide a consulta. Isso é mais
   indireção logo no início do projeto.
-- O domínio é abstrato. Ele não gera intuição de negócio. Quem lê o código não
-  reconhece o problema de imediato, como reconheceria em "reserva de assento".
+- O domínio é abstrato. Ele não gera intuição de negócio. Quem lê o código não reconhece
+  o problema de imediato, como reconheceria em "reserva de assento".
 - O laboratório não exercita modelagem de domínio rica. Value objects, políticas e
   especificações aparecem pouco. DDD tático fica sub-representado.
 - Um único agregado limita os cenários de consistência **entre** agregados. A saga
@@ -180,8 +179,8 @@ resultado não óbvio. Cada célula é um experimento do ADR-0004.
 
 ### Neutras
 
-- O nome "recurso" é genérico de propósito. Ele pode representar CPU, GPU, licença,
-  vaga ou cota. A representação não muda o comportamento do sistema.
+- O nome "recurso" é genérico de propósito. Ele pode representar CPU, GPU, licença, vaga
+  ou cota. A representação não muda o comportamento do sistema.
 
 ### Dependência que esta decisão cria
 
@@ -201,26 +200,24 @@ uma célula vazia legítima da matriz, não uma lacuna.
 
 ### Alternativa A — domínio de negócio realista (venda de ingressos)
 
-Um marketplace de eventos ao vivo. Assentos, reservas, expiração de carrinho,
-pagamento.
+Um marketplace de eventos ao vivo. Assentos, reservas, expiração de carrinho, pagamento.
 
 **Descartada.** O domínio traz regras que não ensinam sobre consistência: cálculo de
 preço, taxa de conveniência, política de reembolso, mapa de assentos. Estimativa: mais
-da metade do código seria regra de negócio. O laboratório teria menos experimentos
-pelo mesmo esforço.
+da metade do código seria regra de negócio. O laboratório teria menos experimentos pelo
+mesmo esforço.
 
 Observação: esse domínio é melhor para **demonstrar** o laboratório a terceiros. A
-invariante escolhida aqui é isomórfica a "não vender o mesmo assento duas vezes". Se
-no futuro for necessário demonstrar o laboratório, basta renomear os conceitos.
+invariante escolhida aqui é isomórfica a "não vender o mesmo assento duas vezes". Se no
+futuro for necessário demonstrar o laboratório, basta renomear os conceitos.
 
 ### Alternativa B — recurso genérico sem invariante
 
-Um objeto com campos arbitrários, atualizado por várias origens. Sem regra de
-negócio.
+Um objeto com campos arbitrários, atualizado por várias origens. Sem regra de negócio.
 
-**Descartada.** Sem invariante não existe erro para detectar. Um `lost update` num
-campo sem regra é indistinguível de um `last-write-wins` intencional. O laboratório
-não teria como provar que uma estratégia de concorrência é melhor que outra.
+**Descartada.** Sem invariante não existe erro para detectar. Um `lost update` num campo
+sem regra é indistinguível de um `last-write-wins` intencional. O laboratório não teria
+como provar que uma estratégia de concorrência é melhor que outra.
 
 Este é o erro mais comum em laboratórios de concorrência: adicionar `@Version` a uma
 entidade e concluir que o problema está resolvido, sem nunca ter tido um problema.
@@ -243,8 +240,8 @@ Uma única fonte de verdade, sem estado duplicado, sem possibilidade de drift.
 
 **Descartada.** É a modelagem mais correta, e por isso mesmo produz menos bugs para
 estudar. Ela elimina a origem Reconciler do ADR-0002, elimina o cenário de drift, e
-força `SERIALIZABLE` com retry já na Etapa 1 — antes de o laboratório ter observabilidade
-para entender o que o retry está fazendo.
+força `SERIALIZABLE` com retry já na Etapa 1 — antes de o laboratório ter
+observabilidade para entender o que o retry está fazendo.
 
 ### Alternativa E — várias invariantes desde o início
 
@@ -258,8 +255,8 @@ experimento que as exija.
 ## Quando esta decisão deixa de valer
 
 Reveja esta decisão se os experimentos começarem a repetir o mesmo veredito sem
-informação nova. Isso indica que a invariante única esgotou o espaço de cenários.
-O sinal concreto: três experimentos seguidos cujo resultado foi previsível antes da
+informação nova. Isso indica que a invariante única esgotou o espaço de cenários. O
+sinal concreto: três experimentos seguidos cujo resultado foi previsível antes da
 execução.
 
 Reveja o suporte a dois modelos se uma das colunas da matriz `capacityModel` ×

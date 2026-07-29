@@ -11,18 +11,18 @@ O ADR-0004 exige que o Chaos Service duplique, reordene e atrase mensagens com
 probabilidade semeada. O campo `seed` alimenta toda fonte de aleatoriedade do
 laboratório, e o campo `chaos` declara as probabilidades.
 
-A regra 6 do ADR-0006 diz que o Control Plane nunca importa o Lab Plane. O README
-da raiz repete a separação: o instrumento não contamina o sistema sob teste.
+A regra 6 do ADR-0006 diz que o Control Plane nunca importa o Lab Plane. O README da
+raiz repete a separação: o instrumento não contamina o sistema sob teste.
 
 O Grupo 2 do ADR-0003 (`IDEMPOTENCY_KEY`, `UNIQUE_CONSTRAINT`, `SEQUENCE_GUARD`)
-entra na Etapa 3. As três estratégias só têm o que filtrar se alguém produzir
-duplicata e reordenação de verdade. Sem caos, os três adaptadores rodam sobre um
-fluxo limpo e todo experimento passa por ausência de estímulo.
+entra na Etapa 3. As três estratégias só têm o que filtrar se alguém produzir duplicata
+e reordenação de verdade. Sem caos, os três adaptadores rodam sobre um fluxo limpo e
+todo experimento passa por ausência de estímulo.
 
 O ADR-0007 define o caminho real de uma mensagem: o caso de uso grava na `outbox`
-na mesma transação do estado; o relay lê por polling e publica no RabbitMQ; o
-consumidor grava o `eventId` na `inbox` antes de processar. A entrega é
-*at-least-once* por construção, e o envelope carrega `eventId`, `aggregateId`,
+na mesma transação do estado; o relay lê por polling e publica no RabbitMQ; o consumidor
+grava o `eventId` na `inbox` antes de processar. A entrega é *at-least-once* por
+construção, e o envelope carrega `eventId`, `aggregateId`,
 `aggregateVersion`, `correlationId`, `causationId`, `producer` e `occurredAt`.
 
 A questão 3 do ADR-0006 registrou a colisão e listou três lugares possíveis de
@@ -30,28 +30,28 @@ interceptação. Nenhum foi escolhido.
 
 ## Problema
 
-As duas frases — "o caos duplica e reordena mensagens" e "o Control Plane não
-importa o Lab Plane" — só coexistem se o caos for injetado fora do processo do
-Control Plane. Onde, exatamente, nunca foi decidido.
+As duas frases — "o caos duplica e reordena mensagens" e "o Control Plane não importa o
+Lab Plane" — só coexistem se o caos for injetado fora do processo do Control Plane.
+Onde, exatamente, nunca foi decidido.
 
 As forças em conflito:
 
 - Interceptar dentro do processo é fiel à semente e viola a regra 6 de frente.
-- Interceptar no broker preserva a regra 6 e insere um salto de rede que entra na
-  medida de `convergence.seconds` do ADR-0004.
-- Interceptar na rede preserva a regra 6 inteira e não produz duplicata nem
-  reordenação semântica — os dois casos que o Grupo 2 do ADR-0003 precisa.
-- A semente precisa atravessar uma fronteira de processo. Um gerador sequencial
-  num processo separado consome números na ordem de chegada das mensagens, e essa
-  ordem não é determinística.
-- O instrumento precisa medir sem ser medido. O proxy adiciona latência à mesma
-  grandeza que o experimento afirma medir.
+- Interceptar no broker preserva a regra 6 e insere um salto de rede que entra na medida
+  de `convergence.seconds` do ADR-0004.
+- Interceptar na rede preserva a regra 6 inteira e não produz duplicata nem reordenação
+  semântica — os dois casos que o Grupo 2 do ADR-0003 precisa.
+- A semente precisa atravessar uma fronteira de processo. Um gerador sequencial num
+  processo separado consome números na ordem de chegada das mensagens, e essa ordem não
+  é determinística.
+- O instrumento precisa medir sem ser medido. O proxy adiciona latência à mesma grandeza
+  que o experimento afirma medir.
 
 ## Decisão
 
-Nenhum mecanismo único produz todas as famílias de falha. O laboratório usa
-**três mecanismos, com fronteira declarada por família**, e nenhum deles é código
-do Lab Plane rodando dentro do Control Plane.
+Nenhum mecanismo único produz todas as famílias de falha. O laboratório usa **três
+mecanismos, com fronteira declarada por família**, e nenhum deles é código do Lab Plane
+rodando dentro do Control Plane.
 
 | Mecanismo | Onde vive | Plano |
 |---|---|---|
@@ -59,9 +59,9 @@ do Lab Plane rodando dentro do Control Plane.
 | **Toxiproxy** | processo próprio, na frente do socket TCP | Lab Plane |
 | **Adaptador de relógio** | dentro do serviço, lendo uma propriedade | Control Plane |
 
-O terceiro é a exceção aparente e não é uma. Ele já é exigido pela regra 8 do
-ADR-0006, existe independente do caos, e recebe um número — não código do Lab
-Plane. A seção *A regra 6 não é reescrita* trata disso.
+O terceiro é a exceção aparente e não é uma. Ele já é exigido pela regra 8 do ADR-0006,
+existe independente do caos, e recebe um número — não código do Lab Plane. A seção *A
+regra 6 não é reescrita* trata disso.
 
 ### Qual mecanismo produz qual falha
 
@@ -112,16 +112,16 @@ flowchart LR
 
 Três pontos de interceptação, com competências que não se sobrepõem:
 
-- **P1 — Toxiproxy no socket.** Partição, queda de conexão, latência de transporte.
-  O Control Plane não sabe que ele existe: ele aponta para um host e uma porta.
-- **P2 — Chaos Relay entre exchanges.** Duplicata, reordenação, atraso por
-  mensagem, perda seletiva. É o único ponto que entende o envelope do ADR-0007.
+- **P1 — Toxiproxy no socket.** Partição, queda de conexão, latência de transporte. O
+  Control Plane não sabe que ele existe: ele aponta para um host e uma porta.
+- **P2 — Chaos Relay entre exchanges.** Duplicata, reordenação, atraso por mensagem,
+  perda seletiva. É o único ponto que entende o envelope do ADR-0007.
 - **P3 — Toxiproxy no PostgreSQL.** Lentidão de banco, queda de conexão do pool.
 
 O produtor publica sempre em `<dominio>.chaos`. O consumidor sempre lê de uma fila
-ligada a `<dominio>.delivery`. Nenhum serviço do Control Plane conhece as duas
-exchanges como "antes e depois do caos" — para ele, uma é a saída e a outra é a
-entrada, e a topologia é configuração da plataforma.
+ligada a `<dominio>.delivery`. Nenhum serviço do Control Plane conhece as duas exchanges
+como "antes e depois do caos" — para ele, uma é a saída e a outra é a entrada, e a
+topologia é configuração da plataforma.
 
 ### O salto do relay é permanente, não condicional
 
@@ -129,32 +129,32 @@ O Chaos Relay está no caminho de **toda** execução, inclusive das que declara
 `chaos: {}`. Ele nunca é removido da topologia.
 
 Isto é deliberado e é a peça que salva a medida. Se o caminho mudasse conforme a
-configuração de caos, a execução de calibração percorreria uma topologia diferente
-da execução sob caos, e a diferença entre as duas mediria o salto de rede, não o
-caos. Com o salto sempre presente, ele é uma constante aditiva nas duas execuções e
-some na comparação.
+configuração de caos, a execução de calibração percorreria uma topologia diferente da
+execução sob caos, e a diferença entre as duas mediria o salto de rede, não o caos. Com
+o salto sempre presente, ele é uma constante aditiva nas duas execuções e some na
+comparação.
 
-Um relay desarmado faz uma coisa só: republica. Ele não desserializa o `payload`,
-não consulta banco e não espera. Lê os cabeçalhos do envelope, calcula o hash da
-decisão e reemite.
+Um relay desarmado faz uma coisa só: republica. Ele não desserializa o `payload`, não
+consulta banco e não espera. Lê os cabeçalhos do envelope, calcula o hash da decisão e
+reemite.
 
 ### A semente atravessa a fronteira de processo
 
 Este é o ponto mais difícil desta decisão, e ele tem duas partes.
 
-**Como o `seed` chega.** O `chaos-service` expõe uma API de controle. Antes de
-iniciar a carga, o `experiment-service` envia o plano de caos completo — o `seed` e
-o bloco `chaos` do JSON — e recebe um `chaosPlanId`. A carga só começa depois do
-armamento confirmado. As duas pontas são Lab Plane, então a regra 6 não é tocada. O
+**Como o `seed` chega.** O `chaos-service` expõe uma API de controle. Antes de iniciar a
+carga, o `experiment-service` envia o plano de caos completo — o `seed` e o bloco `chaos`
+do JSON — e recebe um `chaosPlanId`. A carga só começa depois do armamento confirmado.
+As duas pontas são Lab Plane, então a regra 6 não é tocada. O
 `seed` **não** viaja no envelope de evento: contaminar o contrato do ADR-0007 com um
-campo do instrumento é a mesma violação que a regra 6 proíbe, feita por dados em vez
-de por `import`.
+campo do instrumento é a mesma violação que a regra 6 proíbe, feita por dados em vez de
+por `import`.
 
-**Como a decisão permanece determinística.** Um gerador sequencial não serve. Se o
-relay chamar `rng.nextDouble()` a cada mensagem que chega, a n-ésima chamada
-corresponde a uma mensagem diferente em cada execução, porque a ordem de chegada
-depende de escalonamento e de latência de rede. A reprodutibilidade morreria na
-primeira execução com dois produtores.
+**Como a decisão permanece determinística.** Um gerador sequencial não serve. Se o relay
+chamar `rng.nextDouble()` a cada mensagem que chega, a n-ésima chamada corresponde a uma
+mensagem diferente em cada execução, porque a ordem de chegada depende de escalonamento
+e de latência de rede. A reprodutibilidade morreria na primeira execução com dois
+produtores.
 
 A decisão de caos é uma **função pura da mensagem**, não um sorteio sequencial:
 
@@ -171,34 +171,34 @@ Três propriedades caem disso, e as três são necessárias:
 
 - **Independência da ordem de chegada.** A decisão sobre uma mensagem não depende de
   nenhuma outra mensagem. Chegar primeiro ou último não muda nada.
-- **Independência do número de réplicas.** Duas instâncias do relay decidem igual
-  sobre a mesma mensagem, sem estado compartilhado e sem coordenação. Isso importa
-  porque o relay não pode virar o gargalo que ele mesmo mede.
-- **Estabilidade entre execuções.** A chave usa coordenadas lógicas do envelope, não
-  o `eventId`. A versão 7 do agregado X é a versão 7 do agregado X em toda execução.
-  O `eventId` é um identificador de instância de entrega e mudaria a cada rodada.
+- **Independência do número de réplicas.** Duas instâncias do relay decidem igual sobre
+  a mesma mensagem, sem estado compartilhado e sem coordenação. Isso importa porque o
+  relay não pode virar o gargalo que ele mesmo mede.
+- **Estabilidade entre execuções.** A chave usa coordenadas lógicas do envelope, não o
+  `eventId`. A versão 7 do agregado X é a versão 7 do agregado X em toda execução. O
+  `eventId` é um identificador de instância de entrega e mudaria a cada rodada.
 
 ### Reordenação é atraso diferencial, não embaralhamento
 
-O relay **não** mantém um buffer de mensagens para trocá-las de lugar. Duas razões,
-e a segunda é decisiva:
+O relay **não** mantém um buffer de mensagens para trocá-las de lugar. Duas razões, e a
+segunda é decisiva:
 
 1. Um buffer exige uma janela, e o tamanho da janela vira um parâmetro escondido que
    nenhum experimento declara.
 2. Embaralhar um buffer é uma decisão sobre um conjunto, e o conjunto é formado pela
-   ordem de chegada. Isso reintroduz exatamente a dependência de ordem que a função
-   pura acima eliminou.
+   ordem de chegada. Isso reintroduz exatamente a dependência de ordem que a função pura
+   acima eliminou.
 
 Cada mensagem recebe um atraso derivado da própria chave. Mensagens com atraso maior
-ficam para trás. A reordenação emerge, com fidelidade semântica total do ponto de
-vista do consumidor: um heartbeat antigo chega depois de um recente, que é o cenário
-do ADR-0002 e o motivo de `SEQUENCE_GUARD` existir.
+ficam para trás. A reordenação emerge, com fidelidade semântica total do ponto de vista
+do consumidor: um heartbeat antigo chega depois de um recente, que é o cenário do
+ADR-0002 e o motivo de `SEQUENCE_GUARD` existir.
 
 A honestidade que isto exige está no ADR-0004 e continua valendo: o `seed` torna a
 **decisão** de caos determinística, não o **efeito**. Duas mensagens emitidas com 5 ms
-de intervalo e atrasos de 10 ms e 400 ms trocam de ordem; as mesmas mensagens
-emitidas com 500 ms de intervalo não trocam. O relatório registra a decisão aplicada
-por mensagem, e é isso que permite reexecutar e comparar.
+de intervalo e atrasos de 10 ms e 400 ms trocam de ordem; as mesmas mensagens emitidas
+com 500 ms de intervalo não trocam. O relatório registra a decisão aplicada por
+mensagem, e é isso que permite reexecutar e comparar.
 
 ### A contaminação da medida é medida
 
@@ -206,10 +206,10 @@ O relay adiciona latência. O ADR-0004 mede `convergence.seconds`. Três mecanis
 separam o instrumento do sistema:
 
 **Primeiro: a execução de calibração é obrigatória.** Todo experimento com `chaos`
-não vazio exige uma execução pareada com `chaos: {}`, mesmo `seed`, mesma `load`,
-mesma topologia. O relatório do ADR-0004 registra as duas. A execução de calibração
-não é opcional nem é um experimento à parte: ela é a linha de base da execução
-principal e vive no mesmo relatório.
+não vazio exige uma execução pareada com `chaos: {}`, mesmo `seed`, mesma `load`, mesma
+topologia. O relatório do ADR-0004 registra as duas. A execução de calibração não é
+opcional nem é um experimento à parte: ela é a linha de base da execução principal e
+vive no mesmo relatório.
 
 **Segundo: o limiar de liveness é derivado da linha de base.** O `N` de
 `convergence.seconds < N` não é um número escolhido à mão. Ele é
@@ -218,12 +218,12 @@ diretamente à questão 1 do ADR-0004, que pergunta como `N` é calibrado sem pr
 falha intermitente.
 
 **Terceiro: o relay exporta o próprio custo.** A métrica
-`chaos.relay.transit.millis` mede o tempo entre o consumo em `.chaos` e a
-republicação em `.delivery`, sem contar o atraso injetado de propósito. Se
-`p99(chaos.relay.transit)` passar de **10%** de `convergence.seconds`, o relatório
-marca o resultado como **dominado pelo instrumento** e o veredito de liveness não
-vale. Isto é a mesma guarda que o ADR-0007 declara para o polling do relay de
-Outbox, aplicada ao Lab Plane.
+`chaos.relay.transit.millis` mede o tempo entre o consumo em `.chaos` e a republicação
+em `.delivery`, sem contar o atraso injetado de propósito. Se
+`p99(chaos.relay.transit)` passar de **10%** de `convergence.seconds`, o relatório marca
+o resultado como **dominado pelo instrumento** e o veredito de liveness não vale. Isto é
+a mesma guarda que o ADR-0007 declara para o polling do relay de Outbox, aplicada ao Lab
+Plane.
 
 ### O contrato de configuração
 
@@ -231,12 +231,12 @@ O bloco `chaos` do ADR-0004 — `{ reorderProbability, duplicateProbability, del
 — **não é suficiente**. Três defeitos:
 
 - **Não tem escopo.** Ele se aplica a tudo. Um experimento que precise reordenar só o
-  heartbeat do Agent, mantendo o caminho do Operator limpo, não é exprimível. Sem
-  isso, nenhuma comparação por origem de escrita do ADR-0002 é possível.
-- **Falta metade das famílias.** Perda, partição, lentidão de banco e clock skew não
-  têm campo. As quatro são necessárias na Etapa 3.
-- **`reorderProbability` nomeia um efeito, não um mecanismo.** Não existe reordenar
-  uma mensagem sozinha. A reordenação vem do atraso, e o campo precisa dizer isso.
+  heartbeat do Agent, mantendo o caminho do Operator limpo, não é exprimível. Sem isso,
+  nenhuma comparação por origem de escrita do ADR-0002 é possível.
+- **Falta metade das famílias.** Perda, partição, lentidão de banco e clock skew não têm
+  campo. As quatro são necessárias na Etapa 3.
+- **`reorderProbability` nomeia um efeito, não um mecanismo.** Não existe reordenar uma
+  mensagem sozinha. A reordenação vem do atraso, e o campo precisa dizer isso.
 
 O contrato completo:
 
@@ -278,35 +278,35 @@ O contrato completo:
 
 **Como um cenário é escopado.** Por predicado sobre o envelope, nunca por "todos os
 eventos". Um experimento do ADR-0003 que compare `SEQUENCE_GUARD` contra `OPTIMISTIC`
-escopa o caos ao `producer` e ao `eventType` do heartbeat, e deixa o resto do fluxo
-sem regra. É isso que garante que a diferença de resultado venha da estratégia e não
-de caos derramado sobre o caminho errado.
+escopa o caos ao `producer` e ao `eventType` do heartbeat, e deixa o resto do fluxo sem
+regra. É isso que garante que a diferença de resultado venha da estratégia e não de caos
+derramado sobre o caminho errado.
 
 O escopo por **origem de escrita do ADR-0002** funciona hoje por coincidência: cada
-origem tem um `eventType` próprio. Ele não é expresso diretamente, porque o envelope
-não carrega a origem. Ver a questão 3.
+origem tem um `eventType` próprio. Ele não é expresso diretamente, porque o envelope não
+carrega a origem. Ver a questão 3.
 
 ### Toxiproxy roda sem jitter
 
-Toxiproxy não aceita a semente do laboratório. Seu toxic de latência tem jitter
-próprio, com gerador próprio, fora do alcance do `seed`.
+Toxiproxy não aceita a semente do laboratório. Seu toxic de latência tem jitter próprio,
+com gerador próprio, fora do alcance do `seed`.
 
 O laboratório configura todo toxic com jitter zero. O Toxiproxy produz apenas funções
 degrau: latência fixa, conexão aberta ou fechada, em janelas agendadas. Toda variação
 semeada vive no Chaos Relay, que é código do laboratório e obedece à regra 7 do
 ADR-0006.
 
-O agendamento das janelas de partição é calculado pelo `experiment-service` a partir
-do `seed`, e enviado ao Toxiproxy como uma lista de instantes absolutos. O Toxiproxy
-não sorteia nada — ele executa um roteiro.
+O agendamento das janelas de partição é calculado pelo `experiment-service` a partir do
+`seed`, e enviado ao Toxiproxy como uma lista de instantes absolutos. O Toxiproxy não
+sorteia nada — ele executa um roteiro.
 
 ### A regra 6 não é reescrita. Ela é reforçada
 
-Nenhuma parte do caos vive dentro do processo do Control Plane como **código**. O
-Chaos Relay e o Toxiproxy são processos separados. O adaptador de relógio é a única
-peça dentro do serviço, e ela não é do Lab Plane: a regra 8 do ADR-0006 já a exige
-para a origem Lease Expiry do ADR-0002, ela existiria sem nenhum caos, e o que o caos
-lhe entrega é um inteiro numa propriedade de configuração.
+Nenhuma parte do caos vive dentro do processo do Control Plane como **código**. O Chaos
+Relay e o Toxiproxy são processos separados. O adaptador de relógio é a única peça
+dentro do serviço, e ela não é do Lab Plane: a regra 8 do ADR-0006 já a exige para a
+origem Lease Expiry do ADR-0002, ela existiria sem nenhum caos, e o que o caos lhe
+entrega é um inteiro numa propriedade de configuração.
 
 Mas "configuração" é a brecha óbvia pela qual a regra 6 vira letra morta. Uma
 propriedade `lab.chaos.duplicate-probability` lida por um `MessagePostProcessor` do
@@ -321,12 +321,13 @@ passa a ter três partes:
 
 A 6c precisa que o adaptador de relógio leia uma propriedade que **não** esteja sob
 `lab.`. Ele lê `clock.offset-millis`, no espaço de configuração do próprio serviço. O
-nome importa: um deslocamento de relógio é um parâmetro operacional legítimo — deriva
-de NTP existe fora de qualquer laboratório — e o adaptador não sabe por que o valor é
+nome importa: um deslocamento de relógio é um parâmetro operacional legítimo — deriva de
+NTP existe fora de qualquer laboratório — e o adaptador não sabe por que o valor é
+
 300. Ele soma e devolve. Nenhum código do Control Plane contém a palavra caos.
 
-A 6a e a 6b são verificáveis hoje, na forma de padrão de pacote e de leitura do POM.
-A 6c precisa de um padrão de pacote que identifique o Control Plane, que é a mesma
+A 6a e a 6b são verificáveis hoje, na forma de padrão de pacote e de leitura do POM. A
+6c precisa de um padrão de pacote que identifique o Control Plane, que é a mesma
 dependência que a questão 1 do ADR-0006 e a questão 2 do ADR-0005 já registram.
 
 ## Questões em aberto
@@ -335,27 +336,27 @@ dependência que a questão 1 do ADR-0006 e a questão 2 do ADR-0005 já registr
 
 A função pura resolve a ordem de chegada. Ela não resolve o conjunto.
 `producer | aggregateId | aggregateVersion | eventType` é estável para uma mensagem
-lógica dada, mas **qual** mensagem lógica existe depende da execução: sob
-concorrência real, o agregado X pode alcançar a versão 7 com um payload numa rodada e
-com outro na rodada seguinte, ou não alcançá-la.
+lógica dada, mas **qual** mensagem lógica existe depende da execução: sob concorrência
+real, o agregado X pode alcançar a versão 7 com um payload numa rodada e com outro na
+rodada seguinte, ou não alcançá-la.
 
-- **A favor de aceitar:** o ADR-0004 já declara que a reprodutibilidade é parcial e
-  que o relatório registra quantas tentativas foram necessárias. A chave derivada é
+- **A favor de aceitar:** o ADR-0004 já declara que a reprodutibilidade é parcial e que
+  o relatório registra quantas tentativas foram necessárias. A chave derivada é
   estritamente melhor que um gerador sequencial, e a alternativa perfeita exigiria
   serializar a carga — o que destruiria o objeto de estudo.
-- **Contra:** experimentos com carga alta e muitos agregados podem divergir o
-  bastante para que a mesma semente produza distribuições de caos diferentes. Se isso
-  acontecer, a comparação entre estratégias do ADR-0003 volta a ter a variável
+- **Contra:** experimentos com carga alta e muitos agregados podem divergir o bastante
+  para que a mesma semente produza distribuições de caos diferentes. Se isso acontecer,
+  a comparação entre estratégias do ADR-0003 volta a ter a variável
   "condições diferentes" que ela existe para eliminar.
 
-Não há decisão. Uma medição resolveria: rodar a mesma definição com a mesma semente
-dez vezes e comparar a distribuição de decisões aplicadas. Essa medição não pode ser
-feita antes de existir código.
+Não há decisão. Uma medição resolveria: rodar a mesma definição com a mesma semente dez
+vezes e comparar a distribuição de decisões aplicadas. Essa medição não pode ser feita
+antes de existir código.
 
 ### 2. Um plano de caos por ambiente bloqueia execução paralela
 
-O `chaosPlanId` é armado no `chaos-service` antes da carga. O relay não tem como
-saber a qual experimento uma mensagem pertence: o envelope não carrega o
+O `chaosPlanId` é armado no `chaos-service` antes da carga. O relay não tem como saber a
+qual experimento uma mensagem pertence: o envelope não carrega o
 `chaosPlanId`, e colocá-lo lá seria contaminar o contrato do ADR-0007.
 
 A consequência é que **um ambiente executa um experimento por vez**. Uma bateria de
@@ -369,55 +370,55 @@ comparação de nove estratégias vira nove execuções sequenciais.
 
 Uma saída seria escopar o plano por prefixo de `correlationId`, já que o
 `experiment-service` estampa o `correlationId` da carga que gera. Ela não fecha:
-eventos de Lease Expiry e do Reconciler nascem de processos de fundo do Control
-Plane, sem `correlationId` de experimento. Fica registrado sem decisão.
+eventos de Lease Expiry e do Reconciler nascem de processos de fundo do Control Plane,
+sem `correlationId` de experimento. Fica registrado sem decisão.
 
 ### 3. O envelope não expressa a origem de escrita do ADR-0002
 
-O `scope` casa por `producer` e `eventType`. A origem de escrita do ADR-0002 —
-Operator, Agent, Reconciler, Lease Expiry — não é campo do envelope do ADR-0007.
+O `scope` casa por `producer` e `eventType`. A origem de escrita do ADR-0002 — Operator,
+Agent, Reconciler, Lease Expiry — não é campo do envelope do ADR-0007.
 
 Hoje funciona porque cada origem tem `eventType` distinto. Se duas origens do mesmo
 serviço passarem a publicar o mesmo tipo de evento, o escopo por origem deixa de ser
 exprimível e um experimento não consegue mais isolar uma origem.
 
-A correção seria um campo `origin` no envelope. Isso é uma alteração no ADR-0007, e
-este ADR não a decide.
+A correção seria um campo `origin` no envelope. Isso é uma alteração no ADR-0007, e este
+ADR não a decide.
 
 ### 4. Metade desta decisão depende do ADR-0011
 
-O Chaos Relay intercepta eventos entre serviços. Quantos caminhos de evento existem
-na Etapa 3, e quais, é competência exclusiva do ADR-0011.
+O Chaos Relay intercepta eventos entre serviços. Quantos caminhos de evento existem na
+Etapa 3, e quais, é competência exclusiva do ADR-0011.
 
 Se a decomposição colocar `resource` e `allocation` no mesmo serviço — a opção A da
-questão 3 do ADR-0005 —, o único fluxo de evento da Etapa 3 é o heartbeat do Agent, e
-o Chaos Relay tem um escopo só para operar. `UNIQUE_CONSTRAINT` e `SEQUENCE_GUARD`
-seguem exercitáveis; `IDEMPOTENCY_KEY` passa a depender inteiramente do caminho REST
-do Operator, ou seja, do Toxiproxy e do gerador de carga, não do relay.
+questão 3 do ADR-0005 —, o único fluxo de evento da Etapa 3 é o heartbeat do Agent, e o
+Chaos Relay tem um escopo só para operar. `UNIQUE_CONSTRAINT` e `SEQUENCE_GUARD`
+seguem exercitáveis; `IDEMPOTENCY_KEY` passa a depender inteiramente do caminho REST do
+Operator, ou seja, do Toxiproxy e do gerador de carga, não do relay.
 
-Se a decomposição separar os dois agregados, aparecem caminhos de evento entre eles,
-e o relay ganha escopos que este ADR não pode enumerar hoje.
+Se a decomposição separar os dois agregados, aparecem caminhos de evento entre eles, e o
+relay ganha escopos que este ADR não pode enumerar hoje.
 
-A decisão sobre os mecanismos não muda. A tabela de escopos de cada experimento
-depende do ADR-0011.
+A decisão sobre os mecanismos não muda. A tabela de escopos de cada experimento depende
+do ADR-0011.
 
 ### 5. Descarte com `ack` ou com `nack`?
 
-A decisão acima escolheu `ack`: a mensagem descartada some para sempre. A alternativa
-é `nack` com `requeue`, que devolve a mensagem ao broker.
+A decisão acima escolheu `ack`: a mensagem descartada some para sempre. A alternativa é
+`nack` com `requeue`, que devolve a mensagem ao broker.
 
-- **A favor de `ack`:** produz perda de verdade, que é o cenário que exercita a DLQ e
-  o comportamento do sistema diante de um fato que nunca chegou.
+- **A favor de `ack`:** produz perda de verdade, que é o cenário que exercita a DLQ e o
+  comportamento do sistema diante de um fato que nunca chegou.
 - **Contra:** `ack` e `drop` fazem do Chaos Relay um ponto onde o *at-least-once* do
   ADR-0007 deixa de valer. O laboratório passa a ter uma garantia estrutural que o
   instrumento quebra de propósito, e um leitor do relatório pode confundir perda
   injetada com perda por bug.
-- **A favor de `nack`:** transformaria perda em redelivery, ou seja, em duplicata —
-  que é uma família que o relay já produz por outro caminho, com controle melhor.
+- **A favor de `nack`:** transformaria perda em redelivery, ou seja, em duplicata — que
+  é uma família que o relay já produz por outro caminho, com controle melhor.
 
 A mitigação parcial já está na decisão: o relatório registra toda mensagem descartada
-com sua chave de caos. Isso distingue perda injetada de perda real, mas depois do
-fato, não durante.
+com sua chave de caos. Isso distingue perda injetada de perda real, mas depois do fato,
+não durante.
 
 ### 6. O adaptador de relógio ainda não existe
 
@@ -426,28 +427,28 @@ questão 2 daquele ADR registra que o adaptador não foi especificado. A famíli
 skew desta decisão depende inteiramente dele.
 
 Falta decidir, entre outras coisas, como um deslocamento é aplicado a **um** processo
-quando o mesmo serviço roda em várias réplicas. Uma propriedade por processo resolve
-com variável de ambiente por contêiner, mas isso é decisão do ADR-0010, sobre
-profiles do Docker Compose, que também não existe.
+quando o mesmo serviço roda em várias réplicas. Uma propriedade por processo resolve com
+variável de ambiente por contêiner, mas isso é decisão do ADR-0010, sobre profiles do
+Docker Compose, que também não existe.
 
-Até lá, `clockSkew` é um campo declarado e não implementável — a mesma forma de
-dívida que o ADR-0002 registrou para `expires_at`.
+Até lá, `clockSkew` é um campo declarado e não implementável — a mesma forma de dívida
+que o ADR-0002 registrou para `expires_at`.
 
 ## Consequências
 
 ### Positivas
 
-- A regra 6 do ADR-0006 sobrevive intacta. Nenhuma linha de código do instrumento
-  entra no sistema sob teste, e a questão 3 daquele ADR fecha.
-- O Grupo 2 do ADR-0003 ganha estímulo real na Etapa 3. `IDEMPOTENCY_KEY` recebe
-  comando repetido, `UNIQUE_CONSTRAINT` recebe fato duplicado, `SEQUENCE_GUARD`
+- A regra 6 do ADR-0006 sobrevive intacta. Nenhuma linha de código do instrumento entra
+  no sistema sob teste, e a questão 3 daquele ADR fecha.
+- O Grupo 2 do ADR-0003 ganha estímulo real na Etapa 3. `IDEMPOTENCY_KEY` recebe comando
+  repetido, `UNIQUE_CONSTRAINT` recebe fato duplicado, `SEQUENCE_GUARD`
   recebe fato fora de ordem — cada um do mecanismo certo.
 - A decisão derivada por hash torna o Chaos Relay escalável horizontalmente sem
   coordenação. O instrumento não vira o gargalo que ele mede.
 - A latência do instrumento passa a ser um número exportado, com limiar declarado. O
   laboratório deixa de precisar acreditar que a medida é limpa.
-- A execução de calibração obrigatória dá ao ADR-0004 a resposta que faltava sobre
-  como calibrar o limiar `N` de `convergence.seconds`.
+- A execução de calibração obrigatória dá ao ADR-0004 a resposta que faltava sobre como
+  calibrar o limiar `N` de `convergence.seconds`.
 - O Chaos Relay é o único componente que precisa entender o envelope do ADR-0007.
   Toxiproxy e adaptador de relógio não sabem que mensagens existem.
 
@@ -458,9 +459,9 @@ dívida que o ADR-0002 registrou para `expires_at`.
   alternativa — um caminho que muda com a configuração — invalida a linha de base.
 - Três mecanismos são três coisas para operar, configurar e depurar. O Toxiproxy é uma
   dependência externa a mais no `docker compose`.
-- A topologia do RabbitMQ dobra de tamanho: cada domínio tem uma exchange `.chaos` e
-  uma `.delivery`. Um erro de binding produz mensagem que some sem erro, e esse é um
-  modo de falha novo, do instrumento, difícil de distinguir de perda injetada.
+- A topologia do RabbitMQ dobra de tamanho: cada domínio tem uma exchange `.chaos` e uma
+  `.delivery`. Um erro de binding produz mensagem que some sem erro, e esse é um modo de
+  falha novo, do instrumento, difícil de distinguir de perda injetada.
 - Todo experimento com caos custa duas execuções. O tempo de uma bateria dobra.
 - A regra 6c proíbe a palavra `Chaos` no Control Plane e o prefixo `lab.` na
   configuração. É uma regra de nomenclatura imposta por build, e regras assim irritam
@@ -481,20 +482,20 @@ dívida que o ADR-0002 registrou para `expires_at`.
 
 ### Alternativa A — interceptor dentro do processo do Control Plane
 
-Um `MessagePostProcessor` ou um wrapper do `RabbitTemplate` que consulta o Chaos
-Service antes de publicar.
+Um `MessagePostProcessor` ou um wrapper do `RabbitTemplate` que consulta o Chaos Service
+antes de publicar.
 
 **Descartada.** É a opção mais fácil de escrever e a mais fiel à semente: a decisão de
-duplicar nasce no mesmo processo que gerou o evento, e a ordem das decisões acompanha
-a ordem de geração, sem o problema de ordem de chegada que a decisão derivada precisou
+duplicar nasce no mesmo processo que gerou o evento, e a ordem das decisões acompanha a
+ordem de geração, sem o problema de ordem de chegada que a decisão derivada precisou
 resolver.
 
-O motivo técnico da recusa não é estético. Um `MessagePostProcessor` do instrumento
-roda dentro da mesma transação, do mesmo pool de threads e do mesmo classpath do
-sistema sob teste. Um bug nele — um deadlock, uma exceção não tratada, uma alocação
-que dispara GC — aparece no relatório como resultado de consistência. O laboratório
-inteiro existe para produzir conclusões confiáveis sobre esse sistema, e esta
-alternativa torna toda conclusão condicional à correção do instrumento.
+O motivo técnico da recusa não é estético. Um `MessagePostProcessor` do instrumento roda
+dentro da mesma transação, do mesmo pool de threads e do mesmo classpath do sistema sob
+teste. Um bug nele — um deadlock, uma exceção não tratada, uma alocação que dispara GC —
+aparece no relatório como resultado de consistência. O laboratório inteiro existe para
+produzir conclusões confiáveis sobre esse sistema, e esta alternativa torna toda
+conclusão condicional à correção do instrumento.
 
 Há um segundo motivo, específico do ADR-0007: o interceptor ficaria **antes** da
 `outbox` ou **depois** dela. Antes, ele duplicaria a escrita transacional, o que não é
@@ -505,11 +506,11 @@ componente cuja janela de *at-least-once* o laboratório quer observar sem alter
 
 Concentrar todo o caos no Chaos Relay e não usar falha de rede.
 
-**Descartada.** O relay não consegue produzir partição nem lentidão de banco. Partição
-é a ausência de conectividade, e do ponto de vista do serviço o relay é o broker: um
-relay que para de responder é um broker fora do ar, não uma rede partida, e o cliente
-AMQP não exerce a lógica de reconexão que o experimento quer observar. Lentidão de
-banco nem sequer passa pelo broker — ela é a janela entre `SELECT ... FOR UPDATE` e
+**Descartada.** O relay não consegue produzir partição nem lentidão de banco. Partição é
+a ausência de conectividade, e do ponto de vista do serviço o relay é o broker: um relay
+que para de responder é um broker fora do ar, não uma rede partida, e o cliente AMQP não
+exerce a lógica de reconexão que o experimento quer observar. Lentidão de banco nem
+sequer passa pelo broker — ela é a janela entre `SELECT ... FOR UPDATE` e
 `COMMIT`, que é exatamente onde `PESSIMISTIC` e `OPTIMISTIC` do ADR-0003 falham.
 
 Sem essas duas famílias, a Etapa 3 mede reentrega e ordenação e não mede mais nada.
@@ -536,11 +537,11 @@ relay decida sem armamento prévio.
 **Descartada.** Resolveria a questão 2 acima: dois experimentos poderiam rodar em
 paralelo, cada mensagem carregando o próprio plano.
 
-O custo é a mesma violação que a regra 6 existe para impedir, cometida por dados em
-vez de por `import`. O contrato de mensagem do Control Plane passaria a ter um campo
-que só o instrumento usa, e todo serviço do Control Plane teria de preenchê-lo — o que
-significa que todo serviço do Control Plane precisaria saber que o caos existe. A
-regra 6c, proposta acima, proíbe exatamente essa forma de contaminação.
+O custo é a mesma violação que a regra 6 existe para impedir, cometida por dados em vez
+de por `import`. O contrato de mensagem do Control Plane passaria a ter um campo que só
+o instrumento usa, e todo serviço do Control Plane teria de preenchê-lo — o que
+significa que todo serviço do Control Plane precisaria saber que o caos existe. A regra
+6c, proposta acima, proíbe exatamente essa forma de contaminação.
 
 ### Alternativa E — reordenação por buffer e embaralhamento
 
@@ -548,18 +549,18 @@ O relay acumula uma janela de mensagens e as republica em ordem sorteada.
 
 **Descartada.** É a forma intuitiva de reordenar e é irreprodutível por construção. O
 conteúdo da janela depende de quais mensagens chegaram enquanto ela estava aberta, e
-isso depende de latência de rede e de escalonamento. Duas execuções com a mesma
-semente embaralhariam conjuntos diferentes.
+isso depende de latência de rede e de escalonamento. Duas execuções com a mesma semente
+embaralhariam conjuntos diferentes.
 
 O atraso diferencial produz o mesmo efeito observável no consumidor — um fato antigo
 chegando depois de um recente — com a decisão presa à mensagem, não à janela.
 
 ## Quando esta decisão deixa de valer
 
-Reveja esta decisão se o veredito de um experimento mudar ao alterar apenas o número
-de réplicas do Chaos Relay. A decisão derivada por hash foi escolhida justamente para
-que esse número não importe; se importar, a função pura não está sendo respeitada em
-algum ponto, e a reprodutibilidade que este ADR promete não existe.
+Reveja esta decisão se o veredito de um experimento mudar ao alterar apenas o número de
+réplicas do Chaos Relay. A decisão derivada por hash foi escolhida justamente para que
+esse número não importe; se importar, a função pura não está sendo respeitada em algum
+ponto, e a reprodutibilidade que este ADR promete não existe.
 
 O segundo sinal, mais lento: `p99(chaos.relay.transit.millis)` passar de 10% de
 `convergence.seconds` de forma recorrente. Isso significa que o instrumento passou a

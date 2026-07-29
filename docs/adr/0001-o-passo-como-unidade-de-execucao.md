@@ -4,46 +4,45 @@
 - **Data:** 2026-07-28
 - **Etapa do roadmap:** 1
 - **Relacionado:** nenhum ADR aceito. Substitui em intenção o impasse do
-  `arquivo/0012`. Referencia a regra 6 do `arquivo/0006`. Deixa uma ponta para a
-  decisão 3 da fila (estratégias) e para o ADR do escalonador.
+  `arquivo/0012`. Referencia a regra 6 do `arquivo/0006`. Deixa uma ponta para a decisão
+  3 da fila (estratégias) e para o ADR do escalonador.
 
 ## Contexto
 
 O repositório não tem código. O plano do laboratório
 ([`../plano-do-laboratorio.md`](../plano-do-laboratorio.md), seção 2) identifica esta
-como a primeira decisão da fila, e toda outra herda a forma que ela escolher: o
-formato da timeline, os pontos de injeção de falha, o mecanismo de barreira e a
-viabilidade do replay determinístico.
+como a primeira decisão da fila, e toda outra herda a forma que ela escolher: o formato
+da timeline, os pontos de injeção de falha, o mecanismo de barreira e a viabilidade do
+replay determinístico.
 
 Três exigências do briefing incidem sobre o mesmo lugar.
 
 **Barreiras determinísticas (cenário 25).** O experimento E2 do MVP precisa produzir a
-intercalação `W1.READ → W2.READ → W1.WRITE → W2.WRITE` em **toda** execução. Para
-pausar o W1 entre a leitura e a escrita, alguém precisa deter o controle entre as
-duas.
+intercalação `W1.READ → W2.READ → W1.WRITE → W2.WRITE` em **toda** execução. Para pausar
+o W1 entre a leitura e a escrita, alguém precisa deter o controle entre as duas.
 
 **Injeção de falha em ponto nomeado.** O briefing lista doze pontos: `BEFORE_READ`,
 `AFTER_READ`, `BEFORE_WRITE`, `AFTER_WRITE`, `BEFORE_COMMIT`, `AFTER_COMMIT`,
 `BEFORE_PUBLISH`, `AFTER_PUBLISH`, `BEFORE_CONSUME`, `AFTER_CONSUME`, `BEFORE_ACK`,
-`AFTER_ACK`. Eles precisam ser referenciáveis pela definição de um experimento antes
-de qualquer execução.
+`AFTER_ACK`. Eles precisam ser referenciáveis pela definição de um experimento antes de
+qualquer execução.
 
 **A timeline.** O briefing quer ver `12:01:00.100 Worker-1 READ resource=42 version=1`.
 Isso é um registro por passo, com o instante em que o passo terminou.
 
 Duas restrições já existentes limitam as respostas possíveis. A regra 6 do
-`arquivo/0006` proíbe o Control Plane de importar o Lab Plane. E o MVP inteiro roda
-numa JVM só, o que torna essa separação verificável apenas por regra executável — não
-há fronteira física que a imponha.
+`arquivo/0006` proíbe o Control Plane de importar o Lab Plane. E o MVP inteiro roda numa
+JVM só, o que torna essa separação verificável apenas por regra executável — não há
+fronteira física que a imponha.
 
 ## Problema
 
-Um método Java executa do começo ao fim sem devolver o controle. Entre a linha que lê
-e a linha que grava não existe nada — nenhum lugar onde pausar, falhar ou registrar.
+Um método Java executa do começo ao fim sem devolver o controle. Entre a linha que lê e
+a linha que grava não existe nada — nenhum lugar onde pausar, falhar ou registrar.
 
-A pergunta é: **qual é a forma de uma operação, tal que exista uma fronteira
-observável e controlável entre dois passos consecutivos, sem que o sistema sob teste
-passe a conter o instrumento que o mede?**
+A pergunta é: **qual é a forma de uma operação, tal que exista uma fronteira observável
+e controlável entre dois passos consecutivos, sem que o sistema sob teste passe a conter
+o instrumento que o mede?**
 
 As forças em conflito:
 
@@ -59,9 +58,9 @@ As forças em conflito:
 
 ### A forma
 
-Uma operação é uma **sequência ordenada e finita de passos nomeados**, construída a
-cada execução e executada pelo runtime do laboratório. O runtime chama o passo. O
-passo nunca chama o runtime.
+Uma operação é uma **sequência ordenada e finita de passos nomeados**, construída a cada
+execução e executada pelo runtime do laboratório. O runtime chama o passo. O passo nunca
+chama o runtime.
 
 O esboço abaixo é ilustrativo — fixa a forma, não a API:
 
@@ -86,10 +85,10 @@ real. O runtime não gera, não interpreta e não analisa SQL.
 
 ### A tentativa é a unidade de sequência
 
-A sequência de passos é a **tentativa**, não a operação. Uma execução de operação
-produz uma ou mais tentativas. Ao fim de uma tentativa malsucedida, o runtime pergunta
-se há outra; quem responde é a estratégia de concorrência, que é a decisão 3 da fila.
-O runtime só precisa de "sim" ou "não".
+A sequência de passos é a **tentativa**, não a operação. Uma execução de operação produz
+uma ou mais tentativas. Ao fim de uma tentativa malsucedida, o runtime pergunta se há
+outra; quem responde é a estratégia de concorrência, que é a decisão 3 da fila. O
+runtime só precisa de "sim" ou "não".
 
 O motivo é o `OPTIMISTIC`, que está no E3 e portanto no MVP: ele lê, calcula, grava e
 **repete** ao conflitar. Uma sequência ordenada e finita não tem laço. Colocar o laço
@@ -114,21 +113,21 @@ execução de operação
 ### A fronteira
 
 Cada passo é cercado por duas fronteiras endereçáveis: a de entrada e a de saída. O
-endereço canônico de uma fronteira é a tripla **(rótulo do passo, entrada|saída,
-seletor de tentativa)**.
+endereço canônico de uma fronteira é a tripla **(rótulo do passo, entrada|saída, seletor
+de tentativa)**.
 
 Os doze pontos do briefing são a convenção de nomenclatura da parte (rótulo,
-entrada|saída) quando o tipo é único na operação: `BEFORE_READ` é a fronteira de
-entrada do único passo de tipo `READ`. Quando o tipo aparece mais de uma vez, a
-plataforma **rejeita** o nome abreviado em vez de escolher um dos passos.
+entrada|saída) quando o tipo é único na operação: `BEFORE_READ` é a fronteira de entrada
+do único passo de tipo `READ`. Quando o tipo aparece mais de uma vez, a plataforma
+**rejeita** o nome abreviado em vez de escolher um dos passos.
 
 O seletor de tentativa **não tem valor padrão**. Uma definição que diga apenas
-`AFTER_READ` é rejeitada em qualquer operação que possa tentar mais de uma vez. O
-motivo é que as duas leituras plausíveis medem coisas diferentes: uma barreira que
-dispare em toda tentativa transforma um laço de retry em impasse, com um agendamento
-escrito para uma passagem só; e uma falha injetada apenas na primeira tentativa testa
-recuperação, enquanto uma falha injetada em todas testa esgotamento. Escolher em
-silêncio produziria experimentos que medem outra coisa sem avisar ninguém.
+`AFTER_READ` é rejeitada em qualquer operação que possa tentar mais de uma vez. O motivo
+é que as duas leituras plausíveis medem coisas diferentes: uma barreira que dispare em
+toda tentativa transforma um laço de retry em impasse, com um agendamento escrito para
+uma passagem só; e uma falha injetada apenas na primeira tentativa testa recuperação,
+enquanto uma falha injetada em todas testa esgotamento. Escolher em silêncio produziria
+experimentos que medem outra coisa sem avisar ninguém.
 
 Em cada fronteira o runtime faz duas coisas, **nesta ordem**:
 
@@ -136,13 +135,13 @@ Em cada fronteira o runtime faz duas coisas, **nesta ordem**:
 2. consulta o injetor de falha, e falha se houver falha declarada ali.
 
 A ordem não é arbitrária. Se a injeção viesse antes do bloqueio, o worker morreria sem
-nunca chegar à barreira, e o escalonador esperaria para sempre por um worker que já
-não existe. Injetar depois de liberar mantém a falha dentro da ordem declarada.
+nunca chegar à barreira, e o escalonador esperaria para sempre por um worker que já não
+existe. Injetar depois de liberar mantém a falha dentro da ordem declarada.
 
 ### A observação
 
-A observação não é o terceiro ato da fronteira. Ela é emitida **no instante em que
-cada evento ocorre**:
+A observação não é o terceiro ato da fronteira. Ela é emitida **no instante em que cada
+evento ocorre**:
 
 - o resultado de um passo é observado quando o passo termina, antes da fronteira de
   saída ser consultada;
@@ -153,24 +152,24 @@ O motivo é a timeline. Se a observação do `READ` só fosse emitida depois da 
 liberar, a timeline mostraria o `READ` do W1 acontecendo depois do `READ` do W2 — o
 instrumento mentiria sobre a própria ordem que ele impôs.
 
-O que o passo reporta é um conjunto de fatos (`version=1`, `rowsAffected=0`). O
-runtime registra sem interpretar. Toda observação carrega o número da tentativa.
+O que o passo reporta é um conjunto de fatos (`version=1`, `rowsAffected=0`). O runtime
+registra sem interpretar. Toda observação carrega o número da tentativa.
 
 ### A transação é demarcada através do Spring, não no lugar dele
 
 O runtime abre o escopo transacional com `TransactionTemplate`, e os passos daquele
-escopo rodam dentro do callback. Um escopo envolve uma sub-sequência contígua de
-passos de uma tentativa.
+escopo rodam dentro do callback. Um escopo envolve uma sub-sequência contígua de passos
+de uma tentativa.
 
-O que isso preserva: o `PlatformTransactionManager`, a propagação, o nível de
-isolamento configurado, os recursos ligados à thread e as regras de rollback. Nada
-disso é reimplementado pelo laboratório, e o `SQLSTATE 40001` continua chegando pelo
-caminho normal.
+O que isso preserva: o `PlatformTransactionManager`, a propagação, o nível de isolamento
+configurado, os recursos ligados à thread e as regras de rollback. Nada disso é
+reimplementado pelo laboratório, e o `SQLSTATE 40001` continua chegando pelo caminho
+normal.
 
 Consequência sobre os pontos nomeados: **`COMMIT` não é um passo que o runtime
 executa.** Ele é o retorno do callback. `BEFORE_COMMIT` é a última fronteira dentro do
-escopo; `AFTER_COMMIT` é a primeira fronteira depois dele. Isso é mais fiel que um
-passo `COMMIT` explícito, e dá sentido exato à etapa 6: o commit aconteceu, o callback
+escopo; `AFTER_COMMIT` é a primeira fronteira depois dele. Isso é mais fiel que um passo
+`COMMIT` explícito, e dá sentido exato à etapa 6: o commit aconteceu, o callback
 retornou, e a falha injetada logo em seguida produz o dual write sem publicação.
 
 ### A resolução é um eixo do experimento
@@ -196,11 +195,11 @@ Toda anomalia reproduzida com barreiras precisa aparecer **também** sem barreir
 carga alta. Se aparecer só com barreiras, o runtime está fabricando o fenômeno, e o
 experimento não vale.
 
-Com o eixo de resolução, esta cláusula fica mais forte do que era. "A mesma anomalia
-sem barreiras" deixa de significar apenas "a mesma sequência de passos com o
-escalonador desligado" e passa a poder significar **"o mesmo fenômeno no código que um
-engenheiro escreveria"**. É uma resposta melhor à objeção de fidelidade do que
-qualquer argumento textual deste documento.
+Com o eixo de resolução, esta cláusula fica mais forte do que era. "A mesma anomalia sem
+barreiras" deixa de significar apenas "a mesma sequência de passos com o escalonador
+desligado" e passa a poder significar **"o mesmo fenômeno no código que um engenheiro
+escreveria"**. É uma resposta melhor à objeção de fidelidade do que qualquer argumento
+textual deste documento.
 
 A cláusula é obrigatória para todo experimento do laboratório. O E1 e o E2 do MVP a
 exercitam primeiro.
@@ -209,11 +208,11 @@ exercitam primeiro.
 
 **A linguagem do agendamento.** A decisão fixa que existe uma fronteira consultável e
 como ela é endereçada. Não fixa como uma barreira é declarada — se
-`W1.READ → W2.READ → W1.WRITE → W2.WRITE` é uma lista ordenada de endereços, uma
-máquina de estados, ou outra coisa. É ADR próprio, e ele depende deste.
+`W1.READ → W2.READ → W1.WRITE → W2.WRITE` é uma lista ordenada de endereços, uma máquina
+de estados, ou outra coisa. É ADR próprio, e ele depende deste.
 
-**Quando há outra tentativa.** O runtime pergunta; a estratégia responde. A política é
-a decisão 3 da fila.
+**Quando há outra tentativa.** O runtime pergunta; a estratégia responde. A política é a
+decisão 3 da fila.
 
 Fica registrado para que a ausência não seja lida como omissão.
 
@@ -221,10 +220,10 @@ Fica registrado para que a ausência não seja lida como omissão.
 
 ### 1. O endereço da fronteira precisa sobreviver à edição da operação
 
-Definições de experimento são versionadas e referenciam fronteiras. O rótulo sobrevive
-à inserção de um passo no meio da operação — o índice não sobreviveria, e é por isso
-que o rótulo foi escolhido. Mas o rótulo não sobrevive a uma renomeação, e nada impede
-que o corpo de um passo mude mantendo o rótulo.
+Definições de experimento são versionadas e referenciam fronteiras. O rótulo sobrevive à
+inserção de um passo no meio da operação — o índice não sobreviveria, e é por isso que o
+rótulo foi escolhido. Mas o rótulo não sobrevive a uma renomeação, e nada impede que o
+corpo de um passo mude mantendo o rótulo.
 
 A etapa 12 quer reexecutar um experimento antigo e obter o mesmo resultado. Se o corpo
 do passo mudou, o replay é de outro experimento com o mesmo nome. Nenhum mecanismo de
@@ -263,10 +262,10 @@ precisaria entender o SQL que ele decidiu não entender.
 
 ### 4. O escalonador precisa de um protocolo de desistência
 
-A ordem escolhida na fronteira (bloquear, depois falhar) evita que um worker morra
-antes de chegar à barreira. Não evita o inverso: um worker que falha na fronteira de
-saída do passo N nunca chegará à fronteira de entrada do passo N+1, e um escalonador
-que espere por ele trava a execução inteira.
+A ordem escolhida na fronteira (bloquear, depois falhar) evita que um worker morra antes
+de chegar à barreira. Não evita o inverso: um worker que falha na fronteira de saída do
+passo N nunca chegará à fronteira de entrada do passo N+1, e um escalonador que espere
+por ele trava a execução inteira.
 
 O runtime precisa notificar o escalonador de que um worker terminou — por falha
 injetada, por exceção do banco ou por conclusão. A forma dessa notificação não foi
@@ -278,11 +277,11 @@ decidida, e ela pertence ao ADR do escalonador, não a este.
 
 - As três exigências do briefing passam a ser a mesma exigência atendida uma vez. A
   barreira, o ponto de falha e a linha da timeline são o mesmo lugar do código.
-- O impasse do `arquivo/0012` deixa de existir. Ele escolhia entre interceptar dentro
-  do processo (fiel, mas contamina), no broker (isolado, mas entra na medida de
-  latência) ou na rede (puro, mas não produz duplicata semântica). Com o runtime
-  dirigindo, a direção da dependência se inverte: a injeção fica dentro do processo,
-  que é o modo fiel, e a regra 6 continua verde.
+- O impasse do `arquivo/0012` deixa de existir. Ele escolhia entre interceptar dentro do
+  processo (fiel, mas contamina), no broker (isolado, mas entra na medida de latência)
+  ou na rede (puro, mas não produz duplicata semântica). Com o runtime dirigindo, a
+  direção da dependência se inverte: a injeção fica dentro do processo, que é o modo
+  fiel, e a regra 6 continua verde.
 - `AFTER_COMMIT` fica exato. Como o commit é o retorno do callback do
   `TransactionTemplate`, existe um instante inequívoco em que a transação já terminou e
   nada mais aconteceu. É a fronteira de que a etapa 6 depende.
@@ -291,10 +290,10 @@ decidida, e ela pertence ao ADR do escalonador, não a este.
   referenciá-los.
 - A timeline não precisa de instrumentação adicional. Ela é a projeção direta do log de
   observações, que já existe porque a fronteira existe.
-- Os doze pontos nomeados do briefing saem de graça. Não há doze ganchos para manter;
-  há um mecanismo e uma convenção de nomes.
-- O número de tentativas vira dado de primeira classe do log, sem nada a mais: a
-  métrica central do E3 e do E4 é subproduto de a tentativa ser a unidade.
+- Os doze pontos nomeados do briefing saem de graça. Não há doze ganchos para manter; há
+  um mecanismo e uma convenção de nomes.
+- O número de tentativas vira dado de primeira classe do log, sem nada a mais: a métrica
+  central do E3 e do E4 é subproduto de a tentativa ser a unidade.
 
 ### Negativas
 
@@ -303,8 +302,8 @@ decidida, e ela pertence ao ADR do escalonador, não a este.
   honestidade depende de as duas não divergirem. Ver questão 3.
 - **O estado intermediário sai das variáveis locais.** `value + 1` calculado no
   `COMPUTE` precisa chegar ao `WRITE` por um escopo de execução explícito. Isso é mais
-  verboso e mais fácil de errar que uma variável local — e o erro tem a forma da
-  questão 2.
+  verboso e mais fácil de errar que uma variável local — e o erro tem a forma da questão
+  2.
 - **A operação em alta resolução não é o código que um engenheiro escreveria.** A regra
   pedagógica do repositório quer mostrar o problema no código real. A sequência de
   passos é uma tradução, e o leitor precisa fazer o mapeamento de volta. A forma de
@@ -315,8 +314,8 @@ decidida, e ela pertence ao ADR do escalonador, não a este.
 - Duas fronteiras por passo em vez de uma. É mais explícito, mas dobra o número de
   endereços que um experimento pode referenciar, e alguns deles são inúteis.
 - O runtime vira código crítico do laboratório. Um bug nele contamina todos os
-  experimentos ao mesmo tempo, e a cláusula de honestidade é a única defesa
-  automatizada contra isso.
+  experimentos ao mesmo tempo, e a cláusula de honestidade é a única defesa automatizada
+  contra isso.
 
 ### Neutras
 
@@ -367,9 +366,9 @@ falando a linguagem do instrumento.
 O motivo decisivo é outro, e é prático. Um método linear com ganchos só revela seus
 pontos de pausa **executando**. O runtime não tem a lista de passos antes de rodar a
 operação uma primeira vez. O Experiment Designer da UI não consegue oferecer os pontos
-de barreira, e a definição versionada do experimento não consegue referenciá-los sem
-que alguém os transcreva à mão do código — uma lista manual que apodrece, exatamente
-como a questão 1 do `arquivo/0006` já previa em outro contexto.
+de barreira, e a definição versionada do experimento não consegue referenciá-los sem que
+alguém os transcreva à mão do código — uma lista manual que apodrece, exatamente como a
+questão 1 do `arquivo/0006` já previa em outro contexto.
 
 ### Alternativa C — instrumentação por aspecto ou bytecode
 
@@ -424,9 +423,9 @@ chama `commit()`, sem passar pelo Spring.
 **Descartada.** É o caminho mais direto para ter `BEGIN` e `COMMIT` como passos
 explícitos e endereçáveis, e elimina qualquer dúvida sobre quem controla a transação.
 
-Ela perde porque reimplementa o que já existe. Propagação, nível de isolamento,
-recursos ligados à thread, tradução de exceção e regras de rollback passariam a ser
-código do laboratório — código que precisaria estar correto para que qualquer resultado
+Ela perde porque reimplementa o que já existe. Propagação, nível de isolamento, recursos
+ligados à thread, tradução de exceção e regras de rollback passariam a ser código do
+laboratório — código que precisaria estar correto para que qualquer resultado
 significasse alguma coisa, e que ninguém pediu para estudar. Pior: a operação declarada
 deixaria de rodar sob a mesma infraestrutura transacional da operação `@Transactional`,
 e o eixo de resolução perderia o sentido. As duas resoluções precisam commitar do mesmo
@@ -434,13 +433,13 @@ jeito para que a comparação entre elas prove alguma coisa.
 
 ## Quando esta decisão deixa de valer
 
-Reveja esta decisão quando o corpo de um passo precisar chamar o runtime para
-funcionar. O sinal concreto: um passo que não consiga executar sem consultar o
-escalonador, o injetor ou o log de observações no meio do próprio corpo. Isso
-significaria que a fronteira entre passos não é fina o bastante para o fenômeno em
-estudo, e que a unidade de execução precisa ser menor que o passo.
+Reveja esta decisão quando o corpo de um passo precisar chamar o runtime para funcionar.
+O sinal concreto: um passo que não consiga executar sem consultar o escalonador, o
+injetor ou o log de observações no meio do próprio corpo. Isso significaria que a
+fronteira entre passos não é fina o bastante para o fenômeno em estudo, e que a unidade
+de execução precisa ser menor que o passo.
 
 Reveja também se a asserção de honestidade falhar em qualquer experimento — se uma
 anomalia aparecer em alta resolução e nunca em baixa, sob carga alta. Isso não é um
-experimento ruim; é o runtime fabricando o fenômeno, e a forma da operação passa a ser
-a suspeita principal.
+experimento ruim; é o runtime fabricando o fenômeno, e a forma da operação passa a ser a
+suspeita principal.

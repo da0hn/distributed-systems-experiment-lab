@@ -13,17 +13,18 @@ vazios. Isso é deliberado: a decisão vem antes do código. Um ADR escrito depo
 implementação não é uma decisão, é uma justificativa.
 
 Quando o código existir, a stack é Java 25, Spring Boot 4.x, PostgreSQL, Docker. O
-RabbitMQ entra na etapa 5. O pacote raiz Java, o build e o número de módulos ainda
-**não foram escolhidos** — é a decisão 8 da fila em `docs/adr/README.md`.
+RabbitMQ entra na etapa 5. O pacote raiz Java, o build e o número de módulos ainda **não
+foram escolhidos** — é a decisão 8 da fila em `docs/adr/README.md`.
 
 ## O que este projeto é
 
-Uma plataforma experimental para reproduzir, observar e comparar problemas conhecidos
-de sistemas distribuídos. Não é uma aplicação de negócio: não existe pedido, pagamento,
+Uma plataforma experimental para reproduzir, observar e comparar problemas conhecidos de
+sistemas distribuídos. Não é uma aplicação de negócio: não existe pedido, pagamento,
 cliente ou estoque. O escopo cobre 42 fenômenos, de lost update a cascading failure.
 
-O documento que define tudo é [`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md).
-Leia-o antes de propor qualquer coisa.
+O documento que define tudo é
+[`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md). Leia-o antes de propor
+qualquer coisa.
 
 ## O trabalho aqui é escrever e debater ADRs
 
@@ -52,7 +53,8 @@ atribuído quando o ADR é escrito.
 
 Nenhum ADR é aceito por omissão, e nenhum é aceito sem aprovação explícita do usuário.
 Um ADR com questões em aberto está bloqueado por elas. Ao aceitar, remova a seção
-`## Questões em aberto` e mova o que foi decidido para `## Decisão` ou `## Consequências`.
+`## Questões em aberto` e mova o que foi decidido para `## Decisão` ou
+`## Consequências`.
 
 Um ADR **aceito** nunca é editado nem apagado. Para mudar a decisão, escreva um ADR novo
 e marque o antigo como `Substituído por ADR-NNNN`. Enquanto estiver `Proposto`, editar é
@@ -92,11 +94,11 @@ pensava naquela data.
 Ler só um ADR não basta; estas cinco ideias atravessam todo o projeto.
 
 **Uma operação é uma sequência de passos.** Barreiras determinísticas, fault injection
-em pontos nomeados e a timeline são a mesma exigência: existe uma fronteira observável
-e controlável entre passos consecutivos. O runtime executa os passos e, em cada
-fronteira, consulta o escalonador, consulta o injetor de falha e emite uma observação.
-O que é sintético é apenas o agendamento — o SQL, a transação e o isolamento são reais.
-Esta é a decisão 1 da fila, e todo o resto herda a forma que ela escolher.
+em pontos nomeados e a timeline são a mesma exigência: existe uma fronteira observável e
+controlável entre passos consecutivos. O runtime executa os passos e, em cada fronteira,
+consulta o escalonador, consulta o injetor de falha e emite uma observação. O que é
+sintético é apenas o agendamento — o SQL, a transação e o isolamento são reais. Esta é a
+decisão 1 da fila, e todo o resto herda a forma que ela escolher.
 
 **Dois planos.** O Control Plane é o sistema sob teste; o Lab Plane é o instrumento que
 o mede. Confundir os dois invalida qualquer conclusão — um bug no instrumento vira um
@@ -146,8 +148,8 @@ Vale para os 42 fenômenos, sem exceção.
   e clock skew ficam impossíveis de testar.
 - **Nenhuma sincronização de JVM no sistema sob teste.** `synchronized`,
   `ReentrantLock` e `AtomicInteger` mascaram exatamente os fenômenos do grupo A. A
-  exceção é a estratégia `JVM_LOCK`, que existe **como experimento** para provar que
-  ela falha com duas instâncias.
+  exceção é a estratégia `JVM_LOCK`, que existe **como experimento** para provar que ela
+  falha com duas instâncias.
 - **Cada worker tem sua própria conexão.** Se o pool serializar dois workers, o
   experimento produz um falso negativo silencioso.
 - **`experiments/` guarda definições; `docs/experiments/` guarda resultados.** Os dois
@@ -188,14 +190,15 @@ Três cuidados que valem sempre ao mexer nisso:
 - **A ADR 0017 é de 2026-07-26 e o replanejamento daqui é de 2026-07-28.** Ela descreve
   o laboratório como "monorepo de microsserviços JVM" com "matriz de serviços" — a
   arquitetura **arquivada**. Ela também escolhe **Gradle** e **Toxiproxy**, que nunca
-  foram debatidos aqui. Não absorva nada disso em silêncio: o inventário do que sobrevive
-  e do que colide está em `docs/plano-do-laboratorio.md`, seção 12.
+  foram debatidos aqui. Não absorva nada disso em silêncio: o inventário do que
+  sobrevive e do que colide está em `docs/plano-do-laboratorio.md`, seção 12.
 - **Kubernetes é destino de entrega, não objeto de estudo.** Nenhum dos 42 fenômenos é
   reproduzido por um recurso do cluster. A regra "nenhuma tecnologia entra por estar
   disponível" continua valendo para tudo que entra num experimento.
 - **O orquestrador reage ao que o experimento faz.** Um experimento que mata o processo
   de propósito (etapa 6) roda sob um `Deployment` que o reinicia, com `selfHeal: true`.
-  Isso é a confusão Control Plane / Lab Plane um nível abaixo, e não tem solução decidida.
+  Isso é a confusão Control Plane / Lab Plane um nível abaixo, e não tem solução
+  decidida.
 
 ## Ao trabalhar aqui
 
