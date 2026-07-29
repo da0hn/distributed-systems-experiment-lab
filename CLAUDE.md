@@ -163,9 +163,39 @@ definida, e nada foi decidido.
 O próximo passo é a **decisão 1 da fila: o passo como unidade de execução, observação e
 injeção de falha**. Enquanto ela não existir, nenhuma linha de código é escrita.
 
-A árvore de diretórios atual (`services/` com cinco pastas, `deploy/`,
-`platform/observability/`) deriva das decisões **arquivadas** e não corresponde ao
-plano — o MVP é uma aplicação e um banco. A limpeza acompanha a decisão 7 da fila.
+A árvore só tem `docs/`. O esqueleto herdado das decisões arquivadas foi apagado nos
+commits `83fcfc9` e `e1c88ae` — inclusive o `deploy/`, para onde o ArgoCD do homelab
+aponta. O `Application` de lá está em `ComparisonError` hoje. O conserto acompanha as
+decisões 7 e 8 da fila.
+
+## Este repositório é entregue no homelab
+
+O laboratório é a primeira carga de trabalho da Camada 8 do repositório
+[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure), e a
+exigência é que um serviço **nasça já entregando**: pipeline e CI/CD no mesmo commit que
+cria o módulo, nunca retrofitados. O contrato está na **ADR 0017 daquele repositório**,
+que está **Aceita** — leia-a antes de propor qualquer coisa sobre build, empacotamento
+ou deploy.
+
+O essencial dela: GitHub Actions exclusivamente, em runner hospedado; imagem no GHCR com
+`GITHUB_TOKEN` efêmero e tag = SHA do commit, nunca `latest`; manifests Kustomize em
+`deploy/` **deste** repositório, bumpados pelo workflow da `master`; ArgoCD por polling
+(~3 min); nenhum Secret aqui — eles ficam cifrados com SOPS/KSOPS no homelab e são
+referenciados por nome.
+
+Três cuidados que valem sempre ao mexer nisso:
+
+- **A ADR 0017 é de 2026-07-26 e o replanejamento daqui é de 2026-07-28.** Ela descreve
+  o laboratório como "monorepo de microsserviços JVM" com "matriz de serviços" — a
+  arquitetura **arquivada**. Ela também escolhe **Gradle** e **Toxiproxy**, que nunca
+  foram debatidos aqui. Não absorva nada disso em silêncio: o inventário do que sobrevive
+  e do que colide está em `docs/plano-do-laboratorio.md`, seção 12.
+- **Kubernetes é destino de entrega, não objeto de estudo.** Nenhum dos 42 fenômenos é
+  reproduzido por um recurso do cluster. A regra "nenhuma tecnologia entra por estar
+  disponível" continua valendo para tudo que entra num experimento.
+- **O orquestrador reage ao que o experimento faz.** Um experimento que mata o processo
+  de propósito (etapa 6) roda sob um `Deployment` que o reinicia, com `selfHeal: true`.
+  Isso é a confusão Control Plane / Lab Plane um nível abaixo, e não tem solução decidida.
 
 ## Ao trabalhar aqui
 

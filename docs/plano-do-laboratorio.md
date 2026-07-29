@@ -491,12 +491,17 @@ Adiar é diferente de esquecer. Cada item abaixo tem um gatilho: o experimento q
 | Mecanismo de streaming para a UI (SSE ou WebSocket)               | a primeira execução longa o suficiente para não caber num polling             |
 | Definição de experimento: arquivo versionado ou registro no banco | o Experiment Designer da UI (ver Seção 11)                                    |
 | Valkey                                                            | um experimento que prove que advisory lock do PostgreSQL não basta (etapa 11) |
-| Estrutura do reactor Maven e pacote raiz                          | o segundo módulo compilável                                                   |
+| Build, pacote raiz e número de módulos                            | **deixou de ser adiável** — o pipeline do dia zero precisa deles (seção 12)    |
 | OpenTelemetry, Prometheus, Grafana, Tempo                         | um fenômeno que a timeline própria não consiga explicar                       |
-| Kafka, Kubernetes, Helm, service mesh                             | nenhum gatilho previsto no roadmap atual                                      |
+| Kafka, Helm, service mesh                                         | nenhum gatilho previsto no roadmap atual                                      |
+| Kubernetes                                                        | **gatilho já disparado** — é o destino de entrega desde o dia zero (seção 12) |
 | Event Sourcing e CQRS completos                                   | nenhum. A etapa 9 precisa de uma projeção, não de Event Sourcing              |
 
 O padrão comum: nenhuma tecnologia entra por estar disponível. Cada uma entra quando um experimento não puder ser executado sem ela.
+
+As duas últimas linhas alteradas merecem nota. O Kubernetes entrou, mas **como destino de entrega, não como objeto de estudo** — nenhum experimento o
+usa, e a distinção é o que preserva a regra acima. O build deixou de ser adiável porque a entrega contínua no dia zero exige saber o que empacotar; o
+detalhe está na seção 12.
 
 ---
 
@@ -580,15 +585,135 @@ driver do PostgreSQL precisam ser verificados antes do parent POM. É uma checag
 
 ---
 
-**6. O esqueleto de diretórios ainda descreve a arquitetura arquivada.** `services/`
-tem cinco pastas vazias com nome de dono — `resource-service`, `allocation-service`,
-`registry-service`, `chaos-service`, `experiment-service` — e `deploy/` tem pastas de Helm e ArgoCD. Nada disso corresponde ao MVP, que é **uma
-aplicação e um banco**. Uma pasta vazia com nome de dono afirma uma propriedade que não existe. A limpeza cabe no ADR de arquitetura mínima (decisão 7
-da fila), não antes: refazer a árvore agora e de novo quando o primeiro módulo nascer é churn.
+**6. O esqueleto de diretórios foi apagado antes do ADR que definiria o novo.** O
+`services/` com cinco pastas de nome de dono e o `deploy/` com Helm e ArgoCD sumiram nos commits `83fcfc9` e `e1c88ae`. A limpeza estava certa em
+mérito — uma pasta vazia com nome de dono afirma uma propriedade que não existe —, mas a árvore ficou sem `deploy/`, e o `Application` do ArgoCD no
+homelab aponta para ele. O repositório está hoje num estado que o cluster reporta como erro. O conserto é a decisão 7 da fila, e ela subiu de
+prioridade por isso.
+
+**7. Uma decisão sobre este repositório foi tomada em outro repositório.** A ADR 0017 do homelab escolheu Gradle e Toxiproxy para o laboratório, e
+descreveu-o como microsserviços. Nenhuma das três passou pelo debate daqui. Não é má-fé nem erro: a ADR 0017 é de 2026-07-26 e o replanejamento é de
+2026-07-28. Mas o resultado é que a decisão 8 da fila já está parcialmente respondida por um documento aceito fora do alcance deste processo. Ratificar
+ou emendar é escolha consciente, e precisa ser feita explicitamente — absorver em silêncio seria exatamente o que a regra dura do repositório existe
+para impedir. Detalhe na seção 12.
+
+**8. Um experimento destrutivo sob um orquestrador que ressuscita não mede o que pretende.** A etapa 6 mata o processo de propósito; o Kubernetes o
+reinicia. Nenhum dos dois repositórios registrava isso. Não há solução proposta — as candidatas visíveis (rodar experimentos destrutivos fora do
+cluster; matar a *operação* em vez do processo; desligar `selfHeal` durante a execução) têm custos diferentes e nenhuma é obviamente certa. Detalhe na
+seção 12.
 
 ---
 
-## 12. Próximo passo
+## 12. O acoplamento com o `homelab-infrastructure`
+
+O laboratório é entregue na infraestrutura do repositório
+[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure), e a exigência é que um serviço **nasça já entregando** — pipeline e
+CI/CD aplicados no dia zero, não retrofitados depois. Esta seção registra o que isso implica e onde colide com o resto do plano.
+
+### O acoplamento já existe, e não é hipotético
+
+Três fatos verificáveis hoje, sem escrever nada:
+
+1. A **ADR 0017** do homelab (`docs/adr/0017-cicd-das-aplicacoes-no-github-actions.md`) está **Aceita**, datada de **2026-07-26**, e nomeia este
+   repositório como a primeira carga de trabalho da Camada 8.
+2. Existe um `Application` do ArgoCD commitado em
+   `kubernetes/applications/apps/distributed-consistency-lab.yaml` apontando para
+   `https://github.com/da0hn/distributed-consistency-lab.git`, `targetRevision: master`,
+   `path: deploy`, com `prune: true` e `selfHeal: true`.
+3. O `deploy/` deste repositório **foi apagado** no commit `e1c88ae`. Logo, esse
+   `Application` está em `ComparisonError` **agora** — o próprio comentário do manifesto prevê o sintoma e o classifica como ruidoso, mas inofensivo
+   enquanto o monorepo não existir.
+
+A consequência de processo é que a fronteira do princípio inviolável do homelab (*"nada existe no servidor que não esteja descrito no Git"*) deixou de
+coincidir com aquele repositório. O `.github/workflows/` e o `deploy/` **deste** repositório passam a ser infraestrutura, e a reconstrução do ambiente
+passa a exigir dois `git clone`. A ADR 0017 registra isso como consequência aceita.
+
+### A ADR 0017 descreve a arquitetura arquivada
+
+Ela precede o replanejamento em dois dias, e a premissa que ela usa é a do `arquivo/0011`. Isso não a invalida — a maior parte do que ela decide não
+depende de quantos serviços existem —, mas separa o que pode ser absorvido do que precisa de reconciliação.
+
+**Sobrevive sem alteração**, porque o motivo é independente da contagem de serviços:
+
+| Decisão da ADR 0017                                        | Por que continua valendo com um módulo                                                       |
+|------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| CI/CD exclusivamente no GitHub Actions                     | Testcontainers exige daemon Docker; o backend Kubernetes do Woodpecker não expõe nenhum       |
+| Runner hospedado, fora do perímetro do homelab             | repo público + `docker.sock` no nó equivale a root no servidor para qualquer autor de PR      |
+| Imagens no GHCR com `GITHUB_TOKEN` efêmero                 | evita credencial de longa duração como secret em repositório aberto                           |
+| Tag da imagem = SHA do commit, nunca `latest`              | tag mutável faria o ArgoCD reportar `Synced` com outro binário rodando                        |
+| `deploy/` neste repositório, renderizado por Kustomize     | escrever no homelab exigiria deploy key read-write da infra inteira num repo público          |
+| Bump de imagem commitado pelo `GITHUB_TOKEN`               | push com esse token não dispara workflows — é a proteção nativa contra recursão de build      |
+| ArgoCD por polling (~3 min), sem webhook                   | o Cloudflare Access na frente do ArgoCD bloquearia o POST não-interativo do GitHub            |
+| Secrets ficam no homelab, referenciados por nome           | nenhum Secret vai para o repositório público                                                  |
+| Job agregador como único check obrigatório                 | um check filtrado por `paths:` nunca reporta status e trava o PR para sempre                  |
+
+**Colide, e precisa de decisão aqui:**
+
+| A ADR 0017 afirma                                                | O plano de 2026-07-28 diz                                                             |
+|-------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| "monorepo de microsserviços JVM", "matriz de serviços"           | MVP é **uma aplicação e um banco**; decomposição provocada por experimento (etapa 4)   |
+| namespace único porque "eles falam entre si o tempo todo"        | não há "eles" — há um processo                                                         |
+| "referência de projeto **Gradle**"                               | decisão 8 da fila, **não decidida**; a seção 9 deste plano presume **reactor Maven**   |
+| "**Toxiproxy**, para injetar partição e latência de rede"        | injeção na fronteira de passo, em processo; rede só no grupo B, etapa 5                |
+| `path: deploy` no `Application`                                  | `deploy/` foi apagado; a árvore é decisão 7 da fila                                    |
+
+A colisão do Gradle é a mais séria, e não é técnica — é de governança. Uma decisão sobre o build **deste** repositório está registrada como aceita em
+ADR de **outro** repositório, sem ter passado pelo debate daqui. Maven contra Gradle tem argumentos legítimos dos dois lados; o problema é que a
+escolha foi feita como detalhe de contexto de uma decisão de CI/CD.
+
+A colisão do Toxiproxy é menor em consequência, mas viola a regra estrutural do plano: nenhuma tecnologia entra por estar disponível. Toxiproxy injeta
+falha **na rede**, e o `arquivo/0012` já concluiu que a rede não produz duplicata semântica. O MVP inteiro é grupo A — um processo, um banco, nenhuma
+rede entre partes. Toxiproxy não tem gatilho antes da etapa 5, e talvez nem lá.
+
+### Kubernetes como destino de entrega não é Kubernetes como objeto de estudo
+
+Esta distinção é o que mantém a regra estrutural intacta. A tabela da seção 9 dizia que Kubernetes não tinha gatilho previsto, e isso ficou falso — mas
+não pelo motivo que a linha antecipava. O cluster **hospeda** o laboratório; ele não entra em nenhum experimento. Nenhum dos 42 fenômenos é reproduzido
+por um recurso do Kubernetes, e nenhum ADR da série corrente precisa decidir sobre orquestração para que os experimentos existam.
+
+O que muda é o alvo de empacotamento: o artefato deixa de ser "um jar que roda na máquina" e passa a ser "uma imagem OCI com manifest Kustomize". Isso
+é escopo real, mas é ortogonal à decisão 1.
+
+### Quatro riscos que nenhum dos dois repositórios registrou
+
+**1. O orquestrador ressuscita o processo que o experimento matou.** A etapa 6 pergunta
+*"o que acontece se o processo morre entre o commit e o publish?"*, e a forma de responder é derrubar o processo de propósito. Sob um `Deployment` do
+Kubernetes com `selfHeal: true` no `Application`, o kubelet reinicia o pod e o ArgoCD reconcilia o estado. O experimento passa a medir **o
+orquestrador junto com o fenômeno**. É a confusão entre Control Plane e Lab Plane de novo, um nível abaixo: o instrumento passou a rodar dentro de algo
+que reage ao que o instrumento faz. O laboratório precisa de uma forma de matar um processo que o cluster não desfaça — ou de rodar os experimentos
+destrutivos fora do cluster.
+
+**2. Reusar a Camada 6 contamina a medida nos dois sentidos.** O homelab já tem PostgreSQL (CNPG), RabbitMQ e Valkey, e a economia de reusá-los é
+óbvia. Mas o grupo D produz saturação de propósito, e o grupo A produz deadlock de propósito. Rodar isso num banco compartilhado degrada as outras
+cargas do homelab; e as outras cargas, por sua vez, viram ruído dentro da medida. Um laboratório cuja linha de base depende dos vizinhos não tem linha
+de base. A recomendação é PostgreSQL dedicado ao namespace do laboratório, e ela custa exatamente o que a Camada 6 tentava economizar.
+
+**3. `prune: true` alcança um repositório que não é o do homelab.** Apagar o `deploy/`
+daqui remove os workloads do cluster no próximo sync. É o comportamento desejado e está documentado lá — mas significa que uma limpeza de árvore neste
+repositório (decisão 7 da fila) tem efeito em produção. A limpeza deixou de ser barata.
+
+**4. A proteção de branch conflita com o commit de bump.** A ADR 0017 já registra o problema e adota Ruleset com bypass para o GitHub Actions. Vale
+notar aqui porque a alternativa que ela descarta — branch `deploy` dedicada — tem um argumento que este repositório valoriza: manteria a proteção
+intacta. O custo é espalhar manifests por duas branches.
+
+### O que "nascer com CI/CD no dia zero" exige da fila de decisões
+
+Um pipeline que constrói uma imagem e a entrega precisa saber: qual build tool, quantos módulos, qual o artefato, qual a porta, qual o health check e
+qual a forma do `deploy/`. Isso é a **decisão 7** (arquitetura mínima) e a **decisão 8**
+(stack e build) — hoje no fim da fila, justamente porque dependiam da decisão 1.
+
+A exigência do dia zero **reordena a fila**. Vale reconhecer o argumento a favor: um pipeline que empacota e entrega um esqueleto não decide nada sobre
+o passo, o oráculo ou o veredito — esses eixos são ortogonais, e retrofitar CI/CD depois é reconhecidamente mais caro. O risco real é outro e é
+específico: o `Dockerfile` e o `deploy/kustomization.yaml` **fixam o número de módulos e a forma do artefato**, que é o conteúdo das decisões 7 e 8. Um
+pipeline no dia zero não antecipa a decisão 1; ele antecipa a 7 e a 8.
+
+> `→ ADR` **Entrega contínua no homelab desde o dia zero.** Precisa ratificar ou emendar o que a ADR 0017 do homelab decidiu por este repositório
+> (Gradle, Toxiproxy, contagem de serviços), decidir o Postgres dedicado contra o compartilhado, e resolver o conflito entre experimento destrutivo e
+> orquestrador que ressuscita.
+
+---
+
+## 13. Próximo passo
 
 Nada neste documento é decisão.
 

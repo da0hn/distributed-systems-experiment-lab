@@ -94,15 +94,30 @@ Ordem em que as decisões precisam ser tomadas, derivada de
 
 Os números **não** estão atribuídos. Um número é atribuído quando o ADR é escrito — atribuir antes cria buracos na sequência quando a ordem muda.
 
-| Ordem | Decisão                                                                       | Por que precisa vir aqui                                               |
-|-------|-------------------------------------------------------------------------------|------------------------------------------------------------------------|
-| 1     | **O passo como unidade de execução, observação e injeção de falha**           | toda outra decisão herda a forma que esta escolher (plano, seção 2)    |
-| 2     | **O domínio mínimo: contador com oráculo exato mais predicado de capacidade** | define o que é medido; o oráculo exato é o que torna o MVP verificável |
-| 3     | **Estratégias de concorrência como dado, não como branch**                    | sem isso o experimento de comparação não existe                        |
-| 4     | **O log de observações: forma, ordem e onde vive**                            | é o substrato da timeline agora e do replay depois                     |
-| 5     | **Experiment: definição, semente, hipótese e asserções**                      | precisa resolver a tensão entre Designer na UI e definição versionada  |
-| 6     | **Os dois formatos de veredito: booleano e curva**                            | se ficar para depois, o grupo D não cabe na arquitetura                |
-| 7     | **Arquitetura mínima e guardas executáveis**                                  | um módulo, dois planos na mesma JVM, separação imposta por teste       |
-| 8     | **Stack: Java 25, Spring Boot 4.x, build e monorepo**                         | depende de 1 e 7 para saber quantos módulos declarar                   |
+| Ordem | Decisão                                                                       | Por que precisa vir aqui                                                |
+|-------|-------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| 1     | **O passo como unidade de execução, observação e injeção de falha**           | toda outra decisão herda a forma que esta escolher (plano, seção 2)     |
+| 2     | **O domínio mínimo: contador com oráculo exato mais predicado de capacidade** | define o que é medido; o oráculo exato é o que torna o MVP verificável  |
+| 3     | **Estratégias de concorrência como dado, não como branch**                    | sem isso o experimento de comparação não existe                         |
+| 4     | **O log de observações: forma, ordem e onde vive**                            | é o substrato da timeline agora e do replay depois                      |
+| 5     | **Experiment: definição, semente, hipótese e asserções**                      | precisa resolver a tensão entre Designer na UI e definição versionada   |
+| 6     | **Os dois formatos de veredito: booleano e curva**                            | se ficar para depois, o grupo D não cabe na arquitetura                 |
+| 7     | **Arquitetura mínima, stack e guardas executáveis**                           | um módulo, dois planos na mesma JVM, separação imposta por teste        |
+| 8     | **Entrega contínua no homelab desde o dia zero**                              | o serviço precisa nascer entregando; ratifica ou emenda a ADR 0017 lá   |
 
 As decisões 1 e 2 destravam o MVP inteiro. As demais podem ser debatidas em paralelo ao avanço do MVP, **uma por vez**.
+
+### A ordem das decisões 7 e 8 está sob tensão
+
+O laboratório é entregue no cluster do
+[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure), e a exigência é que um serviço **nasça já entregando** — pipeline e CI/CD
+no mesmo commit que cria o módulo, não retrofitados depois.
+
+Isso não move a decisão 1: o formato do passo não afeta o que o pipeline empacota. Mas move as decisões 7 e 8 para **junto do primeiro módulo
+compilável**, e as decisões 2 a 6 deixam de ser pré-requisito de escrever código de esqueleto. O `Dockerfile` e o `deploy/kustomization.yaml` fixam o
+número de módulos e a forma do artefato — que é o conteúdo da decisão 7.
+
+A decisão 8 tem uma particularidade que nenhuma outra tem: **parte dela já foi tomada fora deste repositório.** A ADR 0017 do homelab, aceita em
+2026-07-26, escolheu Gradle, Toxiproxy e "microsserviços JVM" para este laboratório, dois dias antes do replanejamento que descartou a arquitetura de
+serviços. Ratificar ou emendar é decisão consciente e explícita. O inventário completo do que sobrevive e do que colide está em
+[`../plano-do-laboratorio.md`](../plano-do-laboratorio.md), seção 12.

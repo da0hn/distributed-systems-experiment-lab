@@ -165,9 +165,30 @@ nunca for escrito, a etapa 4 nunca chega — e isso é informação, não atraso
 | Mensageria               | RabbitMQ                | etapa 5                              |
 | Cache e lock distribuído | Valkey                  | etapa 11, **se** provado necessário  |
 | Observabilidade externa  | OpenTelemetry e afins   | quando a timeline própria não bastar |
-| Orquestração             | Kubernetes              | sem gatilho previsto                 |
+| CI/CD                    | GitHub Actions e GHCR   | dia zero do primeiro módulo          |
+| Orquestração             | Kubernetes (K3s)        | dia zero — **destino de entrega**    |
 
 Nenhuma tecnologia entra por estar disponível. Cada uma entra quando um experimento não puder ser executado sem ela. Kafka não está no escopo.
+
+O Kubernetes é a exceção aparente, e a distinção importa: ele **hospeda** o laboratório, mas não entra em nenhum experimento. Nenhum dos 42 fenômenos é
+reproduzido por um recurso do cluster.
+
+## Entrega
+
+O laboratório roda no homelab descrito em
+[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure), como primeira carga de trabalho da Camada 8. O contrato de entrega está
+fixado na ADR 0017 daquele repositório:
+
+- CI/CD **exclusivamente** no GitHub Actions, em runner hospedado — Testcontainers exige um daemon Docker que o CI interno do homelab não expõe, e este
+  repositório é público, o que torna inaceitável dar acesso ao daemon do nó a um autor de PR.
+- Imagem no GHCR, autenticada por `GITHUB_TOKEN` efêmero. Tag = SHA do commit, nunca
+  `latest`.
+- Manifests Kustomize em `deploy/`, **neste** repositório. O workflow da `master` faz
+  `kustomize edit set image` e commita; o ArgoCD do homelab puxa por polling (~3 min).
+- Nenhum Secret vive aqui. Eles ficam cifrados com SOPS/KSOPS no homelab e são referenciados por nome.
+
+A conciliação entre esse contrato e o plano deste repositório — inclusive o que colide — está em
+[`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md), seção 12.
 
 O PostgreSQL não é só armazenamento — ele é **ferramenta do laboratório**. Níveis de isolamento, locks, constraints e deadlocks são objeto de estudo,
 não detalhe de infraestrutura.
@@ -187,10 +208,12 @@ O repositório teve uma primeira série de 13 ADRs, construída sobre outra perg
 concorrência?* Nenhum foi aceito. Todos foram arquivados em [`docs/adr/arquivo/`](docs/adr/arquivo/README.md)
 e continuam lá pelas seções de alternativas descartadas, que não caducaram junto com as decisões.
 
-> **Aviso sobre a árvore de diretórios.** As pastas em `services/`, `deploy/` e
-> `platform/observability/` derivam das decisões arquivadas. Elas descrevem uma
-> arquitetura de cinco serviços que **não é a do plano atual** — o MVP é uma aplicação
-> e um banco. A limpeza acontece junto com o ADR de arquitetura mínima.
+> **Aviso sobre a entrega.** O homelab já tem um `Application` do ArgoCD apontando para
+> o diretório `deploy/` deste repositório, com `prune: true` e `selfHeal: true`. Esse
+> diretório **não existe** — o esqueleto herdado das decisões arquivadas foi apagado
+> antes de o novo ser decidido. O cluster reporta `ComparisonError` para este app hoje.
+> É ruidoso e isolado do resto da árvore, e o conserto acompanha o ADR de arquitetura
+> mínima e entrega.
 
 ## Como este repositório é lido
 
