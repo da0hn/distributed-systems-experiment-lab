@@ -16,10 +16,18 @@ indent_size = 2
 # aplica hard wrap a parágrafos de prosa. Linhas de tabela acima de 88 colunas são
 # esperadas e corretas; quem as governa é ij_markdown_format_tables, que alinha as
 # células com padding.
+#
+# ij_markdown_wrap_text_if_long está desligado desde 2026-07-29. O wrapper de Markdown
+# do IntelliJ não trata um link inline como token atômico: quando `[texto](url)` não
+# cabe no que resta da linha, ele quebra depois de `(` e de `[`, e produz um link
+# partido que não renderiza. O defeito atingiu o mesmo parágrafo do ADR-0001 em três
+# reformatações seguidas. Com o wrap desligado, o max_line_length acima vira guia visual
+# do editor, e a quebra em 88 colunas é manual — que é o que o CLAUDE.md e o
+# docs/adr/README.md já mandam fazer. O restante da formatação continua com a IDE.
 [*.md]
 max_line_length = 88
 trim_trailing_whitespace = false
-ij_markdown_wrap_text_if_long = true
+ij_markdown_wrap_text_if_long = false
 ij_markdown_wrap_text_inside_blockquotes = true
 ij_markdown_format_tables = true
 ij_markdown_force_one_space_between_words = true

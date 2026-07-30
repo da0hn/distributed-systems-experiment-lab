@@ -691,8 +691,8 @@ falhar, vira decisão.
 commits `83fcfc9` e `e1c88ae`. A limpeza estava certa em mérito — uma pasta vazia com
 nome de dono afirma uma propriedade que não existe —, mas a árvore ficou sem `deploy/`,
 e o `Application` do ArgoCD no homelab aponta para ele. O repositório está hoje num
-estado que o cluster reporta como erro. O conserto é a decisão 7 da fila, e ela subiu de
-prioridade por isso.
+estado que o cluster reporta como erro. O conserto é a decisão de arquitetura mínima da
+fila, e ela subiu de prioridade por isso.
 
 **7. Uma decisão sobre este repositório foi tomada em outro repositório.** A ADR 0017 do
 homelab escolheu Gradle e Toxiproxy para o laboratório, e descreveu-o como
@@ -769,9 +769,9 @@ reconciliação.
 |-------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
 | "monorepo de microsserviços JVM", "matriz de serviços"           | MVP é **uma aplicação e um banco**; decomposição provocada por experimento (etapa 4)   |
 | namespace único porque "eles falam entre si o tempo todo"        | não há "eles" — há um processo                                                         |
-| "referência de projeto **Gradle**"                               | decisão 8 da fila, **não decidida**; a seção 9 deste plano presume **reactor Maven**   |
+| "referência de projeto **Gradle**"                               | decisão de entrega contínua, **não decidida**; a seção 9 deste plano presume **reactor Maven** |
 | "**Toxiproxy**, para injetar partição e latência de rede"        | injeção na fronteira de passo, em processo; rede só no grupo B, etapa 5                |
-| `path: deploy` no `Application`                                  | `deploy/` foi apagado; a árvore é decisão 7 da fila                                    |
+| `path: deploy` no `Application`                                  | `deploy/` foi apagado; a árvore é decisão de arquitetura mínima                        |
 
 A colisão do Gradle é a mais séria, e não é técnica — é de governança. Uma decisão sobre
 o build **deste** repositório está registrada como aceita em ADR de **outro**

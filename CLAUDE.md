@@ -14,7 +14,8 @@ implementação não é uma decisão, é uma justificativa.
 
 Quando o código existir, a stack é Java 25, Spring Boot 4.x, PostgreSQL, Docker. O
 RabbitMQ entra na etapa 5. O pacote raiz Java, o build e o número de módulos ainda **não
-foram escolhidos** — é a decisão 8 da fila em `docs/adr/README.md`.
+foram escolhidos** — é a decisão de arquitetura mínima na fila de
+`docs/adr/README.md`.
 
 ## O que este projeto é
 
@@ -52,9 +53,17 @@ atribuído quando o ADR é escrito.
 ### Estados e aceitação
 
 Nenhum ADR é aceito por omissão, e nenhum é aceito sem aprovação explícita do usuário.
-Um ADR com questões em aberto está bloqueado por elas. Ao aceitar, remova a seção
-`## Questões em aberto` e mova o que foi decidido para `## Decisão` ou
-`## Consequências`.
+
+Cada questão da seção `## Questões em aberto` tem um status, e só dois deles bloqueiam:
+`aberto` e `aberto (crítico)`. `encaminhado` marca a questão que pertence a outro ADR já
+na fila; `resolvida` marca a questão fechada durante o debate por algo que não é decisão
+daquele ADR.
+
+Ao aceitar, remova a seção `## Questões em aberto` e mova o que foi decidido para
+`## Decisão` ou `## Consequências`. Antes de remover, **transporte cada questão
+`encaminhado`** — inteira, no mesmo commit — para a seção `## Questões encaminhadas` de
+`docs/adr/README.md`, onde ela recebe o identificador `Q-NNNN-K`. Sem o transporte, o
+enunciado é apagado e a linha da fila que o citava fica pendurada.
 
 Um ADR **aceito** nunca é editado nem apagado. Para mudar a decisão, escreva um ADR novo
 e marque o antigo como `Substituído por ADR-NNNN`. Enquanto estiver `Proposto`, editar é
@@ -75,19 +84,41 @@ pensava naquela data.
 
 ### Convenções de ADR
 
+A lista completa está em `docs/adr/README.md`, seção `## Convenções`, e o esqueleto em
+`docs/adr/0000-template.md`. **Leia os dois antes de escrever um ADR.** O que mais pega:
+
 - Numeração sequencial de quatro dígitos, nunca reutilizada dentro da série corrente.
-  Arquivo: `NNNN-titulo-em-kebab-case.md`. Template em `docs/adr/0000-template.md`.
-- Português do Brasil, com acentuação correta. Frases curtas. Voz ativa. Uma ideia por
-  frase. Linhas quebradas manualmente em ~88 colunas.
+  Arquivo: `NNNN-titulo-em-kebab-case.md`.
+- Português do Brasil, com acentuação correta. Frases de 10 a 20 palavras. Voz ativa.
+  Uma ideia por frase. Linhas quebradas manualmente em ~88 colunas.
+- **`## Decisão` carrega só o quê.** O porquê vive em `## Justificativa`. Quem lê anos
+  depois precisa distinguir o que está em vigor do argumento que o sustentava na época.
+- **`## Trade-offs` é obrigatório**, no formato "o benefício X foi aceito em troca do
+  custo Y". Positivas e Negativas dizem o que aconteceu; o par diz o que foi trocado
+  pelo quê. Um ADR sem trade-off explícito é propaganda.
+- Requisito normativo usa RFC 2119 traduzida, em caixa alta: `DEVE`, `NÃO DEVE`,
+  `DEVERIA`, `NÃO DEVERIA`, `PODE`. Nunca como ênfase.
+- Há uma lista de palavras proibidas (`simples`, `robusto`, `eficiente`, `geralmente`…)
+  no `README.md`. Explique o motivo em vez de qualificar com advérbio.
 - A seção `## Alternativas consideradas` costuma valer mais que a `## Decisão`. Cada
   alternativa leva um parágrafo começando com `**Descartada.**` e um motivo **técnico**.
   Não construa espantalhos: se a alternativa tem um argumento legítimo a favor,
   reconheça-o e mostre por que perde.
 - `## Quando esta decisão deixa de valer` precisa de um sinal concreto e observável, não
   de uma intenção vaga.
+- `## Questões em aberto` é a última seção, e abre com uma tabela-resumo de status.
+- Todo fluxo apresentado no ADR vai **também** como diagrama Mermaid, junto do parágrafo
+  que o descreve. `sequenceDiagram` para ordem no tempo, `flowchart` para topologia e
+  hierarquia. Excalidraw só para o que o Mermaid não expressa, exportado como
+  `.excalidraw.svg`.
 - Sem emojis. Sem linguagem de marketing.
 - Nem toda decisão merece ADR. Só as que têm alternativas plausíveis, impacto
   arquitetural duradouro, criam restrição futura ou representam um trade-off.
+
+A skill global `create-adr` **não** governa a estrutura aqui — o template deste
+repositório governa. O que vale dela é o guia de escrita
+(`~/.claude/skills/create-adr/references/style-guide.md`), com uma exceção deliberada: a
+RFC 2119 é escrita em português, não em inglês.
 
 ## Arquitetura conceitual
 
@@ -97,8 +128,8 @@ Ler só um ADR não basta; estas cinco ideias atravessam todo o projeto.
 em pontos nomeados e a timeline são a mesma exigência: existe uma fronteira observável e
 controlável entre passos consecutivos. O runtime executa os passos e, em cada fronteira,
 consulta o escalonador, consulta o injetor de falha e emite uma observação. O que é
-sintético é apenas o agendamento — o SQL, a transação e o isolamento são reais. Esta é a
-decisão 1 da fila, e todo o resto herda a forma que ela escolher.
+sintético é apenas o agendamento — o SQL, a transação e o isolamento são reais. É a
+decisão do **ADR-0001**, `Aceito`, e todo o resto herda a forma que ela escolheu.
 
 **Dois planos.** O Control Plane é o sistema sob teste; o Lab Plane é o instrumento que
 o mede. Confundir os dois invalida qualquer conclusão — um bug no instrumento vira um
@@ -159,16 +190,23 @@ Vale para os 42 fenômenos, sem exceção.
 
 ## Estado atual
 
-**Nenhum ADR na série corrente.** O planejamento está escrito, a fila de decisões está
-definida, e nada foi decidido.
+**O ADR-0001 está `Aceito`** desde 2026-07-29 — o passo como unidade de execução,
+observação e injeção de falha. É o primeiro aceito da série corrente, e **não pode mais
+ser editado**: para mudar a decisão, escreva um ADR novo e marque este como
+`Substituído por ADR-NNNN`.
 
-O próximo passo é a **decisão 1 da fila: o passo como unidade de execução, observação e
-injeção de falha**. Enquanto ela não existir, nenhuma linha de código é escrita.
+As quatro questões encaminhadas dele viraram `Q-0001-1` a `Q-0001-4`, e vivem em
+`docs/adr/README.md`, seção `## Questões encaminhadas`. Cite-as por esse identificador.
+Cada uma tem destino nomeado na fila: o log de observações, estratégias de concorrência,
+o domínio mínimo e a forma do escalonador.
+
+A próxima decisão da fila é **o domínio mínimo: contador com oráculo exato mais
+predicado de capacidade**. Ela é a base de `Q-0001-3`.
 
 A árvore só tem `docs/`. O esqueleto herdado das decisões arquivadas foi apagado nos
 commits `83fcfc9` e `e1c88ae` — inclusive o `deploy/`, para onde o ArgoCD do homelab
 aponta. O `Application` de lá está em `ComparisonError` hoje. O conserto acompanha as
-decisões 7 e 8 da fila.
+decisões de arquitetura mínima e de entrega contínua.
 
 ## Este repositório é entregue no homelab
 
