@@ -190,18 +190,37 @@ Vale para os 42 fenômenos, sem exceção.
 
 ## Estado atual
 
-**O ADR-0001 está `Aceito`** desde 2026-07-29 — o passo como unidade de execução,
-observação e injeção de falha. É o primeiro aceito da série corrente, e **não pode mais
-ser editado**: para mudar a decisão, escreva um ADR novo e marque este como
+**Dois ADRs estão `Aceito`, os dois de 2026-07-29.** Nenhum dos dois pode ser editado:
+para mudar uma dessas decisões, escreva um ADR novo e marque o antigo como
 `Substituído por ADR-NNNN`.
 
-As quatro questões encaminhadas dele viraram `Q-0001-1` a `Q-0001-4`, e vivem em
-`docs/adr/README.md`, seção `## Questões encaminhadas`. Cite-as por esse identificador.
-Cada uma tem destino nomeado na fila: o log de observações, estratégias de concorrência,
-o domínio mínimo e a forma do escalonador.
+O **ADR-0001** fixou o passo como unidade de execução, observação e injeção de falha. O
+**ADR-0002** fixou o domínio mínimo: `Resource(id, value, capacity)` e
+`Allocation(id, resource_id, amount)`, sem nome de negócio e sem coluna `version`.
 
-A próxima decisão da fila é **o domínio mínimo: contador com oráculo exato mais
-predicado de capacidade**. Ela é a base de `Q-0001-3`.
+Três coisas do ADR-0002 mudam o que se pode propor daqui em diante:
+
+- **O oráculo exato é `perdidas = commits − (value_final − value_inicial)`**, onde
+  `commits` conta passagens pela fronteira `AFTER_COMMIT`, por tentativa. Não é
+  `sucessos` — contar retornos de operação cancela perda real contra falha injetada
+  depois do commit. O `sucessos` continua contado, e a diferença `commits − sucessos`
+  mede o dual write da etapa 6.
+- **Toda execução medida exige uma execução de calibração antes**, com uma estratégia
+  sem perda, em que `commits` DEVE igualar `value_final − value_inicial`. Qual é essa
+  estratégia ainda não foi decidido.
+- **`version` não existe no esquema.** Ela é a solução para a atualização perdida, e a
+  regra pedagógica exige o problema antes. Quem a acrescenta é o ADR de estratégias de
+  concorrência, junto da política que a lê. O esboço ilustrativo do ADR-0001 lê uma
+  coluna que o esquema não tem — o esboço não é normativo.
+
+As questões encaminhadas viraram `Q-0001-1` a `Q-0001-4` e `Q-0002-1` a `Q-0002-4`, e
+vivem em `docs/adr/README.md`, seção `## Questões encaminhadas`. Cite-as por esse
+identificador. Cada uma tem destino nomeado na fila. A `Q-0001-3` está `resolvida por
+ADR-0002`, e o enunciado dela permanece lá de propósito.
+
+A próxima decisão da fila é **a linguagem do agendamento: como uma barreira é
+declarada**. O ADR-0001 fixou o endereço da fronteira e parou ali; sem a linguagem, o E2
+não é declarável.
 
 A árvore só tem `docs/`. O esqueleto herdado das decisões arquivadas foi apagado nos
 commits `83fcfc9` e `e1c88ae` — inclusive o `deploy/`, para onde o ArgoCD do homelab
