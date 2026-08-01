@@ -203,6 +203,39 @@ replanejamento que descartou a arquitetura de serviços. Ratificar ou emendar é
 consciente e explícita. O inventário completo do que sobrevive e do que colide está em
 [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md), seção 12.
 
+### O nível de isolamento não tem lugar nesta fila
+
+O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
+`SERIALIZABLE`. Só o terceiro aborta uma das transações, com SQLSTATE `40001`. O plano
+registra a exigência na seção 6, e nomeia o nível de isolamento como parâmetro do
+experimento — escopo que os quatro experimentos anteriores não têm.
+
+**Nenhuma linha desta fila nomeia esse parâmetro.**
+
+A decisão de estratégias de concorrência é o destino aparente, e ela não serve sem
+argumento. Uma estratégia é código da aplicação: `NONE`, `ATOMIC_UPDATE`, `OPTIMISTIC` e
+`PESSIMISTIC` mudam o SQL que os passos emitem. Um nível de isolamento é propriedade da
+transação, e ele muda o que o banco faz com o mesmo SQL. O E5 é o experimento que separa
+os dois eixos: com `OPTIMISTIC` ativo sob `READ COMMITTED`, a invariante quebra sem
+exceção nenhuma, porque inserir uma alocação não incrementa a versão de linha alguma.
+Tratar o isolamento como mais um valor da mesma enumeração apagaria a distinção que o
+experimento existe para mostrar.
+
+Três destinos são possíveis, e a escolha não foi feita.
+
+- **Estratégias de concorrência**, com o isolamento declarado como eixo separado dentro
+  da mesma decisão. O custo é uma decisão que passa a carregar dois eixos.
+- **Experiment**, que define o que uma execução declara. O isolamento seria um campo da
+  definição, ao lado da semente. O custo é decidir a semântica do parâmetro num ADR cujo
+  assunto é o ciclo de vida da execução.
+- **Linha própria nesta fila**, se a escolha tiver alternativas e trade-off que nenhuma
+  das duas comporte.
+
+Uma pista contra o terceiro destino: o E5 não escolhe um nível, ele varre três. O que a
+plataforma precisa é do eixo de variação, e não de um valor decidido uma vez.
+
+Registrado em 2026-07-31, no levantamento do que falta para fechar o MVP.
+
 ## Questões encaminhadas
 
 Uma questão com status `encaminhado` pertence a outro ADR já identificado na fila. Ao
