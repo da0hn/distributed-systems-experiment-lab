@@ -98,9 +98,10 @@ O motivo do arquivamento e o que sobreviveu estão em
 ## Índice
 
 | ADR                                                          | Título                                                          | Estado     |
-|--------------------------------------------------------------|-----------------------------------------------------------------|------------|
-| [0001](0001-o-passo-como-unidade-de-execucao.md)             | O passo como unidade de execução, observação e injeção de falha | `Aceito`   |
+|--------------------------------------------------------------|-----------------------------------------------------------------    |------------|
+| [0001](0001-o-passo-como-unidade-de-execucao.md)             | O passo como unidade de execução, observação e injeção de falha    | `Aceito`   |
 | [0002](0002-o-dominio-minimo-e-os-dois-oraculos.md)          | O domínio mínimo: contador com oráculo exato e predicado de capacidade | `Aceito`   |
+| [0003](0003-a-linguagem-do-agendamento.md)                   | A linguagem do agendamento: como uma barreira é declarada       | `Proposto` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele
 **não decide nada** — é a análise que define quais decisões precisam ser tomadas e em
@@ -164,7 +165,7 @@ válida depois da inserção, e passa a apontar para outra decisão.
 |-------|------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 1     | **O passo como unidade de execução, observação e injeção de falha** — ADR-0001, `Aceito`             | toda outra decisão herda a forma que esta escolheu (plano, seção 2)                                                                                                                                                 |
 | 2     | **O domínio mínimo: contador com oráculo exato mais predicado de capacidade** — ADR-0002, `Aceito`   | define o que é medido; fechou [`Q-0001-3`](#q-0001-3--o-critério-de-igualdade-entre-dois-traços-de-sql-não-está-definido) e encaminhou quatro questões novas                                                        |
-| 3     | **A linguagem do agendamento: como uma barreira é declarada**                                        | o ADR-0001 fixa o endereço da fronteira e para aí; sem a linguagem o E2 não é declarável                                                                                                                            |
+| 3     | **A linguagem do agendamento: como uma barreira é declarada** — ADR-0003, `Proposto`                 | o ADR-0001 fixa o endereço da fronteira e para aí; sem a linguagem o E2 não é declarável                                                                                                                            |
 | 4     | **A forma do escalonador: estado, decisão e protocolo de desistência**                               | consome o agendamento e executa a barreira; [`Q-0001-4`](#q-0001-4--o-escalonador-precisa-de-um-protocolo-de-desistência) e [`Q-0002-2`](#q-0002-2--quem-declara-que-a-execução-terminou-e-o-oráculo-lê-antes-ou-depois-disso) pedem a mesma máquina |
 | 5     | **Estratégias de concorrência como dado, não como branch**                                           | sem isso o experimento de comparação não existe; [`Q-0001-2`](#q-0001-2--o-compartilhamento-por-colaborador-injetado-continua-sem-guarda) pede o controle positivo aqui; acrescenta a coluna `version` e nomeia a estratégia de calibração do ADR-0002 |
 | 6     | **O log de observações: forma, ordem e onde vive**                                                   | é o substrato da timeline agora e do replay depois; [`Q-0001-1`](#q-0001-1--o-endereço-da-fronteira-precisa-sobreviver-à-edição-da-operação) pede aqui a identidade da operação gravada no registro do resultado    |
@@ -229,16 +230,16 @@ O enunciado transportado é reescrito num ponto só: as referências internas ao
 origem. "Este ADR", "aqui" e "a questão 3" não significam nada fora do documento em que
 foram escritas, e passam a nomear o ADR e o identificador.
 
-| ID         | Questão                                                                    | Destino na fila                | Status                  |
-|------------|----------------------------------------------------------------------------|--------------------------------|-------------------------|
-| `Q-0001-1` | O endereço da fronteira precisa sobreviver à edição da operação            | o log de observações           | pendente                |
-| `Q-0001-2` | O compartilhamento por colaborador injetado continua sem guarda            | estratégias de concorrência    | pendente                |
-| `Q-0001-3` | O critério de igualdade entre dois traços de SQL não está definido         | o domínio mínimo               | resolvida por ADR-0002  |
-| `Q-0001-4` | O escalonador precisa de um protocolo de desistência                       | a forma do escalonador         | pendente                |
-| `Q-0002-1` | A comparação por valor depende de regras que nenhum teste verifica         | arquitetura mínima e guardas   | pendente                |
-| `Q-0002-2` | Quem declara que a execução terminou, e o oráculo lê antes ou depois disso | a forma do escalonador         | pendente                |
-| `Q-0002-3` | Os dois oráculos descrevem apenas o estado final quiescente                | os dois formatos de veredito   | pendente                |
-| `Q-0002-4` | O estado inicial não é estabelecido por ninguém                            | Experiment                     | pendente                |
+| ID         | Questão                                                                    | Destino na fila              | Status                  |
+|------------|----------------------------------------------------------------------------|------------------------------|-------------------------|
+| `Q-0001-1` | O endereço da fronteira precisa sobreviver à edição da operação            | o log de observações         | pendente                |
+| `Q-0001-2` | O compartilhamento por colaborador injetado continua sem guarda            | estratégias de concorrência  | pendente                |
+| `Q-0001-3` | O critério de igualdade entre dois traços de SQL não está definido         | o domínio mínimo             | resolvida por ADR-0002  |
+| `Q-0001-4` | O escalonador precisa de um protocolo de desistência                       | a forma do escalonador       | pendente                |
+| `Q-0002-1` | A comparação por valor depende de regras que nenhum teste verifica         | arquitetura mínima e guardas | pendente                |
+| `Q-0002-2` | Quem declara que a execução terminou, e o oráculo lê antes ou depois disso | a forma do escalonador       | pendente                |
+| `Q-0002-3` | Os dois oráculos descrevem apenas o estado final quiescente                | os dois formatos de veredito | pendente                |
+| `Q-0002-4` | O estado inicial não é estabelecido por ninguém                            | Experiment                   | pendente                |
 
 ### Q-0001-1 — O endereço da fronteira precisa sobreviver à edição da operação
 

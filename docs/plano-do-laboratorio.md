@@ -568,20 +568,20 @@ aplicar depois.
 Adiar é diferente de esquecer. Cada item abaixo tem um gatilho: o experimento que torna
 a decisão obrigatória.
 
-| Decisão adiada                                                    | Gatilho que a torna obrigatória                                               |
-|-------------------------------------------------------------------|-------------------------------------------------------------------------------|
-| Quantos processos, e quais                                        | o experimento `JVM_LOCK` ficar vermelho com duas instâncias (etapa 4)         |
-| Broker: exchanges, filas, roteamento                              | o primeiro experimento assíncrono (etapa 5)                                   |
-| Formato interno da injeção de falha                               | a etapa 6, quando o ponto `BEFORE_PUBLISH` precisar existir de verdade        |
-| Onde o log de observações é persistido                            | um experimento que derrube o processo (etapa 6)                               |
-| Mecanismo de streaming para a UI (SSE ou WebSocket)               | a primeira execução longa o suficiente para não caber num polling             |
-| Definição de experimento: arquivo versionado ou registro no banco | o Experiment Designer da UI (ver Seção 11)                                    |
-| Valkey                                                            | um experimento que prove que advisory lock do PostgreSQL não basta (etapa 11) |
+| Decisão adiada                                                    | Gatilho que a torna obrigatória                                                |
+|-------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| Quantos processos, e quais                                        | o experimento `JVM_LOCK` ficar vermelho com duas instâncias (etapa 4)          |
+| Broker: exchanges, filas, roteamento                              | o primeiro experimento assíncrono (etapa 5)                                    |
+| Formato interno da injeção de falha                               | a etapa 6, quando o ponto `BEFORE_PUBLISH` precisar existir de verdade         |
+| Onde o log de observações é persistido                            | um experimento que derrube o processo (etapa 6)                                |
+| Mecanismo de streaming para a UI (SSE ou WebSocket)               | a primeira execução longa o suficiente para não caber num polling              |
+| Definição de experimento: arquivo versionado ou registro no banco | o Experiment Designer da UI (ver Seção 11)                                     |
+| Valkey                                                            | um experimento que prove que advisory lock do PostgreSQL não basta (etapa 11)  |
 | Build, pacote raiz e número de módulos                            | **deixou de ser adiável** — o pipeline do dia zero precisa deles (seção 12)    |
-| OpenTelemetry, Prometheus, Grafana, Tempo                         | um fenômeno que a timeline própria não consiga explicar                       |
-| Kafka, Helm, service mesh                                         | nenhum gatilho previsto no roadmap atual                                      |
-| Kubernetes                                                        | **gatilho já disparado** — é o destino de entrega desde o dia zero (seção 12) |
-| Event Sourcing e CQRS completos                                   | nenhum. A etapa 9 precisa de uma projeção, não de Event Sourcing              |
+| OpenTelemetry, Prometheus, Grafana, Tempo                         | um fenômeno que a timeline própria não consiga explicar                        |
+| Kafka, Helm, service mesh                                         | nenhum gatilho previsto no roadmap atual                                       |
+| Kubernetes                                                        | **gatilho já disparado** — é o destino de entrega desde o dia zero (seção 12)  |
+| Event Sourcing e CQRS completos                                   | nenhum. A etapa 9 precisa de uma projeção, não de Event Sourcing               |
 
 O padrão comum: nenhuma tecnologia entra por estar disponível. Cada uma entra quando um
 experimento não puder ser executado sem ela.
@@ -751,27 +751,27 @@ reconciliação.
 
 **Sobrevive sem alteração**, porque o motivo é independente da contagem de serviços:
 
-| Decisão da ADR 0017                                        | Por que continua valendo com um módulo                                                       |
-|------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| CI/CD exclusivamente no GitHub Actions                     | Testcontainers exige daemon Docker; o backend Kubernetes do Woodpecker não expõe nenhum       |
-| Runner hospedado, fora do perímetro do homelab             | repo público + `docker.sock` no nó equivale a root no servidor para qualquer autor de PR      |
-| Imagens no GHCR com `GITHUB_TOKEN` efêmero                 | evita credencial de longa duração como secret em repositório aberto                           |
-| Tag da imagem = SHA do commit, nunca `latest`              | tag mutável faria o ArgoCD reportar `Synced` com outro binário rodando                        |
-| `deploy/` neste repositório, renderizado por Kustomize     | escrever no homelab exigiria deploy key read-write da infra inteira num repo público          |
-| Bump de imagem commitado pelo `GITHUB_TOKEN`               | push com esse token não dispara workflows — é a proteção nativa contra recursão de build      |
-| ArgoCD por polling (~3 min), sem webhook                   | o Cloudflare Access na frente do ArgoCD bloquearia o POST não-interativo do GitHub            |
-| Secrets ficam no homelab, referenciados por nome           | nenhum Secret vai para o repositório público                                                  |
-| Job agregador como único check obrigatório                 | um check filtrado por `paths:` nunca reporta status e trava o PR para sempre                  |
+| Decisão da ADR 0017                                        | Por que continua valendo com um módulo                                                         |
+|------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| CI/CD exclusivamente no GitHub Actions                     | Testcontainers exige daemon Docker; o backend Kubernetes do Woodpecker não expõe nenhum        |
+| Runner hospedado, fora do perímetro do homelab             | repo público + `docker.sock` no nó equivale a root no servidor para qualquer autor de PR       |
+| Imagens no GHCR com `GITHUB_TOKEN` efêmero                 | evita credencial de longa duração como secret em repositório aberto                            |
+| Tag da imagem = SHA do commit, nunca `latest`              | tag mutável faria o ArgoCD reportar `Synced` com outro binário rodando                         |
+| `deploy/` neste repositório, renderizado por Kustomize     | escrever no homelab exigiria deploy key read-write da infra inteira num repo público           |
+| Bump de imagem commitado pelo `GITHUB_TOKEN`               | push com esse token não dispara workflows — é a proteção nativa contra recursão de build       |
+| ArgoCD por polling (~3 min), sem webhook                   | o Cloudflare Access na frente do ArgoCD bloquearia o POST não-interativo do GitHub             |
+| Secrets ficam no homelab, referenciados por nome           | nenhum Secret vai para o repositório público                                                   |
+| Job agregador como único check obrigatório                 | um check filtrado por `paths:` nunca reporta status e trava o PR para sempre                   |
 
 **Colide, e precisa de decisão aqui:**
 
-| A ADR 0017 afirma                                                | O plano de 2026-07-28 diz                                                             |
-|-------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
-| "monorepo de microsserviços JVM", "matriz de serviços"           | MVP é **uma aplicação e um banco**; decomposição provocada por experimento (etapa 4)   |
-| namespace único porque "eles falam entre si o tempo todo"        | não há "eles" — há um processo                                                         |
+| A ADR 0017 afirma                                                | O plano de 2026-07-28 diz                                                                      |
+|------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| "monorepo de microsserviços JVM", "matriz de serviços"           | MVP é **uma aplicação e um banco**; decomposição provocada por experimento (etapa 4)           |
+| namespace único porque "eles falam entre si o tempo todo"        | não há "eles" — há um processo                                                                 |
 | "referência de projeto **Gradle**"                               | decisão de entrega contínua, **não decidida**; a seção 9 deste plano presume **reactor Maven** |
-| "**Toxiproxy**, para injetar partição e latência de rede"        | injeção na fronteira de passo, em processo; rede só no grupo B, etapa 5                |
-| `path: deploy` no `Application`                                  | `deploy/` foi apagado; a árvore é decisão de arquitetura mínima                        |
+| "**Toxiproxy**, para injetar partição e latência de rede"        | injeção na fronteira de passo, em processo; rede só no grupo B, etapa 5                        |
+| `path: deploy` no `Application`                                  | `deploy/` foi apagado; a árvore é decisão de arquitetura mínima                                |
 
 A colisão do Gradle é a mais séria, e não é técnica — é de governança. Uma decisão sobre
 o build **deste** repositório está registrada como aceita em ADR de **outro**
