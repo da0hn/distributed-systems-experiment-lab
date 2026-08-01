@@ -411,11 +411,12 @@ da medição.
 
 ## Questões em aberto
 
-| # | Questão                                                                           | Status       |
-|---|-----------------------------------------------------------------------------------|--------------|
-| 1 | Um worker que nunca chega trava o agendamento, e a recusa por texto não o alcança | encaminhado  |
-| 2 | Um agendamento sobre uma tentativa que talvez não ocorra                          | encaminhado  |
-| 3 | Duas execuções do mesmo experimento não têm critério de igualdade                 | encaminhado  |
+| # | Questão                                                                           | Status            |
+|---|-----------------------------------------------------------------------------------|-------------------|
+| 1 | Um worker que nunca chega trava o agendamento, e a recusa por texto não o alcança | encaminhado       |
+| 2 | Um agendamento sobre uma tentativa que talvez não ocorra                          | encaminhado       |
+| 3 | Duas execuções do mesmo experimento não têm critério de igualdade                 | encaminhado       |
+| 4 | A proposta de 2026-07-31 retira deste ADR o motivo de existir                     | aberto (crítico)  |
 
 ### 1. Um worker que nunca chega trava o agendamento, e a recusa por texto não o alcança
 
@@ -472,3 +473,34 @@ O critério provável é intermediário: duas execuções são iguais quando o v
 e quando a ordem dos eventos **restringidos** coincide. Esse critério não foi verificado
 contra nenhum experimento, e ele exige que o log distinga o evento que uma restrição
 ordenou do evento que ocorreu livre. Nada hoje exige esse registro.
+
+### 4. A proposta de 2026-07-31 retira deste ADR o motivo de existir
+
+Status: **aberto (crítico)**. Enunciado completo em
+[`README.md`](README.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira).
+Em debate no
+[ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md), que propõe
+o segundo desfecho.
+
+Este ADR define como uma barreira é declarada. A proposta de 2026-07-31 questiona se a
+barreira deve continuar sendo o mecanismo que produz a anomalia. Ela propõe que a
+anomalia emerja da frequência de execuções concorrentes, e que a plataforma ganhe
+instrumentos para diagnosticar se o erro esperado ocorreu.
+
+Três desfechos daquela proposta incidem sobre este documento, e os três são diferentes.
+
+Se a barreira for **removida**, este ADR fica sem assunto. Ele PODE ser descontinuado
+ainda no estado `Proposto`, e o debate registrado aqui vira material da decisão nova.
+
+Se a barreira for **rebaixada a instrumento de diagnóstico** — usada para separar "a
+anomalia é impossível nesta configuração" de "a janela não foi atingida" —, a linguagem
+decidida aqui continua valendo inteira. O que muda é o estatuto: o agendamento deixa de
+ser o caminho pelo qual o E2 produz o resultado, e passa a ser o controle que interpreta
+um resultado negativo do E1. A seção `## Contexto` precisa ser reescrita antes da
+aceitação, porque ela justifica o ADR pela declarabilidade do E2.
+
+Se a barreira for **mantida como eixo coigual**, este ADR é aceito como está, e a
+proposta vira decisão separada sobre o eixo de frequência.
+
+Este ADR NÃO DEVE ser aceito enquanto esta questão estiver aberta. Aceitá-lo congela uma
+linguagem cujo consumidor PODE deixar de existir, e um ADR aceito não é editado.
