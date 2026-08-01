@@ -1,7 +1,7 @@
 # ADR-0004: O estatuto da barreira e o diagnóstico da não ocorrência
 
-- **Estado:** Proposto
-- **Data:** 2026-07-31
+- **Estado:** Aceito
+- **Data:** 2026-08-01
 - **Etapa do roadmap:** 1
 - **Relacionado:** depende do ADR-0001, que fixou o passo e escreveu a cláusula de
   honestidade, e do ADR-0002, que fixou o oráculo exato e a execução de calibração.
@@ -10,13 +10,17 @@
   ([`README.md`](README.md#substituição-e-subsunção-são-coisas-diferentes)).
   Enunciado da proposta em
   [`README.md`](README.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira).
+- **Questões que este ADR encaminha:** `Q-0004-2` a `Q-0004-5` e `Q-0004-8`, na seção
+  `## Questões encaminhadas` de [`README.md`](README.md).
 
 ## Vocabulário
 
 Este documento pressupõe **passo**, **fronteira** e **tentativa** do ADR-0001, e
-**agendamento** do ADR-0003. Ele define quatro termos.
+**agendamento** do ADR-0003. Ele define cinco termos.
 
 - **execução medida** — a execução cujo resultado o experimento reporta.
+- **tentativa lançada** — uma tentativa que o runtime iniciou. Ela termina em commit ou
+  em aborto, e apenas a primeira saída conta como `commits`.
 - **janela de exposição** — o intervalo, dentro de uma tentativa, em que a anomalia é
   possível. O experimento a declara como um par ordenado de fronteiras da operação.
 - **coincidência** — um par de tentativas cujas janelas de exposição se sobrepõem no
@@ -99,12 +103,23 @@ experimento reporta.
 
 ### O veredito de uma execução medida é uma taxa
 
-O veredito é o par `violações / tentativas`, onde `tentativas` é a contagem de `commits`
-definida pelo ADR-0002. O relatório DEVE exibir os dois números, e NÃO DEVE exibir apenas
-a razão entre eles.
+Uma execução medida produz três contagens, e nenhuma delas substitui as outras:
+
+- **tentativas lançadas**, o `N` que o experimento declara antes de executar;
+- **commits**, as passagens pela fronteira `AFTER_COMMIT`, definidas pelo ADR-0002;
+- **violações**, a saída do oráculo do ADR-0002.
+
+O veredito é a **taxa de violação**, `violações / commits`. O relatório DEVE exibir as
+três contagens, e NÃO DEVE exibir apenas a razão entre duas delas.
+
+O relatório DEVE exibir também a **taxa de aborto**, `(N − commits) / N`. Uma estratégia
+que protege abortando paga o custo nesse número, e a taxa de violação sozinha não o
+mostra.
 
 Quando `violações = 0`, o relatório DEVE declarar o limite superior da taxa a 95% de
-confiança, que para `N` tentativas sem violação fica em torno de `3/N`.
+confiança, que fica em torno de `3 / commits`. O limite é calculado sobre `commits`, e
+NÃO DEVE ser calculado sobre `N`: uma tentativa abortada nunca poderia violar, e
+incluí-la no denominador afirmaria mais do que a execução observou.
 
 ### O experimento declara o número de tentativas antes de executar
 
@@ -148,6 +163,31 @@ observações, e o sistema sob teste NÃO DEVE participar dela.
 A contagem de coincidências mede a **oportunidade**. A contagem de violações mede a
 **consequência**. Um relatório DEVE trazer as duas.
 
+O runtime DEVE contar coincidências em **toda** execução, medida ou de controle. A
+contagem do controle negativo mede a exposição que a carga **oferece**, porque ali
+nenhuma estratégia interfere. A contagem da execução medida mede a exposição que
+**sobra** depois que a estratégia agiu.
+
+A distinção entre as duas é o que classifica um zero. Uma estratégia que serializa as
+tentativas — `SELECT ... FOR UPDATE` é o caso — fecha a janela por construção, e produz
+zero coincidências protegendo. Sem a contagem do controle negativo, esse zero é
+indistinguível de uma carga que nunca gerou concorrência.
+
+```mermaid
+flowchart LR
+    C["mesma carga<br/>mesma operação<br/>mesmo N"] --> CN["controle negativo<br/>estratégia NONE"]
+    C --> EM["execução medida<br/>estratégia sob teste"]
+    CN --> EO["exposição oferecida<br/>coincidências do NONE"]
+    EM --> ES["exposição sobrevivente<br/>coincidências da medida"]
+    EO --> D{"comparação"}
+    ES --> D
+    D --> V["veredito do zero"]
+```
+
+As duas contagens só são comparáveis quando as duas execuções declaram a mesma carga: o
+mesmo `N`, o mesmo número de workers e a mesma operação. A plataforma NÃO DEVE comparar
+contagens de execuções cuja carga declarada diferir.
+
 ### A janela é qualificada por uma chave de contenção
 
 Duas janelas sobrepostas no tempo formam coincidência apenas quando disputam o mesmo
@@ -164,34 +204,55 @@ critério que o ADR-0002 fixou para valores ligados num traço de SQL.
 ### O zero é classificado, e a classificação tem quatro valores
 
 Quando `violações = 0`, a plataforma DEVE classificar o resultado em um de quatro
-veredictos, a partir da contagem de coincidências e de uma execução de controle:
+veredictos. As condições DEVEM ser avaliadas na ordem da tabela, e o primeiro caso que
+casar produz o veredito. A ordem é normativa: duas condições PODEM casar ao mesmo tempo,
+e a de cima descreve um defeito que torna a de baixo ilegível.
 
-| Coincidências | Controle positivo | Veredito                    |
-|---------------|-------------------|-----------------------------|
-| zero          | não executado     | `sem exposição`             |
-| maior que 0   | viola             | `exposição insuficiente`    |
-| maior que 0   | não viola         | `protegido`                 |
-| qualquer      | —                 | `inválido`, se o controle negativo não violar |
+| Ordem | Condição                                                               | Veredito                 |
+|-------|------------------------------------------------------------------------|--------------------------|
+| 1     | o controle negativo não viola                                          | `inválido`               |
+| 2     | o controle negativo viola, e as coincidências dele são zero            | `janela mal declarada`   |
+| 3     | as coincidências da execução medida são zero                           | `protegido`              |
+| 4     | as coincidências são maiores que zero, e o controle positivo viola     | `exposição insuficiente` |
+| 5     | as coincidências são maiores que zero, e o controle positivo não viola | `protegido`              |
 
-`sem exposição` e `exposição insuficiente` NÃO DEVEM ser reportados como evidência de
-proteção. `protegido` é o único veredito que sustenta a comparação entre estratégias.
+`inválido`, `janela mal declarada` e `exposição insuficiente` NÃO DEVEM ser reportados
+como evidência de proteção. `protegido` é o único veredito que sustenta a comparação
+entre estratégias.
+
+A ordem 2 é a guarda da declaração. Uma violação exige que a janela real tenha aberto, e
+o controle negativo viola por definição. Se a contagem de coincidências dele der zero, o
+par `(F_abre, F_fecha)` declarado pelo experimento não delimita a janela em que a
+anomalia acontece. O número está errado, e todo veredito derivado dele também.
+
+A ordem 3 dispensa o controle positivo. A carga ofereceu exposição, a estratégia a
+eliminou, e a eliminação **é** a proteção — não há o que desempatar. É o caso de
+`SELECT ... FOR UPDATE`, e é também o caso em que o controle positivo não poderia ser
+executado: a intercalação que ele impõe exige uma leitura concorrente que o lock impede.
 
 ```mermaid
 flowchart TD
     Z["execução medida<br/>violações = 0"] --> CN{"o controle negativo<br/>violou?"}
     CN -->|" não "| INV["inválido<br/>a carga não quebra nada"]
-    CN -->|" sim "| CO{"coincidências<br/>maiores que zero?"}
-    CO -->|" não "| SE["sem exposição<br/>a janela nunca abriu"]
+    CN -->|" sim "| JD{"coincidências do<br/>controle negativo<br/>maiores que zero?"}
+    JD -->|" não "| JMD["janela mal declarada<br/>violou sem janela contada"]
+    JD -->|" sim "| CO{"coincidências da<br/>execução medida<br/>maiores que zero?"}
+    CO -->|" não "| PR1["protegido<br/>a estratégia fechou a janela"]
     CO -->|" sim "| CP{"o controle positivo<br/>violou?"}
     CP -->|" sim "| EI["exposição insuficiente<br/>aumentar N"]
-    CP -->|" não "| PR["protegido<br/>a anomalia é impossível aqui"]
+    CP -->|" não "| PR2["protegido<br/>a anomalia é impossível aqui"]
 ```
 
 ### A barreira é o controle positivo
 
 O agendamento definido pelo ADR-0003 passa a existir como **execução de controle**. Ela
-roda quando uma execução medida termina com `violações = 0` e `coincidências > 0`, sobre
-a mesma configuração, com a intercalação que causa a anomalia declarada.
+roda quando uma execução medida termina com `violações = 0` e com coincidências
+**próprias** maiores que zero, sobre a mesma configuração, com a intercalação que causa a
+anomalia declarada.
+
+A condição sobre as coincidências próprias é o que impede o controle positivo de rodar
+onde ele travaria. Uma estratégia que eliminou a exposição chega ao veredito `protegido`
+pela ordem 3 da tabela, sem que a barreira seja executada.
 
 Uma execução de controle NÃO DEVE ser reportada como resultado do experimento. Ela
 responde uma pergunta sobre o resultado, e não produz resultado.
@@ -200,10 +261,11 @@ O ciclo completo de uma execução:
 
 ```mermaid
 flowchart LR
-    CAL["calibração<br/>ADR-0002"] --> CN["controle negativo<br/>NONE viola"]
+    CAL["calibração<br/>ADR-0002"] --> CN["controle negativo<br/>NONE viola<br/>mede a exposição oferecida"]
     CN --> EM["execução medida<br/>sem agendamento, N declarado"]
-    EM -->|" violações maiores que zero "| TAXA["veredito: taxa"]
-    EM -->|" violações = 0 "| CP["controle positivo<br/>agendamento do ADR-0003"]
+    EM -->|" violações maiores que zero "| TAXA["veredito: taxa de violação"]
+    EM -->|" violações = 0<br/>coincidências = 0 "| PR["veredito: protegido"]
+    EM -->|" violações = 0<br/>coincidências maiores que zero "| CP["controle positivo<br/>agendamento do ADR-0003"]
     CP --> CLASS["veredito classificado"]
 ```
 
@@ -233,6 +295,28 @@ iguala. A comparação entre estratégias do E3 é uma comparação de magnitude
 "não aconteceu" de "não pôde acontecer". Contar a oportunidade separa as duas com um
 número derivado do log que o ADR-0001 já obriga a existir, e sem tocar no sistema sob
 teste. É a diferença entre um experimento que afirma e um que se cala.
+
+**Por que a exposição de referência vem do controle negativo.** A contagem da execução
+medida mede a exposição depois que a estratégia agiu, e uma estratégia correta age
+reduzindo exatamente esse número. Ler esse zero como falha de carga condenaria a
+estratégia mais protetora ao veredito que descreve um experimento quebrado. O braço
+`NONE` roda a mesma carga sem proteção nenhuma, e por isso ele responde o que a carga
+oferece — a pergunta que a execução medida, por construção, não pode responder sobre si
+mesma.
+
+**Por que o veredito `sem exposição` desapareceu.** Ele nomeava a carga que nunca abriu
+a janela, e o controle negativo já detecta esse caso: uma carga que não gera concorrência
+não faz `NONE` violar, e o resultado é `inválido` antes de qualquer contagem. O que
+ocupou o lugar vago é `janela mal declarada`, que nomeia um defeito que nenhum veredito
+anterior separava — o experimento declarou o par de fronteiras errado, e a contagem de
+coincidências ficou cega sem que nada falhasse.
+
+**Por que três contagens, e não uma razão.** `N` e `commits` divergem exatamente quando
+a estratégia aborta, e abortar é o mecanismo de proteção da estratégia otimista. Uma
+tabela comparativa com um denominador só apagaria o custo dessa proteção: dois braços com
+taxa de violação zero, um deles descartando metade do trabalho, ocupariam células
+idênticas. A taxa de aborto é o preço, e o E3 existe para pôr preço e benefício lado a
+lado.
 
 **Por que a chave de contenção é um fato reportado, e não um dado extraído.** A chave vive
 dentro do corpo do passo, e o ADR-0001 proíbe o runtime de inspecionar esse corpo. O mesmo
@@ -298,13 +382,27 @@ um número sem diagnóstico possível.
   barreira, cujo estatuto esta decisão rebaixa.
 - O MVP encolhe de cinco experimentos para quatro, e o que sai é o experimento cujo
   resultado era garantido por construção.
-- A falha de carga vira um veredito nomeado em vez de um zero silencioso. `sem exposição`
-  e `inválido` dizem ao autor do experimento o que consertar.
+- A falha de carga vira um veredito nomeado em vez de um zero silencioso. `inválido` e
+  `janela mal declarada` dizem ao autor do experimento o que consertar.
+- A estratégia que protege serializando recebe o veredito que descreve o que ela faz. Um
+  zero de coincidências deixa de ser suspeita de carga fraca quando o controle negativo
+  mostrou que a carga expunha.
+- A declaração da janela de exposição ganha uma verificação que ninguém precisa lembrar
+  de rodar. O controle negativo viola e conta coincidências ao mesmo tempo, e a
+  divergência entre os dois números denuncia o par de fronteiras errado.
+- O custo da proteção aparece no relatório. A taxa de aborto separa a estratégia que
+  evita a anomalia da que a evita descartando trabalho.
 
 ### Negativas
 
-- **Toda execução com resultado zero custa duas execuções.** O controle positivo roda
-  depois, sobre a mesma configuração. No E3, três dos quatro braços caem nesse caso.
+- **Toda execução com resultado zero e exposição sobrevivente custa duas execuções.** O
+  controle positivo roda depois, sobre a mesma configuração. A estratégia que zera as
+  coincidências escapa desse custo, e a que apenas reduz a probabilidade, não.
+- **A exposição de referência exige que duas execuções declarem a mesma carga.** A
+  comparação entre a contagem do controle negativo e a da execução medida só significa
+  algo sob `N`, número de workers e operação idênticos. A plataforma verifica a igualdade
+  do que foi declarado, e não a do que aconteceu: dois runners com carga de máquina
+  diferente produzem contagens diferentes com a mesma declaração.
 - **O experimento ganha uma declaração nova e obrigatória.** A janela de exposição é um
   par de fronteiras que alguém escreve à mão, e uma janela declarada errada produz uma
   contagem de coincidências errada — que classifica o zero errado, sem erro nenhum.
@@ -332,8 +430,11 @@ um número sem diagnóstico possível.
 
 - O ADR-0003 continua valendo inteiro. O que muda é quem consome o agendamento: a
   execução de controle, e não a execução medida.
-- A calibração e o controle negativo do ADR-0002 não mudam de forma. Eles ganham um
-  terceiro parente na mesma família, e a família passa a ter nome.
+- A calibração do ADR-0002 não muda de forma. Ela ganha dois parentes na mesma família, e
+  a família passa a ter nome.
+- O controle negativo muda de papel sem mudar de forma. Ele já era exigido, e já rodava
+  `NONE` sobre a mesma carga. O que muda é que a contagem de coincidências dele passa a
+  ser lida, em vez de descartada.
 - O número de tentativas passa a ser entrada declarada do experimento, ao lado da
   semente. Ele já era um número escolhido por alguém; a mudança é que agora ele é
   escrito antes.
@@ -341,8 +442,15 @@ um número sem diagnóstico possível.
 ## Trade-offs
 
 - O benefício **um resultado zero passa a afirmar `protegido` em vez de calar** foi
-  aceito em troca do custo **toda execução com resultado zero custa uma segunda
-  execução**.
+  aceito em troca do custo **uma execução com resultado zero e exposição sobrevivente
+  custa uma segunda execução**.
+- O benefício **a estratégia que fecha a janela é lida como protegida, e não como
+  experimento quebrado** foi aceito em troca do custo **a exposição de referência passa a
+  vir de outra execução, e a comparação depende de uma igualdade de carga que a
+  plataforma verifica na declaração, não no que ocorreu**.
+- O benefício **o custo da proteção por aborto aparece no relatório** foi aceito em troca
+  do custo **a tabela comparativa do E3 passa a ter cinco colunas de números, e quem a lê
+  precisa saber qual delas responde qual pergunta**.
 - O benefício **a plataforma separa "não aconteceu" de "não pôde acontecer"** foi aceito
   em troca do custo **todo experimento declara uma janela de exposição, e uma janela
   errada classifica o zero errado sem produzir erro**.
@@ -443,6 +551,40 @@ de isolamento. O objeto de estudo passaria a ser o modelo, e o E5 existe justame
 mostrar que a intuição sobre o modelo está errada: uma proteção presente e inerte é
 invisível para quem raciocina sobre a anotação em vez de executar.
 
+### Alternativa F — o controle positivo desempata todo resultado zero
+
+A exposição continua sendo contada apenas na execução medida, e o caminho de coincidências
+zero passa a consultar a barreira antes de concluir. Um zero com exposição zero deixaria de
+ser lido como carga fraca, porque a barreira responderia por construção.
+
+**Descartada.** Ela resolve o problema com um instrumento que a decisão já tem, sem
+introduzir a comparação entre duas execuções que a escolha exige. Nenhuma declaração nova
+recai sobre quem escreve o experimento.
+
+Ela perde por não ser executável no caso que a motivou. A barreira impõe uma intercalação
+que o lock pessimista torna inalcançável: o escalonador espera `W2.READ`, e `W2.READ` está
+bloqueado no lock que `W1` segura. O controle positivo trava exatamente na estratégia cujo
+zero ele existiria para classificar, e o protocolo de desistência que decidiria o desfecho
+pertence à decisão do escalonador, que ainda não foi tomada. A alternativa também cobra o
+custo da segunda execução em todo resultado zero, e não apenas nos que restam ambíguos.
+
+### Alternativa G — um denominador único para a taxa
+
+A taxa de violação divide sempre pelo mesmo número: ou pelas coincidências, e passa a
+responder "dado que a janela abriu, com que frequência a anomalia ocorreu"; ou por `N`, e
+as quatro estratégias do E3 dividem pelo mesmo valor declarado.
+
+**Descartada.** As duas produzem uma tabela comparativa com uma coluna a menos, e a
+divisão por `N` torna as células comparáveis por construção — que é a propriedade que uma
+tabela de comparação quer.
+
+Dividir pelas coincidências perde a comparabilidade entre configurações: duas execuções
+com exposições diferentes produzem razões que não se relacionam, e a estratégia que zera
+as coincidências produz uma razão indefinida. Dividir por `N` conta populações diferentes
+no numerador e no denominador, porque uma tentativa abortada nunca poderia violar — e
+apaga do relatório o custo da proteção otimista, que é metade do que o E3 existe para
+mostrar.
+
 ## Quando esta decisão deixa de valer
 
 Reveja esta decisão quando um fenômeno tiver janela de exposição que um par de fronteiras
@@ -460,129 +602,7 @@ passar do tempo que a entrega contínua tolera, medido e não estimado. Nesse po
 escolha entre falha intermitente e execução longa precisa ser feita de novo, com o número
 na mesa.
 
-## Questões em aberto
-
-| # | Questão                                                                        | Status      |
-|---|--------------------------------------------------------------------------------|-------------|
-| 1 | A cláusula de honestidade do ADR-0001 muda de sentido, e um ADR aceito não é editado | resolvida |
-| 2 | Nada obriga o passo a reportar a chave de contenção                            | encaminhado |
-| 3 | Comparar janelas exige um instante comparável entre workers                    | encaminhado |
-| 4 | A regra de parada colide com a exigência de nascer entregando                  | encaminhado |
-| 5 | O terceiro formato de veredito precisa caber ao lado dos dois já previstos     | encaminhado |
-
-### 1. A cláusula de honestidade do ADR-0001 muda de sentido, e um ADR aceito não é editado
-
-**Resolvida em 2026-07-31 pela emenda à convenção**, em [`README.md`](README.md), seção
-`### Substituição e subsunção são coisas diferentes`. Este ADR **subsume** a cláusula de
-honestidade do ADR-0001 sem substituí-lo. As três exigências da emenda ficam atendidas
-assim: a regra subsumida é a frase citada abaixo, da seção `### A cláusula de honestidade`
-do ADR-0001; ela continua valendo sem mudança quando as coincidências são iguais a zero; e
-nenhum caso deste ADR a contradiz, porque o caso que ela não enxergava — coincidências
-maiores que zero — ela nunca tratou de propósito.
-
-O enunciado abaixo permanece porque ele registra o que estava em jogo antes da emenda.
-
-A cláusula diz: "Uma anomalia que apareça só com barreiras indica que o runtime fabricou o
-fenômeno, e o experimento não vale."
-
-Sob esta decisão, "aparece só com barreiras" é um estado diagnóstico com dois valores
-distintos. Com coincidências iguais a zero, a leitura da cláusula continua correta: a
-carga nunca abriu a janela, e a barreira a abriu — o runtime fabricou. Com coincidências
-maiores que zero, a mesma frase descreve o veredito `exposição insuficiente`, e o
-experimento **vale**: ele afirma que a anomalia é possível e rara, e a resposta é aumentar
-`N`.
-
-A `## Justificativa` deste ADR argumenta que a cláusula continua satisfeita, porque a
-anomalia reportada é sempre produzida sem barreiras. O argumento cobre a exigência da
-cláusula e não cobre o veredito dela. A frase do ADR-0001 invalida um experimento que esta
-decisão considera válido.
-
-A convenção do repositório proíbe editar um ADR aceito. Duas saídas existem, e nenhuma é
-barata. Marcar o ADR-0001 como `Substituído por ADR-0004` descartaria junto a decisão do
-passo, que este ADR preserva e reforça. Deixar as duas frases convivendo entrega ao leitor
-futuro duas regras que discordam sobre o mesmo caso, sem dizer qual vale.
-
-Uma terceira saída apareceu no debate e foi a escolhida: ler a cláusula do ADR-0001 como
-**subsumida** por este ADR. Ela não existia na convenção, e a convenção foi emendada para
-admiti-la, com as três exigências que a separam de uma edição disfarçada.
-
-### 2. Nada obriga o passo a reportar a chave de contenção
-
-Status: **encaminhado**. Destino: **arquitetura mínima e guardas executáveis**, que já
-carrega `Q-0002-1` e a análise estática exigida pela camada 2 do ADR-0001. A guarda é da
-mesma família: verificar uma propriedade das classes do sistema sob teste que nenhum teste
-verifica hoje.
-
-A seção `## Decisão` resolveu a metade que era decisão deste ADR. Duas janelas sobrepostas
-no tempo formam coincidência apenas quando as chaves de contenção coincidem, e a chave
-chega ao Lab Plane como um fato reportado pelo passo — o caminho que o ADR-0001 já abriu
-para `version` e `rowsAffected`.
-
-O que sobra é a obrigação. Um passo que não reporte a chave produz uma contagem de
-coincidências que o runtime aceita sem saber que está errada, e o zero é classificado a
-partir dela. O resultado é um veredito `sem exposição` num experimento em que a janela
-abriu, ou o inverso, sem que teste nenhum falhe.
-
-Sem a chave, a contagem seria pior fora do MVP. Os cinco experimentos operam sobre um
-`Resource` único, e toda sobreposição temporal é sobreposição sobre a mesma linha. Um
-experimento com cem recursos e dez workers produz sobreposição o tempo todo, e quase
-nenhuma delas é oportunidade de anomalia. A chave existe para essa configuração; a guarda
-existe para o dia em que alguém a escrever e esquecer de reportá-la.
-
-A forma da guarda tem uma dificuldade que a decisão de destino precisa enfrentar. A
-exigência não vale para todo passo: ela vale para os passos que delimitam uma janela de
-exposição declarada por algum experimento. Uma regra que exija a chave de todo passo
-reprova código correto; uma regra que a exija de nenhum não pega o esquecimento. O
-ligamento entre a declaração da janela e o corpo do passo é onde a guarda precisa olhar, e
-esse ligamento vive no experimento, não na classe.
-
-### 3. Comparar janelas exige um instante comparável entre workers
-
-Status: **encaminhado**. Destino: **o log de observações**, que a fila descreve como o
-substrato da timeline e do replay.
-
-A contagem de coincidências compara intervalos produzidos por threads diferentes. A
-comparação exige que os instantes registrados por dois workers sejam ordenáveis entre si,
-e não apenas dentro de cada worker.
-
-O repositório exige que o tempo seja injetável, e `Q-0002-1` registra que essa exigência
-ainda não é regra executável. Nenhum documento diz qual relógio o log usa, nem se ele é
-monotônico, nem qual é a resolução dele. Duas janelas que se sobreponham por menos que a
-resolução do relógio contam como disjuntas, e a contagem de coincidências subestima.
-
-A questão pertence ao log de observações porque a resposta é uma propriedade do registro,
-e não desta decisão. Esta decisão consome o instante; ela não escolhe de onde ele vem.
-
-### 4. A regra de parada colide com a exigência de nascer entregando
-
-Status: **encaminhado**. Destino: **entrega contínua no homelab desde o dia zero**.
-
-`N` declarado antes resolve o viés da taxa e cria um custo de tempo. Um `N` alto ocupa o
-runner do GitHub Actions; um `N` baixo produz um experimento que passa numa execução e
-falha na seguinte, sem que nada tenha mudado.
-
-O laboratório é entregue por um pipeline que precisa ficar verde, e a ADR 0017 do homelab
-fixa runner hospedado. Nenhum dos dois repositórios decidiu se um experimento roda no
-pipeline, se ele roda sob demanda, ou se o pipeline executa uma versão reduzida com `N`
-menor — que seria uma terceira execução, com um terceiro significado.
-
-A tensão 2 do plano é a mesma vista de outro lado: um limiar mal calibrado produz falha
-intermitente, "o pior resultado possível num instrumento de medida". Aqui o limiar é `N`.
-
-### 5. O terceiro formato de veredito precisa caber ao lado dos dois já previstos
-
-Status: **encaminhado**. Destino: **os dois formatos de veredito**, já na fila, que passa
-a tratar três.
-
-A fila prevê booleano para os grupos A, B, C e E, e curva para o grupo D. Esta decisão
-acrescenta taxa com limite de confiança, e o acréscimo não é um caso particular de nenhum
-dos dois. Uma taxa tem um número e uma incerteza; um booleano não tem nenhum dos dois, e
-uma curva tem uma série.
-
-`Q-0002-3` já acrescentava um eixo àquela decisão — pontual contra contínuo no tempo. Com
-esta questão, aquele ADR passa a resolver três eixos ao mesmo tempo, e PODE precisar ser
-dividido.
-
-A comparação entre execuções depende disso. A tabela do E3 põe quatro estratégias lado a
-lado, e sob esta decisão três delas trazem taxa zero com limites de confiança diferentes.
-Como essa tabela é lida, e o que ela permite concluir, não é decisão deste ADR.
+Reveja a exposição de referência quando duas execuções com a mesma carga declarada
+produzirem contagens de coincidências que diferem por ordem de grandeza. O sinal
+significa que a igualdade declarada não implica a igualdade observada, e o veredito
+`protegido` da ordem 3 passa a depender de uma comparação sem base.

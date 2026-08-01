@@ -353,10 +353,11 @@ entra quando um experimento a exige.
 
 Três observações sobre a forma da tabela.
 
-**As etapas 1 a 3 são o MVP.** Os cinco experimentos da seção 6 se distribuem assim:
-E1 e E2 na etapa 1, E3 e E4 na etapa 2, E5 na etapa 3. O MVP termina quando o
-laboratório conseguir produzir, explicar e comparar as duas famílias de anomalia do
-grupo A — sem nenhum broker envolvido.
+**As etapas 1 a 3 são o MVP.** Os quatro experimentos da seção 6 se distribuem assim:
+E1 na etapa 1, E3 e E4 na etapa 2, E5 na etapa 3. A execução de controle do E2 acompanha
+a etapa 1, porque o E1 depende dela para classificar um resultado zero. O MVP termina
+quando o laboratório conseguir produzir, explicar e comparar as duas famílias de anomalia
+do grupo A — sem nenhum broker envolvido.
 
 **A etapa 4 não tem data.** Ela acontece quando o experimento do lock de JVM ficar
 vermelho com duas instâncias. Se ele nunca for escrito, a etapa 4 nunca chega — e isso é
@@ -368,14 +369,20 @@ concluir "nenhuma violação" em cenários onde o usuário viu dado errado o tem
 
 ---
 
-## 6. MVP — cinco experimentos
+## 6. MVP — quatro experimentos
 
 Todos no grupo A. Nenhum exige broker, segundo processo, ou qualquer serviço além do
 primeiro.
 
-Os quatro primeiros compartilham o mesmo oráculo exato sobre um contador. O quinto troca
+Os três primeiros compartilham o mesmo oráculo exato sobre um contador. O quarto troca
 o oráculo por um predicado sobre um conjunto — é o que produz a segunda família de
 anomalia, e o que exige o nível de isolamento como parâmetro.
+
+O MVP tinha cinco experimentos até 2026-08-01. O
+[ADR-0004](adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)
+rebaixou o E2 a **execução de controle positivo** do E1 e do E3, e uma execução de
+controle não é reportada como resultado. A numeração dos demais não mudou, para que as
+citações existentes continuem resolvendo.
 
 ### E1 — `lost-update-none` (grupo de controle)
 
@@ -389,18 +396,32 @@ anomalia, e o que exige o nível de isolamento como parâmetro.
   `WRITE version=N+1`, com o segundo marcado como sobrescrita.
 - **Este experimento precisa falhar.** Se `value == 100`, a carga é insuficiente e
   nenhum resultado posterior significa nada.
+- **Veredito e janela, pelo ADR-0004:** o relatório traz tentativas lançadas, commits,
+  violações e taxa de aborto. O E1 declara a janela de exposição que vai da fronteira de
+  saída de `select-resource` à de entrada de `update-resource`, e a contagem de
+  coincidências dele é a exposição de referência das demais execuções sobre a mesma
+  carga.
 
-### E2 — `lost-update-deterministic`
+### E2 — `lost-update-deterministic` (execução de controle, não é experimento)
 
-- **Fenômeno:** o mesmo. O que muda é o estatuto epistêmico.
+O ADR-0004 tirou o E2 da lista de experimentos do MVP. Ele permanece descrito aqui
+porque a máquina continua existindo, e porque as citações a ele em outras seções deste
+plano precisam resolver.
+
+- **Fenômeno:** o mesmo do E1. O que muda é o estatuto epistêmico.
 - **Estímulo:** 2 workers, barreiras explícitas:
   `W1.READ → W2.READ → W1.WRITE → W2.WRITE`.
 - **Resultado esperado:** **exatamente uma** atualização perdida, em toda execução.
-- **Por que é um experimento separado:** E1 prova que o laboratório *detecta*. E2 prova
-  que o laboratório *constrói*. São capacidades diferentes, e a segunda é a que torna a
-  primeira confiável.
-- **Asserção obrigatória de honestidade:** E1 e E2 precisam produzir o mesmo fenômeno.
-  Se a anomalia só aparecer com barreiras, o runtime a está fabricando.
+- **Quando roda:** quando uma execução medida do E1 ou do E3 termina com zero violações
+  **e** com coincidências próprias maiores que zero. A estratégia que zera as
+  coincidências chega a `protegido` sem que esta execução aconteça — e é o caso do
+  `PESSIMISTIC`, cujo lock tornaria a intercalação inalcançável.
+- **O que ele responde:** se a anomalia é impossível naquela configuração, ou possível e
+  rara demais para o `N` declarado. Ele **não** produz resultado reportável.
+- **Asserção obrigatória de honestidade:** a anomalia reportada é sempre produzida sem
+  barreiras, porque a execução medida roda sem agendamento. A cláusula do ADR-0001 fica
+  atendida por construção, e o ADR-0004 a subsume para o caso de coincidências maiores
+  que zero.
 
 ### E3 — `lost-update-strategies`
 
@@ -411,6 +432,11 @@ anomalia, e o que exige o nível de isolamento como parâmetro.
 - **Detecção:** a tabela comparativa. Correção, throughput, retries, tempo de espera em
   lock, duração.
 - **O que ele prova sobre a plataforma:** que a estratégia é um dado, não uma branch.
+- **O zero das três é classificado, pelo ADR-0004.** O braço `NONE` é o controle
+  negativo, e a contagem de coincidências dele mede a exposição que a carga oferece.
+  `PESSIMISTIC` zera as próprias coincidências e recebe `protegido` sem execução de
+  controle; `ATOMIC_UPDATE` e `OPTIMISTIC` mantêm coincidências e passam pelo controle
+  positivo. A tabela traz a taxa de aborto, que é onde o custo do `OPTIMISTIC` aparece.
 
 ### E4 — `optimistic-under-contention`
 
@@ -455,15 +481,16 @@ estratégia de concorrência" e "estar protegido" são coisas diferentes.
 
 ---
 
-## 7. Por que esses cinco formam uma boa fundação
+## 7. Por que esses quatro formam uma boa fundação
 
 **Custam a menor arquitetura possível.** Um processo, um banco, um navegador. Nenhum
 broker, nenhum segundo serviço, nenhum container além do PostgreSQL. Qualquer coisa que
 falhe aqui é do laboratório, não da infraestrutura.
 
 **Exercitam as cinco capacidades das quais todo o resto depende.** Uma operação
-decomposta em passos observáveis. Controle determinístico da intercalação. Um oráculo
-automático. Comparação entre execuções. Dois formatos de veredito. Se as cinco funcionam
+decomposta em passos observáveis. Controle determinístico da intercalação, hoje na
+execução de controle. Um oráculo automático. Comparação entre execuções. Os formatos de
+veredito, que o ADR-0004 levou de dois a três. Se as cinco funcionam
 sobre as anomalias mais simples que existem, funcionam sobre os outros 37 cenários. Se
 qualquer uma delas não funcionar, nenhum experimento posterior é confiável — e é muito
 mais barato descobrir isso agora.
@@ -489,6 +516,13 @@ experimentos que rodam em segundos, num processo só.
 um resultado estranho aponta para o sistema, nunca para a medida. Começar por um oráculo
 ambíguo inverteria isso — e um instrumento em que não se confia não produz conhecimento
 nenhum.
+
+Esse parágrafo vale para a violação observada, e o ADR-0004 recortou o alcance dele. O
+oráculo continua exato quando conta uma perda: `perdidas` não é uma estimativa. O
+**resultado zero**, esse sim, passou a carregar um limite de confiança e um veredito
+classificado, porque um zero não é uma observação — é a ausência de uma. A separação
+entre as duas leituras é o que o ADR-0004 acrescentou, e ela é a razão de a contagem de
+coincidências existir.
 
 ---
 
