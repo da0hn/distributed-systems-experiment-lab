@@ -40,9 +40,9 @@ Não remova uma seção para caber no limite; divida a capacidade ou o documento
 | AsyncAPI | references/asyncapi.yaml |
 | JSON Schema | references/json-schema.json |
 | Desenho completo | references/implementation-plan.md |
-| ADR | references/adr.md e docs/adr/0000-template.md |
+| ADR | references/adr.md |
 
-O template de docs/adr/0000-template.md prevalece se divergir de references/adr.md.
+Todos os templates necessários ficam na pasta desta skill.
 
 ## Classifique a mudança
 
@@ -115,7 +115,7 @@ mudança de contrato com consumidor conhecido. Use
 docs/features/<slug>/implementation-plan.md e limite-o a 7.000 caracteres.
 
 Crie ADR somente quando os critérios do repositório forem atendidos. Limite um ADR
-novo a 9.000 caracteres. Preserve o template e as regras locais de docs/adr.
+novo a 9.000 caracteres. Use references/adr.md.
 
 Qualquer outro Markdown persistente criado por este fluxo tem limite de 4.000
 caracteres. Um índice atualizado não é um artefato novo; acrescente apenas o link e
