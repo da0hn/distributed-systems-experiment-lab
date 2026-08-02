@@ -31,157 +31,19 @@ qualquer coisa.
 ou propor a implementação de uma funcionalidade ou atualização.** A skill cria e valida
 os artefatos de especificação deste repositório.
 
-**Desde 2026-08-01 o ADR deixou de ser a forma principal de documentação.** O padrão é
-**Feature Card mais Example Mapping**, com Gherkin para o comportamento estabilizado e
-contratos para o que atravessa fronteira de processo.
+**Desde 2026-08-01 o ADR deixou de ser a forma principal de documentação.** Use Feature
+Card e Example Mapping para comportamento. Use ADR para decisão arquitetural durável.
 
-A divisão que organiza tudo:
+A skill é a fonte operacional para classificação, templates, limites, contratos,
+validações e ciclo de vida dos ADRs. O processo e a justificativa da mudança ficam em
+[`docs/specification-process.md`](docs/specification-process.md).
 
-> **O ADR guarda o porquê da escolha. O Feature Card guarda o quê do comportamento.**
+O índice das capacidades está em [`docs/features/README.md`](docs/features/README.md).
+O registro histórico dos ADRs fica em [`docs/adr/README.md`](docs/adr/README.md).
 
-O motivo da mudança está medido: o repositório acumulou 3.874 linhas de documentação para
-zero linha de código, e os ADRs passaram a carregar três naturezas no mesmo arquivo —
-decisão arquitetural, regra de negócio e tabela de decisão. Só a primeira é decisão.
+## Convenções gerais de escrita
 
-| Artefato        | Onde vive                                 | O que responde                                                            |
-|-----------------|-------------------------------------------|---------------------------------------------------------------------------|
-| Feature Card    | `docs/features/<slug>/feature-card.md`    | o quê da capacidade, em no máximo 700 palavras                            |
-| Example Mapping | `docs/features/<slug>/example-mapping.md` | regras, exemplos concretos, perguntas em aberto, itens adiados            |
-| BDD             | `docs/features/<slug>/behavior.feature`   | comportamento externo observável, em Gherkin português                    |
-| Contrato        | `docs/contracts/openapi/`, `asyncapi/`    | o que atravessa fronteira de processo — **só quando a interface existir** |
-| Integrações     | `docs/architecture/integrations.md`       | a matriz, separando fato de hipótese                                      |
-| ADR             | `docs/adr/`                               | o porquê de uma decisão arquitetural durável, e o que foi descartado      |
-
-O processo completo está em
-[`docs/specification-process.md`](docs/specification-process.md). O índice das capacidades
-está em [`docs/features/README.md`](docs/features/README.md). **Leia os dois antes de
-escrever qualquer artefato novo.**
-
-### O teste que separa ADR de Feature Card
-
-| Pergunta                                                | Sim → ADR | Sim → Feature Card |
-|---------------------------------------------------------|-----------|--------------------|
-| Existe alternativa que alguém defenderia com argumento? | sim       | —                  |
-| A escolha restringe o que se pode construir depois?     | sim       | —                  |
-| A frase descreve o que o sistema faz, e é verificável?  | —         | sim                |
-| Um teste poderia falhar por causa dela?                 | —         | sim                |
-
-Uma regra que caiba nas duas colunas indica um ADR carregando comportamento. Escreva o ADR
-com o porquê e o card com o quê, e faça o card citar o ADR por arquivo e linha.
-
-### Convenções dos artefatos de especificação
-
-- **Um Feature Card cobre uma capacidade**, nunca um endpoint, uma classe ou uma tarefa
-  técnica. Um card acima de 700 palavras está cobrindo mais de uma — divida.
-- **Um card por oráculo, não por experimento.** É o oráculo que define o comportamento
-  observável. E1 e E3 compartilham o mesmo oráculo e vivem num card só.
-- **Toda regra do card leva a evidência**, com arquivo e linha. O que não puder ser
-  confirmado entra como `Pergunta em aberto`, nunca como fato.
-- **Não converta exemplo em Gherkin antes de as perguntas estarem explícitas.** Um cenário
-  escrito sobre regra em debate congela a versão errada dela. Regra debatida vira exemplo;
-  só exemplo estabilizado vira cenário.
-- **Gherkin em português** (`# language: pt`), descrevendo comportamento externo. Nome de
-  classe, de tabela e de coluna não aparecem num cenário.
-- **Nenhuma dependência de BDD entra no projeto por causa disso.** Enquanto não houver
-  código, os `.feature` são a especificação viva, e cada cenário está marcado
-  `@teste-ausente`.
-- **Um contrato é criado quando a interface existir**, nunca antes. Não crie diretório
-  vazio: uma pasta `openapi/` sem conteúdo afirma que existem APIs a documentar.
-- **O que estiver formalizado num contrato NÃO DEVE ser repetido em Markdown.**
-
-### A regra dura vale para todo artefato
-
-> **Nada que importa pode existir apenas na conversa.**
-
-O contexto da conversa é limpo entre uma sessão e outra. Toda objeção, alternativa
-descartada ou pendência é escrita no arquivo — na seção `## Questões em aberto` do ADR, ou
-na seção de perguntas em aberto do Example Mapping — **no mesmo turno em que é levantada**,
-antes de responder ou perguntar qualquer coisa. Uma objeção que fica só no chat desaparece
-no próximo compact, em silêncio.
-
-## O processo de ADR, quando um ADR for escrito
-
-O processo continua valendo sem alteração. O que mudou é a frequência com que ele é
-acionado.
-
-### Um ADR por vez, nunca em lote
-
-A primeira série do repositório rascunhou seis ADRs de uma vez, em paralelo. Escritos sem
-se ver, produziram três contradições entre si e nenhum chegou a ser debatido. O custo foi
-inteiramente perdido.
-
-**Não rascunhe ADRs antecipadamente.** A fila de decisões em `docs/adr/README.md` lista o
-que precisa ser decidido e em que ordem, **sem números atribuídos** — o número é atribuído
-quando o ADR é escrito.
-
-### Estados e aceitação
-
-Nenhum ADR é aceito por omissão, e nenhum é aceito sem aprovação explícita do usuário.
-
-Cada questão da seção `## Questões em aberto` tem um status, e só dois deles bloqueiam:
-`aberto` e `aberto (crítico)`. `encaminhado` marca a questão que pertence a outro ADR já
-na fila; `resolvida` marca a questão fechada durante o debate por algo que não é decisão
-daquele ADR.
-
-Ao aceitar, remova a seção `## Questões em aberto` e mova o que foi decidido para
-`## Decisão` ou `## Consequências`. Antes de remover, **transporte cada questão
-`encaminhado`** — inteira, no mesmo commit — para a seção `## Questões encaminhadas` de
-`docs/adr/README.md`, onde ela recebe o identificador `Q-NNNN-K`. Sem o transporte, o
-enunciado é apagado e a linha da fila que o citava fica pendurada.
-
-Um ADR **aceito** nunca é editado nem apagado. Para mudar a decisão, escreva um ADR novo e
-marque o antigo como `Substituído por ADR-NNNN`. Enquanto estiver `Proposto`, editar é
-permitido.
-
-**Substituição e subsunção são diferentes.** Um ADR que contradiga um aceito o substitui.
-Um ADR que apenas recorte o alcance de uma regra antiga a **subsume**: o antigo permanece
-`Aceito` e o texto dele não é tocado. As três exigências da subsunção estão em
-`docs/adr/README.md`.
-
-### Duas séries de ADR
-
-A numeração foi reiniciada em 2026-07-28. Um mesmo número existe em duas séries.
-
-| Forma de citar | Onde vive           | O que é                                  |
-|----------------|---------------------|------------------------------------------|
-| `ADR-0001`     | `docs/adr/`         | série corrente                           |
-| `arquivo/0001` | `docs/adr/arquivo/` | primeira série, arquivada, nenhum aceito |
-
-**Sempre use o prefixo `arquivo/` ao citar a série antiga.** Sem ele a referência é
-ambígua. Os documentos do arquivo **nunca são editados** — eles registram o que se pensava
-naquela data.
-
-### Convenções de ADR
-
-A lista completa está em `docs/adr/README.md`, seção `## Convenções`, e o esqueleto em
-`docs/adr/0000-template.md`. **Leia os dois antes de escrever um ADR.** O que mais pega:
-
-- Numeração sequencial de quatro dígitos, nunca reutilizada dentro da série corrente.
-  Arquivo: `NNNN-titulo-em-kebab-case.md`.
-- **`## Decisão` carrega só o quê.** O porquê vive em `## Justificativa`.
-- **`## Trade-offs` é obrigatório**, no formato "o benefício X foi aceito em troca do custo
-  Y". Um ADR sem trade-off explícito é propaganda.
-- A seção `## Alternativas consideradas` costuma valer mais que a `## Decisão`. Cada
-  alternativa leva um parágrafo começando com `**Descartada.**` e um motivo **técnico**.
-  Não construa espantalhos: se a alternativa tem argumento legítimo, reconheça-o.
-- `## Quando esta decisão deixa de valer` precisa de sinal concreto e observável.
-- `## Questões em aberto` é a última seção, e abre com uma tabela-resumo de status.
-
-A skill global `create-adr` **não** governa a estrutura aqui — o template deste repositório
-governa. O que vale dela é o guia de escrita
-(`~/.claude/skills/create-adr/references/style-guide.md`), com uma exceção deliberada: a
-RFC 2119 é escrita em português, não em inglês.
-
-## Convenções de escrita, válidas em todo documento
-
-- Português do Brasil, com acentuação correta. Frases de 10 a 20 palavras. Voz ativa. Uma
-  ideia por frase. Linhas quebradas em ~88 colunas.
-- Um conceito tem **um** nome. Escolhido "passo", nunca alterne para "etapa" ou "fase".
-- Requisito normativo usa RFC 2119 traduzida, em caixa alta: `DEVE`, `NÃO DEVE`,
-  `DEVERIA`, `NÃO DEVERIA`, `PODE`. Nunca como ênfase.
-- Lista de palavras proibidas (`simples`, `robusto`, `eficiente`, `geralmente`,
-  `provavelmente`…) em `docs/adr/README.md`. Explique o motivo em vez de qualificar com
-  advérbio.
+- Linhas são quebradas em aproximadamente 88 colunas.
 - Todo fluxo apresentado vai **também** como diagrama Mermaid, junto do parágrafo que o
   descreve. `sequenceDiagram` para ordem no tempo, `flowchart` para topologia e hierarquia.
   Excalidraw só para o que o Mermaid não expressa, exportado como `.excalidraw.svg`.

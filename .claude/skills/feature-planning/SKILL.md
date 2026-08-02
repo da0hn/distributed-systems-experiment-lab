@@ -24,6 +24,9 @@ Use código, configuração e testes como evidência. Cite o arquivo e a linha p
 cada fato existente. Escreva Pergunta em aberto quando a evidência não existir.
 Nunca transforme uma hipótese em fato.
 
+Registre cada objeção, alternativa descartada ou pendência no Example Mapping no
+mesmo turno em que surgir. Quando for ADR, siga references/adr-lifecycle.md.
+
 ## Use o template obrigatório
 
 Leia o template antes de criar ou atualizar o artefato. Mantenha todas as seções
@@ -54,6 +57,9 @@ Todos os templates necessários ficam na pasta desta skill.
 Não escreva um ADR por reflexo. Não altere ADR aceito. Quando uma decisão bloquear
 o escopo, registre a pergunta e use AskUserQuestion antes de escolher por conta
 própria.
+
+Quando a mudança exigir ADR, leia references/adr-lifecycle.md antes de criar,
+aceitar, substituir ou subsumir uma decisão.
 
 ## Gere os artefatos
 
@@ -115,7 +121,7 @@ mudança de contrato com consumidor conhecido. Use
 docs/features/<slug>/implementation-plan.md e limite-o a 7.000 caracteres.
 
 Crie ADR somente quando os critérios do repositório forem atendidos. Limite um ADR
-novo a 9.000 caracteres. Use references/adr.md.
+novo a 9.000 caracteres. Use references/adr.md e references/adr-lifecycle.md.
 
 Qualquer outro Markdown persistente criado por este fluxo tem limite de 4.000
 caracteres. Um índice atualizado não é um artefato novo; acrescente apenas o link e
