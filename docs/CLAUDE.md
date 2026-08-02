@@ -134,18 +134,9 @@ Caminho: `architecture/integrations.md`.
 
 ## ADR
 
-Caminho: `adr/NNNN-titulo-em-kebab-case.md`. Template em
-[`adr/0000-template.md`](adr/0000-template.md); convenções completas em
-[`adr/README.md`](adr/README.md). **Leia os dois antes de escrever.**
-
-- **Um ADR por vez, nunca em lote.** A primeira série rascunhou seis em paralelo e
-  produziu três contradições entre si; nenhum chegou a ser debatido.
-- **Não rascunhe ADRs antecipadamente.** A fila lista o que decidir e em que ordem, sem
-  números atribuídos. O número é atribuído quando o ADR é escrito.
-- Nenhum ADR é aceito por omissão nem sem aprovação explícita do usuário.
-- Ao aceitar: remova `## Questões em aberto`, mova o decidido para `## Decisão` ou
-  `## Consequências`, e **transporte cada questão `encaminhado`** — inteira, no mesmo
-  commit — para `## Questões encaminhadas` de `adr/README.md`.
+Caminho: `adr/NNNN-titulo-em-kebab-case.md`. Para planejar um ADR no Claude Code, use
+a skill `feature-planning`. Ela contém o template e o ciclo de vida. O
+[`adr/README.md`](adr/README.md) mantém as convenções, o índice e o histórico da série.
 
 ## Convenções de escrita
 

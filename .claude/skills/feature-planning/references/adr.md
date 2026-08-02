@@ -3,37 +3,42 @@
 - **Estado:** Proposto
 - **Data:** [AAAA-MM-DD]
 - **Etapa do roadmap:** [N]
-- **Relacionado:** [ADR ou Não se aplica — motivo.]
+- **Relacionado:** [ADR-NNNN ou Não se aplica — motivo.]
 
 ## Contexto
 
-[Fatos e restrições.]
+[Situação, fatos e restrições. Não descreva a solução.]
 
 ## Problema
 
-[Pergunta a decidir e forças em conflito.]
+[Pergunta a responder e forças em conflito. Uma força por linha.]
 
 ## Decisão
 
-[Escolha.]
+[O que foi decidido. Use voz ativa e presente. Não coloque o motivo, histórico ou
+alternativas nesta seção.]
+
+[Quando descrever fluxo, inclua um diagrama Mermaid junto do parágrafo. Use
+`sequenceDiagram` para chamadas no tempo e `flowchart` para topologia ou hierarquia.]
 
 ## Justificativa
 
-[Motivo ligado a fato ou restrição.]
+[Por que a decisão foi tomada. Ligue cada motivo a um fato, força ou restrição das
+seções anteriores.]
 
 ## Consequências
 
 ### Positivas
 
-- [Efeito.]
+- [O que fica mais fácil.]
 
 ### Negativas
 
-- [Custo.]
+- [O custo ou o que fica mais difícil.]
 
 ### Neutras
 
-- [Mudança sem valor positivo ou negativo.]
+- [O que muda sem valor positivo ou negativo.]
 
 ## Trade-offs
 
@@ -41,20 +46,28 @@
 
 ## Alternativas consideradas
 
-### [Alternativa]
+### [Alternativa A]
 
-**Descartada.** [Argumento legítimo e motivo técnico.]
+**Descartada.** [Argumento legítimo a favor e motivo técnico para descartá-la.]
+
+### [Alternativa B]
+
+**Descartada.** [Argumento legítimo a favor e motivo técnico para descartá-la.]
 
 ## Quando esta decisão deixa de valer
 
-[Sinal observável.]
+[Sinal concreto e observável que exige revisão.]
 
 ## Questões em aberto
 
 | # | Questão | Status |
 |---|---|---|
-| 1 | [Questão] | aberto |
+| 1 | [Resumo em uma linha.] | aberto |
+
+[Use `aberto (crítico)` para risco que produz resultado falso sem falha de teste.
+Use `encaminhado` quando outro ADR identificado for responsável. Use `resolvida`
+somente quando citar a origem da resolução.]
 
 ### 1. [Título da questão]
 
-[Argumento completo.]
+[Argumento completo. Não deixe uma lacuna apenas na conversa.]

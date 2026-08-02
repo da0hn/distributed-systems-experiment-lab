@@ -24,8 +24,9 @@ biblioteca ou o formato de um log não atende a nenhum dos quatro critérios.
 
 - Numeração sequencial de quatro dígitos. Nunca reutilize um número **dentro da série
   corrente**.
-- Nome do arquivo: `NNNN-titulo-em-kebab-case.md`. Template em
-  [`0000-template.md`](0000-template.md).
+- Nome do arquivo: `NNNN-titulo-em-kebab-case.md`. O template oficial está em
+  [
+  `.claude/skills/feature-planning/references/adr.md`](../../.claude/skills/feature-planning/references/adr.md).
 - Idioma: português do Brasil, com acentuação correta. Frases de 10 a 20 palavras. Voz
   ativa. Uma ideia por frase. Linhas quebradas manualmente em ~88 colunas.
 - Um conceito tem **um** nome. Escolhido "passo", nunca alterne para "etapa", "estágio"
