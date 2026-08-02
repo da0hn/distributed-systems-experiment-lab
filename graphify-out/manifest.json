@@ -1,0 +1,237 @@
+{
+  ".claude/skills/feature-planning/scripts/check_artifact_limits.py": {
+    "mtime": 1785630854.0004344,
+    "ast_hash": "a1faad60f443fbd36ec0b672912fbc90",
+    "semantic_hash": "a1faad60f443fbd36ec0b672912fbc90"
+  },
+  ".claude/skills/feature-planning/SKILL.md": {
+    "mtime": 1785632955.585,
+    "ast_hash": "76965745be41cca520811739352674a3",
+    "semantic_hash": "76965745be41cca520811739352674a3"
+  },
+  "CLAUDE.md": {
+    "mtime": 1785630907.103439,
+    "ast_hash": "29f1e7f68d90b0758bdaf4087b1cd477",
+    "semantic_hash": "29f1e7f68d90b0758bdaf4087b1cd477"
+  },
+  "docs/adr/0000-template.md": {
+    "mtime": 1785360902.0332334,
+    "ast_hash": "700ee2373e43340ad064e59ddb51ec16",
+    "semantic_hash": "700ee2373e43340ad064e59ddb51ec16"
+  },
+  "docs/adr/0001-o-passo-como-unidade-de-execucao.md": {
+    "mtime": 1785366336.753,
+    "ast_hash": "213e1cea9ea7475e91c046c688432bfa",
+    "semantic_hash": "213e1cea9ea7475e91c046c688432bfa"
+  },
+  "docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md": {
+    "mtime": 1785378305.8582377,
+    "ast_hash": "f845ea7c82b4e640999e5980a8a389f8",
+    "semantic_hash": "f845ea7c82b4e640999e5980a8a389f8"
+  },
+  "docs/adr/0003-a-linguagem-do-agendamento.md": {
+    "mtime": 1785629624.3669078,
+    "ast_hash": "80934788cd3c5592c6bb9b6a57d430e0",
+    "semantic_hash": "80934788cd3c5592c6bb9b6a57d430e0"
+  },
+  "docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md": {
+    "mtime": 1785615349.9676244,
+    "ast_hash": "99aec06acad816bda591517e25fe3d1d",
+    "semantic_hash": "99aec06acad816bda591517e25fe3d1d"
+  },
+  "docs/adr/README.md": {
+    "mtime": 1785630729.1813402,
+    "ast_hash": "89a6265ab7bd5e5f2fdee60b6e145e24",
+    "semantic_hash": "89a6265ab7bd5e5f2fdee60b6e145e24"
+  },
+  "docs/adr/arquivo/0001-dominio-generico-com-invariante-unica.md": {
+    "mtime": 1785290312.182554,
+    "ast_hash": "0df9b8a509463fd4a560484d23a2188c",
+    "semantic_hash": "0df9b8a509463fd4a560484d23a2188c"
+  },
+  "docs/adr/arquivo/0002-quatro-origens-de-escrita.md": {
+    "mtime": 1785290312.237439,
+    "ast_hash": "1fe9a79dbb5a8b200aee3386846430ce",
+    "semantic_hash": "1fe9a79dbb5a8b200aee3386846430ce"
+  },
+  "docs/adr/arquivo/0003-estrategias-de-concorrencia-plugaveis.md": {
+    "mtime": 1785290312.2924385,
+    "ast_hash": "5671d74a9cf2c77f38724ff3229daca4",
+    "semantic_hash": "5671d74a9cf2c77f38724ff3229daca4"
+  },
+  "docs/adr/arquivo/0004-experiment-como-entidade-de-primeira-classe.md": {
+    "mtime": 1785290312.3504384,
+    "ast_hash": "b5fb25d7095a68d9a2787901dbf9322d",
+    "semantic_hash": "b5fb25d7095a68d9a2787901dbf9322d"
+  },
+  "docs/adr/arquivo/0005-monorepo-com-reactor-unico.md": {
+    "mtime": 1785290152.189,
+    "ast_hash": "747a33115adbc27e9d2e7a128bac89a2",
+    "semantic_hash": "747a33115adbc27e9d2e7a128bac89a2"
+  },
+  "docs/adr/arquivo/0006-hexagonal-com-archunit.md": {
+    "mtime": 1785290312.4548275,
+    "ast_hash": "a15edd2fc2b7706d788b7eb3eb99d082",
+    "semantic_hash": "a15edd2fc2b7706d788b7eb3eb99d082"
+  },
+  "docs/adr/arquivo/0007-outbox-e-inbox.md": {
+    "mtime": 1785290312.5068283,
+    "ast_hash": "f6797bb9cafa726f94bc2e35f8376f3b",
+    "semantic_hash": "f6797bb9cafa726f94bc2e35f8376f3b"
+  },
+  "docs/adr/arquivo/0008-motor-de-workflow-proprio-com-profundidade-maxima-2.md": {
+    "mtime": 1785290312.6308665,
+    "ast_hash": "0c6eea9ba4ca8e0eb6c2517eea544eec",
+    "semantic_hash": "0c6eea9ba4ca8e0eb6c2517eea544eec"
+  },
+  "docs/adr/arquivo/0009-dois-executores-plugaveis-para-o-motor-de-workflow.md": {
+    "mtime": 1785290312.7763522,
+    "ast_hash": "2189ad460f37987bc1b447b90059659c",
+    "semantic_hash": "2189ad460f37987bc1b447b90059659c"
+  },
+  "docs/adr/arquivo/0010-plataforma-local-com-profiles-do-docker-compose.md": {
+    "mtime": 1785290312.8613813,
+    "ast_hash": "d73177f590d77651ff3d5cff74f72f66",
+    "semantic_hash": "d73177f590d77651ff3d5cff74f72f66"
+  },
+  "docs/adr/arquivo/0011-decomposicao-em-servicos-e-fronteiras-transacionais.md": {
+    "mtime": 1785290312.9423814,
+    "ast_hash": "97903f608cc523360a243acad67877f1",
+    "semantic_hash": "97903f608cc523360a243acad67877f1"
+  },
+  "docs/adr/arquivo/0012-onde-o-chaos-service-intercepta.md": {
+    "mtime": 1785290433.7444715,
+    "ast_hash": "024bd2ee2c5e8331f713c9edbf5df2a7",
+    "semantic_hash": "024bd2ee2c5e8331f713c9edbf5df2a7"
+  },
+  "docs/adr/arquivo/0013-eixo-de-leitura-defasagem-e-como-medi-la.md": {
+    "mtime": 1785290313.1079738,
+    "ast_hash": "9f86cd4aa5b30bc63b43d6c077ab148c",
+    "semantic_hash": "9f86cd4aa5b30bc63b43d6c077ab148c"
+  },
+  "docs/adr/arquivo/README.md": {
+    "mtime": 1785290152.138,
+    "ast_hash": "aab86345a47eb54fa7de5905e9cc362b",
+    "semantic_hash": "aab86345a47eb54fa7de5905e9cc362b"
+  },
+  "docs/architecture/integrations.md": {
+    "mtime": 1785624884.907,
+    "ast_hash": "426112db75a18924ee444259b6f7a7c8",
+    "semantic_hash": "426112db75a18924ee444259b6f7a7c8"
+  },
+  "docs/contracts/README.md": {
+    "mtime": 1785624519.065,
+    "ast_hash": "7731a1d76d7dbd7407a553b58ee9eb3d",
+    "semantic_hash": "7731a1d76d7dbd7407a553b58ee9eb3d"
+  },
+  "docs/features/README.md": {
+    "mtime": 1785624833.347,
+    "ast_hash": "66494fd1fc519e4e282c47cd9ad45e66",
+    "semantic_hash": "66494fd1fc519e4e282c47cd9ad45e66"
+  },
+  "docs/features/deteccao-de-atualizacao-perdida/example-mapping.md": {
+    "mtime": 1785625722.665,
+    "ast_hash": "bcdb2fe0c5845c5f5d855082a7110b98",
+    "semantic_hash": "bcdb2fe0c5845c5f5d855082a7110b98"
+  },
+  "docs/features/deteccao-de-atualizacao-perdida/feature-card.md": {
+    "mtime": 1785626444.3978348,
+    "ast_hash": "c2399825a8c07c289c628d9e688af1b3",
+    "semantic_hash": "c2399825a8c07c289c628d9e688af1b3"
+  },
+  "docs/features/deteccao-de-protecao-inerte/example-mapping.md": {
+    "mtime": 1785623895.7905548,
+    "ast_hash": "cdb51892463d1412dd7e6c51017f689f",
+    "semantic_hash": "cdb51892463d1412dd7e6c51017f689f"
+  },
+  "docs/features/deteccao-de-protecao-inerte/feature-card.md": {
+    "mtime": 1785623753.2238262,
+    "ast_hash": "6873bbe17b8e9ca1a0cb43d0e923a8d2",
+    "semantic_hash": "6873bbe17b8e9ca1a0cb43d0e923a8d2"
+  },
+  "docs/features/execucao-de-experimento/feature-card.md": {
+    "mtime": 1785630973.821,
+    "ast_hash": "0c2dd18b85a278414886d810016402f0",
+    "semantic_hash": "0c2dd18b85a278414886d810016402f0"
+  },
+  "docs/features/observacao-passo-a-passo/feature-card.md": {
+    "mtime": 1785630973.836,
+    "ast_hash": "be168536f449624e79f2a6313a5658d8",
+    "semantic_hash": "be168536f449624e79f2a6313a5658d8"
+  },
+  "docs/plano-do-laboratorio.md": {
+    "mtime": 1785615508.6103182,
+    "ast_hash": "9c07ff7254d6b269e5486a3ec7e26a5f",
+    "semantic_hash": "9c07ff7254d6b269e5486a3ec7e26a5f"
+  },
+  "docs/specification-process.md": {
+    "mtime": 1785626128.315,
+    "ast_hash": "2b0c9cdfc24a72e912de4071393792a7",
+    "semantic_hash": "2b0c9cdfc24a72e912de4071393792a7"
+  },
+  ".claude/skills/feature-planning/references/json-schema.json": {
+    "mtime": 1785632391.948978,
+    "ast_hash": "fb9e4b3d3acca2205e71f61bda3fc15d",
+    "semantic_hash": "fb9e4b3d3acca2205e71f61bda3fc15d"
+  },
+  ".claude/skills/feature-planning/references/adr.md": {
+    "mtime": 1785632402.154187,
+    "ast_hash": "803e224ae683addca94e45a4a86e6935",
+    "semantic_hash": "803e224ae683addca94e45a4a86e6935"
+  },
+  ".claude/skills/feature-planning/references/asyncapi.yaml": {
+    "mtime": 1785632446.5391426,
+    "ast_hash": "a85b522e6d24fa4aa590533902eb8337",
+    "semantic_hash": "a85b522e6d24fa4aa590533902eb8337"
+  },
+  ".claude/skills/feature-planning/references/example-mapping.md": {
+    "mtime": 1785632361.340784,
+    "ast_hash": "1498d2cdbc731ed7639e8cab61b3a752",
+    "semantic_hash": "1498d2cdbc731ed7639e8cab61b3a752"
+  },
+  ".claude/skills/feature-planning/references/feature-card.md": {
+    "mtime": 1785632354.7314534,
+    "ast_hash": "da39b6de0e8cc58eeb176e2cda43c356",
+    "semantic_hash": "da39b6de0e8cc58eeb176e2cda43c356"
+  },
+  ".claude/skills/feature-planning/references/implementation-plan.md": {
+    "mtime": 1785632397.2066343,
+    "ast_hash": "38d9b62270d2950ef21c7fb3db1910f7",
+    "semantic_hash": "38d9b62270d2950ef21c7fb3db1910f7"
+  },
+  ".claude/skills/feature-planning/references/integrations.md": {
+    "mtime": 1785632373.3191285,
+    "ast_hash": "bf36f221591d3997ad9f1d9ada0703c6",
+    "semantic_hash": "bf36f221591d3997ad9f1d9ada0703c6"
+  },
+  ".claude/skills/feature-planning/references/openapi.yaml": {
+    "mtime": 1785632442.9876347,
+    "ast_hash": "c8ffc786b36766b9883645074ad0daf8",
+    "semantic_hash": "c8ffc786b36766b9883645074ad0daf8"
+  },
+  "README.md": {
+    "mtime": 1785631006.506,
+    "ast_hash": "c4a2eff719c88331c9bc3265f7b5fcde",
+    "semantic_hash": "c4a2eff719c88331c9bc3265f7b5fcde"
+  },
+  "docs/CLAUDE.md": {
+    "mtime": 1785629682.7472548,
+    "ast_hash": "dc4220a3efc2cf5595b496b5234bbd26",
+    "semantic_hash": "dc4220a3efc2cf5595b496b5234bbd26"
+  },
+  "docs/README.md": {
+    "mtime": 1785629729.0429235,
+    "ast_hash": "12958b06841cceb2448c685337118f22",
+    "semantic_hash": "12958b06841cceb2448c685337118f22"
+  },
+  "docs/features/execucao-de-experimento/example-mapping.md": {
+    "mtime": 1785630973.848,
+    "ast_hash": "394ba93d92ca0e23fcafac9d3e9abc8e",
+    "semantic_hash": "394ba93d92ca0e23fcafac9d3e9abc8e"
+  },
+  "docs/features/observacao-passo-a-passo/example-mapping.md": {
+    "mtime": 1785623203.3256438,
+    "ast_hash": "0e0f6db22d43d0cc4e86219a4262a420",
+    "semantic_hash": "0e0f6db22d43d0cc4e86219a4262a420"
+  }
+}

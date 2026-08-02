@@ -3,3 +3,23 @@
 
 # Configuração local de máquina (allowlist de permissões, output style).
 .claude/settings.local.json
+
+# Cache incremental
+graphify-out/cache/
+
+# Estado local
+graphify-out/memory/
+graphify-out/reflections/
+
+# Métricas de custo
+graphify-out/cost.json
+
+# Metadados internos
+graphify-out/.graphify_*
+
+# Backups automáticos
+graphify-out/????-??-??/
+
+# Arquivos temporários (caso existam)
+graphify-out/**/*.tmp
+graphify-out/**/*.bak
