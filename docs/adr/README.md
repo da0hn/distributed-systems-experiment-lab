@@ -104,7 +104,7 @@ O motivo do arquivamento e o que sobreviveu estão em
 | [0002](0002-o-dominio-minimo-e-os-dois-oraculos.md)                      | O domínio mínimo: contador com oráculo exato e predicado de capacidade | `Aceito`   |
 | [0003](0003-a-linguagem-do-agendamento.md)                               | A linguagem do agendamento: como uma barreira é declarada              | `Aceito`   |
 | [0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) | O estatuto da barreira e o diagnóstico da não ocorrência               | `Aceito`   |
-| [0005](0005-a-forma-do-escalonador.md)                                   | A forma do escalonador: estado, decisão e protocolo de desistência     | `Proposto` |
+| [0005](0005-a-forma-do-escalonador.md)                                   | A forma do escalonador: estado, decisão e protocolo de desistência     | `Aceito`   |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele
 **não decide nada** — é a análise que define quais decisões precisam ser tomadas e em
@@ -196,7 +196,7 @@ válida depois da inserção, e passa a apontar para outra decisão.
 | 2     | **O domínio mínimo: contador com oráculo exato mais predicado de capacidade** — ADR-0002, `Aceito`                              | define o que é medido; fechou [`Q-0001-3`](#q-0001-3--o-critério-de-igualdade-entre-dois-traços-de-sql-não-está-definido) e encaminhou quatro questões novas                                                                                                                      |
 | 3     | **O estatuto da barreira e o diagnóstico da não ocorrência** — ADR-0004, `Aceito`                                               | rebaixou a barreira a controle positivo, fixou a taxa como veredito e encaminhou cinco questões                                                                                                                                                                                   |
 | 4     | **A linguagem do agendamento: como uma barreira é declarada** — ADR-0003, `Aceito`                                              | o ADR-0001 fixa o endereço da fronteira e para aí; sem a linguagem, a execução de controle do ADR-0004 não é declarável; encaminhou quatro questões                                                                                                                               |
-| 5     | **A forma do escalonador: estado, decisão e protocolo de desistência** — [ADR-0005](0005-a-forma-do-escalonador.md), `Proposto` | consome o agendamento e executa a barreira; [`Q-0001-4`](#q-0001-4--o-escalonador-precisa-de-um-protocolo-de-desistência) e [`Q-0002-2`](#q-0002-2--quem-declara-que-a-execução-terminou-e-o-oráculo-lê-antes-ou-depois-disso) pedem a mesma máquina, com `Q-0003-1` e `Q-0003-2` |
+| 5     | **A forma do escalonador: estado, decisão e protocolo de desistência** — [ADR-0005](0005-a-forma-do-escalonador.md), `Aceito`   | consumiu o agendamento e executou a barreira; resolveu [`Q-0001-4`](#q-0001-4--o-escalonador-precisa-de-um-protocolo-de-desistência), [`Q-0002-2`](#q-0002-2--quem-declara-que-a-execução-terminou-e-o-oráculo-lê-antes-ou-depois-disso), `Q-0003-1` e `Q-0003-2`, e encaminhou `Q-0005-1` |
 | 6     | **Estratégias de concorrência como dado, não como branch**                                                                      | sem isso o experimento de comparação não existe; [`Q-0001-2`](#q-0001-2--o-compartilhamento-por-colaborador-injetado-continua-sem-guarda) pede o controle positivo aqui; acrescenta a coluna `version` e nomeia a estratégia de calibração do ADR-0002                            |
 | 7     | **O log de observações: forma, ordem e onde vive**                                                                              | é o substrato da timeline agora e do replay depois; [`Q-0001-1`](#q-0001-1--o-endereço-da-fronteira-precisa-sobreviver-à-edição-da-operação) pede aqui a identidade da operação gravada no registro do resultado, e `Q-0003-3` o critério de igualdade entre duas execuções       |
 | 8     | **Experiment: definição, semente, hipótese e asserções**                                                                        | precisa resolver a tensão entre Designer na UI e definição versionada; [`Q-0002-4`](#q-0002-4--o-estado-inicial-não-é-estabelecido-por-ninguém) pede aqui o ciclo de vida de uma execução, e `Q-0003-8` o que `N` conta                                                           |
@@ -218,9 +218,9 @@ E2 deixou de ser experimento do MVP. Enunciado da proposta em
 O agendamento e o escalonador entraram na fila em 2026-07-29. O ADR-0001 encaminhava as
 duas para "ADR próprio" sem que nenhuma delas estivesse aqui. Um encaminhamento sem
 destino é vazamento, não delegação. O agendamento foi aceito em 2026-08-01 como
-ADR-0003, e encaminhou `Q-0003-1`, `Q-0003-2`, `Q-0003-3` e `Q-0003-8`. **A forma do
-escalonador é a primeira decisão não tomada da fila**, e quatro questões apontam para
-ela.
+ADR-0003, e encaminhou `Q-0003-1`, `Q-0003-2`, `Q-0003-3` e `Q-0003-8`. A forma do
+escalonador foi aceita no mesmo dia como ADR-0005: resolveu `Q-0001-4`, `Q-0002-2`,
+`Q-0003-1` e `Q-0003-2`, e encaminhou `Q-0005-1`.
 
 ### A ordem da arquitetura mínima e da entrega contínua está sob tensão
 
@@ -431,13 +431,13 @@ foram escritas, e passam a nomear o ADR e o identificador.
 | `Q-0001-1` | O endereço da fronteira precisa sobreviver à edição da operação            | o log de observações         | pendente                |
 | `Q-0001-2` | O compartilhamento por colaborador injetado continua sem guarda            | estratégias de concorrência  | pendente                |
 | `Q-0001-3` | O critério de igualdade entre dois traços de SQL não está definido         | o domínio mínimo             | resolvida por ADR-0002  |
-| `Q-0001-4` | O escalonador precisa de um protocolo de desistência                       | a forma do escalonador       | pendente                |
+| `Q-0001-4` | O escalonador precisa de um protocolo de desistência                       | a forma do escalonador       | resolvida por ADR-0005  |
 | `Q-0002-1` | A comparação por valor depende de regras que nenhum teste verifica         | arquitetura mínima e guardas | pendente                |
-| `Q-0002-2` | Quem declara que a execução terminou, e o oráculo lê antes ou depois disso | a forma do escalonador       | pendente                |
+| `Q-0002-2` | Quem declara que a execução terminou, e o oráculo lê antes ou depois disso | a forma do escalonador       | resolvida por ADR-0005  |
 | `Q-0002-3` | Os dois oráculos descrevem apenas o estado final quiescente                | os dois formatos de veredito | pendente                |
 | `Q-0002-4` | O estado inicial não é estabelecido por ninguém                            | Experiment                   | pendente                |
-| `Q-0003-1` | Um worker que nunca chega trava o agendamento                              | a forma do escalonador       | pendente                |
-| `Q-0003-2` | Um agendamento sobre uma tentativa que talvez não ocorra                   | a forma do escalonador       | pendente                |
+| `Q-0003-1` | Um worker que nunca chega trava o agendamento                              | a forma do escalonador       | resolvida por ADR-0005  |
+| `Q-0003-2` | Um agendamento sobre uma tentativa que talvez não ocorra                   | a forma do escalonador       | resolvida por ADR-0005  |
 | `Q-0003-3` | Duas execuções do mesmo experimento não têm critério de igualdade          | o log de observações         | pendente                |
 | `Q-0003-8` | O `N` declarado antes não fecha com uma estratégia que retenta             | Experiment                   | pendente                |
 | `Q-0004-2` | Nada obriga o passo a reportar a chave de contenção                        | arquitetura mínima e guardas | pendente                |
@@ -445,6 +445,7 @@ foram escritas, e passam a nomear o ADR e o identificador.
 | `Q-0004-4` | A regra de parada colide com a exigência de nascer entregando              | entrega contínua no homelab  | pendente                |
 | `Q-0004-5` | O terceiro formato de veredito precisa caber ao lado dos dois já previstos | os dois formatos de veredito | pendente                |
 | `Q-0004-8` | O limite `3/N` pressupõe ensaios independentes                             | os dois formatos de veredito | pendente                |
+| `Q-0005-1` | O critério de "falha não recuperada pela estratégia" não está definido     | estratégias de concorrência  | pendente                |
 
 ### Q-0001-1 — O endereço da fronteira precisa sobreviver à edição da operação
 
@@ -566,6 +567,8 @@ dela não existir.
 
 ### Q-0001-4 — O escalonador precisa de um protocolo de desistência
 
+**Resolvida pelo ADR-0005**, na subseção `### O término resolve a desistência`.
+
 Origem: ADR-0001, questão 4. Destino: **a forma do escalonador**. Esta é a primeira
 entrada daquela decisão.
 
@@ -594,6 +597,9 @@ num instrumento de medida, porque a reprovação some quando alguém reexecuta. 
 diagnóstico apontaria para o critério de igualdade, e a causa estaria no corpo do passo.
 
 ### Q-0002-2 — Quem declara que a execução terminou, e o oráculo lê antes ou depois disso
+
+**Resolvida pelo ADR-0005**, na subseção `### O contador de ativos sinaliza o fim da
+execução`.
 
 Origem: ADR-0002, questão 2. Destino: **a forma do escalonador**, junto de `Q-0001-4`,
 porque a resposta é a mesma máquina.
@@ -661,6 +667,8 @@ limpeza, em que momento, e se o histórico de uma execução anterior sobrevive.
 
 ### Q-0003-1 — Um worker que nunca chega trava o agendamento, e a recusa por texto não o alcança
 
+**Resolvida pelo ADR-0005**, na subseção `### O término resolve a desistência`.
+
 Origem: ADR-0003, questão 1. Destino: **a forma do escalonador**, junto de `Q-0001-4`,
 porque a resposta é a mesma máquina.
 
@@ -686,6 +694,8 @@ trabalho antes dos outros. A subseção `### A execução de controle declara a 
 passagem por worker` do ADR-0003 trata do eixo que produz esse desalinhamento.
 
 ### Q-0003-2 — Um agendamento sobre uma tentativa que talvez não ocorra
+
+**Resolvida pelo ADR-0005**, na subseção `### O término resolve a desistência`.
 
 Origem: ADR-0003, questão 2. Destino: **a forma do escalonador**, pelo mesmo motivo de
 `Q-0003-1`.
@@ -882,3 +892,17 @@ maior em outro. Menor porque o limite ordena corretamente dois relatórios com n
 commits diferente, que é o uso principal que a `## Justificativa` daquele ADR lhe dá.
 Maior porque o número publicado carrega uma precisão que o pressuposto não sustenta, e
 quem o ler não saberá disso.
+
+### Q-0005-1 — O critério de "falha não recuperada pela estratégia" não está definido
+
+Origem: ADR-0005, questão 1. Destino: **estratégias de concorrência** (Ordem 6 da fila),
+porque é a estratégia quem decide se uma exceção do banco é motivo de retry.
+
+A política de quando uma estratégia trata uma exceção como motivo de retry pertence ao
+ADR de estratégias de concorrência, ainda não escrito. O ADR-0005 presume essa resposta
+ao definir **término** — o instante em que um worker para de tentar uma execução de
+operação, por commit final, por resposta negativa da estratégia, ou por falha não
+recuperada por ela — sem definir o critério que separa uma falha recuperável de uma que
+não é.
+
+Nenhuma outra decisão da fila trata dessa pergunta.

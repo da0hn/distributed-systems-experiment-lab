@@ -1,6 +1,6 @@
 # ADR-0005: A forma do escalonador — estado, decisão e protocolo de desistência
 
-- **Estado:** Proposto
+- **Estado:** Aceito
 - **Data:** 2026-08-01
 - **Etapa do roadmap:** 1
 - **Relacionado:** depende do ADR-0001 (escalonador pressuposto), do ADR-0002 (oráculo)
@@ -102,6 +102,12 @@ controle que não termina o próprio agendamento.
 `agendamento não cumprido` NÃO DEVE ser lido como `exposição insuficiente`. O primeiro
 diz que o controle não terminou. O segundo diz que ele terminou sem violar.
 
+### O escalonador usa `ReentrantLock` para excluir acesso ao próprio estado
+
+O contador de ativos e o mapa de restrições pendentes vivem atrás de um único
+`ReentrantLock` por execução. `chegada()` e `término()` adquirem o mesmo lock antes de
+ler ou alterar qualquer um dos dois, e o liberam em bloco `finally`.
+
 ## Justificativa
 
 **Por que dois eventos, e não um.** Chegada diz que o worker está numa fronteira agora;
@@ -119,6 +125,15 @@ proibido fora de um adaptador de relógio. O término já é um evento do própr
 não expôs nada. `agendamento não cumprido` é a carga que expôs, mas cujo controle não
 terminou o próprio agendamento. Confundir os dois esconderia a causa do relatório.
 
+**Por que `ReentrantLock`, e não `synchronized`.** A regra estrutural deste repositório
+proíbe `synchronized`, `ReentrantLock` e `AtomicInteger` no sistema sob teste, sem
+exceção declarada por trecho de código. Um guard textual que procure a palavra-chave
+`synchronized` em qualquer classe do sistema sob teste (`Q-0002-1`, `Q-0004-2`) precisa
+de uma exceção para o escalonador, se o escalonador também usar a palavra-chave. Usar
+`ReentrantLock` no Lab Plane mantém a proibição sem exceção: a palavra-chave
+`synchronized` nunca aparece em código nenhum do repositório, e o guard não precisa
+distinguir os dois planos para decidir o que rejeitar.
+
 ## Consequências
 
 ### Positivas
@@ -129,6 +144,9 @@ terminou o próprio agendamento. Confundir os dois esconderia a causa do relató
 - `Q-0003-2` deixa de ser hipotético: `OPTIMISTIC` no E3 e no E4 usa o mesmo mecanismo.
 - A tabela de veredito do ADR-0004 ganha o caso que faltava, sem reabrir os cinco
   aceitos.
+- A proibição de `synchronized` no sistema sob teste continua sem exceção — o Lab Plane
+  também não usa a palavra-chave, e um guard textual não precisa distinguir os dois
+  planos.
 
 ### Negativas
 
@@ -136,6 +154,8 @@ terminou o próprio agendamento. Confundir os dois esconderia a causa do relató
 - **A desistência não distingue worker morto de worker rápido.** Os dois produzem o
   mesmo veredito, e só a timeline separa os dois casos.
 - **`agendamento não cumprido` é um sexto caso que ninguém debateu antes de hoje.**
+- **`ReentrantLock` exige liberar o lock manualmente em bloco `finally`.**
+  `synchronized` faria isso pela própria sintaxe, sem chance de esquecimento.
 
 ### Neutras
 
@@ -150,6 +170,10 @@ terminou o próprio agendamento. Confundir os dois esconderia a causa do relató
   custo **o escalonador guardar estado, e não ser mais uma função pura**.
 - O benefício **a tabela do ADR-0004 ganha o caso que faltava** foi aceito em troca do
   custo **um sexto veredito que ninguém debateu quando o quinto foi aceito**.
+- O benefício **a proibição de `synchronized` no sistema sob teste continua sem
+  exceção**
+  foi aceito em troca do custo **liberar o `ReentrantLock` exige bloco `finally`
+  explícito, que `synchronized` dispensaria**.
 
 ## Alternativas consideradas
 
@@ -171,28 +195,29 @@ decisão.
 exigência do ADR-0001 de observar cada evento no instante em que ocorre — a sondagem
 introduz um atraso não determinístico entre o evento e a reação a ele.
 
+### Alternativa D — bloqueio grosso com `synchronized`
+
+`chegada()` e `término()` marcados `synchronized`, cobrindo o contador de ativos e o
+mapa de restrições na mesma seção crítica.
+
+**Descartada.** É a forma mais direta de Java para uma seção crítica composta, e não
+introduz dependência nova. Perde porque a palavra-chave `synchronized` deixaria de ser
+exclusiva do que este repositório proíbe: um guard textual precisaria de uma exceção
+para o escalonador, e uma exceção documentada é uma exceção que alguém PODE copiar para
+o lugar errado.
+
+### Alternativa E — escalonador como ator single-thread
+
+O runtime empurra chegada e término para uma fila, e uma única thread consome, em vez de
+as threads de worker acessarem o estado diretamente.
+
+**Descartada.** Dá ordenação determinística de brinde. Perde por custo: o worker
+chamador ainda espera o processamento terminar antes de prosseguir — o mesmo bloqueio de
+antes, com um componente de execução novo no meio. É o mesmo tipo de custo que a
+Alternativa C já perdeu para: complexidade que o problema não pede.
+
 ## Quando esta decisão deixa de valer
 
 Reveja esta decisão quando um controle precisar de várias restrições pendentes ao mesmo
 tempo, em escala que o mapa simples não navegue sem uma FSM — o E5 com mais de dois
 papéis, por exemplo.
-
-## Questões em aberto
-
-| # | Questão                                                                | Status |
-|---|------------------------------------------------------------------------|--------|
-| 1 | O critério de "falha não recuperada pela estratégia" não está definido | aberto |
-| 2 | O acesso concorrente ao estado do escalonador não foi especificado     | aberto |
-
-### 1. O critério de "falha não recuperada pela estratégia" não está definido
-
-A política de quando uma estratégia trata uma exceção como motivo de retry pertence ao
-ADR de estratégias de concorrência, ainda não escrito. Este ADR presume essa resposta;
-não a define.
-
-### 2. O acesso concorrente ao estado do escalonador não foi especificado
-
-Cada worker roda na própria thread (ADR-0001). O contador de ativos e o mapa de
-restrições são estado compartilhado entre threads, e este ADR não fixa o mecanismo de
-exclusão. A proibição de `synchronized` alcança o sistema sob teste, não o Lab Plane — a
-forma exata do escalonador não foi escolhida.
