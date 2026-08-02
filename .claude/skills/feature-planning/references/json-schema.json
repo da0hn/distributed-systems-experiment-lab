@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "[URI estável do esquema]",
+  "title": "[Nome do payload]",
+  "description": "[Finalidade do payload.]",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {},
+  "required": [],
+  "examples": [
+    {}
+  ],
+  "x-contract": {
+    "producer": "[Produtor]",
+    "known-consumers": "[Consumidores ou Não se aplica — motivo.]",
+    "versioning": "[Política de evolução.]",
+    "validation": "[Regras semânticas fora do esquema.]"
+  }
+}

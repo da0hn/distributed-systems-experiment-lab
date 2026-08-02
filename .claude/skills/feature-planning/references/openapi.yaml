@@ -1,0 +1,43 @@
+openapi: 3.1.1
+info:
+  title: "[Nome da API]"
+  version: "[Versão]"
+  description: "[Finalidade e limite da interface.]"
+servers:
+  - url: "[URL base]"
+security:
+  - "[MecanismoDeSeguranca]": []
+paths:
+  "/[recurso]":
+    post:
+      operationId: "[verboRecurso]"
+      summary: "[Resultado da operação.]"
+      description: "[Pré-condição, efeito e comportamento de repetição.]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/[Requisicao]"
+      responses:
+        "[codigo-sucesso]":
+          description: "[Resultado de sucesso.]"
+        "[codigo-erro]":
+          description: "[Erro esperado.]"
+components:
+  securitySchemes:
+    "[MecanismoDeSeguranca]":
+      type: "[tipo]"
+  schemas:
+    "[Requisicao]":
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+x-contract:
+  authorization: "[Regra ou Não se aplica — motivo.]"
+  validation: "[Regra de entrada.]"
+  pagination-and-filters: "[Regra ou Não se aplica — motivo.]"
+  idempotency: "[Chave e comportamento ou Não se aplica — motivo.]"
+  compatibility: "[Política de evolução.]"
+  examples: "[Exemplo realista por operação.]"

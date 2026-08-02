@@ -1,0 +1,41 @@
+asyncapi: 3.1.0
+info:
+  title: "[Nome da interface de eventos]"
+  version: "[Versão]"
+  description: "[Finalidade e limite da interface.]"
+servers:
+  "[servidor]":
+    host: "[host]"
+    protocol: "[protocolo]"
+channels:
+  "[canal]":
+    address: "[tópico ou fila]"
+    messages:
+      "[Mensagem]":
+        payload:
+          $ref: "#/components/schemas/[Payload]"
+operations:
+  "publicar[Mensagem]":
+    action: send
+    channel:
+      $ref: "#/channels/[canal]"
+    messages:
+      - $ref: "#/channels/[canal]/messages/[Mensagem]"
+components:
+  schemas:
+    "[Payload]":
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+x-contract:
+  message-type: "[Comando ou evento de domínio.]"
+  producer: "[Produtor.]"
+  known-consumers: "[Consumidores ou Não se aplica — motivo.]"
+  versioning: "[Política de evolução.]"
+  correlation: "[Campo ou Não se aplica — motivo.]"
+  idempotency: "[Chave e comportamento ou Não se aplica — motivo.]"
+  ordering: "[Chave e garantia ou Não se aplica — motivo.]"
+  retry-and-dlq: "[Política ou Não se aplica — motivo.]"
+  delivery: "[Garantia de entrega.]"
+  example: "[Payload realista.]"
