@@ -73,7 +73,12 @@ saber controlar para reproduzir o fenômeno.
 
 O grupo D é o que quebra o modelo de veredito do resto: backpressure não tem estado
 errado, tem uma fila de 40 mil mensagens e alguém que precisa decidir se isso é falha.
-Os dois formatos de veredito existem desde o desenho por causa disso.
+Os formatos de veredito existem desde o desenho por causa disso.
+
+Eles são **três**, não dois. O [`ADR-0004`](docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)
+acrescentou a **taxa com limite de confiança** — um número mais uma incerteza, que não é
+caso particular do booleano nem da curva. Como os três convivem é decisão em aberto na
+fila.
 
 ## Os dois planos
 
@@ -123,26 +128,36 @@ para dentro do Lab Plane. O runtime chama a operação; a operação nunca chama
 Nas primeiras etapas os dois planos vivem na **mesma JVM**. A separação precisa ser
 imposta por teste executável, justamente por isso.
 
-## O MVP — cinco experimentos, um processo, um banco
+## O MVP — quatro experimentos, um processo, um banco
 
 Todos no grupo A. Nenhum exige broker, segundo processo ou serviço adicional.
 
-| #  | Experimento                   | O que ele prova                                                    |
-|----|-------------------------------|--------------------------------------------------------------------|
-| E1 | `lost-update-none`            | o laboratório **detecta**. É o grupo de controle: precisa falhar   |
-| E2 | `lost-update-deterministic`   | o laboratório **constrói**. Exatamente uma perda, em toda execução |
-| E3 | `lost-update-strategies`      | a estratégia é um dado, não uma branch. Quatro comparadas          |
-| E4 | `optimistic-under-contention` | o primeiro resultado que é **curva**, não veredito                 |
-| E5 | `write-skew-inert-protection` | a proteção pode estar presente e **não proteger nada**             |
+| #  | Experimento                   | O que ele prova                                                  |
+|----|-------------------------------|------------------------------------------------------------------|
+| E1 | `lost-update-none`            | o laboratório **detecta**. É o grupo de controle: precisa falhar |
+| E3 | `lost-update-strategies`      | a estratégia é um dado, não uma branch. Quatro comparadas        |
+| E4 | `optimistic-under-contention` | o primeiro resultado que é **curva**, não veredito               |
+| E5 | `write-skew-inert-protection` | a proteção pode estar presente e **não proteger nada**           |
 
-O E5 é o resultado que mais justifica o laboratório existir: sob um modelo de
-verificação derivado, inserir uma alocação não incrementa a `version` do recurso. A
-anotação está lá, nenhuma exceção é lançada, e a invariante quebra em silêncio. Nenhum
-teste de unidade o detecta.
+**O E2 deixou de ser um experimento em 2026-08-01.** O
+[`ADR-0004`](docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) o
+rebaixou a **execução de controle positivo** do E1 e do E3: ele responde a uma pergunta
+sobre um resultado zero, e não produz resultado reportável. A numeração dos demais não
+mudou, para que as citações existentes continuem resolvendo.
+
+O E5 é o resultado que mais justifica o laboratório existir: sob um modelo de verificação
+derivado, inserir uma alocação não incrementa a `version` do recurso. A anotação está lá,
+nenhuma exceção é lançada, e a invariante quebra em silêncio. Nenhum teste de unidade o
+detecta.
 
 **E1 é obrigado a falhar.** Se ele não falhar, a carga é insuficiente e nenhum resultado
-dos outros quatro significa nada. É a regra que separa um laboratório de uma
-demonstração.
+dos outros significa nada. É a regra que separa um laboratório de uma demonstração, e o
+ADR-0004 a tornou a primeira linha da classificação do veredito zero.
+
+Os experimentos estão especificados em
+[`docs/features/`](docs/features/README.md) — E1 e E3 partilham um card, porque partilham
+o oráculo. O E4 é a capacidade conhecida **sem** card, porque o formato curva não tem
+forma decidida.
 
 ## Roadmap
 
@@ -219,18 +234,44 @@ infraestrutura.
 
 **Nada foi implementado.** Não existe `pom.xml`, classe Java ou `docker-compose.yml`.
 
-| Item                   | Estado                                                     |
-|------------------------|------------------------------------------------------------|
-| Plano do laboratório   | [escrito](docs/plano-do-laboratorio.md), não é decisão     |
-| ADRs da série corrente | **nenhum escrito**                                         |
+| Item | Estado |
+|---|---|
+| Plano do laboratório | [escrito](docs/plano-do-laboratorio.md), não é decisão |
+| Processo de especificação | [escrito](docs/specification-process.md), adotado em 2026-08-01 |
+| Feature Cards | [quatro capacidades](docs/features/README.md), nenhuma implementada |
+| Contratos | [nenhum](docs/contracts/README.md) — nenhuma interface existe para contratar |
+| ADRs da série corrente | [quatro](docs/adr/README.md): 0001, 0002 e 0004 `Aceito`; 0003 `Proposto` |
 | Primeira série de ADRs | [arquivada](docs/adr/arquivo/README.md), nenhum foi aceito |
-| Código                 | nenhum                                                     |
+| Código | nenhum |
 
-O repositório teve uma primeira série de 13 ADRs, construída sobre outra pergunta
-central: *quanto custa proteger uma invariante de capacidade sob concorrência?* Nenhum
-foi aceito. Todos foram arquivados em [`docs/adr/arquivo/`](docs/adr/arquivo/README.md)
-e continuam lá pelas seções de alternativas descartadas, que não caducaram junto com as
-decisões.
+### O formato do planejamento mudou em 2026-08-01
+
+O ADR deixou de ser a forma principal de documentação. A divisão é esta:
+
+> **O ADR guarda o porquê da escolha. O Feature Card guarda o quê do comportamento.**
+
+O motivo é medido. O repositório acumulou 3.874 linhas de documentação para zero linha de
+código, e os ADRs passaram a carregar três naturezas no mesmo arquivo: decisão
+arquitetural, regra de negócio e tabela de decisão. Só a primeira é decisão — as outras
+duas descrevem comportamento verificável, e comportamento escrito como prosa argumentativa
+não vira teste.
+
+O padrão passa a ser **Feature Card mais Example Mapping**, com Gherkin para o
+comportamento estabilizado e OpenAPI/AsyncAPI para o que atravessa fronteira de processo.
+Um ADR continua sendo escrito quando a decisão tem alternativa plausível, impacto
+arquitetural duradouro, cria restrição futura e representa um trade-off.
+
+**Os ADRs aceitos não mudaram, e continuam imutáveis.** Nenhum foi convertido em
+documentação de feature; os cards os citam por arquivo e linha.
+
+O processo completo está em [`docs/specification-process.md`](docs/specification-process.md).
+
+### A primeira série de ADRs
+
+O repositório teve uma primeira série de 13 ADRs, construída sobre outra pergunta central:
+*quanto custa proteger uma invariante de capacidade sob concorrência?* Nenhum foi aceito.
+Todos foram arquivados em [`docs/adr/arquivo/`](docs/adr/arquivo/README.md) e continuam lá
+pelas seções de alternativas descartadas, que não caducaram junto com as decisões.
 
 > **Aviso sobre a entrega.** O homelab já tem um `Application` do ArgoCD apontando para
 > o diretório `deploy/` deste repositório, com `prune: true` e `selfHeal: true`. Esse
@@ -243,10 +284,20 @@ decisões.
 
 1. [`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md) — taxonomia,
    dependências pedagógicas, roadmap, MVP, arquitetura mínima e decisões adiadas.
-2. [`docs/adr/README.md`](docs/adr/README.md) — o processo de decisão e a fila do que
+2. [`docs/specification-process.md`](docs/specification-process.md) — como uma
+   funcionalidade é especificada, e o que cada artefato responde.
+3. [`docs/features/README.md`](docs/features/README.md) — as capacidades do laboratório,
+   em Feature Card, Example Mapping e Gherkin.
+4. [`docs/architecture/integrations.md`](docs/architecture/integrations.md) — o que
+   atravessa uma fronteira de processo, separando fato de hipótese.
+5. [`docs/adr/README.md`](docs/adr/README.md) — o processo de decisão e a fila do que
    precisa ser decidido, em ordem.
-3. [`docs/adr/arquivo/README.md`](docs/adr/arquivo/README.md) — por que a primeira série
+6. [`docs/adr/arquivo/README.md`](docs/adr/arquivo/README.md) — por que a primeira série
    foi arquivada e o que sobreviveu dela.
 
 A decisão vem antes do código. Um ADR escrito depois da implementação não é uma
 decisão — é uma justificativa.
+
+Desde 2026-08-01 o ADR deixou de ser a forma principal de documentação. Ele continua
+registrando **o porquê** de uma decisão arquitetural durável; o **quê** do comportamento
+vive nos Feature Cards. Os ADRs aceitos não mudaram.
