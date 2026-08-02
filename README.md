@@ -234,15 +234,15 @@ infraestrutura.
 
 **Nada foi implementado.** Não existe `pom.xml`, classe Java ou `docker-compose.yml`.
 
-| Item | Estado |
-|---|---|
-| Plano do laboratório | [escrito](docs/plano-do-laboratorio.md), não é decisão |
-| Processo de especificação | [escrito](docs/specification-process.md), adotado em 2026-08-01 |
-| Feature Cards | [quatro capacidades](docs/features/README.md), nenhuma implementada |
-| Contratos | [nenhum](docs/contracts/README.md) — nenhuma interface existe para contratar |
-| ADRs da série corrente | [quatro](docs/adr/README.md): 0001, 0002 e 0004 `Aceito`; 0003 `Proposto` |
-| Primeira série de ADRs | [arquivada](docs/adr/arquivo/README.md), nenhum foi aceito |
-| Código | nenhum |
+| Item                      | Estado                                                                       |
+|---------------------------|------------------------------------------------------------------------------|
+| Plano do laboratório      | [escrito](docs/plano-do-laboratorio.md), não é decisão                       |
+| Processo de especificação | [escrito](docs/specification-process.md), adotado em 2026-08-01              |
+| Feature Cards             | [quatro capacidades](docs/features/README.md), nenhuma implementada          |
+| Contratos                 | [nenhum](docs/contracts/README.md) — nenhuma interface existe para contratar |
+| ADRs da série corrente    | [quatro](docs/adr/README.md), todos `Aceito`: 0001 a 0004                    |
+| Primeira série de ADRs    | [arquivada](docs/adr/arquivo/README.md), nenhum foi aceito                   |
+| Código                    | nenhum                                                                       |
 
 ### O formato do planejamento mudou em 2026-08-01
 

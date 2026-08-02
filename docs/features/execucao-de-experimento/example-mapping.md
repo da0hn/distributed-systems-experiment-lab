@@ -115,33 +115,35 @@ um defeito que torna a de baixo ilegível.
 
 ## Perguntas em aberto
 
-| # | Pergunta | Origem |
-|---|---|---|
-| P1 | O limite `3/commits` pressupõe independência que a execução não tem. O que o número publicado afirma? | `Q-0004-8` |
-| P2 | Quem escolhe `N`, e o experimento roda no pipeline, sob demanda, ou os dois com `N` diferente? | `Q-0004-4` |
-| P3 | Como a taxa com incerteza cabe ao lado do booleano e da curva? | `Q-0004-5` |
-| P4 | Quem declara que a execução terminou, e o oráculo lê antes ou depois? | `Q-0002-2` |
-| P5 | Quem estabelece o estado inicial, e como o banco volta ao ponto de partida entre execuções? | `Q-0002-4` |
-| P6 | O que obriga um passo a reportar a chave de contenção que R10 consome? | `Q-0004-2` |
-| P7 | Os instantes de dois workers precisam ser ordenáveis entre si. Qual relógio, e com que resolução? | `Q-0004-3` |
-| P8 | A tabela do E3 põe três estratégias com taxa zero e limites diferentes lado a lado. O que ela permite concluir? | `Q-0004-5` |
-| P9 | Um experimento cujo veredito **não** pode ser zero está dispensado de declarar janela. Qual experimento é esse, e quem decide? | nova, 2026-08-01 |
+| #   | Pergunta                                                                                                                                                               | Origem           |
+|-----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
+| P1  | O limite `3/commits` pressupõe independência que a execução não tem. O que o número publicado afirma?                                                                  | `Q-0004-8`       |
+| P2  | Quem escolhe `N`, e o experimento roda no pipeline, sob demanda, ou os dois com `N` diferente?                                                                         | `Q-0004-4`       |
+| P3  | Como a taxa com incerteza cabe ao lado do booleano e da curva?                                                                                                         | `Q-0004-5`       |
+| P4  | Quem declara que a execução terminou, e o oráculo lê antes ou depois?                                                                                                  | `Q-0002-2`       |
+| P5  | Quem estabelece o estado inicial, e como o banco volta ao ponto de partida entre execuções?                                                                            | `Q-0002-4`       |
+| P6  | O que obriga um passo a reportar a chave de contenção que R10 consome?                                                                                                 | `Q-0004-2`       |
+| P7  | Os instantes de dois workers precisam ser ordenáveis entre si. Qual relógio, e com que resolução?                                                                      | `Q-0004-3`       |
+| P8  | A tabela do E3 põe três estratégias com taxa zero e limites diferentes lado a lado. O que ela permite concluir?                                                        | `Q-0004-5`       |
+| P9  | Um experimento cujo veredito **não** pode ser zero está dispensado de declarar janela. Qual experimento é esse, e quem decide?                                         | nova, 2026-08-01 |
 | P10 | R11 exige mesma carga para comparar. "Mesma carga" é mesmo `N`, mesmos workers e mesma operação — a estratégia difere por construção. A semente entra nessa igualdade? | nova, 2026-08-01 |
+| P11 | O `ADR-0003` foi aceito e nenhum cenário cobre o agendamento. Quais das sete recusas viram cenário, e este card é o dono delas ou a capacidade pede card próprio?      | nova, 2026-08-01 |
 
 ## Adiado de propósito
 
-| Item | Gatilho que o retoma |
-|---|---|
-| Veredito em formato curva (E4) | a decisão "os dois formatos de veredito", na fila |
-| Nível de isolamento como parâmetro | o E5, que varre três níveis |
-| Definição do experimento: arquivo versionado ou registro no banco | o Experiment Designer da UI |
+| Item                                                              | Gatilho que o retoma                              |
+|-------------------------------------------------------------------|---------------------------------------------------|
+| Veredito em formato curva (E4)                                    | a decisão "os dois formatos de veredito", na fila |
+| Nível de isolamento como parâmetro                                | o E5, que varre três níveis                       |
+| Definição do experimento: arquivo versionado ou registro no banco | o Experiment Designer da UI                       |
 
 ## O que não virou cenário, e por quê
 
-**Nada do [`ADR-0003`](../../adr/0003-a-linguagem-do-agendamento.md).** Ele está
-`Proposto`, com a questão 4 em `aberto (crítico)`. O agendamento como conjunto de
-restrições de precedência, o encontro como forma curta e as sete recusas antes de executar
-são material de exemplo, não de cenário — escrever Gherkin sobre eles congelaria uma
-versão que ainda está em debate.
+**Nada do [`ADR-0003`](../../adr/0003-a-linguagem-do-agendamento.md), ainda.** Ele foi
+aceito em 2026-08-01, e o motivo que o mantinha fora do Gherkin — a questão 4 em
+`aberto (crítico)` — deixou de valer. O agendamento como conjunto de restrições de
+precedência, o encontro como forma curta e as sete recusas antes de executar são
+comportamento externo estabilizado, e **nenhum cenário foi escrito para eles**. A pergunta
+P11 registra a pendência e o que falta decidir antes de escrevê-los.
 
 R1 (a medida roda sem agendamento) é premissa de todos os cenários, e vira `Contexto`.

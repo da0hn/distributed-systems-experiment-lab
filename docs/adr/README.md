@@ -101,7 +101,7 @@ O motivo do arquivamento e o que sobreviveu estão em
 |--------------------------------------------------------------------------|------------------------------------------------------------------------|------------|
 | [0001](0001-o-passo-como-unidade-de-execucao.md)                         | O passo como unidade de execução, observação e injeção de falha        | `Aceito`   |
 | [0002](0002-o-dominio-minimo-e-os-dois-oraculos.md)                      | O domínio mínimo: contador com oráculo exato e predicado de capacidade | `Aceito`   |
-| [0003](0003-a-linguagem-do-agendamento.md)                               | A linguagem do agendamento: como uma barreira é declarada              | `Proposto` |
+| [0003](0003-a-linguagem-do-agendamento.md)                               | A linguagem do agendamento: como uma barreira é declarada              | `Aceito`   |
 | [0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) | O estatuto da barreira e o diagnóstico da não ocorrência               | `Aceito`   |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele
@@ -188,19 +188,19 @@ A coluna `Ordem` é posição na fila, e a posição muda quando uma decisão en
 **Cite uma decisão pelo nome, nunca pela posição.** Uma citação por posição continua
 válida depois da inserção, e passa a apontar para outra decisão.
 
-| Ordem | Decisão                                                                                              | Por que precisa vir aqui                                                                                                                                                                                                                               |
-|-------|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | **O passo como unidade de execução, observação e injeção de falha** — ADR-0001, `Aceito`             | toda outra decisão herda a forma que esta escolheu (plano, seção 2)                                                                                                                                                                                    |
-| 2     | **O domínio mínimo: contador com oráculo exato mais predicado de capacidade** — ADR-0002, `Aceito`   | define o que é medido; fechou [`Q-0001-3`](#q-0001-3--o-critério-de-igualdade-entre-dois-traços-de-sql-não-está-definido) e encaminhou quatro questões novas                                                                                           |
-| 3     | **O estatuto da barreira e o diagnóstico da não ocorrência** — ADR-0004, `Aceito`                    | rebaixou a barreira a controle positivo, fixou a taxa como veredito e encaminhou cinco questões                                                                                                                                                        |
-| 4     | **A linguagem do agendamento: como uma barreira é declarada** — ADR-0003, `Proposto`                 | o ADR-0001 fixa o endereço da fronteira e para aí; sem a linguagem, a execução de controle do ADR-0004 não é declarável                                                                                                                                |
-| 5     | **A forma do escalonador: estado, decisão e protocolo de desistência**                               | consome o agendamento e executa a barreira; [`Q-0001-4`](#q-0001-4--o-escalonador-precisa-de-um-protocolo-de-desistência) e [`Q-0002-2`](#q-0002-2--quem-declara-que-a-execução-terminou-e-o-oráculo-lê-antes-ou-depois-disso) pedem a mesma máquina   |
-| 6     | **Estratégias de concorrência como dado, não como branch**                                           | sem isso o experimento de comparação não existe; [`Q-0001-2`](#q-0001-2--o-compartilhamento-por-colaborador-injetado-continua-sem-guarda) pede o controle positivo aqui; acrescenta a coluna `version` e nomeia a estratégia de calibração do ADR-0002 |
-| 7     | **O log de observações: forma, ordem e onde vive**                                                   | é o substrato da timeline agora e do replay depois; [`Q-0001-1`](#q-0001-1--o-endereço-da-fronteira-precisa-sobreviver-à-edição-da-operação) pede aqui a identidade da operação gravada no registro do resultado                                       |
-| 8     | **Experiment: definição, semente, hipótese e asserções**                                             | precisa resolver a tensão entre Designer na UI e definição versionada; [`Q-0002-4`](#q-0002-4--o-estado-inicial-não-é-estabelecido-por-ninguém) pede aqui o ciclo de vida de uma execução                                                              |
-| 9     | **Os dois formatos de veredito: booleano e curva**                                                   | se ficar para depois, o grupo D não cabe na arquitetura; [`Q-0002-3`](#q-0002-3--os-dois-oráculos-descrevem-apenas-o-estado-final-quiescente) acrescenta o eixo pontual contra contínuo no tempo                                                       |
-| 10    | **Arquitetura mínima, stack e guardas executáveis**                                                  | um módulo, dois planos na mesma JVM, separação imposta por teste; [`Q-0002-1`](#q-0002-1--a-comparação-por-valor-depende-de-regras-que-nenhum-teste-verifica) pede a guarda que torna as três regras executáveis                                       |
-| 11    | **Entrega contínua no homelab desde o dia zero**                                                     | o serviço precisa nascer entregando; ratifica ou emenda a ADR 0017 lá                                                                                                                                                                                  |
+| Ordem | Decisão                                                                                            | Por que precisa vir aqui                                                                                                                                                                                                                                                          |
+|-------|----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1     | **O passo como unidade de execução, observação e injeção de falha** — ADR-0001, `Aceito`           | toda outra decisão herda a forma que esta escolheu (plano, seção 2)                                                                                                                                                                                                               |
+| 2     | **O domínio mínimo: contador com oráculo exato mais predicado de capacidade** — ADR-0002, `Aceito` | define o que é medido; fechou [`Q-0001-3`](#q-0001-3--o-critério-de-igualdade-entre-dois-traços-de-sql-não-está-definido) e encaminhou quatro questões novas                                                                                                                      |
+| 3     | **O estatuto da barreira e o diagnóstico da não ocorrência** — ADR-0004, `Aceito`                  | rebaixou a barreira a controle positivo, fixou a taxa como veredito e encaminhou cinco questões                                                                                                                                                                                   |
+| 4     | **A linguagem do agendamento: como uma barreira é declarada** — ADR-0003, `Aceito`                 | o ADR-0001 fixa o endereço da fronteira e para aí; sem a linguagem, a execução de controle do ADR-0004 não é declarável; encaminhou quatro questões                                                                                                                               |
+| 5     | **A forma do escalonador: estado, decisão e protocolo de desistência**                             | consome o agendamento e executa a barreira; [`Q-0001-4`](#q-0001-4--o-escalonador-precisa-de-um-protocolo-de-desistência) e [`Q-0002-2`](#q-0002-2--quem-declara-que-a-execução-terminou-e-o-oráculo-lê-antes-ou-depois-disso) pedem a mesma máquina, com `Q-0003-1` e `Q-0003-2` |
+| 6     | **Estratégias de concorrência como dado, não como branch**                                         | sem isso o experimento de comparação não existe; [`Q-0001-2`](#q-0001-2--o-compartilhamento-por-colaborador-injetado-continua-sem-guarda) pede o controle positivo aqui; acrescenta a coluna `version` e nomeia a estratégia de calibração do ADR-0002                            |
+| 7     | **O log de observações: forma, ordem e onde vive**                                                 | é o substrato da timeline agora e do replay depois; [`Q-0001-1`](#q-0001-1--o-endereço-da-fronteira-precisa-sobreviver-à-edição-da-operação) pede aqui a identidade da operação gravada no registro do resultado, e `Q-0003-3` o critério de igualdade entre duas execuções       |
+| 8     | **Experiment: definição, semente, hipótese e asserções**                                           | precisa resolver a tensão entre Designer na UI e definição versionada; [`Q-0002-4`](#q-0002-4--o-estado-inicial-não-é-estabelecido-por-ninguém) pede aqui o ciclo de vida de uma execução, e `Q-0003-8` o que `N` conta                                                           |
+| 9     | **Os dois formatos de veredito: booleano e curva**                                                 | se ficar para depois, o grupo D não cabe na arquitetura; [`Q-0002-3`](#q-0002-3--os-dois-oráculos-descrevem-apenas-o-estado-final-quiescente) acrescenta o eixo pontual contra contínuo no tempo                                                                                  |
+| 10    | **Arquitetura mínima, stack e guardas executáveis**                                                | um módulo, dois planos na mesma JVM, separação imposta por teste; [`Q-0002-1`](#q-0002-1--a-comparação-por-valor-depende-de-regras-que-nenhum-teste-verifica) pede a guarda que torna as três regras executáveis                                                                  |
+| 11    | **Entrega contínua no homelab desde o dia zero**                                                   | o serviço precisa nascer entregando; ratifica ou emenda a ADR 0017 lá                                                                                                                                                                                                             |
 
 O passo e o domínio mínimo destravam o MVP inteiro. O agendamento e o escalonador
 destravam o E2 — o experimento que prova que a plataforma **constrói** a anomalia, e não
@@ -215,7 +215,9 @@ deixou de ser experimento do MVP. Enunciado da proposta em
 
 O agendamento e o escalonador entraram na fila em 2026-07-29. O ADR-0001 encaminhava as
 duas para "ADR próprio" sem que nenhuma delas estivesse aqui. Um encaminhamento sem
-destino é vazamento, não delegação.
+destino é vazamento, não delegação. O agendamento foi aceito em 2026-08-01 como ADR-0003,
+e encaminhou `Q-0003-1`, `Q-0003-2`, `Q-0003-3` e `Q-0003-8`. **A forma do escalonador é
+a primeira decisão não tomada da fila**, e quatro questões apontam para ela.
 
 ### A ordem da arquitetura mínima e da entrega contínua está sob tensão
 
@@ -383,6 +385,11 @@ O segundo desfecho foi o escolhido, e o
 [ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) o fixou
 junto dos instrumentos de diagnóstico. Ele foi aceito em 2026-08-01.
 
+O [ADR-0003](0003-a-linguagem-do-agendamento.md) foi aceito no mesmo dia, com a seção
+`## Contexto` reescrita para justificá-lo pela execução de controle. O parágrafo acima
+que o proibia de ser aceito registra o bloqueio vigente em 2026-07-31, e deixou de valer
+quando o ADR-0004 escolheu o desfecho.
+
 O debate da aceitação mudou dois pontos do que está escrito acima. A exposição de
 referência é contada no **controle negativo**, e não na execução medida: uma estratégia
 que serializa fecha a janela, e ler esse zero como carga fraca condenaria a estratégia
@@ -426,6 +433,10 @@ foram escritas, e passam a nomear o ADR e o identificador.
 | `Q-0002-2` | Quem declara que a execução terminou, e o oráculo lê antes ou depois disso | a forma do escalonador       | pendente                |
 | `Q-0002-3` | Os dois oráculos descrevem apenas o estado final quiescente                | os dois formatos de veredito | pendente                |
 | `Q-0002-4` | O estado inicial não é estabelecido por ninguém                            | Experiment                   | pendente                |
+| `Q-0003-1` | Um worker que nunca chega trava o agendamento                              | a forma do escalonador       | pendente                |
+| `Q-0003-2` | Um agendamento sobre uma tentativa que talvez não ocorra                   | a forma do escalonador       | pendente                |
+| `Q-0003-3` | Duas execuções do mesmo experimento não têm critério de igualdade          | o log de observações         | pendente                |
+| `Q-0003-8` | O `N` declarado antes não fecha com uma estratégia que retenta             | Experiment                   | pendente                |
 | `Q-0004-2` | Nada obriga o passo a reportar a chave de contenção                        | arquitetura mínima e guardas | pendente                |
 | `Q-0004-3` | Comparar janelas exige um instante comparável entre workers                | o log de observações         | pendente                |
 | `Q-0004-4` | A regra de parada colide com a exigência de nascer entregando              | entrega contínua no homelab  | pendente                |
@@ -644,6 +655,113 @@ comparação por valor. Sobram a limpeza entre execuções e o isolamento por sc
 A parte decidida pelo ADR-0002: o identificador do recurso DEVE ser função da semente do
 experimento, e NÃO DEVE ser função do instante da execução. O que resta é quem executa a
 limpeza, em que momento, e se o histórico de uma execução anterior sobrevive.
+
+### Q-0003-1 — Um worker que nunca chega trava o agendamento, e a recusa por texto não o alcança
+
+Origem: ADR-0003, questão 1. Destino: **a forma do escalonador**, junto de `Q-0001-4`,
+porque a resposta é a mesma máquina.
+
+A seção `## Decisão` do ADR-0003 recusa antes de executar o que o texto do agendamento
+revela: ciclo, papel inexistente, endereço que não resolve. Sobra o que o texto não
+revela.
+
+Um worker morto por falha injetada na fronteira anterior nunca produz a chegada que os
+outros esperam. O encontro fica incompleto, e a execução para. O sintoma é idêntico ao de
+um bug do runtime e ao de um ciclo que a detecção tivesse deixado passar.
+
+`Q-0001-4` registra o mesmo problema do lado do worker: o runtime precisa notificar o
+escalonador de que um worker terminou, por falha, por exceção ou por conclusão. O
+agendamento é o consumidor dessa notificação — ele precisa saber que a chegada esperada
+não virá, para decidir entre liberar os demais e declarar o experimento inválido. A
+escolha entre esses dois não é a mesma pergunta que `Q-0001-4` faz, e ela depende da
+resposta daquela.
+
+O ADR-0004 aumentou a superfície desta questão. A execução de controle roda sobre a carga
+da execução medida, e o E1 usa dez workers. Uma chegada que não vem deixa de ser o caso
+raro de uma falha injetada e passa a incluir o worker que terminou seu quinhão de trabalho
+antes dos outros. A subseção `### A execução de controle declara a própria carga, com uma
+passagem por worker` do ADR-0003 trata do eixo que produz esse desalinhamento.
+
+### Q-0003-2 — Um agendamento sobre uma tentativa que talvez não ocorra
+
+Origem: ADR-0003, questão 2. Destino: **a forma do escalonador**, pelo mesmo motivo de
+`Q-0003-1`.
+
+O ADR-0001 exige seletor de tentativa em todo endereço de fronteira, sem valor padrão. O
+E2 usa uma estratégia sem retry e cita `tentativa 1` sem ambiguidade.
+
+O E4 roda `OPTIMISTIC` com 2 a 50 workers, e o número de tentativas de cada worker é
+resultado do experimento, não entrada dele. Um encontro declarado para a `tentativa 2` de
+dois workers espera por um worker que PODE ter concluído na primeira e nunca chegará.
+
+É o caso geral de `Q-0003-1`, e a diferença importa: aqui a espera impossível não vem de
+falha, e sim de sucesso. Nenhuma análise do texto do agendamento a detecta, porque o
+texto está correto.
+
+O ADR-0004 tirou esta questão do hipotético. O texto acima dizia que a pergunta valeria
+para "o primeiro experimento que combine os dois". Esse experimento é o E3: ele tem
+`OPTIMISTIC` entre as quatro estratégias, e o controle positivo do braço otimista roda
+sobre a configuração dele. Um zero com exposição sobrevivente no braço `OPTIMISTIC` é
+exatamente o caso que o ADR-0004 manda desempatar com a barreira, e é o caso em que o
+número de tentativas não é conhecido antes.
+
+### Q-0003-3 — Duas execuções do mesmo experimento não têm critério de igualdade
+
+Origem: ADR-0003, questão 3. Destino: **o log de observações**, que a fila descreve como
+o substrato do replay, e que já recebeu `Q-0001-1` pelo lado da identidade da operação.
+
+A seção `## Decisão` do ADR-0003 fixa que o determinismo garantido é o do veredito, e que
+a timeline PODE variar nos trechos que nenhuma restrição ordena. A etapa 12 quer
+reexecutar um experimento antigo e obter o mesmo resultado, e "o mesmo resultado" passa a
+ter duas leituras possíveis.
+
+Comparar apenas o veredito aceita duas execuções cujas timelines divergem em tudo que o
+agendamento não ordena — que é o comportamento desejado, e também o que esconde uma
+mudança real de comportamento sob uma coincidência de veredito. Comparar a timeline
+inteira reprova execuções corretas, pelo mesmo motivo que derrubou a alternativa A
+daquele ADR.
+
+O critério provável é intermediário: duas execuções são iguais quando o veredito coincide
+e quando a ordem dos eventos **restringidos** coincide. Esse critério não foi verificado
+contra nenhum experimento, e ele exige que o log distinga o evento que uma restrição
+ordenou do evento que ocorreu livre. Nada hoje exige esse registro.
+
+O ADR-0004 partiu a questão em duas metades com dificuldades diferentes. Numa execução de
+controle, o critério intermediário acima ainda tem chance: existem eventos restringidos
+para comparar. Numa execução medida não existe restrição nenhuma, e o veredito é uma taxa
+que a concorrência real produz. Duas execuções medidas com a mesma semente PODEM devolver
+taxas diferentes sem que nada tenha mudado, e a etapa 12 quer reexecutar um experimento
+antigo e obter o mesmo resultado. O que "o mesmo resultado" significa para uma taxa não
+foi decidido em documento nenhum.
+
+### Q-0003-8 — O `N` declarado antes não fecha com uma estratégia que retenta
+
+Origem: ADR-0003, questão 8. Destino: **Experiment**, que define o que uma execução
+declara, junto de `Q-0002-4`. A pergunta é o que `N` conta, e `N` é entrada declarada de
+uma execução.
+
+O ADR-0004 exige que uma execução medida declare `N` antes de começar, e chama `N` de
+número de **tentativas lançadas**. Tentativa é termo do ADR-0001: uma passagem completa
+pela sequência de passos, e uma execução de operação produz uma ou mais.
+
+As duas leituras de `N` quebram em pontos diferentes.
+
+Se `N` conta tentativas no sentido do ADR-0001, ele inclui os retries. Sob `OPTIMISTIC`,
+o número de retries é resultado da execução, e não entrada dela: o ADR-0001 registra que
+"o número de tentativas vira um dado observável do log", e um dado observável não é
+declarável antes. O E3 e o E4 rodam `OPTIMISTIC`, e os dois estão no MVP.
+
+Se `N` conta execuções de operação, ele é declarável, e a taxa de aborto `(N − commits)/N`
+deixa de enxergar o retry. Uma execução de operação que falhe duas vezes e cometa na
+terceira entra como um lançamento e um commit, e a taxa de aborto dela é zero. A
+`## Justificativa` do ADR-0004 diz que essa taxa existe para mostrar "a estratégia que
+evita a anomalia descartando trabalho" — e sob esta leitura ela não mostra o trabalho
+descartado.
+
+O ADR-0004 está `Aceito` e não pode ser editado. A questão não é do agendamento: ela
+apareceu no ADR-0003 porque o seletor de tentativa do ADR-0001 é o mesmo eixo, e a
+decisão da questão 6 daquele documento obrigou a olhar para ele. A resolução PODE exigir
+um ADR que substitua a contagem do ADR-0004, e não apenas a decisão de destino.
 
 ### Q-0004-2 — Nada obriga o passo a reportar a chave de contenção
 

@@ -28,7 +28,7 @@ Mapa da pasta `docs/`. Tudo que existe neste repositório vive aqui — não há
 | `features/`                | Feature Cards, Example Mappings e `.feature` | quatro capacidades                                  |
 | `contracts/`               | OpenAPI, AsyncAPI, JSON Schema               | **vazio** — nenhuma interface existe                |
 | `architecture/`            | a matriz de integrações                      | uma integração real, e ela está quebrada            |
-| `adr/`                     | série corrente de ADRs                       | quatro: 0001, 0002 e 0004 `Aceito`; 0003 `Proposto` |
+| `adr/`                     | série corrente de ADRs                       | quatro, todos `Aceito`: 0001 a 0004                 |
 | `adr/arquivo/`             | primeira série, arquivada                    | treze, nenhum aceito, **nunca editados**            |
 | `experiments/`             | resultados de execução                       | vazio — nada foi executado                          |
 | `diagrams/`                | Excalidraw exportado como `.excalidraw.svg`  | vazio                                               |

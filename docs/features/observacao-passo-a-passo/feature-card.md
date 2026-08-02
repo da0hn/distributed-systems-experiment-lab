@@ -27,7 +27,7 @@ transacional por `TransactionTemplate`. O eixo de resolução. A prova de equiva
 ## Fora de escopo
 
 A linguagem do agendamento está em
-[`ADR-0003`](../../adr/0003-a-linguagem-do-agendamento.md), `Proposto`. A forma do
+[`ADR-0003`](../../adr/0003-a-linguagem-do-agendamento.md), `Aceito`. A forma do
 escalonador, a política de retentativa e o formato interno da injeção de falha estão na
 fila de decisões.
 
@@ -58,11 +58,11 @@ formalizado: o esquema existe apenas como prosa no ADR-0002 — ver `Q-INT-5` em
 
 ## Riscos e decisões pendentes
 
-| Questão | O que está em jogo |
-|---|---|
-| `Q-0001-1` | o corpo de um passo muda com o rótulo intacto, e o replay mede outra operação em silêncio; quatro candidatas de mecanismo, nenhuma escolhida |
+| Questão    | O que está em jogo                                                                                                                                                  |
+|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Q-0001-1` | o corpo de um passo muda com o rótulo intacto, e o replay mede outra operação em silêncio; quatro candidatas de mecanismo, nenhuma escolhida                        |
 | `Q-0002-1` | "relógio injetável" e "aleatoriedade semeada" são texto, não regra executável; uma chamada a `Instant.now()` faz R10 reprovar um par correto, de forma intermitente |
-| `Q-0004-2` | nada obriga um passo a reportar a chave de contenção |
+| `Q-0004-2` | nada obriga um passo a reportar a chave de contenção                                                                                                                |
 
 ## Critérios de pronto
 

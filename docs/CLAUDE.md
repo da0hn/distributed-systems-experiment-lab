@@ -21,8 +21,8 @@ aberto do `example-mapping.md`.
 | `adr/arquivo/**`        | registra o que se pensava naquela data; editar apaga a evidência                       |
 | ADR com estado `Aceito` | para mudar a decisão, escreva um ADR novo e marque o antigo `Substituído por ADR-NNNN` |
 
-Um ADR `Proposto` **pode** ser editado. Hoje só o `adr/0003-a-linguagem-do-agendamento.md`
-está nesse estado, e a questão 4 dele é `aberto (crítico)`.
+Um ADR `Proposto` **pode** ser editado. Hoje **nenhum** ADR da série corrente está nesse
+estado: os quatro estão `Aceito`, e nenhum deles pode ser editado.
 
 ## Qual artefato criar
 

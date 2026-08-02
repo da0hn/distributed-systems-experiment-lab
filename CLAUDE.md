@@ -27,6 +27,10 @@ qualquer coisa.
 
 ## Como o planejamento funciona aqui
 
+**Use automaticamente a skill `/feature-planning` antes de planejar, refinar, estimar
+ou propor a implementação de uma funcionalidade ou atualização.** A skill cria e valida
+os artefatos de especificação deste repositório.
+
 **Desde 2026-08-01 o ADR deixou de ser a forma principal de documentação.** O padrão é
 **Feature Card mais Example Mapping**, com Gherkin para o comportamento estabilizado e
 contratos para o que atravessa fronteira de processo.
@@ -276,14 +280,14 @@ lista os quatro gatilhos que criam cada um.
 
 ### Decisões
 
-**Três ADRs estão `Aceito`: 0001 e 0002 de 2026-07-29, 0004 de 2026-08-01.** Nenhum pode
-ser editado. O **ADR-0003** está `Proposto`, com a questão 4 em `aberto (crítico)`.
+**Os quatro ADRs da série corrente estão `Aceito`: 0001 e 0002 de 2026-07-29, 0004 e 0003
+de 2026-08-01.** Nenhum pode ser editado. Nenhum ADR está `Proposto` hoje.
 
 | ADR  | O que fixou                                                                             |
 |------|-----------------------------------------------------------------------------------------|
 | 0001 | o passo como unidade de execução, observação e injeção de falha                         |
 | 0002 | o domínio mínimo, o oráculo exato e o oráculo do predicado                              |
-| 0003 | a linguagem do agendamento — **`Proposto`**, não use como regra                         |
+| 0003 | a linguagem do agendamento: precedência entre eventos, encontro, sete recusas           |
 | 0004 | a barreira rebaixada a controle positivo; a taxa como veredito; a classificação do zero |
 
 Três consequências mudam o que se pode propor daqui em diante:
