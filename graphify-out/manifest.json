@@ -5,44 +5,39 @@
     "semantic_hash": "a1faad60f443fbd36ec0b672912fbc90"
   },
   ".claude/skills/feature-planning/SKILL.md": {
-    "mtime": 1785632955.585,
-    "ast_hash": "76965745be41cca520811739352674a3",
-    "semantic_hash": "76965745be41cca520811739352674a3"
+    "mtime": 1785801286.5836062,
+    "ast_hash": "6110dc13d3a8d505cdd834434bc92042",
+    "semantic_hash": "6110dc13d3a8d505cdd834434bc92042"
   },
   "CLAUDE.md": {
-    "mtime": 1785630907.103439,
-    "ast_hash": "29f1e7f68d90b0758bdaf4087b1cd477",
-    "semantic_hash": "29f1e7f68d90b0758bdaf4087b1cd477"
-  },
-  "docs/adr/0000-template.md": {
-    "mtime": 1785360902.0332334,
-    "ast_hash": "700ee2373e43340ad064e59ddb51ec16",
-    "semantic_hash": "700ee2373e43340ad064e59ddb51ec16"
+    "mtime": 1785804254.713478,
+    "ast_hash": "dbbe69efae5452db3078664d82583bd3",
+    "semantic_hash": "dbbe69efae5452db3078664d82583bd3"
   },
   "docs/adr/0001-o-passo-como-unidade-de-execucao.md": {
-    "mtime": 1785366336.753,
-    "ast_hash": "213e1cea9ea7475e91c046c688432bfa",
-    "semantic_hash": "213e1cea9ea7475e91c046c688432bfa"
+    "mtime": 1785803697.4102535,
+    "ast_hash": "2f116b4c33899b94a3f1844d91919a29",
+    "semantic_hash": "2f116b4c33899b94a3f1844d91919a29"
   },
   "docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md": {
-    "mtime": 1785378305.8582377,
-    "ast_hash": "f845ea7c82b4e640999e5980a8a389f8",
-    "semantic_hash": "f845ea7c82b4e640999e5980a8a389f8"
+    "mtime": 1785803697.421297,
+    "ast_hash": "0727e74ef8b42c91d8f4d9a9cbed0f87",
+    "semantic_hash": "0727e74ef8b42c91d8f4d9a9cbed0f87"
   },
   "docs/adr/0003-a-linguagem-do-agendamento.md": {
-    "mtime": 1785629624.3669078,
-    "ast_hash": "80934788cd3c5592c6bb9b6a57d430e0",
-    "semantic_hash": "80934788cd3c5592c6bb9b6a57d430e0"
+    "mtime": 1785803697.423318,
+    "ast_hash": "40eaf934a973b4adf15bb43bbe7d1649",
+    "semantic_hash": "40eaf934a973b4adf15bb43bbe7d1649"
   },
   "docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md": {
-    "mtime": 1785615349.9676244,
-    "ast_hash": "99aec06acad816bda591517e25fe3d1d",
-    "semantic_hash": "99aec06acad816bda591517e25fe3d1d"
+    "mtime": 1785803697.4243255,
+    "ast_hash": "72b372d7241882926023e079c160004a",
+    "semantic_hash": "72b372d7241882926023e079c160004a"
   },
   "docs/adr/README.md": {
-    "mtime": 1785630729.1813402,
-    "ast_hash": "89a6265ab7bd5e5f2fdee60b6e145e24",
-    "semantic_hash": "89a6265ab7bd5e5f2fdee60b6e145e24"
+    "mtime": 1785803697.407253,
+    "ast_hash": "a15786d0d3bdeca190f470e9c5b2ca0e",
+    "semantic_hash": "a15786d0d3bdeca190f470e9c5b2ca0e"
   },
   "docs/adr/arquivo/0001-dominio-generico-com-invariante-unica.md": {
     "mtime": 1785290312.182554,
@@ -125,39 +120,39 @@
     "semantic_hash": "7731a1d76d7dbd7407a553b58ee9eb3d"
   },
   "docs/features/README.md": {
-    "mtime": 1785624833.347,
-    "ast_hash": "66494fd1fc519e4e282c47cd9ad45e66",
-    "semantic_hash": "66494fd1fc519e4e282c47cd9ad45e66"
+    "mtime": 1785803697.4368615,
+    "ast_hash": "24b4bea1dfc8f75f87c9d8672284cbc9",
+    "semantic_hash": "24b4bea1dfc8f75f87c9d8672284cbc9"
   },
   "docs/features/deteccao-de-atualizacao-perdida/example-mapping.md": {
-    "mtime": 1785625722.665,
-    "ast_hash": "bcdb2fe0c5845c5f5d855082a7110b98",
-    "semantic_hash": "bcdb2fe0c5845c5f5d855082a7110b98"
+    "mtime": 1785803697.4368615,
+    "ast_hash": "82f43c37f4cbf84532759820f07df637",
+    "semantic_hash": "82f43c37f4cbf84532759820f07df637"
   },
   "docs/features/deteccao-de-atualizacao-perdida/feature-card.md": {
-    "mtime": 1785626444.3978348,
-    "ast_hash": "c2399825a8c07c289c628d9e688af1b3",
-    "semantic_hash": "c2399825a8c07c289c628d9e688af1b3"
+    "mtime": 1785803640.4966738,
+    "ast_hash": "6864b6878fe7423f5c62568b8ae05d66",
+    "semantic_hash": "6864b6878fe7423f5c62568b8ae05d66"
   },
   "docs/features/deteccao-de-protecao-inerte/example-mapping.md": {
-    "mtime": 1785623895.7905548,
-    "ast_hash": "cdb51892463d1412dd7e6c51017f689f",
-    "semantic_hash": "cdb51892463d1412dd7e6c51017f689f"
+    "mtime": 1785803640.4986799,
+    "ast_hash": "7e2af9612dc66f0d24dbe1dc0c46db0e",
+    "semantic_hash": "7e2af9612dc66f0d24dbe1dc0c46db0e"
   },
   "docs/features/deteccao-de-protecao-inerte/feature-card.md": {
-    "mtime": 1785623753.2238262,
-    "ast_hash": "6873bbe17b8e9ca1a0cb43d0e923a8d2",
-    "semantic_hash": "6873bbe17b8e9ca1a0cb43d0e923a8d2"
+    "mtime": 1785803697.4368615,
+    "ast_hash": "4668eb11b67149507d852c7354e21256",
+    "semantic_hash": "4668eb11b67149507d852c7354e21256"
   },
   "docs/features/execucao-de-experimento/feature-card.md": {
-    "mtime": 1785630973.821,
-    "ast_hash": "0c2dd18b85a278414886d810016402f0",
-    "semantic_hash": "0c2dd18b85a278414886d810016402f0"
+    "mtime": 1785803697.43837,
+    "ast_hash": "c8982489748daa1a0abfd8a1e9e6a461",
+    "semantic_hash": "c8982489748daa1a0abfd8a1e9e6a461"
   },
   "docs/features/observacao-passo-a-passo/feature-card.md": {
-    "mtime": 1785630973.836,
-    "ast_hash": "be168536f449624e79f2a6313a5658d8",
-    "semantic_hash": "be168536f449624e79f2a6313a5658d8"
+    "mtime": 1785803640.5011828,
+    "ast_hash": "fa434bfdca303c2d44851a3c9c369ee6",
+    "semantic_hash": "fa434bfdca303c2d44851a3c9c369ee6"
   },
   "docs/plano-do-laboratorio.md": {
     "mtime": 1785615508.6103182,
@@ -165,19 +160,14 @@
     "semantic_hash": "9c07ff7254d6b269e5486a3ec7e26a5f"
   },
   "docs/specification-process.md": {
-    "mtime": 1785626128.315,
-    "ast_hash": "2b0c9cdfc24a72e912de4071393792a7",
-    "semantic_hash": "2b0c9cdfc24a72e912de4071393792a7"
+    "mtime": 1785801423.017178,
+    "ast_hash": "ed5d7d13da9b18d9d2fafc2ab4b1f7df",
+    "semantic_hash": "ed5d7d13da9b18d9d2fafc2ab4b1f7df"
   },
   ".claude/skills/feature-planning/references/json-schema.json": {
     "mtime": 1785632391.948978,
     "ast_hash": "fb9e4b3d3acca2205e71f61bda3fc15d",
     "semantic_hash": "fb9e4b3d3acca2205e71f61bda3fc15d"
-  },
-  ".claude/skills/feature-planning/references/adr.md": {
-    "mtime": 1785632402.154187,
-    "ast_hash": "803e224ae683addca94e45a4a86e6935",
-    "semantic_hash": "803e224ae683addca94e45a4a86e6935"
   },
   ".claude/skills/feature-planning/references/asyncapi.yaml": {
     "mtime": 1785632446.5391426,
@@ -215,23 +205,168 @@
     "semantic_hash": "c4a2eff719c88331c9bc3265f7b5fcde"
   },
   "docs/CLAUDE.md": {
-    "mtime": 1785629682.7472548,
-    "ast_hash": "dc4220a3efc2cf5595b496b5234bbd26",
-    "semantic_hash": "dc4220a3efc2cf5595b496b5234bbd26"
+    "mtime": 1785801311.7787557,
+    "ast_hash": "062ec9caa83e2c0a3804b70637f1632d",
+    "semantic_hash": "062ec9caa83e2c0a3804b70637f1632d"
   },
   "docs/README.md": {
-    "mtime": 1785629729.0429235,
-    "ast_hash": "12958b06841cceb2448c685337118f22",
-    "semantic_hash": "12958b06841cceb2448c685337118f22"
+    "mtime": 1785804125.5820448,
+    "ast_hash": "392b8e82ae994d37614ffd586164baf2",
+    "semantic_hash": "392b8e82ae994d37614ffd586164baf2"
   },
   "docs/features/execucao-de-experimento/example-mapping.md": {
-    "mtime": 1785630973.848,
-    "ast_hash": "394ba93d92ca0e23fcafac9d3e9abc8e",
-    "semantic_hash": "394ba93d92ca0e23fcafac9d3e9abc8e"
+    "mtime": 1785803640.5006783,
+    "ast_hash": "a3bb1d1c1caef5fd89fdb942ca3dfa43",
+    "semantic_hash": "a3bb1d1c1caef5fd89fdb942ca3dfa43"
   },
   "docs/features/observacao-passo-a-passo/example-mapping.md": {
-    "mtime": 1785623203.3256438,
-    "ast_hash": "0e0f6db22d43d0cc4e86219a4262a420",
-    "semantic_hash": "0e0f6db22d43d0cc4e86219a4262a420"
+    "mtime": 1785803697.4393787,
+    "ast_hash": "b5c52b8a888f2a82b8520142684c4c5b",
+    "semantic_hash": "b5c52b8a888f2a82b8520142684c4c5b"
+  },
+  ".claude/skills/adr/SKILL.md": {
+    "mtime": 1785801256.6453412,
+    "ast_hash": "421c91683da58a18fc94ef24cbe01540",
+    "semantic_hash": "421c91683da58a18fc94ef24cbe01540"
+  },
+  ".claude/skills/adr/references/adr-lifecycle.md": {
+    "mtime": 1785804204.1177738,
+    "ast_hash": "57072356760e0fadea1b94796ac851ef",
+    "semantic_hash": "57072356760e0fadea1b94796ac851ef"
+  },
+  ".claude/skills/adr/references/adr.md": {
+    "mtime": 1785635679.121421,
+    "ast_hash": "5dcd6039cd731c588ea0bc783f936758",
+    "semantic_hash": "5dcd6039cd731c588ea0bc783f936758"
+  },
+  ".claude/skills/codebase-design/SKILL.md": {
+    "mtime": 1785801348.2600005,
+    "ast_hash": "656a9673174105a8983372ba683f144d",
+    "semantic_hash": "656a9673174105a8983372ba683f144d"
+  },
+  ".claude/skills/codebase-design/references/deepening.md": {
+    "mtime": 1785801358.9312725,
+    "ast_hash": "88fd53c474469d6e74a7d3e2fe5b191e",
+    "semantic_hash": "88fd53c474469d6e74a7d3e2fe5b191e"
+  },
+  ".claude/skills/codebase-design/references/design-it-twice.md": {
+    "mtime": 1785801369.2966783,
+    "ast_hash": "fc755af4de37bb0a088e279be3cd685d",
+    "semantic_hash": "fc755af4de37bb0a088e279be3cd685d"
+  },
+  ".claude/skills/domain-modeling/SKILL.md": {
+    "mtime": 1785801390.0166628,
+    "ast_hash": "a2e443655be9873cca2728d468ac1601",
+    "semantic_hash": "a2e443655be9873cca2728d468ac1601"
+  },
+  ".claude/skills/domain-modeling/references/context-format.md": {
+    "mtime": 1785801397.8236828,
+    "ast_hash": "3bd6c60631c32905aea4ee156bc21e0f",
+    "semantic_hash": "3bd6c60631c32905aea4ee156bc21e0f"
+  },
+  "docs/adr/0005-a-forma-do-escalonador.md": {
+    "mtime": 1785803697.4313395,
+    "ast_hash": "63a3f81bc3a78f46b1809ab6e659ec54",
+    "semantic_hash": "63a3f81bc3a78f46b1809ab6e659ec54"
+  },
+  "docs/adr/0006-a-forma-da-estrategia-de-concorrencia.md": {
+    "mtime": 1785803697.4348621,
+    "ast_hash": "11574952cacc72197dddcb984c87f0be",
+    "semantic_hash": "11574952cacc72197dddcb984c87f0be"
+  },
+  "docs/questions/Q-0001-1.md": {
+    "mtime": 1785803997.334536,
+    "ast_hash": "cff71422f5e469aa3db6c4ef50fba571",
+    "semantic_hash": "cff71422f5e469aa3db6c4ef50fba571"
+  },
+  "docs/questions/Q-0001-2.md": {
+    "mtime": 1785802645.6915336,
+    "ast_hash": "61e1c431609ca81de5b52bf15d328a05",
+    "semantic_hash": "61e1c431609ca81de5b52bf15d328a05"
+  },
+  "docs/questions/Q-0001-3.md": {
+    "mtime": 1785802645.6915336,
+    "ast_hash": "19e5e18b2c381526be576fdc419120d4",
+    "semantic_hash": "19e5e18b2c381526be576fdc419120d4"
+  },
+  "docs/questions/Q-0001-4.md": {
+    "mtime": 1785802645.6990483,
+    "ast_hash": "3bdb89b76839aff56ba046501248d72b",
+    "semantic_hash": "3bdb89b76839aff56ba046501248d72b"
+  },
+  "docs/questions/Q-0002-1.md": {
+    "mtime": 1785802645.7000492,
+    "ast_hash": "c29580d97b5ab50955d7191291d5b79c",
+    "semantic_hash": "c29580d97b5ab50955d7191291d5b79c"
+  },
+  "docs/questions/Q-0002-2.md": {
+    "mtime": 1785803997.335536,
+    "ast_hash": "ee4f28e7f0d927ea1de6a08ad6c16c75",
+    "semantic_hash": "ee4f28e7f0d927ea1de6a08ad6c16c75"
+  },
+  "docs/questions/Q-0002-3.md": {
+    "mtime": 1785802645.7000492,
+    "ast_hash": "af9cb8ffc0e5cd7302d8da5001c2f7cd",
+    "semantic_hash": "af9cb8ffc0e5cd7302d8da5001c2f7cd"
+  },
+  "docs/questions/Q-0002-4.md": {
+    "mtime": 1785802645.7020495,
+    "ast_hash": "062c64992c74c4d6290aad71cfd71b26",
+    "semantic_hash": "062c64992c74c4d6290aad71cfd71b26"
+  },
+  "docs/questions/Q-0003-1.md": {
+    "mtime": 1785803997.337537,
+    "ast_hash": "3fe9995147191210fdbd53ccac1e8029",
+    "semantic_hash": "3fe9995147191210fdbd53ccac1e8029"
+  },
+  "docs/questions/Q-0003-2.md": {
+    "mtime": 1785803997.3385355,
+    "ast_hash": "0286717c108a4493006f974851a075f4",
+    "semantic_hash": "0286717c108a4493006f974851a075f4"
+  },
+  "docs/questions/Q-0003-3.md": {
+    "mtime": 1785803997.3385355,
+    "ast_hash": "ebfabd8325f11de2eaccfe2387a3dd78",
+    "semantic_hash": "ebfabd8325f11de2eaccfe2387a3dd78"
+  },
+  "docs/questions/Q-0003-8.md": {
+    "mtime": 1785803997.3395362,
+    "ast_hash": "9c67050755f1dd786838d0832de9f095",
+    "semantic_hash": "9c67050755f1dd786838d0832de9f095"
+  },
+  "docs/questions/Q-0004-2.md": {
+    "mtime": 1785803997.3405364,
+    "ast_hash": "29e568d0e502bc6e8ea0b17f5ed4dc26",
+    "semantic_hash": "29e568d0e502bc6e8ea0b17f5ed4dc26"
+  },
+  "docs/questions/Q-0004-3.md": {
+    "mtime": 1785803997.341041,
+    "ast_hash": "916e73df2b73abaa572a81bd3933d453",
+    "semantic_hash": "916e73df2b73abaa572a81bd3933d453"
+  },
+  "docs/questions/Q-0004-4.md": {
+    "mtime": 1785802645.7055662,
+    "ast_hash": "c126d6bfe35a1f659486a6b9f6698681",
+    "semantic_hash": "c126d6bfe35a1f659486a6b9f6698681"
+  },
+  "docs/questions/Q-0004-5.md": {
+    "mtime": 1785803997.3420475,
+    "ast_hash": "6a69fc30027c6e3616a5b25bd91d8462",
+    "semantic_hash": "6a69fc30027c6e3616a5b25bd91d8462"
+  },
+  "docs/questions/Q-0004-8.md": {
+    "mtime": 1785803997.3430524,
+    "ast_hash": "d990fe58d8fccb52ec8ac072a0c30ed0",
+    "semantic_hash": "d990fe58d8fccb52ec8ac072a0c30ed0"
+  },
+  "docs/questions/Q-0005-1.md": {
+    "mtime": 1785802645.707566,
+    "ast_hash": "16f6fe53692fd70c60a64abcccf90d6a",
+    "semantic_hash": "16f6fe53692fd70c60a64abcccf90d6a"
+  },
+  "docs/questions/README.md": {
+    "mtime": 1785802809.2168546,
+    "ast_hash": "8db50f42a11a4ad593788d816c545af2",
+    "semantic_hash": "8db50f42a11a4ad593788d816c545af2"
   }
 }

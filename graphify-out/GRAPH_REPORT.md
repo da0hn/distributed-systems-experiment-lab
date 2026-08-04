@@ -1,45 +1,55 @@
-# Graph Report - D:\Code\Personal\distributed-consistency-lab  (2026-08-01)
+# Graph Report - .  (2026-08-03)
 
 ## Corpus Check
 - cluster-only mode — file stats not available
 
 ## Summary
-- 178 nodes · 203 edges · 26 communities (19 shown, 7 thin omitted)
-- Extraction: 83% EXTRACTED · 12% INFERRED · 5% AMBIGUOUS · INFERRED: 24 edges (avg confidence: 0.81)
-- Token cost: 0 input · 0 output
+- 213 nodes · 227 edges · 36 communities (22 shown, 14 thin omitted)
+- Extraction: 84% EXTRACTED · 11% INFERRED · 5% AMBIGUOUS · INFERRED: 26 edges (avg confidence: 0.82)
+- Token cost: 2,000 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f275569c`
+- Built from commit: `cee27b4d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- Architecture Decision Records Index
-- Scheduling Language Concepts
-- Core Execution Primitives
-- Workflow Engine Internals
-- Resource Concurrency Model
+- ADR and Feature Cards
+- Scheduling and Barrier ADRs
+- Core Abstractions Glossary
+- JSON Schema Contract
+- Workflow Engine and Sagas
+- Capacity and Concurrency Model
 - Experiment Design Questions
-- Pedagogical Experiment Roadmap
-- Platform Service Decomposition
+- Pedagogical Rules and Experiments
+- Docker Compose Services
+- Documentation Templates
 - Concurrency Phenomena Taxonomy
-- Artifact Limit Checker
-- Chaos Engineering Adapters
-- Control Plane Entities
-- Lab Runtime Architecture
-- Specification Artifacts
-- Allocation Service Projections
-- ADR Process Conventions
-- Messaging Contract Guards
-- Reliable Messaging Patterns
-- Infrastructure Planning Archive
-- Authoritative Read Control
+- Artifact Limit Script
+- Experiment and Chaos Services
+- Allocation Control Plane
+- Lab and Control Planes
+- Specification and Design Methods
+- Distributed Systems Lab
+- Services and Transactional Outbox
+- ADR Process and Conventions
+- Shared Messaging Module
+- Idempotency and Outbox Patterns
+- Archived ADRs and ArgoCD
+- Read Control Group
+- Documentation README
 - Homelab Infrastructure ADR
 - Experiment Definition Designer
 - Specification First Principle
 - Barrier Concept
 - Increment Operation
-- Declaration Rule R4
+- Experiment Execution Mapping
+- N Declaration Rule
+- Step Observation Mapping
+- Feature Card Index
+- Operation as Steps
+- Positive Control Experiment
+- Technology Stack
 
 ## God Nodes (most connected - your core abstractions)
 1. `ADR-0004: O Estatuto da Barreira e o Diagnóstico da Não Ocorrência` - 15 edges
@@ -49,13 +59,13 @@
 5. `Experiment` - 8 edges
 6. `Índice de ADRs` - 7 edges
 7. `Feature Card: Detecção da Atualização Perdida (E1 e E3)` - 7 edges
-8. `ADR-0001: O Passo como Unidade de Execução` - 6 edges
-9. `resource-service` - 6 edges
-10. `Taxonomia dos 42 Fenômenos` - 5 edges
+8. `Feature Planning Skill` - 7 edges
+9. `ADR-0001: O Passo como Unidade de Execução` - 6 edges
+10. `resource-service` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Regra Pedagógica: Problema → Causa → Solução → Trade-off` --conceptually_related_to--> `Roadmap de 12 Etapas`  [INFERRED]
-  CLAUDE.md → docs/plano-do-laboratorio.md
+  CLAUDE.md → README.md
 - `Q-0003-1 Worker Unreachability` --conceptually_related_to--> `Experiment`  [AMBIGUOUS]
   docs/adr/README.md → docs/adr/arquivo/0004-experiment-como-entidade-de-primeira-classe.md
 - `Q-0003-2 Scheduling on Missing Attempt` --conceptually_related_to--> `Experiment`  [AMBIGUOUS]
@@ -91,81 +101,93 @@
 - **Ciclo de execução de experimento** — docs_features_execucao_de_experimento_feature_card_execucao_de_um_experimento, docs_features_execucao_de_experimento_feature_card_r3, docs_features_execucao_de_experimento_feature_card_r4, docs_features_execucao_de_experimento_feature_card_r8, docs_features_execucao_de_experimento_feature_card_r9, docs_features_execucao_de_experimento_feature_card_r14 [EXTRACTED 1.00]
 - **Reuso do oráculo do predicado no experimento E5** — docs_features_deteccao_de_protecao_inerte_feature_card_oraculo_do_predicado, docs_features_deteccao_de_protecao_inerte_feature_card_experimento_e5, docs_features_deteccao_de_protecao_inerte_feature_card_allocate [EXTRACTED 0.95]
 
-## Communities (26 total, 7 thin omitted)
+## Communities (36 total, 14 thin omitted)
 
-### Community 0 - "Architecture Decision Records Index"
-Cohesion: 0.11
-Nodes (27): Skill: /feature-planning, Lab Plane, Oracle for Lost Update Detection, Oracle for Inert Protection Detection, ADR-0001: O Passo como Unidade de Execução, ADR-0001: Passo como Unidade de Execução, Observação e Injeção de Falha, ADR-0002: O Domínio Mínimo e os Dois Oráculos, Índice de ADRs (+19 more)
+### Community 0 - "ADR and Feature Cards"
+Cohesion: 0.12
+Nodes (25): Lab Plane, Oracle for Lost Update Detection, Oracle for Inert Protection Detection, ADR-0001: O Passo como Unidade de Execução, ADR-0001: Passo como Unidade de Execução, Observação e Injeção de Falha, ADR-0002: O Domínio Mínimo e os Dois Oráculos, Índice de ADRs, Matriz de Integrações (+17 more)
 
-### Community 1 - "Scheduling Language Concepts"
+### Community 1 - "Scheduling and Barrier ADRs"
 Cohesion: 0.18
 Nodes (20): ADR-0003: A linguagem do agendamento, Carga (declaração de papéis de uma execução), Encontro (forma curta de agendamento), Evento (chegada e travessia numa fronteira), Papel (nome com cardinalidade), Restrição de precedência (A antes de B), ADR-0004: O Estatuto da Barreira e o Diagnóstico da Não Ocorrência, Chave de contenção (+12 more)
 
-### Community 2 - "Core Execution Primitives"
+### Community 2 - "Core Abstractions Glossary"
 Cohesion: 0.13
 Nodes (16): Tentativa (Attempt), Fronteira (Boundary), Injetor de Falha (Fault Injector), Cláusula de Honestidade (Honesty Clause), Operação (Operation), Escalonador (Scheduler), Passo (Step), Corpo do Passo (Step Body) (+8 more)
 
-### Community 3 - "Workflow Engine Internals"
+### Community 3 - "JSON Schema Contract"
+Cohesion: 0.13
+Nodes (14): additionalProperties, description, examples, $id, properties, required, $schema, title (+6 more)
+
+### Community 4 - "Workflow Engine and Sagas"
 Cohesion: 0.15
 Nodes (14): Tabela allocation (schema revisado), Coluna deadline_at, Invariante de Motor Verificável por SQL, EvictionSaga, Mecanismo de Idempotency Key, PlacementSaga, Tabela saga_instance, Tabela saga_step (+6 more)
 
-### Community 4 - "Resource Concurrency Model"
+### Community 5 - "Capacity and Concurrency Model"
 Cohesion: 0.17
 Nodes (12): CapacityModel, Unique Invariant, Resource (Aggregate), Agent (Writing Origin), Lease Expiry (Writing Origin), Operator (Writing Origin), OVERCOMMITTED State, Reconciler (Writing Origin) (+4 more)
 
-### Community 5 - "Experiment Design Questions"
+### Community 6 - "Experiment Design Questions"
 Cohesion: 0.18
 Nodes (11): Experiment, Experiment Report, Q-0002-3 Final Quiescent State, Q-0002-4 Initial State Management, Q-0003-1 Worker Unreachability, Q-0003-2 Scheduling on Missing Attempt, Q-0003-3 Experiment Equality Criteria, Q-0003-8 N Definition vs. Retry (+3 more)
 
-### Community 6 - "Pedagogical Experiment Roadmap"
-Cohesion: 0.25
-Nodes (9): Regra Pedagógica: Problema → Causa → Solução → Trade-off, ADR-0002: Domínio Mínimo e Oráculo Exato, Experimento E1: Lost Update (Grupo de Controle), Experimento E3: Comparação de Estratégias, Experimento E5: Write Skew com Proteção Inerte, MVP do Laboratório, Oráculo Exato (Contagem de Perdas), Oráculo de Predicado sobre Conjunto (+1 more)
+### Community 7 - "Pedagogical Rules and Experiments"
+Cohesion: 0.22
+Nodes (10): Regra Pedagógica: Problema → Causa → Solução → Trade-off, Experimento E1: Lost Update (Grupo de Controle), Experimento E3: Comparação de Estratégias, Experimento E5: Write Skew com Proteção Inerte, MVP do Laboratório, Oráculo Exato (Contagem de Perdas), Oráculo de Predicado sobre Conjunto, Cinco Grupos de Fenômenos (+2 more)
 
-### Community 7 - "Platform Service Decomposition"
+### Community 8 - "Docker Compose Services"
 Cohesion: 0.22
 Nodes (9): Docker Compose Profiles, docker-compose.yml, Manifesto de Serviços (platform/services.yaml), platform/versions.env, chaos-service, experiment-service, registry-service, resource-service (+1 more)
 
-### Community 8 - "Concurrency Phenomena Taxonomy"
+### Community 9 - "Documentation Templates"
+Cohesion: 0.25
+Nodes (8): ADR Template, AsyncAPI Template, Example Mapping Template, Feature Card Template, Implementation Plan Template, Integrations Template, OpenAPI Template, Feature Planning Skill
+
+### Community 10 - "Concurrency Phenomena Taxonomy"
 Cohesion: 0.29
 Nodes (7): ADR-0004: Estatuto da Barreira e Diagnóstico da Não-Ocorrência, Grupo A: Intercalação, Grupo B: Entrega, Grupo C: Escrita Parcial, Grupo D: Saturação, Grupo E: Posse no Tempo, Taxonomia dos 42 Fenômenos
 
-### Community 9 - "Artifact Limit Checker"
+### Community 11 - "Artifact Limit Script"
 Cohesion: 0.67
 Nodes (5): default_limit(), main(), parse_limit(), resolve_inside(), Path
 
-### Community 10 - "Chaos Engineering Adapters"
+### Community 12 - "Experiment and Chaos Services"
 Cohesion: 0.47
 Nodes (6): experiment-service (ADR-0011), Adaptador de Relógio, Chaos Relay, chaos-service (ADR-0012), Toxiproxy, Observer (ADR-0013)
 
-### Community 11 - "Control Plane Entities"
+### Community 13 - "Allocation Control Plane"
 Cohesion: 0.40
 Nodes (5): Allocate Operation, Allocation Entity, Control Plane, Increment Operation, Resource Entity
 
-### Community 12 - "Lab Runtime Architecture"
+### Community 14 - "Lab and Control Planes"
 Cohesion: 0.40
 Nodes (5): Control Plane (Sistema sob Teste), Injeção de Falha em Pontos Nomeados, Lab Plane (Instrumento de Medida), Observação Passo a Passo, Runtime do Laboratório
 
-### Community 13 - "Specification Artifacts"
+### Community 15 - "Specification and Design Methods"
 Cohesion: 0.40
 Nodes (5): ADR, BDD (behavior.feature), Contrato (Contract), Example Mapping, Feature Card
 
-### Community 14 - "Allocation Service Projections"
+### Community 16 - "Distributed Systems Lab"
+Cohesion: 0.40
+Nodes (5): Contrato de Entrega (Homelab), Distributed Systems Experiment Lab, Lab Plane e Control Plane, Homelab Infrastructure, Princípio: Problema Antes da Solução
+
+### Community 17 - "Services and Transactional Outbox"
 Cohesion: 0.50
 Nodes (4): allocation-service (ADR-0011), resource-service (ADR-0011), Transactional Outbox (ADR-0007), Projeção Assíncrona (Modelo de Leitura)
 
-### Community 15 - "ADR Process Conventions"
+### Community 18 - "ADR Process and Conventions"
 Cohesion: 0.67
 Nodes (3): Processo de ADR, Template de ADR, Convenções de ADR
 
-### Community 16 - "Messaging Contract Guards"
+### Community 19 - "Shared Messaging Module"
 Cohesion: 0.67
 Nodes (3): Shared Module (lab-messaging-contract), ArchUnit Guard, Q-0004-2 Contention Key Guard
 
-### Community 17 - "Reliable Messaging Patterns"
+### Community 20 - "Idempotency and Outbox Patterns"
 Cohesion: 0.67
 Nodes (3): Idempotent Inbox, Transactional Outbox, Q-0004-3 Comparable Timestamps
 
-### Community 18 - "Infrastructure Planning Archive"
+### Community 21 - "Archived ADRs and ArgoCD"
 Cohesion: 0.67
 Nodes (3): Série Arquivada de ADRs, ArgoCD (homelab-infrastructure), Replanejamento de 2026-07-28
 
@@ -194,9 +216,9 @@ Nodes (3): Série Arquivada de ADRs, ArgoCD (homelab-infrastructure), Replanejam
   docs/adr/arquivo/0013-eixo-de-leitura-defasagem-e-como-medi-la.md · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **62 isolated node(s):** `ADR-0001: Passo como Unidade de Execução, Observação e Injeção de Falha`, `Lab Plane (Instrumento de Medida)`, `Injeção de Falha em Pontos Nomeados`, `Observação Passo a Passo`, `Convenções de ADR` (+57 more)
+- **92 isolated node(s):** `ADR-0001: Passo como Unidade de Execução, Observação e Injeção de Falha`, `Lab Plane (Instrumento de Medida)`, `Injeção de Falha em Pontos Nomeados`, `Observação Passo a Passo`, `Convenções de ADR` (+87 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
