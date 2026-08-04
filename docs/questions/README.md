@@ -13,7 +13,8 @@ que acontece **depois** que uma questão nasce.
 
 Uma questão nasce na seção `## Questões em aberto` de um ADR ainda `Proposto`. Se a
 resposta pertence a outra decisão, ela recebe status `encaminhado` e, no ato da aceitação
-do ADR de origem, é transportada para um arquivo nesta pasta — **inteira, não resumida**.
+do ADR de origem, é transportada para um arquivo nesta pasta — **inteira, não
+resumida**.
 O ADR de destino precisa nascer com o problema que motivou a entrada dele na
 [fila de decisões](../adr/README.md#fila-de-decisões). Um resumo é a mesma perda, mais
 devagar.
@@ -28,7 +29,8 @@ quando o ADR é aceito, e a citação passaria a apontar para nada.
 
 ## Ciclo de vida
 
-Uma questão nasce com status `pendente`. Ela **não** é apagada quando alguém a resolve: o
+Uma questão nasce com status `pendente`. Ela
+**não** é apagada quando alguém a resolve: o
 status passa a `resolvida por ADR-NNNN`, e o arquivo dela abre nomeando a subseção do ADR
 onde a decisão está. O enunciado permanece porque ele registra o que estava em jogo antes
 da decisão — e é isso que um leitor futuro não consegue reconstruir a partir do ADR de
@@ -47,7 +49,7 @@ identificador.
 
 | ID                        | Questão                                                                           | Origem   | Destino na fila              | Status                 |
 |---------------------------|-----------------------------------------------------------------------------------|----------|------------------------------|------------------------|
-| [`Q-0001-1`](Q-0001-1.md) | O endereço da fronteira precisa sobreviver à edição da operação                   | ADR-0001 | o log de observações         | `pendente`             |
+| [`Q-0001-1`](Q-0001-1.md) | O endereço da fronteira precisa sobreviver à edição da operação                   | ADR-0001 | Experiment                   | `pendente`             |
 | [`Q-0001-2`](Q-0001-2.md) | O compartilhamento por colaborador injetado continua sem guarda                   | ADR-0001 | estratégias de concorrência  | resolvida por ADR-0006 |
 | [`Q-0001-3`](Q-0001-3.md) | O critério de igualdade entre dois traços de SQL não está definido                | ADR-0001 | o domínio mínimo             | resolvida por ADR-0002 |
 | [`Q-0001-4`](Q-0001-4.md) | O escalonador precisa de um protocolo de desistência                              | ADR-0001 | a forma do escalonador       | resolvida por ADR-0005 |
@@ -57,7 +59,7 @@ identificador.
 | [`Q-0002-4`](Q-0002-4.md) | O estado inicial não é estabelecido por ninguém                                   | ADR-0002 | Experiment                   | `pendente`             |
 | [`Q-0003-1`](Q-0003-1.md) | Um worker que nunca chega trava o agendamento, e a recusa por texto não o alcança | ADR-0003 | a forma do escalonador       | resolvida por ADR-0005 |
 | [`Q-0003-2`](Q-0003-2.md) | Um agendamento sobre uma tentativa que talvez não ocorra                          | ADR-0003 | a forma do escalonador       | resolvida por ADR-0005 |
-| [`Q-0003-3`](Q-0003-3.md) | Duas execuções do mesmo experimento não têm critério de igualdade                 | ADR-0003 | o log de observações         | `pendente`             |
+| [`Q-0003-3`](Q-0003-3.md) | Duas execuções do mesmo experimento não têm critério de igualdade                 | ADR-0003 | os dois formatos de veredito | resolvida por ADR-0007 |
 | [`Q-0003-8`](Q-0003-8.md) | O `N` declarado antes não fecha com uma estratégia que retenta                    | ADR-0003 | Experiment                   | `pendente`             |
 | [`Q-0004-2`](Q-0004-2.md) | Nada obriga o passo a reportar a chave de contenção                               | ADR-0004 | arquitetura mínima e guardas | `pendente`             |
 | [`Q-0004-3`](Q-0004-3.md) | Comparar janelas exige um instante comparável entre workers                       | ADR-0004 | o log de observações         | `pendente`             |
