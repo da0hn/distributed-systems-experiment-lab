@@ -31,7 +31,7 @@ Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
   digitação) é recusado antes de qualquer execução. A parada é ruidosa por decisão.
 - **Exemplo 4.4, o buraco conhecido** — Renomear `select-resource` e atribuir esse mesmo
   rótulo a **outro** passo faz o endereço resolver para o passo errado, sem erro nenhum.
-  É `Q-0001-1`, e nenhum mecanismo o cobre hoje.
+  É [`Q-0001-1`](../../questions/Q-0001-1.md), e nenhum mecanismo o cobre hoje.
 
 ### R5 — A ordem das duas consultas na fronteira
 
@@ -39,9 +39,10 @@ Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
   primeiro e falha depois de liberá-lo.
 - **Exemplo 5.2, por que a ordem importa** — Na ordem inversa, um worker que precisasse
   chegar à barreira morreria antes, e os outros esperariam por alguém que nunca chega.
-- **Exemplo 5.3, o inverso não está resolvido** — Um worker que falha na saída do passo N
-  nunca chega à entrada do passo N+1. Um escalonador que o espere trava a execução
-  inteira. É `Q-0001-4`, encaminhada à decisão da forma do escalonador.
+- **Exemplo 5.3, o inverso não está resolvido** — Um worker que falha na saída do passo
+  N nunca chega à entrada do passo N+1. Um escalonador que o espere trava a execução
+  inteira. É [`Q-0001-4`](../../questions/Q-0001-4.md), encaminhada à decisão da forma
+  do escalonador.
 
 ### R6 e R7 — O escopo pertence a um worker e a uma tentativa
 
@@ -52,7 +53,8 @@ Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
 - **Contraexemplo 7.2, a lacuna** — Um repositório injetado que guarde um `Map` como
   cache passa pelas três camadas: a definição não tem estado mutável, a análise fica
   verde, e o escopo continua íntegro. Os workers compartilham por ele assim mesmo, e o
-  laboratório produz atualizações perdidas dentro do próprio instrumento. É `Q-0001-2`.
+  laboratório produz atualizações perdidas dentro do próprio instrumento. É
+  [`Q-0001-2`](../../questions/Q-0001-2.md).
 
 ### R9 — O commit não é um passo
 
@@ -90,16 +92,16 @@ Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
 
 ## Perguntas em aberto
 
-| # | Pergunta | Origem |
-|---|---|---|
-| P1 | Como o replay sabe que o **corpo** de um passo mudou, com o rótulo intacto? | `Q-0001-1` |
-| P2 | Um rótulo reciclado faz o endereço resolver para o passo errado, em silêncio. Quem impede? | `Q-0001-1` |
-| P3 | O que impede um colaborador injetado de compartilhar estado entre workers? | `Q-0001-2` |
-| P4 | Como um worker que morreu notifica o escalonador? | `Q-0001-4` |
-| P5 | "Relógio injetável" e "aleatoriedade semeada" viram regra executável como? | `Q-0002-1` |
-| P6 | O que obriga um passo a reportar a chave de contenção? | `Q-0004-2` |
-| P7 | O tipo de passo é conjunto fechado. Acrescentar `PUBLISH` na etapa 5 muda o quê? | nova, 2026-08-01 |
-| P8 | Qual é o comportamento quando dois passos declaram o mesmo rótulo? R2 exige unicidade e nenhum documento diz o que acontece quando ela é violada. | nova, 2026-08-01 |
+| #   | Pergunta                                                                                                                                          | Origem                                    |
+|-----|---------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
+| P1  | Como o replay sabe que o **corpo** de um passo mudou, com o rótulo intacto?                                                                       | [`Q-0001-1`](../../questions/Q-0001-1.md) |
+| P2  | Um rótulo reciclado faz o endereço resolver para o passo errado, em silêncio. Quem impede?                                                        | [`Q-0001-1`](../../questions/Q-0001-1.md) |
+| P3  | O que impede um colaborador injetado de compartilhar estado entre workers?                                                                        | [`Q-0001-2`](../../questions/Q-0001-2.md) |
+| P4  | Como um worker que morreu notifica o escalonador?                                                                                                 | [`Q-0001-4`](../../questions/Q-0001-4.md) |
+| P5  | "Relógio injetável" e "aleatoriedade semeada" viram regra executável como?                                                                        | [`Q-0002-1`](../../questions/Q-0002-1.md) |
+| P6  | O que obriga um passo a reportar a chave de contenção?                                                                                            | [`Q-0004-2`](../../questions/Q-0004-2.md) |
+| P7  | O tipo de passo é conjunto fechado. Acrescentar `PUBLISH` na etapa 5 muda o quê?                                                                  | nova, 2026-08-01                          |
+| P8  | Qual é o comportamento quando dois passos declaram o mesmo rótulo? R2 exige unicidade e nenhum documento diz o que acontece quando ela é violada. | nova, 2026-08-01                          |
 
 ## Adiado de propósito
 

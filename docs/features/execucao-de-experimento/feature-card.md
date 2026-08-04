@@ -57,17 +57,19 @@ formaliza** — `Q-INT-1` em [`integrations.md`](../../architecture/integrations
 
 ## Riscos e decisões pendentes
 
-| Questão    | O que está em jogo                                                       |
-|------------|--------------------------------------------------------------------------|
-| `Q-0004-8` | o limite `3/commits` pressupõe independência que as tentativas não têm   |
-| `Q-0004-4` | `N` alto ocupa o runner; `N` baixo produz falha intermitente no pipeline |
-| `Q-0004-5` | a taxa com incerteza é um terceiro formato de veredito                   |
-| `Q-0002-2` | quem declara o fim da execução, e se o oráculo lê antes ou depois        |
-| `Q-0004-2` | nada obriga o passo a reportar a chave de contenção que R10 consome      |
+| Questão                                   | O que está em jogo                                                       |
+|-------------------------------------------|--------------------------------------------------------------------------|
+| [`Q-0004-8`](../../questions/Q-0004-8.md) | o limite `3/commits` pressupõe independência que as tentativas não têm   |
+| [`Q-0004-4`](../../questions/Q-0004-4.md) | `N` alto ocupa o runner; `N` baixo produz falha intermitente no pipeline |
+| [`Q-0004-5`](../../questions/Q-0004-5.md) | a taxa com incerteza é um terceiro formato de veredito                   |
+| [`Q-0002-2`](../../questions/Q-0002-2.md) | quem declara o fim da execução, e se o oráculo lê antes ou depois        |
+| [`Q-0004-2`](../../questions/Q-0004-2.md) | nada obriga o passo a reportar a chave de contenção que R10 consome      |
 
-O [`ADR-0003`](../../adr/0003-a-linguagem-do-agendamento.md) foi aceito em 2026-08-01. Ele
-encaminhou `Q-0003-1`, `Q-0003-2`, `Q-0003-3` e `Q-0003-8`; as duas primeiras alcançam a
-execução de controle deste card.
+O [`ADR-0003`](../../adr/0003-a-linguagem-do-agendamento.md) foi aceito em 2026-08-01.
+Ele encaminhou [`Q-0003-1`](../../questions/Q-0003-1.md),
+[`Q-0003-2`](../../questions/Q-0003-2.md), [`Q-0003-3`](../../questions/Q-0003-3.md) e
+[`Q-0003-8`](../../questions/Q-0003-8.md); as duas primeiras alcançam a execução de
+controle deste card.
 
 ## Critérios de pronto
 

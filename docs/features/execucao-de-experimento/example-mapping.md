@@ -57,7 +57,7 @@ flowchart LR
   abortada nunca poderia violar.
 - **Exemplo 7.3, o que o número não diz** — As tentativas competem pelo mesmo recurso e
   pelo mesmo pool. O limite pressupõe independência, e a correlação não tem sinal
-  conhecido sem um modelo. É `Q-0004-8`.
+  conhecido sem um modelo. É [`Q-0004-8`](../../questions/Q-0004-8.md).
 
 ### R9, R10 e R11 — A contagem de coincidências
 
@@ -115,19 +115,19 @@ um defeito que torna a de baixo ilegível.
 
 ## Perguntas em aberto
 
-| #   | Pergunta                                                                                                                                                               | Origem           |
-|-----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
-| P1  | O limite `3/commits` pressupõe independência que a execução não tem. O que o número publicado afirma?                                                                  | `Q-0004-8`       |
-| P2  | Quem escolhe `N`, e o experimento roda no pipeline, sob demanda, ou os dois com `N` diferente?                                                                         | `Q-0004-4`       |
-| P3  | Como a taxa com incerteza cabe ao lado do booleano e da curva?                                                                                                         | `Q-0004-5`       |
-| P4  | Quem declara que a execução terminou, e o oráculo lê antes ou depois?                                                                                                  | `Q-0002-2`       |
-| P5  | Quem estabelece o estado inicial, e como o banco volta ao ponto de partida entre execuções?                                                                            | `Q-0002-4`       |
-| P6  | O que obriga um passo a reportar a chave de contenção que R10 consome?                                                                                                 | `Q-0004-2`       |
-| P7  | Os instantes de dois workers precisam ser ordenáveis entre si. Qual relógio, e com que resolução?                                                                      | `Q-0004-3`       |
-| P8  | A tabela do E3 põe três estratégias com taxa zero e limites diferentes lado a lado. O que ela permite concluir?                                                        | `Q-0004-5`       |
-| P9  | Um experimento cujo veredito **não** pode ser zero está dispensado de declarar janela. Qual experimento é esse, e quem decide?                                         | nova, 2026-08-01 |
-| P10 | R11 exige mesma carga para comparar. "Mesma carga" é mesmo `N`, mesmos workers e mesma operação — a estratégia difere por construção. A semente entra nessa igualdade? | nova, 2026-08-01 |
-| P11 | O `ADR-0003` foi aceito e nenhum cenário cobre o agendamento. Quais das sete recusas viram cenário, e este card é o dono delas ou a capacidade pede card próprio?      | nova, 2026-08-01 |
+| #   | Pergunta                                                                                                                                                               | Origem                                    |
+|-----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
+| P1  | O limite `3/commits` pressupõe independência que a execução não tem. O que o número publicado afirma?                                                                  | [`Q-0004-8`](../../questions/Q-0004-8.md) |
+| P2  | Quem escolhe `N`, e o experimento roda no pipeline, sob demanda, ou os dois com `N` diferente?                                                                         | [`Q-0004-4`](../../questions/Q-0004-4.md) |
+| P3  | Como a taxa com incerteza cabe ao lado do booleano e da curva?                                                                                                         | [`Q-0004-5`](../../questions/Q-0004-5.md) |
+| P4  | Quem declara que a execução terminou, e o oráculo lê antes ou depois?                                                                                                  | [`Q-0002-2`](../../questions/Q-0002-2.md) |
+| P5  | Quem estabelece o estado inicial, e como o banco volta ao ponto de partida entre execuções?                                                                            | [`Q-0002-4`](../../questions/Q-0002-4.md) |
+| P6  | O que obriga um passo a reportar a chave de contenção que R10 consome?                                                                                                 | [`Q-0004-2`](../../questions/Q-0004-2.md) |
+| P7  | Os instantes de dois workers precisam ser ordenáveis entre si. Qual relógio, e com que resolução?                                                                      | [`Q-0004-3`](../../questions/Q-0004-3.md) |
+| P8  | A tabela do E3 põe três estratégias com taxa zero e limites diferentes lado a lado. O que ela permite concluir?                                                        | [`Q-0004-5`](../../questions/Q-0004-5.md) |
+| P9  | Um experimento cujo veredito **não** pode ser zero está dispensado de declarar janela. Qual experimento é esse, e quem decide?                                         | nova, 2026-08-01                          |
+| P10 | R11 exige mesma carga para comparar. "Mesma carga" é mesmo `N`, mesmos workers e mesma operação — a estratégia difere por construção. A semente entra nessa igualdade? | nova, 2026-08-01                          |
+| P11 | O `ADR-0003` foi aceito e nenhum cenário cobre o agendamento. Quais das sete recusas viram cenário, e este card é o dono delas ou a capacidade pede card próprio?      | nova, 2026-08-01                          |
 
 ## Adiado de propósito
 

@@ -28,7 +28,8 @@ Use esta referência somente quando a mudança exigir um ADR.
 - Nunca aceite por omissão. Exija aprovação explícita da pessoa responsável.
 - Aceite somente sem questões `aberto` ou `aberto (crítico)`.
 - Antes de remover `## Questões em aberto`, transporte cada questão `encaminhado`, inteira,
-  para `## Questões encaminhadas` de `docs/adr/README.md`, no mesmo commit.
+  para um arquivo próprio `Q-NNNN-K.md` em `docs/questions/`, e acrescente a linha dela ao
+  índice de `docs/questions/README.md`, no mesmo commit.
 - Mova a decisão fechada para `## Decisão` ou `## Consequências` e então remova a seção de
   questões em aberto.
 

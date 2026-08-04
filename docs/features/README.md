@@ -34,11 +34,12 @@ O MVP tem quatro experimentos, e os cards **não** são um por experimento. Um c
 
 **E4 — `optimistic-under-contention`, o veredito em formato curva.**
 
-O E4 está no MVP (`../plano-do-laboratorio.md`:441-449) e **não tem card**. O motivo é que
-o formato de veredito dele não foi decidido: a fila de decisões enfileira "os dois formatos
-de veredito" na posição 9, e três questões encaminhadas mudam o escopo daquela decisão
-antes que ela seja tomada — `Q-0002-3` acrescenta o eixo pontual contra contínuo no tempo,
-`Q-0004-5` acrescenta um terceiro formato, e `Q-0004-8` pergunta o que a incerteza
+O E4 está no MVP (`../plano-do-laboratorio.md`:441-449) e **não tem card**. O motivo é
+que o formato de veredito dele não foi decidido: a fila de decisões enfileira "os dois
+formatos de veredito" na posição 9, e três questões encaminhadas mudam o escopo daquela
+decisão antes que ela seja tomada — [`Q-0002-3`](../questions/Q-0002-3.md) acrescenta o
+eixo pontual contra contínuo no tempo, [`Q-0004-5`](../questions/Q-0004-5.md) acrescenta
+um terceiro formato, e [`Q-0004-8`](../questions/Q-0004-8.md) pergunta o que a incerteza
 publicada afirma.
 
 O que existe hoje sobre o E4 é o estímulo (`OPTIMISTIC` fixo, workers de 2 a 50) e a forma

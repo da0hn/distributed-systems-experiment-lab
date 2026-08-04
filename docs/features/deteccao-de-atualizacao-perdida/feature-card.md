@@ -67,11 +67,11 @@ Lab Plane depois da quiescência. **Não existe DDL nem contrato de esquema** �
 
 ## Riscos e decisões pendentes
 
-| Questão    | O que está em jogo                                                                                                |
-|------------|-------------------------------------------------------------------------------------------------------------------|
-| `Q-0002-4` | ninguém estabelece o estado inicial; R4 faz o identificador da semente colidir com as linhas da execução anterior |
-| `Q-0002-3` | o oráculo lê o estado final quiescente, e não serve a violação transitória                                        |
-| `Q-0003-8` | quantas vezes `OPTIMISTIC` tenta de novo sob exceção reconhecida não tem limite definido                          |
+| Questão                                   | O que está em jogo                                                                                                |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| [`Q-0002-4`](../../questions/Q-0002-4.md) | ninguém estabelece o estado inicial; R4 faz o identificador da semente colidir com as linhas da execução anterior |
+| [`Q-0002-3`](../../questions/Q-0002-3.md) | o oráculo lê o estado final quiescente, e não serve a violação transitória                                        |
+| [`Q-0003-8`](../../questions/Q-0003-8.md) | quantas vezes `OPTIMISTIC` tenta de novo sob exceção reconhecida não tem limite definido                          |
 
 ## Critérios de pronto
 

@@ -8,10 +8,11 @@
   impasse do `arquivo/0012`. Referencia a regra 6 do `arquivo/0006`. Deixa uma ponta
   para cinco decisões da fila: o domínio mínimo, a linguagem do agendamento, a forma do
   escalonador, as estratégias de concorrência e o log de observações.
-- **Questões encaminhadas:** `Q-0001-1` a `Q-0001-4`, em
+- **Questões encaminhadas:** [`Q-0001-1`](../questions/Q-0001-1.md) a
+  [`Q-0001-4`](../questions/Q-0001-4.md), em
   [`README.md`](README.md#questões-encaminhadas). A quinta questão do debate foi
-  resolvida em 2026-07-29 pela emenda à convenção de aceitação, nas seções
-  `## Processo de debate` e `## Questões encaminhadas` daquele arquivo.
+  resolvida em 2026-07-29 pela emenda à convenção de aceitação, nas seções `## Processo
+  de debate` e `## Questões encaminhadas` daquele arquivo.
 
 ## Vocabulário
 
@@ -190,7 +191,7 @@ A plataforma DEVE recusar um endereço de fronteira que não resolva para nenhum
 operação. Um rótulo renomeado faz o experimento antigo parar de executar, e a parada é
 ruidosa por decisão. O que a resolução de endereço NÃO cobre é a mudança do corpo de um
 passo com o rótulo intacto: ali o replay executa e mede outra operação em silêncio. Ver
-`Q-0001-1`.
+[`Q-0001-1`](../questions/Q-0001-1.md).
 
 Em cada fronteira o runtime faz duas coisas, **nesta ordem**:
 
@@ -315,7 +316,8 @@ detecta o que sobra dela. A ordem entre as duas importa: sem a primeira, cada tr
 divergente exigiria comparar dois corpos de SQL escritos à mão para descobrir qual dos
 dois está errado.
 
-O critério de igualdade entre dois traços não é decidido aqui. Ver `Q-0001-3`.
+O critério de igualdade entre dois traços não é decidido aqui. Ver
+[`Q-0001-3`](../questions/Q-0001-3.md).
 
 ### O que este ADR não decide
 
@@ -327,7 +329,7 @@ de estados, ou outra coisa. É ADR próprio, já na fila, e ele depende deste.
 **A forma do escalonador.** A decisão fixa que o runtime consulta o escalonador em cada
 fronteira, e fixa a ordem dessa consulta. A decisão não fixa como o escalonador decide,
 que estado ele guarda, nem como um worker que morreu o notifica. É ADR próprio, já na
-fila, e `Q-0001-4` é a primeira entrada dele.
+fila, e [`Q-0001-4`](../questions/Q-0001-4.md) é a primeira entrada dele.
 
 **Quando há outra tentativa.** O runtime pergunta; a estratégia responde. A política
 pertence ao ADR de estratégias de concorrência.
@@ -469,11 +471,11 @@ não com um argumento escrito.
   acoplamento ser aceitável.
 - **A prova de equivalência é por amostragem.** O teste cobre as entradas que ele
   executa. Uma divergência que só apareça fora delas continua invisível, e o conjunto
-  amostrado ainda não foi definido. Ver `Q-0001-3`.
+  amostrado ainda não foi definido. Ver [`Q-0001-3`](../questions/Q-0001-3.md).
 - **O estado intermediário sai das variáveis locais.** O `value + 1` calculado no
   `COMPUTE` precisa chegar ao `WRITE` por um escopo de execução explícito. Esse escopo é
   mais verboso e mais fácil de errar que uma variável local — e o erro tem a forma de
-  `Q-0001-2`.
+  [`Q-0001-2`](../questions/Q-0001-2.md).
 - **A operação em alta resolução não é o código que um engenheiro escreveria.** A regra
   pedagógica do repositório quer mostrar o problema no código real. A sequência de
   passos é uma tradução, e o leitor precisa fazer o mapeamento de volta. A forma de
@@ -494,11 +496,11 @@ não com um argumento escrito.
   construção que uma instância direta não teria.
 - **Uma rota de compartilhamento continua sem guarda.** As três camadas protegem o
   escopo entre passos, e não protegem o estado alcançado por colaborador injetado. Ver
-  `Q-0001-2`.
+  [`Q-0001-2`](../questions/Q-0001-2.md).
 - O runtime vira código crítico do laboratório. Um bug nele contamina todos os
   experimentos ao mesmo tempo. A cláusula de honestidade cobre parte desses bugs, e não
   cobre a fabricação de anomalia dentro do escopo — para essa, as três camadas acima e o
-  controle positivo de `Q-0001-2` são a defesa.
+  controle positivo de [`Q-0001-2`](../questions/Q-0001-2.md) são a defesa.
 
 ### Neutras
 
@@ -620,7 +622,8 @@ coisa que o laboratório tem para ensinar.
 O corpo da operação continua linear e cede o controle ao runtime em pontos marcados.
 
 **Descartada.** A alternativa E preservaria o código linear e a demarcação de transação.
-É também a única alternativa que atacaria `Q-0001-2` e `Q-0001-3` de frente.
+É também a única alternativa que atacaria [`Q-0001-2`](../questions/Q-0001-2.md) e
+[`Q-0001-3`](../questions/Q-0001-3.md) de frente.
 
 A API de continuação delimitada da JVM é interna (`jdk.internal.vm.Continuation`) e
 exige `--add-exports` para ser usada. Um laboratório cuja fundação depende de API

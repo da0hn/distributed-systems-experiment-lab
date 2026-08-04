@@ -17,8 +17,9 @@ da seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 - O E1 roda sem coluna de versão — o ponto pedagógico. O esboço do ADR-0001 lê `version`
   numa coluna inexistente; fixa forma, não é normativo.
 - A semente `42` produz sempre o mesmo identificador (replay da etapa 12), e por isso
-  também colide com as linhas da execução anterior (`Q-0002-4`). Um `SERIAL` quebraria
-  essa igualdade, tornando o identificador função da ordem de inserção.
+  também colide com as linhas da execução anterior
+  ([`Q-0002-4`](../../questions/Q-0002-4.md)). Um `SERIAL` quebraria essa igualdade,
+  tornando o identificador função da ordem de inserção.
 
 ### R5 a R9 — O oráculo e o denominador
 
@@ -60,13 +61,13 @@ da seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 
 ## Perguntas em aberto
 
-| #  | Pergunta                                                          | Origem     |
-|----|-------------------------------------------------------------------|------------|
-| P2 | Quem estabelece o estado inicial entre execuções?                 | `Q-0002-4` |
-| P4 | O oráculo lê o estado quiescente. E violação transitória?         | `Q-0002-3` |
-| P5 | R11 exige pool maior que workers — quem verifica, e quando?       | nova       |
-| P6 | `capacity` existe, `increment` não a lê — intencional?            | nova       |
-| P7 | Três estratégias podem empatar em taxa zero — o que isso conclui? | `Q-0004-5` |
+| #   | Pergunta                                                          | Origem                                    |
+|-----|-------------------------------------------------------------------|-------------------------------------------|
+| P2  | Quem estabelece o estado inicial entre execuções?                 | [`Q-0002-4`](../../questions/Q-0002-4.md) |
+| P4  | O oráculo lê o estado quiescente. E violação transitória?         | [`Q-0002-3`](../../questions/Q-0002-3.md) |
+| P5  | R11 exige pool maior que workers — quem verifica, e quando?       | nova                                      |
+| P6  | `capacity` existe, `increment` não a lê — intencional?            | nova                                      |
+| P7  | Três estratégias podem empatar em taxa zero — o que isso conclui? | [`Q-0004-5`](../../questions/Q-0004-5.md) |
 
 P1 e P3 foram respondidas por R14/R15 do ADR-0006, `Aceito`.
 

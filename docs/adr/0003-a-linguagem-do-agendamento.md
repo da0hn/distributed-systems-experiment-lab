@@ -11,8 +11,10 @@
   ADR-0004 sem substituí-lo, pela convenção emendada em 2026-07-31
   ([`README.md`](README.md#substituição-e-subsunção-são-coisas-diferentes)). Precede a
   forma do escalonador, que consome o que ele decidiu.
-- **Questões que este ADR encaminha:** `Q-0003-1`, `Q-0003-2`, `Q-0003-3` e `Q-0003-8`,
-  na seção `## Questões encaminhadas` de [`README.md`](README.md).
+- **Questões que este ADR encaminha:** [`Q-0003-1`](../questions/Q-0003-1.md),
+  [`Q-0003-2`](../questions/Q-0003-2.md), [`Q-0003-3`](../questions/Q-0003-3.md) e
+  [`Q-0003-8`](../questions/Q-0003-8.md), na seção `## Questões encaminhadas` de
+  [`README.md`](README.md).
 
 ## Vocabulário
 
@@ -583,8 +585,8 @@ identifica as cem. Disparar na primeira deixa noventa e nove passagens livres de
 uma execução que existe para forçar uma ordem, e a violação observada PODE ter vindo de
 qualquer uma delas — o controle deixaria de provar o que existe para provar. Disparar em
 todas transforma a execução em rodadas sincronizadas, e o primeiro worker a esgotar seu
-quinhão trava as rodadas seguintes, que é a `Q-0003-1` promovida de acidente a caminho
-normal.
+quinhão trava as rodadas seguintes, que é a [`Q-0003-1`](../questions/Q-0003-1.md)
+promovida de acidente a caminho normal.
 
 ### Alternativa F — derivar o encontro da janela de exposição
 

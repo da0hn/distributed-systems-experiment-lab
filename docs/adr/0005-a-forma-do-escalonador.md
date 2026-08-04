@@ -7,7 +7,9 @@
   e do ADR-0003 (chegada, travessia, agendamento). **Subsume** a tabela de classificação
   do ADR-0004, sem substituí-lo, pela convenção emendada em 2026-07-31 ([
   `README.md`](README.md#substituição-e-subsunção-são-coisas-diferentes)).
-- **Questões que este ADR resolve:** `Q-0001-4`, `Q-0002-2`, `Q-0003-1`, `Q-0003-2`.
+- **Questões que este ADR resolve:** [`Q-0001-4`](../questions/Q-0001-4.md),
+  [`Q-0002-2`](../questions/Q-0002-2.md), [`Q-0003-1`](../questions/Q-0003-1.md),
+  [`Q-0003-2`](../questions/Q-0003-2.md).
 
 ## Vocabulário
 
@@ -75,8 +77,9 @@ sequenceDiagram
 ### O contador de ativos sinaliza o fim da execução
 
 Quando o contador chega a zero, o escalonador sinaliza "execução terminada". É este
-sinal que o oráculo do ADR-0002 aguarda antes de ler o banco. `Q-0002-2` fecha aqui: o
-escalonador declara, o oráculo espera.
+sinal que o oráculo do ADR-0002 aguarda antes de ler o banco.
+[`Q-0002-2`](../questions/Q-0002-2.md) fecha aqui: o escalonador declara, o oráculo
+espera.
 
 ### O término resolve a desistência
 
@@ -86,8 +89,9 @@ restrição não pode mais ser satisfeita — **desistência** — e quem espera
 liberado.
 
 A desistência cobre os dois casos das questões encaminhadas. Um worker morto por falha
-injetada nunca chega — `Q-0001-4`. Um worker que comete na tentativa 1 nunca produz a
-chegada agendada para a tentativa 2 — `Q-0003-2`. Os dois terminam pelo mesmo evento.
+injetada nunca chega — [`Q-0001-4`](../questions/Q-0001-4.md). Um worker que comete na
+tentativa 1 nunca produz a chegada agendada para a tentativa 2 —
+[`Q-0003-2`](../questions/Q-0003-2.md). Os dois terminam pelo mesmo evento.
 
 ### O veredito nomeia a desistência
 
@@ -114,9 +118,9 @@ ler ou alterar qualquer um dos dois, e o liberam em bloco `finally`.
 término diz que ele não vai chegar a mais nenhuma. Fundir os dois exigiria que toda
 chegada soubesse se é a última — resposta que só a estratégia dá.
 
-**Por que o contador de ativos serve toda execução.** `Q-0002-2` não depende de
-agendamento. Reaproveitar o evento de término evita um segundo mecanismo para a mesma
-pergunta.
+**Por que o contador de ativos serve toda execução.**
+[`Q-0002-2`](../questions/Q-0002-2.md) não depende de agendamento. Reaproveitar o evento
+de término evita um segundo mecanismo para a mesma pergunta.
 
 **Por que a desistência é imediata, e não por timeout.** Timeout mede tempo de parede,
 proibido fora de um adaptador de relógio. O término já é um evento do próprio runtime.
@@ -128,7 +132,8 @@ terminou o próprio agendamento. Confundir os dois esconderia a causa do relató
 **Por que `ReentrantLock`, e não `synchronized`.** A regra estrutural deste repositório
 proíbe `synchronized`, `ReentrantLock` e `AtomicInteger` no sistema sob teste, sem
 exceção declarada por trecho de código. Um guard textual que procure a palavra-chave
-`synchronized` em qualquer classe do sistema sob teste (`Q-0002-1`, `Q-0004-2`) precisa
+`synchronized` em qualquer classe do sistema sob teste
+([`Q-0002-1`](../questions/Q-0002-1.md), [`Q-0004-2`](../questions/Q-0004-2.md)) precisa
 de uma exceção para o escalonador, se o escalonador também usar a palavra-chave. Usar
 `ReentrantLock` no Lab Plane mantém a proibição sem exceção: a palavra-chave
 `synchronized` nunca aparece em código nenhum do repositório, e o guard não precisa
@@ -141,7 +146,8 @@ distinguir os dois planos para decidir o que rejeitar.
 - O oráculo ganha um instante único para ler o banco, derivado do mesmo evento que
   resolve desistência.
 - Um worker morto por falha injetada não trava mais a execução de controle.
-- `Q-0003-2` deixa de ser hipotético: `OPTIMISTIC` no E3 e no E4 usa o mesmo mecanismo.
+- [`Q-0003-2`](../questions/Q-0003-2.md) deixa de ser hipotético: `OPTIMISTIC` no E3 e
+  no E4 usa o mesmo mecanismo.
 - A tabela de veredito do ADR-0004 ganha o caso que faltava, sem reabrir os cinco
   aceitos.
 - A proibição de `synchronized` no sistema sob teste continua sem exceção — o Lab Plane

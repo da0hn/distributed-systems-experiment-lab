@@ -117,8 +117,9 @@ Vale para os 42 fenômenos, sem exceção. É por isso que `version` não está 
   entram no Git — juntos, o histórico vira um caderno de laboratório. (A fonte de verdade
   entre arquivo versionado e Experiment Designer na UI é tensão aberta: plano, seção 11.)
 
-As três primeiras são hoje **texto, não regra executável**. `Q-0002-1` registra isso, e a
-guarda pertence à decisão de arquitetura mínima.
+As três primeiras são hoje **texto, não regra executável**.
+[`Q-0002-1`](docs/questions/Q-0002-1.md) registra isso, e a guarda pertence à decisão de
+arquitetura mínima.
 
 ## Estado atual
 
@@ -152,10 +153,10 @@ diante:
   concorrência, junto da política que a lê. O esboço ilustrativo do ADR-0001 lê uma coluna
   que o esquema não tem — o esboço não é normativo.
 
-As questões encaminhadas vivem em [`docs/adr/README.md`](docs/adr/README.md), seção
-`## Questões encaminhadas`, com identificador `Q-NNNN-K`. **Cite-as por esse
-identificador**, nunca por "a questão K do ADR-NNNN". Cada uma tem destino nomeado na
-fila; uma resolvida mantém o enunciado e ganha `resolvida por ADR-NNNN`, de propósito.
+As questões encaminhadas vivem em [`docs/questions/`](docs/questions/README.md), um
+arquivo por questão, com identificador `Q-NNNN-K`. **Cite-as por esse identificador**,
+nunca por "a questão K do ADR-NNNN". Cada uma tem destino nomeado na fila; uma resolvida
+mantém o enunciado e ganha `resolvida por ADR-NNNN`, de propósito.
 
 As perguntas levantadas durante o Example Mapping vivem nos próprios `example-mapping.md`, e
 **não** foram transportadas para a fila de ADRs.

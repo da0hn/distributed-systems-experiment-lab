@@ -58,11 +58,11 @@ formalizado: o esquema existe apenas como prosa no ADR-0002 — ver `Q-INT-5` em
 
 ## Riscos e decisões pendentes
 
-| Questão    | O que está em jogo                                                                                                                                                  |
-|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Q-0001-1` | o corpo de um passo muda com o rótulo intacto, e o replay mede outra operação em silêncio; quatro candidatas de mecanismo, nenhuma escolhida                        |
-| `Q-0002-1` | "relógio injetável" e "aleatoriedade semeada" são texto, não regra executável; uma chamada a `Instant.now()` faz R10 reprovar um par correto, de forma intermitente |
-| `Q-0004-2` | nada obriga um passo a reportar a chave de contenção                                                                                                                |
+| Questão                                   | O que está em jogo                                                                                                                                                  |
+|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`Q-0001-1`](../../questions/Q-0001-1.md) | o corpo de um passo muda com o rótulo intacto, e o replay mede outra operação em silêncio; quatro candidatas de mecanismo, nenhuma escolhida                        |
+| [`Q-0002-1`](../../questions/Q-0002-1.md) | "relógio injetável" e "aleatoriedade semeada" são texto, não regra executável; uma chamada a `Instant.now()` faz R10 reprovar um par correto, de forma intermitente |
+| [`Q-0004-2`](../../questions/Q-0004-2.md) | nada obriga um passo a reportar a chave de contenção                                                                                                                |
 
 ## Critérios de pronto
 

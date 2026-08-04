@@ -5,7 +5,7 @@
 - **Etapa:** 2
 - **Relacionado:** depende do ADR-0002 (R3, calibração) e do ADR-0005 (término). Não
   substitui nem subsume nenhum ADR aceito.
-- **Fecha:** `Q-0001-2`, `Q-0005-1`.
+- **Fecha:** [`Q-0001-2`](../questions/Q-0001-2.md), [`Q-0005-1`](../questions/Q-0005-1.md).
 
 ## Contexto
 
@@ -15,8 +15,9 @@ atribuindo a esta decisão três pontos: colunas, calibração e retry (linhas 2
 
 O ADR-0005 definiu **término** como o instante em que um worker para de tentar, "por
 commit final, por resposta negativa da estratégia a 'há outra tentativa?', ou por falha
-não recuperada por ela" (`0005-a-forma-do-escalonador.md:19-21`); `Q-0005-1` diz que o
-critério de "falha não recuperada" pertence a esta decisão. `Q-0001-2` pede o espelho do
+não recuperada por ela" (`0005-a-forma-do-escalonador.md:19-21`);
+[`Q-0005-1`](../questions/Q-0005-1.md) diz que o critério de "falha não recuperada"
+pertence a esta decisão. [`Q-0001-2`](../questions/Q-0001-2.md) pede o espelho do
 controle negativo: uma estratégia cujas coincidências DEVEM ser exatamente zero
 (`README.md:515-539`).
 
@@ -60,8 +61,9 @@ partir da exceção recebida do banco, no vocabulário de término do ADR-0005. 
 consulta a resposta; não a calcula.
 
 Uma exceção que a estratégia não reconhecer como recuperável DEVE receber resposta
-**não**: falha fechada, não tenta de novo por omissão. Fecha `Q-0005-1` no nível do
-contrato; qual exceção cada uma reconhece é comportamento observável, no Feature Card
+**não**: falha fechada, não tenta de novo por omissão. Fecha
+[`Q-0005-1`](../questions/Q-0005-1.md) no nível do contrato; qual exceção cada uma
+reconhece é comportamento observável, no Feature Card
 [`deteccao-de-atualizacao-perdida`](../features/deteccao-de-atualizacao-perdida/feature-card.md).
 **O contrato NÃO DEVE usar timeout de parede** — uma falha sistêmica (ex.: conexão
 recusada) já não é reconhecida por nenhuma estratégia, e recebe **não** de imediato.
@@ -70,7 +72,7 @@ recusada) já não é reconhecida por nenhuma estratégia, e recebe **não** de 
 
 Coincidências DEVEM ser zero em toda execução, pois o lock impede a janela de existir.
 Uma violação aponta para o banco ou fabricação no instrumento, nunca para a estratégia.
-Fecha `Q-0001-2`.
+Fecha [`Q-0001-2`](../questions/Q-0001-2.md).
 
 ### `ATOMIC_UPDATE` é a estratégia de calibração
 
@@ -106,14 +108,16 @@ desistência é imediata, e não por timeout — timeout mede tempo de parede, p
 de um adaptador de relógio" (`0005-a-forma-do-escalonador.md:121-123`). A falha fechada
 por padrão é mais forte que um timeout: falha no primeiro sintoma, sem esperar `T`
 segundos. Quantas vezes `OPTIMISTIC` tenta de novo sob exceção que **reconhece** já tem
-dono — `Q-0003-8`, encaminhada para `Experiment` — e esta decisão não o duplica.
+dono — [`Q-0003-8`](../questions/Q-0003-8.md), encaminhada para `Experiment` — e esta
+decisão não o duplica.
 
 ## Consequências
 
 ### Positivas
 
-- Lab Plane reutilizável entre as quatro estratégias; `Q-0001-2` e `Q-0005-1` fecham sem
-  esperar a arquitetura mínima; a calibração do ADR-0002 R3 ganha procedimento.
+- Lab Plane reutilizável entre as quatro estratégias;
+  [`Q-0001-2`](../questions/Q-0001-2.md) e [`Q-0005-1`](../questions/Q-0005-1.md) fecham
+  sem esperar a arquitetura mínima; a calibração do ADR-0002 R3 ganha procedimento.
 
 ### Negativas
 

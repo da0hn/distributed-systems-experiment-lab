@@ -68,8 +68,8 @@ código da aplicação e muda o SQL emitido. Um nível de isolamento é propried
 transação e muda o que o banco faz com o **mesmo** SQL. Tratar o isolamento como mais um
 valor da mesma enumeração apagaria a diferença.
 
-**`Q-0002-3`** — o oráculo descreve o estado final quiescente, e serve ao E5 porque uma
-alocação excedente não sai da tabela.
+**[`Q-0002-3`](../../questions/Q-0002-3.md)** — o oráculo descreve o estado final
+quiescente, e serve ao E5 porque uma alocação excedente não sai da tabela.
 
 ## Critérios de pronto
 

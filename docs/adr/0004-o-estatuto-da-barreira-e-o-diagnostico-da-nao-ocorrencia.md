@@ -10,8 +10,9 @@
   ([`README.md`](README.md#substituição-e-subsunção-são-coisas-diferentes)).
   Enunciado da proposta em
   [`README.md`](README.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira).
-- **Questões que este ADR encaminha:** `Q-0004-2` a `Q-0004-5` e `Q-0004-8`, na seção
-  `## Questões encaminhadas` de [`README.md`](README.md).
+- **Questões que este ADR encaminha:** [`Q-0004-2`](../questions/Q-0004-2.md) a
+  [`Q-0004-5`](../questions/Q-0004-5.md) e [`Q-0004-8`](../questions/Q-0004-8.md), na
+  seção `## Questões encaminhadas` de [`README.md`](README.md).
 
 ## Vocabulário
 

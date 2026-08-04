@@ -7,9 +7,10 @@
   `arquivo/0001`, que modelava apenas a invariante de capacidade. Deixa ponta para as
   estratégias de concorrência, para o log de observações e para os dois formatos de
   veredito.
-- **Questão que este ADR fecha:** `Q-0001-3`, transportada do ADR-0001 e listada na
-  seção `## Questões encaminhadas` de [`README.md`](README.md).
-- **Questões que este ADR encaminha:** `Q-0002-1` a `Q-0002-4`, na mesma seção.
+- **Questão que este ADR fecha:** [`Q-0001-3`](../questions/Q-0001-3.md), transportada
+  do ADR-0001 e listada na seção `## Questões encaminhadas` de [`README.md`](README.md).
+- **Questões que este ADR encaminha:** [`Q-0002-1`](../questions/Q-0002-1.md) a
+  [`Q-0002-4`](../questions/Q-0002-4.md), na mesma seção.
 
 ## Vocabulário
 
@@ -56,7 +57,7 @@ inteiras.
 **A prova de equivalência já existe e está sem critério.** O ADR-0001 exige um teste que
 compare o traço de SQL das duas resoluções da mesma operação, e declara que a cláusula
 de honestidade não vale enquanto esse teste não existir. O critério de igualdade entre
-dois traços foi encaminhado para cá como `Q-0001-3`.
+dois traços foi encaminhado para cá como [`Q-0001-3`](../questions/Q-0001-3.md).
 
 ## Problema
 
@@ -65,9 +66,9 @@ Duas perguntas precisam de resposta, e a segunda só faz sentido depois da prime
 **O que o laboratório mede?** O modelo de dados, as operações que escrevem nele, e o
 procedimento que decide se o resultado está errado.
 
-**Quando dois traços de SQL são o mesmo traço?** É `Q-0001-3`, e ela chega aqui porque o
-critério depende de quais valores atravessam a fronteira do banco — que é o que o
-domínio define.
+**Quando dois traços de SQL são o mesmo traço?** É
+[`Q-0001-3`](../questions/Q-0001-3.md), e ela chega aqui porque o critério depende de
+quais valores atravessam a fronteira do banco — que é o que o domínio define.
 
 As forças em conflito:
 
@@ -128,7 +129,8 @@ teste, a partir da semente do experimento. O esquema NÃO DEVE usar `SERIAL`, `I
 O identificador DEVE ser função da semente, e NÃO DEVE ser função do instante da
 execução. Duas execuções da mesma semente produzem os mesmos identificadores. Esta
 restrição vincula quem decidir como o banco volta ao ponto de partida entre duas
-execuções — questão encaminhada à definição de Experiment como `Q-0002-4`.
+execuções — questão encaminhada à definição de Experiment como
+[`Q-0002-4`](../questions/Q-0002-4.md).
 
 ### O oráculo exato
 
@@ -241,7 +243,7 @@ a alternativa E por outro caminho.
 
 ### O critério de igualdade entre dois traços de SQL
 
-Esta subseção fecha `Q-0001-3`.
+Esta subseção fecha [`Q-0001-3`](../questions/Q-0001-3.md).
 
 Um traço é a sequência ordenada dos statements que uma tentativa enviou ao banco. Cada
 entrada tem o texto do statement e a lista ordenada dos valores ligados a ele.
@@ -290,7 +292,8 @@ experimento, e tem ADR próprio na fila.
 
 **Quem estabelece o estado inicial, e como o banco volta ao ponto de partida entre duas
 execuções.** O oráculo lê `value_inicial`; ele não o cria. A restrição de que o
-identificador seja função da semente vale para qualquer resposta. Ver `Q-0002-4`.
+identificador seja função da semente vale para qualquer resposta. Ver
+[`Q-0002-4`](../questions/Q-0002-4.md).
 
 **Qual estratégia serve de calibração.** A calibração exige uma estratégia que não perca
 incremento nenhum. Qual é ela pertence ao ADR de estratégias de concorrência.
@@ -352,8 +355,8 @@ do instrumento.
 adicional — reordenar cláusula, ignorar alias, reconhecer que dois textos significam a
 mesma consulta — exige um analisador de SQL. O ADR-0001 decidiu que o laboratório NÃO
 DEVE analisar SQL, e a proibição não abre exceção para o Lab Plane sem abrir para o
-runtime. A borda estrita de `Q-0001-3` não foi escolhida entre duas opções: é a única
-que sobrevive a uma decisão já aceita.
+runtime. A borda estrita de [`Q-0001-3`](../questions/Q-0001-3.md) não foi escolhida
+entre duas opções: é a única que sobrevive a uma decisão já aceita.
 
 **Por que os valores ligados são comparados como valores.** Três regras removem as
 fontes de não determinismo dos valores que atravessam a fronteira do banco: o relógio é
@@ -361,11 +364,12 @@ injetável, a aleatoriedade é semeada, e esta decisão retira do banco a geraç
 identidade. Com as três, dois braços corretos da mesma operação, sobre o mesmo estado
 inicial e a mesma entrada, ligam os mesmos valores.
 
-O ganho é específico. `Q-0001-1` aponta que o digest do traço é cego para o passo
-`COMPUTE`, porque trocar `value + 1` por `value + 2` não altera o texto de statement
-nenhum quando o parâmetro entra como marcador. Comparando valores, a troca altera o
-valor ligado do `UPDATE`, e a prova de equivalência a enxerga. Isso não fecha
-`Q-0001-1`, que pertence ao log de observações — reduz um dos limites que ela registra.
+O ganho é específico. [`Q-0001-1`](../questions/Q-0001-1.md) aponta que o digest do
+traço é cego para o passo `COMPUTE`, porque trocar `value + 1` por `value + 2` não
+altera o texto de statement nenhum quando o parâmetro entra como marcador. Comparando
+valores, a troca altera o valor ligado do `UPDATE`, e a prova de equivalência a enxerga.
+Isso não fecha [`Q-0001-1`](../questions/Q-0001-1.md), que pertence ao log de
+observações — reduz um dos limites que ela registra.
 
 **Por que a ordem entre statements é comparada como sequência.** O ADR-0001 decidiu que
 uma tentativa é uma sequência **ordenada** de passos, e que a diferença entre as duas
@@ -456,7 +460,8 @@ modo que retirar a coluna não edita um ADR aceito.
   `INSERT` passa a carregar a chave. Uma inserção manual em `psql` durante depuração
   deixa de funcionar sem que alguém escolha um identificador.
 - **O veredito descreve o estado final quiescente.** Uma violação que exista durante a
-  execução e desapareça antes do fim é invisível para os dois oráculos. Ver `Q-0002-3`.
+  execução e desapareça antes do fim é invisível para os dois oráculos. Ver
+  [`Q-0002-3`](../questions/Q-0002-3.md).
 - **O E3 exige uma migração de esquema antes de rodar.** O `OPTIMISTIC` precisa de
   `version`, e a coluna não existe. A migração vem junto do ADR de estratégias.
 
@@ -588,9 +593,10 @@ número que o relatório publica.
 O traço registra `UPDATE resource SET value = ? WHERE id = ?`, e a comparação ignora os
 valores.
 
-**Descartada.** A alternativa F tem o argumento que `Q-0001-3` registra: comparar
-valores torna o teste dependente do dado de entrada, e uma entrada trocada quebra o
-teste sem que a operação tenha mudado.
+**Descartada.** A alternativa F tem o argumento que
+[`Q-0001-3`](../questions/Q-0001-3.md) registra: comparar valores torna o teste
+dependente do dado de entrada, e uma entrada trocada quebra o teste sem que a operação
+tenha mudado.
 
 Ela perde porque o marcador apaga o passo `COMPUTE`. Num laboratório de contadores, o
 `COMPUTE` é a lógica: `value + 1` contra `value + 2` é a diferença entre um braço
@@ -661,7 +667,8 @@ do que entrega, e o custo passaria a recair sobre quem escreve operações.
 
 Reveja o oráculo exato quando um experimento do roadmap precisar de um veredito antes do
 fim da execução. O sinal é um fenômeno cuja violação é transitória por natureza — o
-estado errado existe durante uma janela e some depois. Ver `Q-0002-3`.
+estado errado existe durante uma janela e some depois. Ver
+[`Q-0002-3`](../questions/Q-0002-3.md).
 
 Reveja a calibração do denominador quando a execução de calibração passar a reprovar por
 motivo que não seja defeito do runtime. O sinal é uma estratégia declarada sem perda que

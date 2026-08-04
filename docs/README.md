@@ -14,24 +14,27 @@ Mapa da pasta `docs/`. Tudo que existe neste repositório vive aqui — não há
    Mapping e Gherkin.
 4. [`architecture/integrations.md`](architecture/integrations.md) — o que atravessa uma
    fronteira de processo, separando fato de hipótese.
-5. [`adr/README.md`](adr/README.md) — o processo de decisão, a fila do que precisa ser
-   decidido e as questões encaminhadas.
-6. [`adr/arquivo/README.md`](adr/arquivo/README.md) — por que a primeira série foi
+5. [`adr/README.md`](adr/README.md) — o processo de decisão e a fila do que precisa ser
+   decidido.
+6. [`questions/README.md`](questions/README.md) — as questões encaminhadas de um ADR
+   para outro, uma por arquivo, com status `pendente` ou `resolvida por ADR-NNNN`.
+7. [`adr/arquivo/README.md`](adr/arquivo/README.md) — por que a primeira série foi
    arquivada e o que sobreviveu dela.
 
 ## O que vive em cada diretório
 
-| Caminho                    | Conteúdo                                     | Estado                                              |
-|----------------------------|----------------------------------------------|-----------------------------------------------------|
-| `plano-do-laboratorio.md`  | a análise que origina as decisões            | escrito, 13 seções                                  |
-| `specification-process.md` | o processo de especificação                  | adotado em 2026-08-01                               |
-| `CONTEXT.md`               | glossário de domínio, linguagem ubíqua       | **não existe** — nenhum termo em disputa ainda      |
-| `features/`                | Feature Cards, Example Mappings e `.feature` | quatro capacidades                                  |
-| `contracts/`               | OpenAPI, AsyncAPI, JSON Schema               | **vazio** — nenhuma interface existe                |
-| `architecture/`            | a matriz de integrações                      | uma integração real, e ela está quebrada            |
-| `adr/`                     | série corrente de ADRs                       | quatro, todos `Aceito`: 0001 a 0004                 |
-| `adr/arquivo/`             | primeira série, arquivada                    | treze, nenhum aceito, **nunca editados**            |
-| `diagrams/`                | Excalidraw exportado como `.excalidraw.svg`  | vazio                                               |
+| Caminho                    | Conteúdo                                     | Estado                                         |
+|----------------------------|----------------------------------------------|------------------------------------------------|
+| `plano-do-laboratorio.md`  | a análise que origina as decisões            | escrito, 13 seções                             |
+| `specification-process.md` | o processo de especificação                  | adotado em 2026-08-01                          |
+| `CONTEXT.md`               | glossário de domínio, linguagem ubíqua       | **não existe** — nenhum termo em disputa ainda |
+| `features/`                | Feature Cards, Example Mappings e `.feature` | quatro capacidades                             |
+| `contracts/`               | OpenAPI, AsyncAPI, JSON Schema               | **vazio** — nenhuma interface existe           |
+| `architecture/`            | a matriz de integrações                      | uma integração real, e ela está quebrada       |
+| `adr/`                     | série corrente de ADRs                       | quatro, todos `Aceito`: 0001 a 0004            |
+| `questions/`               | questões encaminhadas de um ADR para outro   | dezoito, um arquivo por questão                |
+| `adr/arquivo/`             | primeira série, arquivada                    | treze, nenhum aceito, **nunca editados**       |
+| `diagrams/`                | Excalidraw exportado como `.excalidraw.svg`  | vazio                                          |
 
 ## Como o planejamento funciona
 
@@ -77,11 +80,11 @@ não há código para testá-lo.
 
 Elas estão em três lugares, e a distinção importa:
 
-| Lugar                                       | O que guarda                                                          |
-|---------------------------------------------|-----------------------------------------------------------------------|
-| `adr/README.md`, `## Questões encaminhadas` | questões transportadas de um ADR aceito, com identificador `Q-NNNN-K` |
-| `adr/NNNN-*.md`, `## Questões em aberto`    | questões vivas de um ADR ainda `Proposto`                             |
-| `features/<slug>/example-mapping.md`        | perguntas levantadas no refinamento da capacidade                     |
+| Lugar                                    | O que guarda                                                                |
+|------------------------------------------|-----------------------------------------------------------------------------|
+| `questions/`, um arquivo por `Q-NNNN-K`  | questões transportadas de um ADR aceito para outro, já identificado na fila |
+| `adr/NNNN-*.md`, `## Questões em aberto` | questões vivas de um ADR ainda `Proposto`                                   |
+| `features/<slug>/example-mapping.md`     | perguntas levantadas no refinamento da capacidade                           |
 
 **Cite uma questão encaminhada pelo identificador `Q-NNNN-K`**, nunca por "a questão K do
 ADR-NNNN" — aquela seção deixa de existir quando o ADR é aceito.
