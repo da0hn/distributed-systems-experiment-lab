@@ -30,7 +30,6 @@ Mapa da pasta `docs/`. Tudo que existe neste repositório vive aqui — não há
 | `architecture/`            | a matriz de integrações                      | uma integração real, e ela está quebrada            |
 | `adr/`                     | série corrente de ADRs                       | quatro, todos `Aceito`: 0001 a 0004                 |
 | `adr/arquivo/`             | primeira série, arquivada                    | treze, nenhum aceito, **nunca editados**            |
-| `experiments/`             | resultados de execução                       | vazio — nada foi executado                          |
 | `diagrams/`                | Excalidraw exportado como `.excalidraw.svg`  | vazio                                               |
 
 ## Como o planejamento funciona
