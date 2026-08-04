@@ -135,8 +135,17 @@ Caminho: `architecture/integrations.md`.
 ## ADR
 
 Caminho: `adr/NNNN-titulo-em-kebab-case.md`. Para planejar um ADR no Claude Code, use
-a skill `feature-planning`. Ela contém o template e o ciclo de vida. O
-[`adr/README.md`](adr/README.md) mantém as convenções, o índice e o histórico da série.
+a skill `adr`. Ela contém o template e o ciclo de vida, e é acionada tanto por
+`feature-planning` quanto por `domain-modeling`. O [`adr/README.md`](adr/README.md)
+mantém as convenções, o índice e o histórico da série.
+
+## Glossário de domínio
+
+Caminho: `CONTEXT.md`, criado de forma preguiçosa quando o primeiro termo se
+cristalizar. Para manter o glossário no Claude Code, use a skill `domain-modeling`. Ela
+desafia termo ambíguo, cruza a linguagem com o código e atualiza o arquivo no mesmo
+turno em que um termo é resolvido — nunca em lote. O formato está em
+`.claude/skills/domain-modeling/references/context-format.md`.
 
 ## Convenções de escrita
 

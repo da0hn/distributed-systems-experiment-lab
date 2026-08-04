@@ -27,7 +27,7 @@ o argumento que o sustentava esconde a regra que interessa a quem for implementa
 A separação é essa. **O ADR guarda o porquê da escolha; o Feature Card guarda o quê do
 comportamento.**
 
-## Os quatro artefatos, e quando cada um entra
+## Os cinco artefatos, e quando cada um entra
 
 ```mermaid
 flowchart TB
@@ -37,6 +37,9 @@ flowchart TB
     EM -->|" pergunta em aberto "| Q["fica na seção de perguntas<br/>não vira cenário"]
     FC -->|" a capacidade cruza<br/>uma fronteira de processo "| CT["contrato<br/>OpenAPI · AsyncAPI · JSON Schema"]
     FC -->|" a escolha tem alternativas<br/>e impacto duradouro "| ADR["ADR<br/>o porquê, e o descartado"]
+    FC -.->|" termo novo<br/>ou ambíguo aparece "| CTX["CONTEXT.md<br/>o glossário de domínio"]
+    EM -.->|" termo novo<br/>ou ambíguo aparece "| CTX
+    ADR -.->|" termo novo<br/>ou ambíguo aparece "| CTX
 ```
 
 ### Feature Card — o padrão
@@ -115,6 +118,27 @@ ADR com o porquê, e o card com o quê, e faça o card citar o ADR.
 são editados nem apagados — a regra de imutabilidade de `adr/README.md` continua valendo
 sem alteração. Os Feature Cards os citam por caminho e linha; eles não os substituem.
 
+### Glossário de domínio — CONTEXT.md
+
+`CONTEXT.md` registra a linguagem ubíqua do laboratório: o termo de domínio, a definição
+canônica dele e os sinônimos a evitar. Ele é diferente dos outros quatro artefatos porque
+não é acionado por uma capacidade nova — é mantido continuamente, toda vez que um termo
+se cristaliza durante o refinamento de um Feature Card, de um Example Mapping ou do
+debate de um ADR.
+
+`CONTEXT.md` NÃO DEVE conter detalhe de implementação, regra de negócio ou decisão
+pendente. É um glossário, e nada além disso — regra de negócio vai para o Feature Card, e
+decisão arquitetural vai para o ADR.
+
+O arquivo é criado de forma preguiçosa: só quando o primeiro termo for resolvido. Hoje
+`CONTEXT.md` não existe, porque a terminologia do laboratório — passo, tentativa,
+operação, fronteira, oráculo — já está fixada nos ADRs aceitos e no
+[`plano-do-laboratorio.md`](plano-do-laboratorio.md). Criar o glossário antes de um termo
+novo entrar em disputa documentaria o que já está estável, sem função.
+
+O formato e a skill que mantêm este artefato estão em
+`.claude/skills/domain-modeling/references/context-format.md`.
+
 ### SDD — só para mudança de alto risco
 
 Um documento de desenho completo é escrito apenas quando a mudança for de alto risco,
@@ -153,6 +177,7 @@ emojis e sem linguagem de marketing. A lista de palavras proibidas está em
 ```
 docs/
   specification-process.md      este documento
+  CONTEXT.md                    glossário de domínio (criado quando o 1º termo resolver)
   features/
     README.md                   índice das capacidades
     <slug>/

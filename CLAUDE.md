@@ -124,15 +124,8 @@ guarda pertence à decisão de arquitetura mínima.
 
 ### Especificação
 
-Quatro capacidades estão especificadas e **nenhuma implementada**. O índice está em
-[`docs/features/README.md`](docs/features/README.md):
-
-| Capacidade                        | Cobre                                                          |
-|-----------------------------------|----------------------------------------------------------------|
-| `observacao-passo-a-passo`        | o runtime de passos, fronteiras, log e prova de equivalência   |
-| `execucao-de-experimento`         | o ciclo de quatro execuções e a classificação do veredito zero |
-| `deteccao-de-atualizacao-perdida` | E1 e E3, o oráculo exato do contador                           |
-| `deteccao-de-protecao-inerte`     | E5, o oráculo do predicado de capacidade                       |
+Quatro capacidades estão especificadas e **nenhuma implementada**. O índice completo,
+com o que cada uma cobre, está em [`docs/features/README.md`](docs/features/README.md).
 
 **O E4 não tem card, de propósito.** O veredito em formato curva não tem forma decidida, e
 um card agora seria majoritariamente pergunta em aberto. O motivo está registrado no índice.
@@ -142,17 +135,12 @@ lista os quatro gatilhos que criam cada um.
 
 ### Decisões
 
-**Os quatro ADRs da série corrente estão `Aceito`: 0001 e 0002 de 2026-07-29, 0004 e 0003
-de 2026-08-01.** Nenhum pode ser editado. Nenhum ADR está `Proposto` hoje.
+**Os ADRs da série corrente aceitos até agora, e o que cada um fixou, estão no índice de**
+[`docs/adr/README.md`](docs/adr/README.md). Nenhum ADR aceito pode ser editado; para mudar
+uma decisão, um ADR novo o substitui. Nenhum ADR está `Proposto` hoje.
 
-| ADR  | O que fixou                                                                             |
-|------|-----------------------------------------------------------------------------------------|
-| 0001 | o passo como unidade de execução, observação e injeção de falha                         |
-| 0002 | o domínio mínimo, o oráculo exato e o oráculo do predicado                              |
-| 0003 | a linguagem do agendamento: precedência entre eventos, encontro, sete recusas           |
-| 0004 | a barreira rebaixada a controle positivo; a taxa como veredito; a classificação do zero |
-
-Três consequências mudam o que se pode propor daqui em diante:
+Três consequências, fixadas pelos ADRs 0001 e 0002, mudam o que se pode propor daqui em
+diante:
 
 - **O oráculo exato é `perdidas = commits − (value_final − value_inicial)`**, onde `commits`
   conta passagens pela fronteira `AFTER_COMMIT`, por tentativa. Não é `sucessos` — contar
@@ -164,10 +152,10 @@ Três consequências mudam o que se pode propor daqui em diante:
   concorrência, junto da política que a lê. O esboço ilustrativo do ADR-0001 lê uma coluna
   que o esquema não tem — o esboço não é normativo.
 
-As questões encaminhadas são `Q-0001-1` a `Q-0001-4`, `Q-0002-1` a `Q-0002-4` e `Q-0004-2`
-a `Q-0004-8`, e vivem em `docs/adr/README.md`, seção `## Questões encaminhadas`. **Cite-as
-por esse identificador**, nunca por "a questão K do ADR-NNNN". Cada uma tem destino nomeado
-na fila. A `Q-0001-3` está `resolvida por ADR-0002`, e o enunciado permanece lá de propósito.
+As questões encaminhadas vivem em [`docs/adr/README.md`](docs/adr/README.md), seção
+`## Questões encaminhadas`, com identificador `Q-NNNN-K`. **Cite-as por esse
+identificador**, nunca por "a questão K do ADR-NNNN". Cada uma tem destino nomeado na
+fila; uma resolvida mantém o enunciado e ganha `resolvida por ADR-NNNN`, de propósito.
 
 As perguntas levantadas durante o Example Mapping vivem nos próprios `example-mapping.md`, e
 **não** foram transportadas para a fila de ADRs.

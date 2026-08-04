@@ -25,6 +25,7 @@ Mapa da pasta `docs/`. Tudo que existe neste repositório vive aqui — não há
 |----------------------------|----------------------------------------------|-----------------------------------------------------|
 | `plano-do-laboratorio.md`  | a análise que origina as decisões            | escrito, 13 seções                                  |
 | `specification-process.md` | o processo de especificação                  | adotado em 2026-08-01                               |
+| `CONTEXT.md`               | glossário de domínio, linguagem ubíqua       | **não existe** — nenhum termo em disputa ainda      |
 | `features/`                | Feature Cards, Example Mappings e `.feature` | quatro capacidades                                  |
 | `contracts/`               | OpenAPI, AsyncAPI, JSON Schema               | **vazio** — nenhuma interface existe                |
 | `architecture/`            | a matriz de integrações                      | uma integração real, e ela está quebrada            |
@@ -50,6 +51,9 @@ flowchart TB
     EM -->|" pergunta em aberto "| Q["fica registrada<br/>não vira cenário"]
     FC -->|" atravessa fronteira<br/>de processo "| CT["contrato<br/>contracts/"]
     FC -->|" alternativa plausível<br/>e impacto duradouro "| ADR["ADR<br/>adr/"]
+    FC -.->|" termo novo<br/>ou ambíguo "| CTX["CONTEXT.md<br/>glossário de domínio"]
+    EM -.->|" termo novo<br/>ou ambíguo "| CTX
+    ADR -.->|" termo novo<br/>ou ambíguo "| CTX
 ```
 
 ## Estado da especificação

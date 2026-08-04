@@ -25,7 +25,7 @@ cada fato existente. Escreva Pergunta em aberto quando a evidência não existir
 Nunca transforme uma hipótese em fato.
 
 Registre cada objeção, alternativa descartada ou pendência no Example Mapping no
-mesmo turno em que surgir. Quando for ADR, siga references/adr-lifecycle.md.
+mesmo turno em que surgir. Quando for ADR, use a skill adr (.claude/skills/adr/).
 
 ## Use o template obrigatório
 
@@ -43,9 +43,10 @@ Não remova uma seção para caber no limite; divida a capacidade ou o documento
 | AsyncAPI | references/asyncapi.yaml |
 | JSON Schema | references/json-schema.json |
 | Desenho completo | references/implementation-plan.md |
-| ADR | references/adr.md |
+| ADR | delegado à skill adr — .claude/skills/adr/references/adr.md |
 
-Todos os templates necessários ficam na pasta desta skill.
+Todos os templates necessários ficam na pasta desta skill, exceto o ADR, que vive na
+skill adr.
 
 ## Classifique a mudança
 
@@ -58,8 +59,8 @@ Não escreva um ADR por reflexo. Não altere ADR aceito. Quando uma decisão blo
 o escopo, registre a pergunta e use AskUserQuestion antes de escolher por conta
 própria.
 
-Quando a mudança exigir ADR, leia references/adr-lifecycle.md antes de criar,
-aceitar, substituir ou subsumir uma decisão.
+Quando a mudança exigir ADR, acione a skill adr antes de criar, aceitar, substituir
+ou subsumir uma decisão.
 
 ## Gere os artefatos
 
@@ -121,7 +122,8 @@ mudança de contrato com consumidor conhecido. Use
 docs/features/<slug>/implementation-plan.md e limite-o a 7.000 caracteres.
 
 Crie ADR somente quando os critérios do repositório forem atendidos. Limite um ADR
-novo a 9.000 caracteres. Use references/adr.md e references/adr-lifecycle.md.
+novo a 9.000 caracteres. Use a skill adr, que contém references/adr.md e
+references/adr-lifecycle.md.
 
 Qualquer outro Markdown persistente criado por este fluxo tem limite de 4.000
 caracteres. Um índice atualizado não é um artefato novo; acrescente apenas o link e
