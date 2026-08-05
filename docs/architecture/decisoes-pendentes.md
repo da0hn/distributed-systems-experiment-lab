@@ -1726,3 +1726,183 @@ aberto.** O repositório versiona esse verificador e o roda no pipeline? Ele
 transformaria a regra "toda afirmação leva evidência com caminho e linha" em regra
 executável, que é o que [`../questions/Q-0002-1.md`](../questions/Q-0002-1.md) pede para
 outras três regras. Acrescentá-lo é decisão, e ela não foi tomada.
+
+---
+
+## Os seis lotes, e o Lote A decidido em 2026-08-05
+
+As pendências da seção "O que aguarda decisão da pessoa" foram agrupadas em seis lotes.
+O critério não é gravidade nem ordem de aparição: é o que uma sessão fecha sem trocar de
+assunto, e o que cada lote destrava. Pendência de vocabulário de processo e pendência de
+arquitetura exigem leituras diferentes, e misturá-las foi o que fez este arquivo crescer
+oitocentas linhas numa sessão só.
+
+| Lote | Tema                             | Itens  | Destrava                          |
+|------|----------------------------------|--------|-----------------------------------|
+| `A`  | vocabulário do processo de ADR   | 4      | a escrita dos dois ADRs do lote 1 |
+| `C`  | convenção de citação e higiene   | 6      | o Lote D, e o apodrecimento       |
+| `B`  | governança da especificação      | 5      | os Lotes D e E                    |
+| `D`  | execução da pulverização         | 3      | a leitura de `docs/architecture/` |
+| `E`  | arquitetura mínima, Blocos 0 e 1 | 9 + 2  | a primeira linha de código        |
+| `F`  | Bloco 2, E1 e etapa 1            | 19 + 1 | o primeiro experimento            |
+
+```mermaid
+flowchart LR
+    A["Lote A<br/>vocabulário<br/>do processo"] --> ADR["os dois ADRs<br/>do lote 1"]
+    C["Lote C<br/>citação<br/>e higiene"] --> D["Lote D<br/>pulverização"]
+    B["Lote B<br/>governança<br/>da fila"] --> D
+    B --> E["Lote E<br/>Blocos 0 e 1"]
+    E --> F["Lote F<br/>Bloco 2"]
+    C --> AP["aplicar as decisões<br/>do Lote A nos<br/>arquivos de regra"]
+```
+
+O Lote C vem antes de B, D, E e F por dependência medida, e não por preferência: a
+aplicação das decisões do Lote A depende dele, pelo motivo registrado no fim desta
+seção.
+
+### As seis decisões do Lote A, em 2026-08-05
+
+Nenhuma foi tomada por agente. As quatro primeiras foram apresentadas com alternativas e
+trade-offs; as duas últimas nasceram de objeção levantada depois da primeira rodada, e
+foram decididas na mesma sessão.
+
+#### `A1` — a emenda entra no vocabulário do processo
+
+**Decidido.** Um ADR novo que contradiga uma regra **acessória** de um ADR aceito, sem
+contradizer a decisão principal dele, o **emenda**. O ADR antigo permanece `Aceito` e
+recebe `Última atualização` e `Alterado por: ADR-NNNN — emenda; qual regra, com a seção
+de origem`, pela mecânica de [`../adr/README.md`](../adr/README.md), seção "O rastro de
+alterações, emendado em 2026-08-04".
+
+A fronteira é objetiva, e não julgamento: a regra emendada **NÃO DEVE** ser a que dá
+título ao ADR, nem a que está na seção `## Decisão`. Qualquer outra afirmação normativa
+dele **PODE** ser emendada.
+
+Descartadas: a substituição pela letra da regra atual — `../adr/README.md:171-172` manda
+"se contradisser, é substituição" —, porque o `Estado` do ADR-0008 passaria a dizer que
+a decisão dos dois planos em processos separados saiu de vigor, e ela não saiu; alargar
+a subsunção trocando a terceira exigência de `:171-172` por "não contradiz a decisão
+principal", porque `Alterado por: subsunção` deixaria de dizer se a regra antiga ainda
+vale, que é a informação que o campo existe para carregar; e tirar a renomeação do ADR
+novo, porque `C7` continuaria aberta dentro de um ADR aceito e o mesmo problema
+retornaria nos quatro ADRs que `D-DOM-02` alcança.
+
+#### `A2` — o identificador de questão deixa de codificar a origem
+
+**Decidido.** Uma questão nova recebe identificador plano, `Q-NNNN`, sem sufixo, e a
+origem passa a ser **coluna** do índice de
+[`../questions/README.md`](../questions/README.md). A sequência nova começa em
+`Q-0019`, para não colidir visualmente com os dezoito identificadores existentes.
+
+**Os dezoito não são renomeados.** A medição de 2026-08-05: `Q-NNNN-K` aparece 255 vezes
+em `docs/` e no `AGENTS.md` da raiz, e **66 dessas ocorrências estão dentro dos oito
+ADRs aceitos** — 11 no ADR-0001, 14 no ADR-0002, 16 no ADR-0007, e assim por diante. O
+corpo de um ADR aceito não pode ser editado ([`../AGENTS.md`](../AGENTS.md), seção "O
+que nunca é editado"). Renomear produziria 66 citações mortas em artefato imutável: o
+dano da Lacuna 1, repetido 66 vezes.
+
+O formato `Q-NNNN-K` fica **congelado como legado**. Ele não é reutilizado, não é
+estendido, e nenhuma questão nova o recebe.
+
+Descartadas: o prefixo próprio `Q-ARQ-K`, por criar um terceiro espaço de nomes ao lado
+de `Q-NNNN-K` e `Q-INT-*`, quando a seção "Uma nota sobre os identificadores `Q-INT-*`"
+deste arquivo já registra o que espaço de nomes sem dono produziu; `NNNN` passando a ser
+o ADR de destino, porque o destino de `C3` é `D-MSG-02`, linha de fila sem número de
+ADR, e o identificador seguiria inatribuível; e `C3` permanecer como linha de fila, por
+contrariar a decisão já registrada e porque a fila não é citável de forma estável.
+
+**`C3` é a primeira questão da sequência nova.** O número é atribuído no ato da criação
+do arquivo, e o dono da atribuição é `../questions/README.md`.
+
+#### `A3` — o rótulo do estouro de espera pelo CDC é `fonte atrasada`
+
+**Decidido.** Ele e `fontes divergentes` formam um par legível: uma fonte diverge, a
+outra não alcança o ponto declarado no tempo declarado. Os dois falam do instrumento, e
+nenhum é veredito sobre o system under test. A subsunção no ADR-0004 segue o caminho de
+`O14`, registrado na seção `O19` deste arquivo.
+
+Descartados: `CDC não alcançou`, por amarrar o vocabulário de veredito a uma tecnologia
+— se a segunda fonte deixar de ser CDC, o rótulo mente; `espera do observador esgotada`,
+por ser longo demais para um rótulo que aparece em relatório ao lado de `protegido` e
+`violado`; e `observação incompleta`, por não dizer o que falhou nem por quê.
+
+#### `A4` — um ADR de vocabulário cobre as quatro decisões do Bloco 4
+
+**Decidido.** `D-DOM-01` a `D-DOM-04` são registradas num ADR de vocabulário. O
+glossário [`../CONTEXT.md`](../CONTEXT.md) continua sendo a fonte operacional, e passa a
+citá-lo.
+
+O motivo é que **o glossário já exige um ADR e não o tem**. `../CONTEXT.md:51` define o
+estado `aposentado` como "existiu em ADR aceito e foi retirado da linguagem por outro
+ADR", e `../CONTEXT.md:64` e `:193` marcam `Control Plane` como aposentado por
+`D-DOM-02` — que é linha de fila, e não ADR. Sem o ADR, o glossário permanece falso
+contra a própria definição de estado, e o campo `Alterado por` dos ADRs alcançados não
+tem `ADR-NNNN` para receber.
+
+Descartadas: só o glossário, porque os ADRs alcançados por `D-DOM-02` nunca seriam
+carimbados e quem lesse um deles isolado continuaria lendo o termo aposentado sem aviso;
+e um ADR só para `D-DOM-02`, porque `D-DOM-03` também aposenta termo presente em ADR
+aceito e cairia na mesma exceção, fazendo o critério nomear dois casos em vez de
+enunciar uma regra.
+
+Custo aceito e nomeado: quatro decisões num ADR, contra "um ADR por decisão". É o mesmo
+custo já aceito na seção `C4` e `C7` deste arquivo, e as quatro partilham tema.
+
+#### `A5` — a sigla `sut` no pacote, e a proibição no glossário
+
+**Decidido.** A proibição de `SUT` vale para **prosa**, e não para identificador de
+código. A escolha de `dev.da0hn.lab.sut` fica de pé, e o glossário passa a declarar a
+separação.
+
+A tensão foi levantada em 2026-08-05: a escolha do pacote se justifica dizendo que o
+glossário "já define o termo por extenso", enquanto a entrada `system under test`
+daquele arquivo lista `SUT` sob `_Evite_`, "por ser sigla sem expansão"
+(`../CONTEXT.md:180`). Sem a separação declarada, o ADR novo e o glossário nascem se
+contradizendo.
+
+Descartadas: rever o nome do pacote, por reabrir uma decisão do dia anterior e trazer de
+volta três alternativas já descartadas; e registrar como pergunta em aberto, por fazer o
+ADR novo nascer carregando contradição conhecida com o glossário.
+
+### O que o Lote A NÃO aplicou, e a cadeia causal
+
+As seis decisões estão registradas aqui e **não** foram aplicadas em
+[`../adr/README.md`](../adr/README.md),
+[`../questions/README.md`](../questions/README.md) e [`../CONTEXT.md`](../CONTEXT.md).
+O motivo é medido, e não cautela genérica.
+
+**`../adr/README.md` tem 517 linhas, e dois ADRs aceitos citam além desse fim.**
+`../adr/0005-...md:34` cita `README.md:598-609`; `../adr/0006-...md:22` cita
+`README.md:515-539`. As duas quebraram quando aquele arquivo encolheu de 908 para 517
+linhas, em 2026-08-03, e estão na auditoria acima. Acrescentar a regra da emenda no fim
+dele faria as duas **voltarem a resolver** — para a regra da emenda, que nada tem a ver
+com o que elas citavam. Uma citação que aponta para nada é detectável por script; uma
+que aponta para o texto errado mente em silêncio, e nenhum verificador a pega.
+
+```mermaid
+flowchart TD
+    E["escrever a regra da emenda<br/>no fim de adr/README.md"]
+    G["o arquivo passa de 517 para<br/>mais de 609 linhas"]
+    R1["README.md:598-609, citada<br/>pelo ADR-0005, volta a resolver"]
+    R2["README.md:515-539, citada<br/>pelo ADR-0006, volta a resolver"]
+    M["as duas apontam para a regra da<br/>emenda, e não para o que citavam"]
+    I["nenhum dos dois ADRs<br/>pode ser corrigido"]
+    E --> G
+    G --> R1
+    G --> R2
+    R1 --> M
+    R2 --> M
+    M --> I
+```
+
+**`../questions/README.md` e `../CONTEXT.md` são citados por linha em prosa.** A
+execução de `A2` acrescenta texto na seção `## Identificador`, que este arquivo cita
+como "linhas 24 a 28"; a de `A5` altera a entrada `system under test`, e este arquivo
+cita `../CONTEXT.md`, linha 355 e linha 49. Deslocar qualquer uma exige corrigir as
+referências no mesmo turno, e a convenção que dispensa esse acerto — citação por âncora
+nomeada — é pendência do Lote C.
+
+**A escrita dos dois ADRs do lote 1 continua destravada.** Eles são arquivos novos e não
+deslocam linha de arquivo citado. Enquanto `A1` não estiver aplicada em
+`../adr/README.md`, o ADR que emenda o ADR-0008 **DEVE** citar esta seção como a decisão
+que criou a emenda.
