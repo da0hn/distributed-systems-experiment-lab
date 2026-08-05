@@ -1643,3 +1643,67 @@ citações comprovadamente quebradas.
 
 A segunda torna o índice menos visível. A alternativa deslocaria todas as citações externas
 de novo, repetindo o dano no mesmo turno em que ele foi documentado.
+
+---
+
+## Auditoria de citações, feita em 2026-08-05
+
+`verificado` por script sobre as 597 citações no formato `arquivo.md:N` presentes em
+`docs/`. O script resolve a abreviação `NNNN-...md` que este repositório usa, e reporta
+duas classes de defeito objetivo: alvo inexistente, e linha citada além do fim do alvo.
+Ele **não** verifica se o conteúdo da linha corresponde à afirmação, porque isso exige
+julgamento.
+
+### Cinco citações apontam além do fim do arquivo, e duas estão em ADR aceito
+
+| Origem                                                    | Citação             | O alvo tem |
+|-----------------------------------------------------------|---------------------|------------|
+| `../adr/0005-a-forma-do-escalonador.md:34`                | `README.md:598-609` | 517 linhas |
+| `../adr/0006-a-forma-da-estrategia-de-concorrencia.md:22` | `README.md:515-539` | 517 linhas |
+| `integrations.md:26`                                      | `README.md:200-208` | ambíguo    |
+| `integrations.md:32`                                      | `README.md:180`     | ambíguo    |
+| `integrations.md:33`                                      | `README.md:181`     | ambíguo    |
+
+**As duas primeiras eram válidas quando foram escritas.** O histórico do Git mostra que
+[`../adr/README.md`](../adr/README.md) tinha **908 linhas** em 2026-08-01, data em que o
+ADR-0005 e o ADR-0006 foram aceitos, e tem
+**517** hoje. O arquivo encolheu em 2026-08-03,
+no commit que extraiu as questões para [`../questions/`](../questions/README.md).
+
+**Isto prova que o problema é sistêmico, e anterior a esta
+sessão.** Duas citações dentro
+de ADRs imutáveis quebraram por uma refatoração de documentação, e nenhum documento do
+repositório registrava a quebra. O dano causado nesta sessão à citação do ADR-0008 é o
+terceiro caso, e não o primeiro.
+
+**As três de [`integrations.md`](integrations.md) são ambíguas, e não comprovadamente
+quebradas.** Elas citam `README.md` sem caminho, e o repositório tem quatro arquivos com
+esse nome. A citação `README.md:180` sustenta uma afirmação sobre o RabbitMQ; a linha 180
+do `README.md` da raiz trata da etapa 7 do roadmap. A intenção provável é o `README.md` do
+[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure), que este
+repositório não versiona e cujo conteúdo não pode ser conferido daqui.
+
+### Quarenta e oito citações não resolvem o caminho
+
+Todas em [`mensageria.md`](mensageria.md), e todas com a mesma forma: o ADR é citado como
+`0001-...md:NN`, sem o prefixo `../adr/`. De `docs/architecture/`, esse caminho não resolve.
+São citações em texto, e não links Markdown, mas [`../AGENTS.md`](../AGENTS.md) exige que os
+links relativos resolvam.
+
+### O verificador não está versionado
+
+O script vive no diretório temporário desta sessão e **não** foi acrescentado ao
+repositório: incluir ferramenta nova é decisão, e nenhuma foi tomada. A lógica dele cabe em
+cinco passos, e reconstruí-la é barato:
+
+1. varrer `docs/**/*.md` procurando `([A-Za-z0-9_./\-]+\.md):(\d+)(?:-(\d+))?`;
+2. resolver o caminho contra a pasta da origem, contra `docs/` e contra a raiz;
+3. expandir a abreviação `NNNN-...md` pelo prefixo, dentro da pasta candidata;
+4. contar as linhas do alvo;
+5. reportar alvo inexistente, e linha citada maior que o total.
+
+**Pergunta em
+aberto.** O repositório versiona esse verificador e o roda no pipeline? Ele
+transformaria a regra "toda afirmação leva evidência com caminho e linha" em regra
+executável, que é o que [`../questions/Q-0002-1.md`](../questions/Q-0002-1.md) pede para
+outras três regras. Acrescentá-lo é decisão, e ela não foi tomada.
