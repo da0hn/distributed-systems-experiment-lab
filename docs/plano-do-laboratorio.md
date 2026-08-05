@@ -125,7 +125,7 @@ asserção obrigatória do MVP, não uma promessa.
 O arquivo/0012 está travado há três rascunhos numa escolha entre três males: interceptar
 dentro do processo (fiel, mas contamina), no broker (isolado, mas entra na medida de
 latência) ou na rede (puro, mas não produz duplicata semântica). A regra 6 do
-arquivo/0006 proíbe o Control Plane de importar o Lab Plane, e o gancho dentro do
+arquivo/0006 proíbe o system under test de importar o Lab Plane, e o gancho dentro do
 processo parecia violá-la.
 
 Com a operação executada **pelo** runtime, a direção da dependência se inverte. O
@@ -356,8 +356,8 @@ Três observações sobre a forma da tabela.
 **As etapas 1 a 3 são o MVP.** Os quatro experimentos da seção 6 se distribuem assim:
 E1 na etapa 1, E3 e E4 na etapa 2, E5 na etapa 3. A execução de controle do E2 acompanha
 a etapa 1, porque o E1 depende dela para classificar um resultado zero. O MVP termina
-quando o laboratório conseguir produzir, explicar e comparar as duas famílias de anomalia
-do grupo A — sem nenhum broker envolvido.
+quando o laboratório conseguir produzir, explicar e comparar as duas famílias de
+anomalia do grupo A — sem nenhum broker envolvido.
 
 **A etapa 4 não tem data.** Ela acontece quando o experimento do lock de JVM ficar
 vermelho com duas instâncias. Se ele nunca for escrito, a etapa 4 nunca chega — e isso é
@@ -547,7 +547,7 @@ flowchart TB
         VER["Veredito<br/>oráculo · métricas"]
     end
 
-    subgraph SUT["Control Plane — o sistema sob teste"]
+    subgraph SUT["System under test — o sistema medido"]
         OPD["Operação<br/>sequência de passos declarada"]
         STR["Estratégia<br/>NONE · ATOMIC · OPTIMISTIC · PESSIMISTIC"]
         REP["Acesso ao banco<br/>SQL · transação · isolamento"]
@@ -642,7 +642,7 @@ escopo novo.
 |-------------------------------------------------------|----------------------------------------|----------------------------------------------------------|
 | Veredito em dois eixos: safety e liveness             | `arquivo/0002`                         | generaliza para os grupos A–C (booleano) e D (curva)     |
 | Grupo de controle obrigatório — `NONE` precisa falhar | `arquivo/0003`                         | é a regra que separa laboratório de demonstração         |
-| Separação Control Plane / Lab Plane                   | `arquivo/0006` regra 6                 | mais crítica agora, porque os dois dividem a mesma JVM   |
+| Separação system under test / Lab Plane                   | `arquivo/0006` regra 6                 | mais crítica agora, porque os dois dividem a mesma JVM   |
 | Relógio injetável                                     | `arquivo/0006` regra 8                 | pré-requisito das etapas 9 e 11                          |
 | Nenhuma aleatoriedade não semeada                     | `arquivo/0004`, `arquivo/0006` regra 7 | pré-requisito do replay determinístico                   |
 | Domínio em Java puro, testável com `new` e `assert`   | `arquivo/0006`                         | mantém a troca de estratégia por configuração            |
@@ -839,10 +839,10 @@ máquina" e passa a ser "uma imagem OCI com manifest Kustomize". Isso é escopo 
 responder é derrubar o processo de propósito. Sob um `Deployment` do Kubernetes com
 `selfHeal: true` no `Application`, o kubelet reinicia o pod e o ArgoCD reconcilia o
 estado. O experimento passa a medir **o orquestrador junto com o fenômeno**. É a
-confusão entre Control Plane e Lab Plane de novo, um nível abaixo: o instrumento passou
-a rodar dentro de algo que reage ao que o instrumento faz. O laboratório precisa de uma
-forma de matar um processo que o cluster não desfaça — ou de rodar os experimentos
-destrutivos fora do cluster.
+confusão entre system under test e Lab Plane de novo, um nível abaixo: o instrumento
+passou a rodar dentro de algo que reage ao que o instrumento faz. O laboratório precisa
+de uma forma de matar um processo que o cluster não desfaça — ou de rodar os
+experimentos destrutivos fora do cluster.
 
 **2. Reusar a Camada 6 contamina a medida nos dois sentidos.** O homelab já tem
 PostgreSQL (CNPG), RabbitMQ e Valkey, e a economia de reusá-los é óbvia. Mas o grupo D
