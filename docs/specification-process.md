@@ -27,6 +27,39 @@ o argumento que o sustentava esconde a regra que interessa a quem for implementa
 A separação é essa. **O ADR guarda o porquê da escolha; o Feature Card guarda o quê do
 comportamento.**
 
+## A decisão vem antes do artefato
+
+Adotado em 2026-08-04. Substitui a prática de enfileirar ADRs.
+
+O que se enfileira é **decisão**, e não ADR. Uma decisão entra na fila com o problema
+que a exige, as alternativas e as objeções levantadas contra cada uma. Ela sai da fila
+quando a pessoa escolhe. Só então o artefato é escolhido.
+
+```mermaid
+flowchart TB
+    P["problema, contradição<br/>ou lacuna"] --> F["entra na fila de decisões<br/>com alternativas e objeções"]
+    F --> E["a pessoa escolhe"]
+    E --> T{"a escolha tem alternativa plausível,<br/>impacto durável, restrição futura<br/>e trade-off?"}
+    T -->|" sim "| ADR["ADR, criado já Aceito"]
+    T -->|" não "| ART["artefato de feature-planning:<br/>card, example mapping,<br/>contrato ou tarefa"]
+```
+
+Três regras seguem disso.
+
+- **Escrever ADR NÃO É obrigatório.** O ADR surge durante o planejamento, quando a
+  escolha atende aos quatro critérios de [`adr/README.md`](adr/README.md). Uma escolha
+  que não os atende gera artefato de [`features/`](features/README.md), e nenhum ADR.
+- **Um ADR nasce `Aceito`.** Ele registra decisão já tomada, e não decisão em debate. O
+  estado `Proposto` continua disponível e deixa de ser o caminho padrão.
+- **O debate acontece na fila, não no ADR.** Objeção, alternativa descartada e pendência
+  são escritas na linha da fila **no mesmo turno em que aparecem**.
+
+**O custo desta troca.** Um ADR que nasce `Aceito` não pode ser editado
+([`adr/README.md`](adr/README.md), seção "Substituição e subsunção são coisas
+diferentes"). Uma objeção que aparecer depois de ele estar escrito exige ADR novo, e não
+emenda. Por isso a linha da fila carrega o peso do debate: ela é o único lugar em que
+uma objeção ainda cabe sem custar um documento.
+
 ## Os cinco artefatos, e quando cada um entra
 
 ```mermaid
@@ -200,9 +233,11 @@ tensão 1.
 
 ## O que este processo não decide
 
-**O destino da fila de decisões de `adr/README.md`.** Onze decisões estão enfileiradas
-lá, e algumas são comportamento disfarçado de arquitetura. Podá-la é decisão consciente,
-e ela não foi tomada.
+**O destino da fila de decisões de `adr/README.md`** foi decidido em 2026-08-04, e a
+seção "A decisão vem antes do artefato" o registra: a fila passa a enfileirar decisão, e
+cada linha nomeia o artefato que ela gera. Continua em aberto **quais** das linhas atuais
+são comportamento disfarçado de arquitetura. Podá-las é decisão consciente, e ela não foi
+tomada.
 
 **Se um Feature Card pode contradizer um ADR aceito.** Não aconteceu ainda. Quando
 acontecer, o caminho provável é um ADR novo que substitua o antigo — mas a regra não está
