@@ -14,7 +14,7 @@ project = "distributed-consistency-lab"
 # que refaz o SessionStart. O brief carrega o corpo das páginas `pinned`,
 # `_rules/` e `_slots/` deste projeto, mais os títulos das recém-atualizadas.
 #
-# O `CLAUDE.md` já é sempre carregado. O brief existe para o que ele não
+# O `AGENTS.md` já é sempre carregado. O brief existe para o que ele não
 # cobre: estado de processo que atravessa sessões. Páginas que o dupliquem
 # são desperdício de contexto.
 #

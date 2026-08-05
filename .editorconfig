@@ -22,7 +22,7 @@ indent_size = 2
 # cabe no que resta da linha, ele quebra depois de `(` e de `[`, e produz um link
 # partido que não renderiza. O defeito atingiu o mesmo parágrafo do ADR-0001 em três
 # reformatações seguidas. Com o wrap desligado, o max_line_length acima vira guia visual
-# do editor, e a quebra em 88 colunas é manual — que é o que o CLAUDE.md e o
+# do editor, e a quebra em 88 colunas é manual — que é o que o AGENTS.md e o
 # docs/adr/README.md já mandam fazer. O restante da formatação continua com a IDE.
 [*.md]
 max_line_length = 88

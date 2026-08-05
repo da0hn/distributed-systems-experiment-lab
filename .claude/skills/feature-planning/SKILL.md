@@ -14,7 +14,7 @@ Não crie arquivos de modelo em docs. Use os modelos versionados em references/.
 
 Leia, nesta ordem:
 
-1. CLAUDE.md na raiz.
+1. AGENTS.md na raiz.
 2. docs/specification-process.md.
 3. docs/features/README.md.
 4. docs/contracts/README.md e docs/architecture/integrations.md.
@@ -33,17 +33,17 @@ Leia o template antes de criar ou atualizar o artefato. Mantenha todas as seçõ
 obrigatórias. Escreva Não se aplica — <motivo> quando uma seção não se aplicar.
 Não remova uma seção para caber no limite; divida a capacidade ou o documento.
 
-| Artefato | Template |
-|---|---|
-| Feature Card | references/feature-card.md |
-| Example Mapping | references/example-mapping.md |
-| BDD | references/behavior.feature |
-| Matriz de integrações | references/integrations.md |
-| OpenAPI | references/openapi.yaml |
-| AsyncAPI | references/asyncapi.yaml |
-| JSON Schema | references/json-schema.json |
-| Desenho completo | references/implementation-plan.md |
-| ADR | delegado à skill adr — .claude/skills/adr/references/adr.md |
+| Artefato              | Template                                                    |
+|-----------------------|-------------------------------------------------------------|
+| Feature Card          | references/feature-card.md                                  |
+| Example Mapping       | references/example-mapping.md                               |
+| BDD                   | references/behavior.feature                                 |
+| Matriz de integrações | references/integrations.md                                  |
+| OpenAPI               | references/openapi.yaml                                     |
+| AsyncAPI              | references/asyncapi.yaml                                    |
+| JSON Schema           | references/json-schema.json                                 |
+| Desenho completo      | references/implementation-plan.md                           |
+| ADR                   | delegado à skill adr — .claude/skills/adr/references/adr.md |
 
 Todos os templates necessários ficam na pasta desta skill, exceto o ADR, que vive na
 skill adr.

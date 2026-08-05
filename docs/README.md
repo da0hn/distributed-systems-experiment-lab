@@ -111,4 +111,4 @@ marketing. A lista de palavras proibidas está em [`adr/README.md`](adr/README.m
 Todo fluxo descrito em prosa vai **também** como diagrama Mermaid, junto do parágrafo que
 o descreve.
 
-As instruções operacionais para quem edita aqui estão em [`CLAUDE.md`](CLAUDE.md).
+As instruções operacionais para quem edita aqui estão em [`AGENTS.md`](AGENTS.md).
