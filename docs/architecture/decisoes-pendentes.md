@@ -319,7 +319,7 @@ processo muda a forma que ela precisa declarar.
 | `D-DAT-01` | tipo e derivação da coluna de identidade      | `bigint` ordinal da semente              |
 | `D-DAT-02` | chave estrangeira de `allocation.resource_id` | sem FK no MVP                            |
 | `D-DAT-03` | índice sobre `allocation(resource_id)`        | criar, e registrar o plano efetivo       |
-| `D-DAT-05` | como o banco volta ao ponto de partida        | `TRUNCATE` antes de cada execução        |
+| `D-DAT-05` | como o banco volta ao ponto de partida        | decidida em 2026-08-05: não há reset     |
 | `D-DOM-14` | dono da identidade derivada da semente        | o experimento publica; o domínio consome |
 | `D-DOM-13` | o esquema compartilhado entre os dois planos  | Shared Kernel com contrato verificável   |
 
@@ -327,6 +327,17 @@ processo muda a forma que ela precisa declarar.
 `INSERT` de uma alocação toma `FOR KEY SHARE` na linha do recurso e conflita com
 o `FOR UPDATE` do `PESSIMISTIC` — uma restrição de integridade mudaria o
 fenômeno medido.
+
+`D-DAT-05` recomendava `TRUNCATE` antes de cada execução até 2026-08-05, quando uma
+quarta candidata entrou — pôr a execução na chave primária, preservando todo o
+histórico — e `P-DAT-9` mostrou que a objeção de `Q-0002-4` contra preservar linhas
+entre execuções não se sustenta sobre nenhum dos dois critérios de igualdade aceitos.
+**O usuário decidiu na mesma data: não há reset.** A chave primária das duas tabelas
+passa a incluir um discriminador UUIDv7, gerado pelo Lab Plane e propagado a tudo que o
+sistema medido publica, com o crescimento das tabelas aceito. A linha permanece aqui
+para que o histórico da recomendação não se perca; a decisão e o que ela deixa em aberto
+estão em [`modelo-de-dados.md`](modelo-de-dados.md), seção 7, `D-DAT-05`, `P-DAT-10` e
+`P-DAT-11`.
 
 ## Bloco 2 — destravam o E1 e a etapa 1
 

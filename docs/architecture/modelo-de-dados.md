@@ -391,10 +391,13 @@ pré-requisito de executar o ADR-0006, e não uma preferência de ferramenta.
 
 ## 7. Reset entre execuções
 
-Esta seção **não fecha** [`Q-0002-4`](../questions/Q-0002-4.md). O destino dela na fila
-é o ADR de Experiment (fila, posição 8), porque a escolha depende do ciclo de vida de
-uma execução. O que segue é o levantamento técnico e uma recomendação — a decisão é
-D-DAT-05.
+**Em 2026-08-05 o usuário decidiu que não há reset**, e a decisão está registrada em
+D-DAT-05. O que segue mantém o levantamento das quatro candidatas, porque ele é o que
+justifica a escolha; a decisão e o que ela deixa em aberto estão em D-DAT-05.
+
+A decisão **não fecha** [`Q-0002-4`](../questions/Q-0002-4.md) por si. O destino daquela
+questão na fila continua sendo o ADR de Experiment (fila, posição 8), e é lá que a
+escolha vira artefato — este documento não é o lugar onde a questão se encerra.
 
 O aperto é o que a própria questão descreve: o identificador é função da semente, logo
 duas execuções da mesma semente produzem a mesma chave primária, e a segunda colide com
@@ -405,11 +408,71 @@ as linhas da primeira. As três candidatas visíveis:
 | `TRUNCATE` antes de cada execução | apaga o histórico; `TRUNCATE` toma `ACCESS EXCLUSIVE` e reinicia o arquivo da tabela, o que zera a estatística e o bloat acumulados      |
 | schema por execução               | isola de verdade dentro do mesmo banco quanto a colisão de chave, e multiplica objetos; o `search_path` passa a ser parâmetro de conexão |
 | recurso novo por execução         | contradiz a comparação por valor do traço, porque o identificador passa a variar entre execuções (`Q-0002-4`)                            |
+| execução na chave primária        | preserva todo o histórico e faz as duas tabelas crescerem sem limite; põe vocabulário do Lab Plane na chave do sistema medido            |
 
 Um detalhe do `TRUNCATE` que muda a comparabilidade entre execuções: ele recria o
 arquivo físico da tabela, e a execução seguinte começa sobre páginas novas. Um `DELETE`
 deixa tuplas mortas e o autovacuum passa a rodar dentro da execução seguinte. As duas
 limpezas não produzem a mesma linha de base, e nenhuma das duas está declarada hoje.
+
+**A quarta candidata não está em `Q-0002-4`, e foi levantada em 2026-08-05.** Ela troca
+a chave primária de `resource` por um par `(execução, recurso)`, e faz o mesmo em
+`allocation`. Nenhuma execução colide com outra, nada é apagado, e a análise de uma
+execução passada continua possível sobre as linhas — não apenas sobre o veredito do
+relatório. Ela **não** é a candidata "recurso novo por execução" de `Q-0002-4`: aquela
+faz o identificador do recurso variar, e esta o mantém função da semente, acrescentando
+uma segunda coluna à chave. A restrição do ADR-0002 sobre a identidade
+(`Q-0002-4.md`:30-32) continua satisfeita.
+
+O que ela custa está em dois lugares. O primeiro é a linha de base: as duas tabelas
+crescem monotonicamente, e a execução número `n` roda sobre um heap formado pelas `n-1`
+anteriores. É a mesma objeção que derruba a terceira candidata em `Q-0002-4.md`:16-17, e
+ela só é neutralizada por particionamento pela coluna de execução, por retenção
+declarada, ou pela demonstração de que o crescimento não alcança o veredito do E4 — cuja
+forma é uma curva de tempo (`plano-do-laboratorio.md`:443). Nenhuma das três está
+escrita. O segundo é de desenho: a coluna de execução é vocabulário do Lab Plane, e
+colocá-la na chave primária do sistema medido faz o sistema medido saber que está sendo
+medido. O ADR-0008 separa os planos por processo, e nada nele fala sobre o esquema.
+
+**A forma proposta para a coluna, em 2026-08-05: um ULID, propagado a tudo que participa
+da execução**, de modo que log, oráculo e linhas do banco sejam rastreáveis ao mesmo
+identificador. A propagação não é gratuita e abre três pontos que ninguém decidiu:
+
+- **Quem gera, e sob qual regra.** Um ULID é 48 bits de instante mais 80 bits de
+  aleatoriedade. As duas metades esbarram nas regras de `../../AGENTS.md`:124-128 — nada
+  de aleatoriedade fora do componente semeado, nada de `Instant.now()` fora do adaptador
+  de relógio. A saída plausível é que o identificador nasça **no Lab Plane**, que é o
+  instrumento e não o sistema medido, mas as duas regras estão escritas sem qualificar
+  plano, e `Q-0002-1` já registra que elas são texto e não guarda executável.
+- **Como é armazenado.** Um ULID cabe em 16 bytes e o PostgreSQL tem `uuid` nativo com
+  esse tamanho; a forma canônica em texto ocupa 26 caracteres. Como a coluna entra na
+  chave primária das duas tabelas e em todo índice, a escolha multiplica por `n` linhas
+  de `allocation`. Guardá-lo como texto é a variante cara, e nada hoje declara qual vale.
+- **Até onde propaga.** Hoje existem dois processos (ADR-0008) e nenhum protocolo entre
+  eles está decidido. A partir da etapa 5 entra o RabbitMQ, e propagar passa a significar
+  header de mensagem, com a pergunta de o que acontece quando ele falta.
+
+Há um enquadramento que dissolve a objeção de desenho acima, e ele também é decisão de
+alguém: se a coluna de execução for lida como **discriminador de inquilino**, e não como
+identificador de medição, o sistema medido deixa de saber que está sendo medido — ele
+apenas passa a ser multi-inquilino, que é forma corrente em sistema real. O nome da
+coluna decide qual das duas leituras o esquema afirma.
+
+O que ela **não** custa, ao contrário do que `Q-0002-4.md`:19-21 sugere, é a igualdade
+de traço. Os dois critérios de igualdade aceitos hoje sobrevivem a ela:
+
+| Critério                                         | Compara                                                            | A coluna de execução entra?       |
+|--------------------------------------------------|--------------------------------------------------------------------|-----------------------------------|
+| igualdade de traço de SQL (`0002-...md`:244-281) | os dois braços da mesma operação, na mesma entrada amostrada       | os dois braços leem o mesmo valor |
+| execuções de controle (`0007-...md`:90-95)       | veredito, mais a subsequência de eventos com `restrito` verdadeiro | não compara SQL nenhum            |
+
+A prova de equivalência do ADR-0002 é intra-execução: os dois braços rodam sobre a mesma
+entrada amostrada e leem a mesma coluna de execução, de modo que os valores ligados
+coincidem. E o critério que compara duas execuções — o do ADR-0007 — olha veredito e
+subsequência de eventos restritos por tipo e endereço de fronteira, ignorando eventos
+livres e instante de parede; nenhum valor de SQL entra nele. O que segue sem critério é a
+**execução medida**, e isso já é consequência negativa declarada do ADR-0007
+(`0007-...md`:141-142), anterior a esta candidata e independente dela. Ver `P-DAT-9`.
 
 Recomendação em D-DAT-05: `TRUNCATE` das duas tabelas seguido da semeadura, executado
 pelo Lab Plane antes de cada uma das quatro execuções do ciclo
@@ -433,12 +496,12 @@ dois como parâmetros distintos da execução, com donos distintos.
 
 Quatro formas de aplicar o parâmetro, e três estragam alguma coisa:
 
-| Forma                                                         | Consequência                                                                                                                  |
-|---------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| runtime configura o `TransactionTemplate` ao abrir o escopo   | recomendada; o runtime já é quem abre o escopo (`0001-...md`:256-262), e o SQL da operação não muda                           |
+| Forma                                                         | Consequência                                                                                                                      |
+|---------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| runtime configura o `TransactionTemplate` ao abrir o escopo   | recomendada; o runtime já é quem abre o escopo (`0001-...md`:256-262), e o SQL da operação não muda                               |
 | a operação emite `SET TRANSACTION ISOLATION LEVEL` como passo | o statement entra no traço e muda o critério de igualdade (`0002-...md`:248-252); e o isolamento vira código do system under test |
-| configuração do pool, igual para todas as execuções           | o E5 deixa de poder variar o eixo que ele existe para varrer                                                                  |
-| `@Transactional(isolation = ...)` no braço declarativo        | a anotação é constante; o braço declarativo não recebe o parâmetro da execução — ver `## Perguntas em aberto`                 |
+| configuração do pool, igual para todas as execuções           | o E5 deixa de poder variar o eixo que ele existe para varrer                                                                      |
+| `@Transactional(isolation = ...)` no braço declarativo        | a anotação é constante; o braço declarativo não recebe o parâmetro da execução — ver `## Perguntas em aberto`                     |
 
 Duas armadilhas de configuração que valem estar escritas antes da primeira execução.
 `spring.datasource.hikari.transaction-isolation`, quando fixado, sobrepõe o nível pedido
@@ -623,7 +686,7 @@ isso é 10¹⁰ pares por força bruta, e nenhum documento declara como a contag
 | D-DAT-02 | chave estrangeira de `allocation.resource_id`             | com FK; sem FK                                                              | sem FK no MVP                                     | é restrição do banco sobre o sistema medido, vizinha da Alternativa D do ADR-0002      |
 | D-DAT-03 | índice sobre `allocation(resource_id)`                    | criar; não criar                                                            | criar, e registrar o plano efetivo                | muda a granularidade do predicate lock e o significado do braço `SERIALIZABLE` do E5   |
 | D-DAT-04 | ferramenta de migração                                    | Flyway; Liquibase; nenhuma                                                  | Flyway com SQL versionado                         | é pré-requisito do ADR-0006 e toca a decisão de build (fila, posição 10 e 11)          |
-| D-DAT-05 | como o banco volta ao ponto de partida entre execuções    | `TRUNCATE`; schema por execução; recurso novo por execução                  | `TRUNCATE` antes de cada uma das quatro execuções | é `Q-0002-4`, com destino no ADR de Experiment (fila, posição 8)                       |
+| D-DAT-05 | como o banco volta ao ponto de partida entre execuções    | `TRUNCATE`; schema por execução; recurso novo; execução na chave primária   | decidida em 2026-08-05: não há reset              | é `Q-0002-4`, com destino no ADR de Experiment (fila, posição 8)                       |
 | D-DAT-06 | onde o Lab Plane guarda o log durável a partir da etapa 6 | instância separada; mesmo cluster, outro banco; arquivo em disco            | instância separada da que o experimento mede      | resolve também a divergência entre `plano`:589-592 e `0007-...md`:86-88                |
 | D-DAT-07 | onde vive a definição de experimento                      | arquivo versionado; tabela no banco; os dois com fonte de verdade declarada | não decidir aqui                                  | é a tensão 1 do plano e pertence ao ADR de Experiment                                  |
 | D-DAT-08 | como o nível de isolamento é aplicado                     | `TransactionTemplate`; statement no passo; pool; anotação                   | `TransactionTemplate`, configurado pelo runtime   | a forma errada entra no traço de SQL ou apaga a distinção que o E5 existe para mostrar |
@@ -720,16 +783,60 @@ seguinte uma linha de base limpa; contra, apaga o histórico de linhas que algu�
 quisesse inspecionar. Schema por execução preserva tudo e multiplica objetos no banco,
 além de tornar o `search_path` parâmetro de conexão — e mais objetos no mesmo cluster é
 mais catálogo e mais autovacuum durante a medida. Recurso novo por execução contradiz a
-comparação por valor do traço, e a própria questão já o descarta.
+comparação por valor do traço, e a própria questão já o descarta. **Execução na chave
+primária** — levantada em 2026-08-05, fora de `Q-0002-4` — preserva todo o histórico sem
+multiplicar objetos, ao custo de crescimento monotônico das duas tabelas e de pôr
+vocabulário do Lab Plane na chave do sistema medido; ver seção 7 e `P-DAT-9`.
 
-**Recomendação.** `TRUNCATE` das duas tabelas seguido da semeadura, antes de cada uma
-das quatro execuções do ciclo, com o estado final copiado para o relatório antes da
-limpeza seguinte.
+**Decidido pelo usuário em 2026-08-05: não há reset.** A recomendação anterior era
+`TRUNCATE` das duas tabelas antes de cada uma das quatro execuções do ciclo, e ela se
+apoiava em parte na objeção de `Q-0002-4.md`:19-21 contra preservar linhas entre
+execuções — objeção que `P-DAT-9` mostra não se sustentar sobre nenhum dos dois critérios
+de igualdade aceitos. O que foi decidido:
 
-**Se a escolha for outra.** Com schema por execução, D-DAT-01 ganha liberdade — a
-colisão some — e a migração passa a rodar por schema, o que muda a forma da ferramenta
-escolhida em D-DAT-04. A decisão pertence ao ADR de Experiment; esta recomendação não a
-antecipa.
+| Ponto                   | Decisão                                                                  |
+|-------------------------|--------------------------------------------------------------------------|
+| reset entre execuções   | não existe; a chave primária das duas tabelas passa a incluir a execução |
+| forma do identificador  | UUIDv7, armazenado no tipo `uuid` nativo do PostgreSQL                   |
+| quem gera               | o Lab Plane, uma vez por execução                                        |
+| o que a coluna afirma   | discriminador de inquilino, com nome genérico no sistema medido          |
+| crescimento das tabelas | aceito, sem particionamento e sem retenção                               |
+
+O sistema medido persiste o discriminador e o propaga a **tudo que publica** — o que a
+partir da etapa 5 alcança a mensagem no RabbitMQ e a tabela de outbox. Ele não sabe que o
+valor é uma execução de experimento; para ele é a partição lógica dos dados. Quem sabe é
+o Lab Plane, que guarda a correspondência e a usa para reconstruir o histórico e
+consultar por execução.
+
+```mermaid
+flowchart LR
+    LP["Lab Plane<br/>gera o UUIDv7 e sabe<br/>que ele é uma execução"]
+    SUT["sistema medido<br/>vê um discriminador<br/>de inquilino, e nada mais"]
+    DB[("resource, allocation<br/>PK começa pelo discriminador")]
+    MSG["o que o SUT publica<br/>mensagem, outbox"]
+    LP -->|" abre a execução com o valor "| SUT
+    SUT --> DB
+    SUT --> MSG
+    DB -.->|" consulta por execução "| LP
+    MSG -.->|" correlação "| LP
+```
+
+**UUIDv7 e não ULID.** As duas formas têm a propriedade que importa aqui — prefixo de
+tempo, portanto inserção no fim do índice em vez de espalhada, o que evita a
+fragmentação de B-tree que um UUIDv4 causaria dentro da própria janela de medida. UUIDv7
+tem tipo nativo de 16 bytes no PostgreSQL, e a forma canônica em Base32 do ULID seria
+projeção de apresentação, nunca o tipo da coluna.
+
+**O que a decisão deixa em aberto**, e não é fechado aqui: o nome concreto da coluna
+genérica; e a geração do UUIDv7 diante das regras de `../../AGENTS.md`:124-128, já que a
+metade de instante e a metade aleatória do formato tocam as duas — a saída de gerá-lo no
+Lab Plane é plausível, e nenhuma das duas regras qualifica plano hoje. Ver `P-DAT-10`.
+
+**Consequências imediatas.** `P-DAT-7` e `P-DAT-8` deixam de existir: não há `TRUNCATE`,
+logo não há lock a tomar nem `CASCADE` a escrever. D-DAT-03 muda, porque todo índice
+passa a começar pelo discriminador. D-DAT-01 permanece: o identificador do recurso
+continua função da semente, e o discriminador é a segunda coluna da chave, não uma
+substituição.
 
 ### D-DAT-06 — onde o Lab Plane guarda o log durável
 
@@ -883,7 +990,72 @@ os trechos estão em 88-93, 95-96 e 125-127. `contracts/README.md`:48 e
 `integrations.md`:29 carregam deslocamento parecido. Nenhuma afirmação muda de sentido,
 e o deslocamento corrói a verificabilidade que a regra de evidência existe para dar.
 
----
+**P-DAT-7 — Ninguém garante que o `TRUNCATE` do reset consiga tomar o lock.**
+**Resolvida por D-DAT-05 em 2026-08-05**, que decidiu não haver reset. Fica registrada
+porque é parte do custo que derrubou a candidata do `TRUNCATE`. A
+recomendação de D-DAT-05 põe o `TRUNCATE` no Lab Plane, antes de cada execução
+(seção 7), e ele exige `ACCESS EXCLUSIVE` sobre as duas tabelas. Uma transação da
+execução anterior que tenha ficado aberta segura o lock e o `TRUNCATE` espera por ela —
+e, enquanto espera, a fila de locks bloqueia também quem chegar depois. O cenário não é
+hipotético: a etapa 6 mata o processo de propósito
+(`plano-do-laboratorio.md`:741), e um backend cuja conexão morreu sem `ROLLBACK` só é
+liberado quando o servidor detecta a queda. Nenhum documento declara quem encerra as
+conexões da execução anterior, nem se o reset tem `lock_timeout` e o que fazer quando
+ele estourar. Sem isso, um reset que trava é indistinguível de um experimento lento.
+
+**P-DAT-8 — O reset acopla D-DAT-05 a D-DAT-02, e a ordem entre as duas não está
+declarada.** **Resolvida por D-DAT-05 em 2026-08-05**, pelo mesmo motivo que `P-DAT-7`.
+No PostgreSQL, `TRUNCATE` sobre uma tabela referenciada por chave
+estrangeira falha a menos que a tabela que referencia entre no mesmo comando, ou que se
+use `CASCADE`. Hoje o acoplamento não aparece porque D-DAT-02 recomenda o MVP sem FK
+(seção de decisões, `D-DAT-02`), e a recomendação de D-DAT-05 já limpa as duas tabelas
+no mesmo passo. Se a FK entrar depois, o reset passa a depender da forma exata do
+comando — e um `CASCADE` escrito por conveniência apaga tabelas que ninguém listou.
+
+**P-DAT-9 — `Q-0002-4` aplica o critério de igualdade de traço a um uso para o qual ele
+não foi decidido.** A questão afirma que um identificador variável entre execuções faz a
+comparação por valor reprovar o par (`../questions/Q-0002-4.md`:19-21), e é essa frase
+que descarta uma candidata inteira de reset. Mas o critério do ADR-0002 nasceu fechando
+`Q-0001-3` e compara os dois braços da mesma operação sobre a mesma entrada amostrada
+(`0002-...md`:244-281) — uma comparação dentro de uma execução. A comparação entre
+execuções que existe é a do ADR-0007 (`0007-...md`:90-95), e ela olha veredito e
+subsequência de eventos restritos, sem tocar em SQL. Enquanto ninguém decidir qual
+critério vale para o replay da etapa 12, a objeção de `Q-0002-4` não se sustenta sobre
+nenhum dos dois — e uma candidata de reset está sendo descartada por ela. `Q-0002-4` é
+arquivo de questão e mantém o enunciado; a correção pertence a quem escrever o ADR de
+Experiment.
+
+**P-DAT-10 — Quem gera o UUIDv7 do discriminador, e sob qual regra.** D-DAT-05 fixou o
+formato e que o Lab Plane gera, e não fechou a tensão com `../../AGENTS.md`:124-128. Um
+UUIDv7 é 48 bits de instante mais aleatoriedade, e as duas regras — nada de aleatório
+fora do componente semeado, nada de `Instant.now()` fora do adaptador de relógio — estão
+escritas sem qualificar plano. Ou elas passam a dizer que valem sobre o sistema medido e
+não sobre o instrumento, ou a geração do discriminador é exceção nomeada. Enquanto as
+regras forem texto e não guarda executável (`../questions/Q-0002-1.md`), a diferença não
+é detectável em revisão de código. Fica também em aberto o nome concreto da coluna, de
+que depende qual das duas leituras — inquilino ou medição — o esquema afirma.
+
+**P-DAT-11 — O crescimento monotônico foi aceito, e o tamanho das tabelas não é
+registrado em lugar nenhum.** D-DAT-05 aceitou o crescimento sem particionamento e sem
+retenção. A execução número `n` roda sobre um heap formado pelas `n-1` anteriores, e o
+veredito do E4 é uma curva de tempo (`plano-do-laboratorio.md`:443). Sem o tamanho das
+duas tabelas no relatório de cada execução, duas curvas distantes no tempo são comparadas
+sem que ninguém saiba que a linha de base mudou entre elas — que é a forma silenciosa do
+erro, não a ruidosa. O custo de fechar isto é uma consulta a `pg_total_relation_size` no
+início da execução, e a decisão de incluí-la no relatório pertence a D-DAT-10. Vizinha de
+`P-DAT-2`, que registra o autovacuum pelo mesmo motivo.
+
+**P-DAT-12 — Sem reset, um `WHERE` que esqueça o discriminador corrompe o veredito em
+silêncio.** É o risco que D-DAT-05 troca pelos de `P-DAT-7` e `P-DAT-8`, e ele é pior na
+forma. Com `TRUNCATE`, uma consulta sem filtro lê apenas a execução corrente, porque não
+há outra — o esquecimento é inofensivo. Sem reset, a mesma consulta lê o histórico
+inteiro: o `value_final` do oráculo exato (`0002-...md`:293-295) passa a somar linhas de
+execuções anteriores, e o veredito sai errado sem nenhum sintoma. Nada hoje obriga o
+filtro. As candidatas visíveis são a guarda em teste executável, na linha de D-DAT-09
+para "uma conexão por worker"; e Row Level Security com o discriminador vindo de
+`current_setting`, que move a garantia do código para o banco — ao custo de o predicado
+da política entrar em todo plano de execução, o que toca o E5 e precisa ser medido antes
+de ser adotado. A escolha não foi feita.
 
 ## Adições propostas a `contracts/README.md`
 
