@@ -176,7 +176,7 @@ o nome do glossário e o nome do código, que a regra "um conceito tem **um** no
 | `C2` | **decidida**           | controle positivo rotulado; ver abaixo                    |
 | `C3` | **adiada, com forma**  | vira arquivo em [`../questions/`](../questions/README.md) |
 | `C4` | **decidida**           | ADR novo, junto de `C7`                                   |
-| `C5` | **decidida**           | log orientado a evento; ver abaixo                        |
+| `C5` | **fechada**            | log orientado a evento; 21 objeções decididas             |
 | `C6` | **refutada**           | seção seguinte deste arquivo                              |
 | `C7` | **decidida**           | ADR novo, junto de `C4`                                   |
 
@@ -765,17 +765,162 @@ tabela nova? O ADR-0004 está aceito, e o ADR-0005 já acrescentou um sexto valo
 classificação por subsunção (`../adr/0005-...md:96-104`). O caminho existe; a escolha não
 foi feita.
 
-**Pergunta em aberto.** Qual preocupação a contraproposta do consolidado atende? Se for
-acoplamento ao schema do system under test, ele já existe por ADR aceito: `resource`,
-`allocation`, `value` e `capacity` são fixados pelo ADR-0002 (`:87-99`). Se for permissão,
-o `GRANT SELECT` read-only a resolve sem tocar em ADR nenhum. A preocupação não foi
-nomeada, e o formato do `GRANT` depende dela.
+#### Decidido em 2026-08-05: o oráculo deixa de consultar o banco
 
-**Pergunta em
-aberto.** A exceção de `O11` é concedida como `SELECT` read-only no schema do
-system under test, como view mínima, ou como `SELECT` nas tabelas nomeadas? Nenhuma foi
-escolhida. Eliminar a leitura exige um ADR que substitua o ADR-0002, e esse caminho não foi
-pedido.
+Instrução do usuário, verbatim: "Oraculo aceita compara apenas o evento emitido pelo SUT e
+CDC. Reconstruir os eventos a partir dos INSERTS é aceitavel por estar na camada do banco
+de dados."
+
+**As fontes passam a ser duas, e nenhuma delas é um `SELECT` do Lab Plane.**
+
+| Fonte                          | Origem                    | Depende do código do SUT? |
+|--------------------------------|---------------------------|---------------------------|
+| consolidado publicado pelo SUT | leitura em transação nova | sim                       |
+| CDC sobre o WAL                | o que o cluster aplicou   | não                       |
+
+**`O11` deixa de existir, e a política de acesso fica sem exceção.** Sem `SELECT` do
+oráculo, nenhum usuário precisa de permissão fora do próprio schema. A regra decidida em
+`O6` — leitura restrita ao schema da aplicação — passa a valer sem caso especial. Era o
+objetivo da contraproposta, e ele foi alcançado.
+
+**O argumento sobre a camada do banco tem mérito, e ele não estava escrito.** O ADR-0002
+proíbe derivar o estado final "do log de observações do **runtime**"
+(`../adr/0002-...md:219-220`). O CDC não é esse log: ele é o WAL do PostgreSQL, e o WAL
+registra o que o cluster aplicou, sem passar por código do system under test. O trade-off
+que o ADR-0002 declara — "o oráculo é independente do runtime" (`:493-495`) — é
+**preservado** por esta escolha, e não revogado.
+
+**Ainda assim, é substituição, e não
+subsunção.** O diagrama da seção "O oráculo lê o banco"
+mostra `OR -->|" SELECT após a quiescência "| T` como a única aresta do oráculo (`../adr/0002-...md:230-241`). Remover essa aresta contradiz o desenho, e contradição segue
+o caminho da substituição (`../adr/README.md`, seção "Substituição e subsunção são coisas
+diferentes"). O ADR-0002 recebe `Substituído por ADR-NNNN`.
+
+**`O15` fecha por consequência.** Com duas fontes, a regra é a que a pessoa declarou:
+divergiu, invalida. Não há maioria a apurar.
+
+**Três objeções novas, e a primeira muda o peso de uma decisão já tomada.**
+
+**O19 — um slot atrasado invalida execuções corretas.** A guarda escolhida em `O16` foi
+monitoramento externo no homelab, fora do relatório. Com o CDC como **uma das duas
+fontes**, um slot atrasado entrega soma incompleta, ela diverge do consolidado, e a
+execução recebe `fontes divergentes`.
+
+**O mecanismo de duas fontes protege o veredito.** Um atraso do CDC
+**não** produz número
+errado: ele produz invalidação, que é o comportamento seguro. O custo é de **ruído**, e
+não de erro — execuções corretas descartadas por atraso de infraestrutura, num
+laboratório em que a etapa 6 mata processos de propósito e o consumidor do CDC é um deles.
+
+Uma saída existe e não foi escolhida: o oráculo aguardar o CDC alcançar o LSN do commit
+final antes de comparar, do mesmo modo que o ADR-0002 já o faz aguardar a quiescência.
+
+**O20 — o `value_inicial` não tem
+fonte.** O ADR-0002 exige `value_inicial` lido "antes de
+o primeiro worker começar" (`:143-145`). O CDC reporta mudanças, e não estado. Se o estado
+inicial existir antes da janela de captura, nenhuma das duas fontes o enxerga. Duas saídas
+existem e nenhuma foi escolhida: o CDC roda com snapshot inicial, ou o estado inicial é
+sempre criado dentro da janela — o que amarra esta decisão a `D-DAT-05`, que trata de como
+o banco volta ao ponto de partida.
+
+**O21 — uma soma reconstruída não é auto-consistente.** Um `SELECT sum` é atômico: ele
+sempre devolve um valor coerente com o estado do banco. Uma soma reconstruída de N eventos
+está errada se faltar um, e nada no valor resultante indica a falta.
+
+**A comparação entre as duas fontes é a guarda, e ela é boa.** As duas erram por motivos
+independentes: o consolidado do system under test erra por defeito na camada de
+persistência dele, e o CDC erra por evento perdido ou atrasado. Duas fontes que erram por
+motivos independentes concordarem no **mesmo** valor errado é improvável, e uma delas
+errando produz divergência, que invalida.
+
+O que resta sem guarda é o caso em que **as duas** estão certas sobre o que observaram e
+mesmo assim discordam por diferença de janela — o `value_inicial` de `O20` é o exemplo.
+
+#### `O16` fecha: monitoramento externo
+
+Decidido em 2026-08-05. O atraso do slot de replicação é observado por monitoramento no
+homelab, fora do relatório e fora do caminho do experimento.
+
+`O19` registra o efeito colateral: com o CDC como fonte, o atraso vira invalidação de
+execução correta, e não degradação silenciosa.
+
+#### `O14` fecha: o rótulo é `fontes divergentes`
+
+Decidido em 2026-08-05. O nome descreve o fato observado, sem interpretar de que lado está
+o defeito. Ele entra na tabela de classificação do ADR-0004 por
+**subsunção**, pelo mesmo
+caminho que o ADR-0005 usou para acrescentar o sexto valor (`../adr/0005-...md:96-104`): o
+ADR-0004 permanece `Aceito`, os cinco valores dele continuam válidos para o caso que
+enxergavam, e o rótulo novo cobre o caso que nenhum previa.
+
+O critério de separação é o do ADR-0005 (`:106-107`): um rótulo fala do fenômeno, o outro
+fala do instrumento. `fontes divergentes` NÃO DEVE ser lido como resultado do experimento.
+
+#### `O17` e `O18` são execução, e ficam registradas como tarefa
+
+**`O17`.** [`integrations.md`](integrations.md) ganha as linhas do RabbitMQ, do Debezium e
+do serviço de histórico, como **fato** a partir do commit que os criar, e como
+**hipótese** até lá. `D-ARQ-15` muda pela quarta vez, e `deploy/` passa a declarar os dois
+artefatos do ADR-0008 mais o serviço de histórico.
+
+**`O18`.** O relatório ganha dois campos que decisões deste lote lhe acrescentaram: o
+`wal_level` vigente e a latência imposta pela confirmação de publicador. Nenhum documento
+descreve a forma do relatório, e a lacuna pertence a `D-UI-13`.
+
+#### `O20` fecha: o estado inicial é criado dentro da janela de captura
+
+Decidido em 2026-08-05. Antes de cada execução o banco volta ao ponto de partida e o estado
+inicial é
+**inserido**, não pressuposto. O CDC captura esse `INSERT`, e o `value_inicial`
+passa a vir da mesma fonte que o `value_final`.
+
+**`D-DAT-05` fecha junto.** A linha perguntava como o banco volta ao ponto de partida e
+recomendava `TRUNCATE` antes de cada execução. A escolha a confirma, e acrescenta a razão
+que a linha não tinha: sem criar o estado inicial dentro da janela, o oráculo fica sem
+minuendo.
+
+Descartadas: o snapshot inicial do Debezium, porque ele lê a tabela inteira e devolve ao
+instrumento o acesso ao banco medido que a decisão anterior tinha removido; e o system
+under test publicar inicial e final, porque o `value_inicial` ficaria com fonte única,
+sem a redundância que protege o `value_final`.
+
+#### `O19` fecha: o oráculo espera o CDC, com limite declarado
+
+Decidido em 2026-08-05. O oráculo aguarda o CDC alcançar o LSN do commit final antes de
+comparar as duas fontes. A espera tem limite declarado por execução.
+
+**O limite é exigência, e não
+precaução.** O ADR-0005 fixa a terminação como critério: "Uma
+restrição sem antecedente não pode travar a execução para sempre"
+(`../adr/0005-...md:53`). Um consumidor de CDC morto na etapa 6 é exatamente esse caso.
+
+**O estouro do limite recebe rótulo próprio**, distinto de `fontes divergentes`. Os dois
+falam do instrumento, e dizem coisas diferentes: um diz que o CDC não alcançou o commit
+final no tempo declarado; o outro diz que as duas fontes alcançaram e discordam. Confundir
+os dois esconderia qual componente falhou. O nome do rótulo e a subsunção no ADR-0004
+seguem o mesmo caminho de `O14`.
+
+### `C5` fecha, e o que ela produziu
+
+Vinte e uma objeções, todas decididas ou cobertas. As linhas da fila que a decisão fechou
+ou destravou:
+
+| Linha                              | Efeito                                                              |
+|------------------------------------|---------------------------------------------------------------------|
+| `D-DAT-05`                         | fecha: `TRUNCATE` mais `INSERT` do estado inicial, dentro da janela |
+| `D-DAT-06`                         | fecha: o log durável vive em banco, atrás do serviço de histórico   |
+| `D-DAT-11`                         | fecha: instância compartilhada, `wal_level` registrado no relatório |
+| `D-MSG-06`                         | fecha em parte: confirmação ligada, sem braço de comparação         |
+| `D-MSG-01`                         | destravada: o gatilho disparou pelo log, e não pela reentrega       |
+| `D-MSG-03`, `D-MSG-04`, `D-MSG-09` | destravadas: o broker entrou no MVP                                 |
+| `D-MSG-10`                         | intacta no papel que avaliou; o CDC entra em papel que ela não viu  |
+| `D-ARQ-15`                         | muda pela quarta vez: `deploy/` ganha o serviço de histórico        |
+| `D-UI-13`                          | ganha dois campos novos de relatório                                |
+
+**Dois ADRs aceitos são substituídos por esta
+decisão.** O ADR-0007, na forma e no lugar do
+log; o ADR-0002, na fonte do oráculo. Os dois recebem `Substituído por ADR-NNNN` e o rastro
+de alterações, no mesmo commit em que o ADR novo nascer.
 
 ---
 
