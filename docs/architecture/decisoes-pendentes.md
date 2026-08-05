@@ -2017,13 +2017,22 @@ por linha que vivem dentro dos oito ADRs aceitos exigiria exatamente isso.
 
 #### `C-1a` — qual convenção de slug, pendência derivada
 
-**Não decidido.** GitHub, IntelliJ e o renderizador do Markdown local geram o slug de um
-título por regras diferentes — tratamento de acento, de crase, de pontuação e de títulos
-repetidos. Sem fixar **uma**, a verificação por script não é possível, e ela é metade do
-argumento que sustentou `C-1`.
+**Decidido em 2026-08-05, pela pessoa.** O slug é o que o **GitHub Flavored Markdown**
+gera do título: minúsculas, espaço vira hífen, pontuação é removida, e o **acento é
+preservado**. A escolha se justifica por onde o repositório vive: o link resolve ao ser
+clicado no GitHub, sem marcação adicional.
 
-A conversão das 53 citações NÃO DEVE começar antes desta escolha, sob pena de precisar
-ser refeita.
+O custo, nomeado: um título com travessão produz hífen duplo. `### Lacuna 1 — um ADR
+aceito cita esta pasta` vira `#lacuna-1--um-adr-aceito-cita-esta-pasta`. O slug é
+feio, e é correto.
+
+Descartadas: **GFM mais âncora explícita** em cada seção citada, por exigir que alguém
+marque a seção antes de citá-la e por trazer HTML para dentro do Markdown, quando a
+quebra que ela evitaria — renomear um título — já é detectável por script; e o **slug
+ASCII sem acento**, porque o link deixaria de resolver no GitHub e cada seção citável
+precisaria de `<a id>`, o que a torna a alternativa anterior com trabalho a mais.
+
+A conversão de `C-3`, `C-4` e `C-6` está destravada por esta decisão.
 
 ### `C-2` — o caminho movido vira lápide com mapa de destinos
 
@@ -2068,8 +2077,94 @@ originou.
   a citava ser substituído? A segunda opção reintroduz a pergunta quando alguém
   remover a lápide.
 
-### O que o Lote C ainda exige da pessoa
+### `C-5` — o verificador de citações é versionado e roda no CI
 
-`C-3` a `C-7` continuam abertas, e `C-1a` nasceu aberta nesta rodada.
+**Decidido em 2026-08-05, pela pessoa.** O script que produziu a auditoria de citações
+entra no repositório e é executado pelo GitHub Actions a cada push, falhando quando uma
+citação aponta para âncora que não existe no alvo.
 
-**Nenhuma foi decidida por agente.**
+A decisão transforma "toda afirmação leva evidência com caminho e linha" em regra
+executável, que é o que [`../questions/Q-0002-1.md`](../questions/Q-0002-1.md) pede para
+outras três regras do repositório. Sem ela, a convenção continua sendo texto, e o
+modo de falha já está medido: as citações dos ADRs 0005 e 0006 quebraram em
+2026-08-03 e ninguém notou até a auditoria de 2026-08-05, dois dias depois.
+
+Descartadas: **versionar sem executar**, porque a auditoria viraria ato voluntário e a
+regressão voltaria a passar despercebida pelo mesmo mecanismo que produziu `C-6`;
+e **não versionar**, porque a conversão das 53 citações não teria como ser conferida.
+
+**Isto cria o primeiro pipeline do repositório.** A ADR 0017 do
+[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure) governa CI/CD
+aqui e exige GitHub Actions em runner hospedado — o que esta decisão respeita. Ela
+**não** antecipa build, empacotamento nem deploy: o workflow verifica documentação,
+e nada mais.
+
+### `C-7` — o limite de ADR sobe para 12.000, com o legado isento
+
+**Decidido em 2026-08-05, pela pessoa.** `ADR_LIMIT` passa de 9000 para **12.000**
+caracteres. Os ADRs `0001` a `0004` ficam **isentos**, nomeados no script, e o limite
+passa a alcançar apenas `docs/adr/NNNN-*.md` — o índice e `../adr/arquivo/**` saem da
+regra.
+
+#### O achado que reenquadrou esta pendência
+
+Esta seção nasceu descrevendo o ADR-0008 como o primeiro a estourar o limite, de 8985
+para 9249 caracteres. A medição de 2026-08-05 mostra outra coisa: **seis dos nove
+ADRs já o violavam**, quatro deles por quase quatro vezes.
+
+| ADR    | Caracteres | Contra 9000 |
+|--------|------------|-------------|
+| `0002` | 36.317     | 4,0x        |
+| `0001` | 35.991     | 4,0x        |
+| `0003` | 35.130     | 3,9x        |
+| `0004` | 34.482     | 3,8x        |
+| `0005` | 11.009     | 1,2x        |
+| `0009` | 10.442     | 1,2x        |
+| `0008` | 9.250      | 1,03x       |
+| `0006` | 8.527      | cabe        |
+| `0007` | 8.404      | cabe        |
+
+O script mede o arquivo inteiro, na linha 90 de
+`../../.claude/skills/feature-planning/scripts/check_artifact_limits.py`, e aplica
+`ADR_LIMIT` a qualquer `.md` sob `docs/adr/`, nas linhas 54 e 55. Isso significa que ele
+nunca foi executado sobre essa pasta: um limite que ninguém mede não é limite, é
+comentário. O ADR-0008 só pareceu especial porque foi o primeiro caso em que alguém
+contou os caracteres.
+
+O mesmo defeito de escopo alcançava o índice [`../adr/README.md`](../adr/README.md), com
+35.482 caracteres, e todo o histórico congelado de `../adr/arquivo/**` — nenhum dos dois
+é um documento de decisão única, e o índice cresce por construção a cada ADR novo.
+
+#### O que 12.000 compra
+
+A folga sobre o maior ADR da série corrente é de cerca de 1.500 caracteres, e uma emenda
+de cabeçalho custou **264** no ADR-0008. São aproximadamente seis emendas antes de o
+limite voltar a apertar, e nenhum ADR aceito hoje recebeu mais de uma.
+
+Descartadas: **37.000 sem isenção**, porque nenhum ADR plausível chegaria perto e o
+limite deixaria de restringir qualquer coisa; **12.000 sem isenção**, porque os quatro
+ADRs de 35 mil passariam a falhar para sempre, sem poderem ser encolhidos — o corpo
+de um ADR aceito não pode ser editado —, e um verificador permanentemente vermelho
+deixa de ser lido; e **dois limites por série**, por exigir manutenção manual da
+fronteira toda vez que a série mudar.
+
+### O estado do Lote C ao fim de 2026-08-05
+
+| Item    | Estado                            | O que falta                      |
+|---------|-----------------------------------|----------------------------------|
+| `C-1`   | decidido                          | aplicar em `../../AGENTS.md`     |
+| `C-1a`  | decidido                          | nada                             |
+| `C-2`   | decidido                          | a forma e o prazo da lápide      |
+| `C-3`   | destravado por `C-1a`             | converter 48 citações            |
+| `C-4`   | destravado por `C-1a`             | resolver o alvo ambíguo          |
+| `C-5`   | decidido                          | escrever o script e o workflow   |
+| `C-6`   | **não decidido**                  | ver abaixo                       |
+| `C-7`   | decidido                          | alterar `ADR_LIMIT` e o escopo   |
+
+**`C-6` não é conversão, e por isso não foi destravada por `C-1a`.** As duas citações
+mortas vivem **dentro** dos ADRs 0005 e 0006, cujos corpos NÃO DEVEM ser editados. Elas
+não podem ser convertidas para âncora, nem corrigidas para outra linha. O que existe é
+uma escolha sobre o que fazer com uma evidência comprovadamente morta em artefato
+imutável, e ela não foi apresentada nem tomada.
+
+**Nenhuma decisão deste lote foi tomada por agente.**

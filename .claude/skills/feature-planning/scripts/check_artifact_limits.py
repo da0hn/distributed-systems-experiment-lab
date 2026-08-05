@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
+from typing import Optional
 
 
 LIMITS_BY_NAME = {
@@ -18,8 +20,20 @@ LIMITS_BY_PATH = {
     Path("docs/architecture/integrations.md"): 12000,
 }
 MARKDOWN_LIMIT = 4000
-ADR_LIMIT = 9000
+ADR_LIMIT = 12000
 CONTRACT_LIMIT = 16000
+
+# Um ADR e' `docs/adr/NNNN-titulo.md`. O indice e o historico congelado de
+# `docs/adr/arquivo/**` vivem na mesma pasta e nao sao documentos de decisao
+# unica: o indice cresce por construcao a cada ADR novo, e o arquivo morto nao
+# pode ser encolhido. Decisao `C-7`, em `docs/architecture/decisoes-pendentes.md`.
+ADR_FILENAME = re.compile(r"^\d{4}-.+\.md$")
+
+# Os quatro primeiros ADRs foram escritos sob outra pratica e tem cerca de 35 mil
+# caracteres. O corpo de um ADR aceito nao pode ser editado, entao eles nunca
+# caberao em limite nenhum. Isenta-los evita um verificador permanentemente
+# vermelho, que deixa de ser lido. Decisao `C-7`.
+ADR_LEGACY = {"0001", "0002", "0003", "0004"}
 
 
 def parse_limit(value: str) -> tuple[Path, int]:
@@ -46,12 +60,17 @@ def resolve_inside(root: Path, relative_path: Path) -> Path:
     return candidate
 
 
-def default_limit(relative_path: Path) -> int:
+def default_limit(relative_path: Path) -> Optional[int]:
+    """Devolve o limite do arquivo, ou None quando ele e' isento."""
     if relative_path in LIMITS_BY_PATH:
         return LIMITS_BY_PATH[relative_path]
     if relative_path.name in LIMITS_BY_NAME:
         return LIMITS_BY_NAME[relative_path.name]
-    if relative_path.parts[:2] == ("docs", "adr") and relative_path.suffix == ".md":
+    if relative_path.parts[:2] == ("docs", "adr"):
+        if not ADR_FILENAME.match(relative_path.name):
+            return None
+        if relative_path.name[:4] in ADR_LEGACY:
+            return None
         return ADR_LIMIT
     if relative_path.suffix in {".yaml", ".yml", ".json"}:
         return CONTRACT_LIMIT
@@ -88,6 +107,9 @@ def main() -> int:
                 raise ValueError(f"Arquivo ausente: {relative_path}")
             limit = overrides.get(relative_path, default_limit(relative_path))
             size = len(file_path.read_text(encoding="utf-8").strip())
+            if limit is None:
+                print(f"ISENTO: {relative_path} — {size} caracteres, sem limite")
+                continue
             state = "OK" if size <= limit else "EXCEDE"
             print(f"{state}: {relative_path} — {size}/{limit} caracteres")
             failed = failed or size > limit
