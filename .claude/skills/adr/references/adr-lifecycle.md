@@ -4,6 +4,12 @@ Use esta referência somente quando a mudança exigir um ADR.
 
 ## Antes de criar
 
+- **Escreva o ADR depois de a pessoa tomar a decisão, e crie-o já com estado `Aceito`.**
+  Regra adotada em 2026-08-04. O ADR registra escolha feita, e não escolha em debate.
+- **Escrever ADR não é obrigatório.** Avalie primeiro se a escolha atende aos quatro
+  critérios. Se não atender, o destino é um artefato de `docs/features/`, e nenhum ADR.
+- **O debate acontece na fila de decisões, antes do documento.** Toda objeção e
+  alternativa descartada vai para a linha da fila, no mesmo turno em que aparece.
 - Escreva um ADR somente para alternativa plausível, impacto durável, restrição futura
   ou trade-off relevante.
 - Escreva um ADR por vez. Não crie rascunhos antecipados ou em lote.
@@ -12,6 +18,9 @@ Use esta referência somente quando a mudança exigir um ADR.
 - Cite a série antiga como `arquivo/NNNN`. Nunca edite arquivo histórico.
 
 ## Enquanto estiver proposto
+
+O estado `Proposto` continua disponível e deixou de ser o caminho padrão em 2026-08-04.
+Use-o somente quando a pessoa pedir um ADR em debate, e não um registro de escolha feita.
 
 - Use `references/adr.md` sem remover seções obrigatórias.
 - Registre toda objeção, alternativa descartada ou pendência em `## Questões em aberto`
@@ -35,9 +44,32 @@ Use esta referência somente quando a mudança exigir um ADR.
 
 ## Depois de aceito
 
-- Nunca edite ou apague um ADR aceito.
+- Nunca edite nem apague o **corpo** de um ADR aceito. Corpo é tudo a partir da primeira
+  seção `##`.
 - Se uma decisão nova contradisser a antiga, crie ADR novo e marque a antiga como
   `Substituído por ADR-NNNN`.
 - Se a regra antiga continuar correta no caso original, use subsunção. O novo ADR DEVE
   citar a regra e seção originais, declarar o caso que permanece válido e não contradizê-la.
-- Não altere o texto do ADR subsumido. Ele permanece `Aceito`.
+- O ADR subsumido permanece `Aceito`, e o corpo dele permanece intocado.
+
+### O rastro de alterações, obrigatório desde 2026-08-04
+
+Todo ADR alterado — por substituição ou por subsunção — recebe dois campos no
+**cabeçalho**, logo depois de `Aceito em:`:
+
+```markdown
+- **Última atualização:** AAAA-MM-DD
+- **Alterado por:** [ADR-NNNN](NNNN-titulo.md) — substituição | subsunção; qual regra,
+  com a seção de origem.
+```
+
+- Escreva os dois campos **no mesmo commit** em que o ADR novo nasce.
+- `Última atualização` é quando o rastro entrou. `Data` é quando a decisão foi tomada, e
+  nunca muda.
+- Acumule linhas em `Alterado por` quando houver mais de uma alteração. Nunca remova a
+  linha antiga.
+- Nomeie **qual regra** e **de qual seção**. Uma referência sem a regra não resolve o
+  problema que o campo existe para resolver.
+
+O detalhamento e a justificativa estão em `docs/adr/README.md`, seção "O rastro de
+alterações, emendado em 2026-08-04".

@@ -5,6 +5,14 @@
 - **Etapa do roadmap:** [N]
 - **Relacionado:** [ADR-NNNN ou Não se aplica — motivo.]
 
+[Os dois campos abaixo entram só quando um ADR posterior alterar este. Omita-os enquanto
+nada tiver alterado a decisão. Ver `references/adr-lifecycle.md`, seção "O rastro de
+alterações".]
+
+- **Última atualização:** [AAAA-MM-DD]
+- **Alterado por:** [ADR-NNNN — substituição | subsunção; qual regra, com a seção de
+  origem.]
+
 ## Contexto
 
 [Situação, fatos e restrições. Não descreva a solução.]
@@ -60,8 +68,8 @@ seções anteriores.]
 
 ## Questões em aberto
 
-| # | Questão | Status |
-|---|---|---|
+| # | Questão                | Status |
+|---|------------------------|--------|
 | 1 | [Resumo em uma linha.] | aberto |
 
 [Use `aberto (crítico)` para risco que produz resultado falso sem falha de teste.
