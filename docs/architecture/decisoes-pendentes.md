@@ -874,15 +874,44 @@ inicial é
 **inserido**, não pressuposto. O CDC captura esse `INSERT`, e o `value_inicial`
 passa a vir da mesma fonte que o `value_final`.
 
-**`D-DAT-05` fecha junto.** A linha perguntava como o banco volta ao ponto de partida e
-recomendava `TRUNCATE` antes de cada execução. A escolha a confirma, e acrescenta a razão
-que a linha não tinha: sem criar o estado inicial dentro da janela, o oráculo fica sem
-minuendo.
-
 Descartadas: o snapshot inicial do Debezium, porque ele lê a tabela inteira e devolve ao
 instrumento o acesso ao banco medido que a decisão anterior tinha removido; e o system
 under test publicar inicial e final, porque o `value_inicial` ficaria com fonte única,
 sem a redundância que protege o `value_final`.
+
+##### O `TRUNCATE` NÃO fecha junto, e a reavaliação foi pedida
+
+Instrução do usuário, registrada em 2026-08-05: o `TRUNCATE` fica **em
+aberto**, para ser
+avaliado com calma em outro momento. `D-DAT-05` **não** fecha com `O20`.
+
+**O que `O20` exige é o `INSERT`, e não
+o `TRUNCATE`.** Os dois requisitos são separáveis,
+e misturá-los foi imprecisão do parágrafo anterior a este.
+
+| Requisito                                          | Quem o exige | Mecanismo              |
+|----------------------------------------------------|--------------|------------------------|
+| o estado inicial nasce dentro da janela de captura | `O20`        | um `INSERT` observável |
+| os dados da execução anterior não contaminam       | `D-DAT-05`   | ainda em aberto        |
+
+O segundo requisito admite pelo menos quatro mecanismos, e nenhum foi debatido: `TRUNCATE`;
+`DROP` e `CREATE` do schema por execução; identificador de execução em cada linha, com
+filtro por execução; ou banco descartável por execução.
+
+**O22 — o `TRUNCATE` PODE não ser visto pelo consumidor do CDC.** A replicação lógica do
+PostgreSQL trata `TRUNCATE` como operação própria, e a publicação precisa incluí-la de
+forma explícita. Se a publicação não a listar, o consumidor não recebe evento nenhum e a
+visão materializada dele fica com as linhas da execução anterior — que, com o CDC agora
+sendo **fonte do veredito**, produz soma errada e não invalidação.
+
+Esta objeção é de conhecimento externo sobre a ferramenta, e
+**não** foi verificada contra
+a documentação da versão do PostgreSQL que o homelab usa. Ela é `Pergunta em aberto`, e não
+fato.
+
+**Pergunta em aberto.** Como os dados de uma execução anterior deixam de contaminar a
+seguinte, e o mecanismo escolhido é observável pelo CDC? A pergunta é `D-DAT-05`, que volta
+a ficar aberta, agora com o requisito novo de ser visível no stream.
 
 #### `O19` fecha: o oráculo espera o CDC, com limite declarado
 
@@ -902,20 +931,21 @@ seguem o mesmo caminho de `O14`.
 
 ### `C5` fecha, e o que ela produziu
 
-Vinte e uma objeções, todas decididas ou cobertas. As linhas da fila que a decisão fechou
-ou destravou:
+Vinte e duas objeções. Vinte e uma decididas ou cobertas; `O22`, sobre a visibilidade do
+`TRUNCATE` no CDC, fica aberta junto de `D-DAT-05`. As linhas da fila que a decisão fechou,
+destravou ou reabriu:
 
-| Linha                              | Efeito                                                              |
-|------------------------------------|---------------------------------------------------------------------|
-| `D-DAT-05`                         | fecha: `TRUNCATE` mais `INSERT` do estado inicial, dentro da janela |
-| `D-DAT-06`                         | fecha: o log durável vive em banco, atrás do serviço de histórico   |
-| `D-DAT-11`                         | fecha: instância compartilhada, `wal_level` registrado no relatório |
-| `D-MSG-06`                         | fecha em parte: confirmação ligada, sem braço de comparação         |
-| `D-MSG-01`                         | destravada: o gatilho disparou pelo log, e não pela reentrega       |
-| `D-MSG-03`, `D-MSG-04`, `D-MSG-09` | destravadas: o broker entrou no MVP                                 |
-| `D-MSG-10`                         | intacta no papel que avaliou; o CDC entra em papel que ela não viu  |
-| `D-ARQ-15`                         | muda pela quarta vez: `deploy/` ganha o serviço de histórico        |
-| `D-UI-13`                          | ganha dois campos novos de relatório                                |
+| Linha                              | Efeito                                                                              |
+|------------------------------------|-------------------------------------------------------------------------------------|
+| `D-DAT-05`                         | **continua aberta**: só o `INSERT` foi decidido; o `TRUNCATE` fica para reavaliação |
+| `D-DAT-06`                         | fecha: o log durável vive em banco, atrás do serviço de histórico                   |
+| `D-DAT-11`                         | fecha: instância compartilhada, `wal_level` registrado no relatório                 |
+| `D-MSG-06`                         | fecha em parte: confirmação ligada, sem braço de comparação                         |
+| `D-MSG-01`                         | destravada: o gatilho disparou pelo log, e não pela reentrega                       |
+| `D-MSG-03`, `D-MSG-04`, `D-MSG-09` | destravadas: o broker entrou no MVP                                                 |
+| `D-MSG-10`                         | intacta no papel que avaliou; o CDC entra em papel que ela não viu                  |
+| `D-ARQ-15`                         | muda pela quarta vez: `deploy/` ganha o serviço de histórico                        |
+| `D-UI-13`                          | ganha dois campos novos de relatório                                                |
 
 **Dois ADRs aceitos são substituídos por esta
 decisão.** O ADR-0007, na forma e no lugar do
