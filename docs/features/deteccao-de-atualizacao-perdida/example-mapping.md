@@ -53,8 +53,8 @@ da seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 - **E3.4, calibração** — `ATOMIC_UPDATE` calibra: `commits` iguala `value_final −
   value_inicial`, pois o `UPDATE` é a única operação sobre a linha, sem leitura antes.
 - **E3.5/E3.6, controle positivo** — `PESSIMISTIC` roda sem execução de controle:
-  coincidências sempre zero, pois o lock torna a janela inalcançável; uma violação aponta
-  para o banco ou fabricação no instrumento, nunca para a estratégia.
+  coincidências sempre zero, pois o lock torna a janela inalcançável; uma violação
+  aponta para o banco ou fabricação no instrumento, nunca para a estratégia.
 - **E3.7/E3.8, retry** — Cada estratégia responde "há outra tentativa?" a partir da
   exceção recebida; `OPTIMISTIC` reconhece `version` divergente como recuperável, e uma
   exceção não reconhecida recebe **não** — falha fechada.
@@ -81,6 +81,6 @@ P1 e P3 foram respondidas por R14/R15 do ADR-0006, `Aceito`.
 
 ## O que não virou cenário, e por quê
 
-R1 é estrutural e vira `Contexto`. R12 (rótulo opaco) descreve o Lab Plane por dentro, não
-comportamento externo. R13 a R15 ainda não entraram em `behavior.feature` — esse arquivo
-já excede o próprio limite (débito anterior), e fica para uma passada dedicada.
+R1 é estrutural e vira `Contexto`. R12 (rótulo opaco) descreve o Lab Plane por dentro,
+não comportamento externo. R13 a R15 ainda não entraram em `behavior.feature` — esse
+arquivo já excede o próprio limite (débito anterior), e fica para uma passada dedicada.

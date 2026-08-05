@@ -10,19 +10,19 @@ Os dois compartilham o mesmo oráculo; o E3 varia a estratégia sobre a mesma ca
 Duas operações leem um contador, calculam e gravam. Uma sobrescreve a outra, sem exceção,
 log ou rastro. O engenheiro continua sem saber **quanto** se perde, e sob qual proteção.
 
-Resultado esperado: uma contagem exata de incrementos perdidos, não um predicado que pode
-ou não ter sido violado.
+Resultado esperado: uma contagem exata de incrementos perdidos, não um predicado que
+pode ou não ter sido violado.
 
 ## Atores e gatilho
 
-Workers do Control Plane executam `increment(resourceId)` concorrentemente. O oráculo lê o
-banco antes do primeiro worker e depois do último. Gatilho: uma execução de experimento
-sobre `increment`.
+Workers do system under test executam `increment(resourceId)` concorrentemente. O
+oráculo lê o banco antes do primeiro worker e depois do último. Gatilho: uma execução de
+experimento sobre `increment`.
 
 ## Escopo
 
-O domínio mínimo de duas entidades. A operação `increment`. O oráculo exato. A escolha do
-denominador. A separação entre `commits` e `sucessos`. A comparação entre quatro
+O domínio mínimo de duas entidades. A operação `increment`. O oráculo exato. A escolha
+do denominador. A separação entre `commits` e `sucessos`. A comparação entre quatro
 estratégias sobre a mesma carga.
 
 ## Fora de escopo
@@ -76,8 +76,8 @@ Lab Plane depois da quiescência. **Não existe DDL nem contrato de esquema** �
 ## Critérios de pronto
 
 R1 a R16 verificadas por teste. O E1 produz `perdidas > 0` de forma repetida sob a carga
-declarada. R7 é testada com o caso que a distingue: uma tentativa que commitou e reportou
-falha entra na contagem; uma que esgotou as tentativas, não.
+declarada. R7 é testada com o caso que a distingue: uma tentativa que commitou e
+reportou falha entra na contagem; uma que esgotou as tentativas, não.
 
 ## Links
 
