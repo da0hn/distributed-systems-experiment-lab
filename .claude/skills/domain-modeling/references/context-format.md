@@ -1,5 +1,18 @@
 # Formato de docs/CONTEXT.md
 
+## O idioma
+
+**O nome do termo é em inglês; a explicação, em português.** Regra adotada em 2026-08-04
+junto da decisão `D-ARQ-06`: todo identificador de código deste laboratório é escrito em
+inglês, e o glossário nomeia o que vira código.
+
+A linha `_Evite_` lista as palavras **inglesas** recusadas para o mesmo conceito. Quando
+o termo já existir em português no corpus, o par entra na tabela de de/para — e **só
+lá**, para que os dois lugares não possam divergir.
+
+Os rótulos de estado — `estabelecido`, `proposto`, `aposentado` — continuam em
+português. Eles descrevem o processo do repositório e nunca viram identificador.
+
 ## Estrutura
 
 ```md
@@ -7,25 +20,36 @@
 
 {Uma ou duas frases descrevendo o que este contexto é e por que existe.}
 
+## De/para — português para inglês
+
+| Português   | Inglês    |
+|-------------|-----------|
+| `passo`     | `step`    |
+| `tentativa` | `attempt` |
+
 ## Linguagem
 
-**Passo**:
+**step** — `estabelecido`
 {Uma ou duas frases descrevendo o termo}
-_Evite_: etapa, estágio, fase
+_Evite_: stage, phase, action
 
-**Tentativa**:
+**attempt** — `estabelecido`
 Uma passagem completa pela sequência de passos de uma operação.
-_Evite_: execução, rodada
+_Evite_: round, iteration, retry
 
-**Operação**:
+**operation** — `estabelecido`
 A definição versionada de uma sequência de passos, distinta de cada execução dela.
-_Evite_: fluxo, workflow
+_Evite_: flow, workflow
 ```
 
 ## Regras
 
 - **Seja opinativo.** Quando várias palavras existirem para o mesmo conceito, escolha a
   melhor e liste as outras em `_Evite_`.
+- **Verifique se a palavra inglesa já está numa linha `_Evite_`.** Um termo português
+  costuma recusar justamente o anglicismo que a conversão promove a nome. Ao converter,
+  a linha se inverte — e quando a recusa deve permanecer, isso é escolha, não tradução:
+  registre-a como pergunta em aberto.
 - **Mantenha definições enxutas.** Uma ou duas frases no máximo. Defina o que o termo
   **é**, não o que ele faz.
 - **Inclua só termos específicos do contexto deste projeto.** Conceito geral de
