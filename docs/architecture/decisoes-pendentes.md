@@ -1906,3 +1906,24 @@ nomeada — é pendência do Lote C.
 deslocam linha de arquivo citado. Enquanto `A1` não estiver aplicada em
 `../adr/README.md`, o ADR que emenda o ADR-0008 **DEVE** citar esta seção como a decisão
 que criou a emenda.
+
+## O limite de 9000 caracteres colide com o rastro de alterações, achado na escrita
+## do ADR-0009
+
+**Lacuna, não decisão.** Ao aplicar o cabeçalho de emenda no ADR-0008
+(`../adr/0008-os-dois-planos-em-processos-separados.md`), pela mecânica de
+`../adr/README.md`, seção "O rastro de alterações" (linhas 195-199), o arquivo passou
+de 8985 para 9249 caracteres — 249 acima do `ADR_LIMIT = 9000` de
+`.claude/skills/feature-planning/scripts/check_artifact_limits.py:21`. O corpo de um
+ADR `Aceito` NÃO DEVE ser editado (`../adr/README.md:153` e `:174`), e nenhuma forma do
+cabeçalho de emenda que ainda cite a regra e a seção de origem, exigidas por
+`../adr/README.md:209-210`, cabe na margem de 15 caracteres que sobrou.
+
+**Pergunta em aberto.** O limite de 9000 caracteres vale só no nascimento de um ADR, ou
+para o arquivo inteiro em qualquer momento posterior — inclusive depois de um cabeçalho
+de rastro obrigatório ser acrescentado por emenda ou subsunção? Se valer sempre, todo
+ADR aceito perto do limite fica impedido de receber o rastro que o processo torna
+obrigatório, e as duas regras se contradizem. A escolha não foi feita. O cabeçalho do
+ADR-0008 foi escrito de qualquer forma, no mesmo commit do ADR-0009, porque
+`../adr/README.md:203` exige os dois campos "no mesmo commit em que nasce" o ADR que
+altera, sem exceção declarada para o caso de estouro.

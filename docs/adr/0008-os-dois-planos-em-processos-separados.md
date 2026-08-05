@@ -9,6 +9,11 @@
   [`decisoes-pendentes.md`](../architecture/decisoes-pendentes.md), e `D-ARQ-01` por
   consequência.
 
+- **Última atualização:** 2026-08-05
+- **Alterado por:** [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)
+  — emenda; a região de pacote `dev.da0hn.lab.controlplane` (seção "Decisão", tabela de
+  pacotes, `:70`) passa a `dev.da0hn.lab.sut`.
+
 ## Contexto
 
 A árvore versionada não tem `pom.xml` nem classe Java, e o pacote raiz nunca foi

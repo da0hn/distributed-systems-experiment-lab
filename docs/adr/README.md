@@ -107,6 +107,7 @@ O motivo do arquivamento e o que sobreviveu estão em
 | [0006](0006-a-forma-da-estrategia-de-concorrencia.md)                    | A forma da estratégia de concorrência: contrato plugável e calibração  | `Aceito` |
 | [0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md)             | O log de observações: forma, ordem e onde vive                         | `Aceito` |
 | [0008](0008-os-dois-planos-em-processos-separados.md)                    | Os dois planos em processos separados, desde o dia zero                | `Aceito` |
+| [0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)       | A classificação do dual write e a região de pacote do sistema sob teste| `Aceito` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele
 **não decide nada** — é a análise que define quais decisões precisam ser tomadas e em

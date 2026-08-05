@@ -12,6 +12,11 @@
 - **Questões que este ADR encaminha:** [`Q-0002-1`](../questions/Q-0002-1.md) a
   [`Q-0002-4`](../questions/Q-0002-4.md), na mesma seção.
 
+- **Última atualização:** 2026-08-05
+- **Alterado por:** [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)
+  — emenda; a classificação do dual write como "o fenômeno do grupo B que a etapa 6
+  estuda" (seção "O oráculo exato", `:175`) passa a grupo C, escrita parcial.
+
 ## Vocabulário
 
 Este documento cria quatro termos. Os quatro aparecem no restante do texto sem nova
