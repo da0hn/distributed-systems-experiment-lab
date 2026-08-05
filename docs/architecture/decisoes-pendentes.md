@@ -927,16 +927,43 @@ O segundo requisito admite pelo menos quatro mecanismos, e nenhum foi debatido: 
 `DROP` e `CREATE` do schema por execução; identificador de execução em cada linha, com
 filtro por execução; ou banco descartável por execução.
 
-**O22 — o `TRUNCATE` PODE não ser visto pelo consumidor do CDC.** A replicação lógica do
-PostgreSQL trata `TRUNCATE` como operação própria, e a publicação precisa incluí-la de
-forma explícita. Se a publicação não a listar, o consumidor não recebe evento nenhum e a
-visão materializada dele fica com as linhas da execução anterior — que, com o CDC agora
-sendo **fonte do veredito**, produz soma errada e não invalidação.
+**O22 — o `TRUNCATE` é descartado pelo Debezium na configuração padrão.** `verificado em
+2026-08-05, por leitura da documentação das duas ferramentas.`
 
-Esta objeção é de conhecimento externo sobre a ferramenta, e
-**não** foi verificada contra
-a documentação da versão do PostgreSQL que o homelab usa. Ela é `Pergunta em aberto`, e não
-fato.
+A objeção procede, e a causa
+**não** é a que este arquivo afirmava antes da verificação. O
+PostgreSQL publica `TRUNCATE` por padrão; quem o descarta é o conector.
+
+| Camada     | Propriedade          | Padrão                               | Efeito sobre `TRUNCATE` |
+|------------|----------------------|--------------------------------------|-------------------------|
+| PostgreSQL | `publish`            | `'insert, update, delete, truncate'` | **publicado**           |
+| Debezium   | `skipped.operations` | `t`                                  | **descartado**          |
+
+A documentação do PostgreSQL é literal: "The default is to publish all actions, and so the
+default value for this option is `'insert, update, delete, truncate'`"
+([CREATE PUBLICATION](https://www.postgresql.org/docs/current/sql-createpublication.html)).
+
+A referência de configuração do conector lista `skipped.operations` com padrão `t`, em que
+`t` significa `truncates`
+([Debezium PostgreSQL Source Connector](https://docs.confluent.io/kafka-connectors/debezium-postgres-source/current/postgres_source_connector_config.html)).
+
+**A consequência é a que a objeção previa.** Com a configuração padrão, o consumidor não
+recebe evento nenhum de `TRUNCATE`, e a visão materializada dele conserva as linhas da
+execução anterior. Com o CDC como **fonte do veredito**, isso produz soma errada — e não
+invalidação, porque a soma errada PODE coincidir com o consolidado se o system under test
+também não enxergar o problema.
+
+**A correção é uma linha de configuração**, e ela DEVE ser declarada:
+`skipped.operations = none`.
+
+**Pergunta em aberto.** A documentação do Debezium no ramo principal diz "If you do not
+want the connector to capture *truncate* events, use the `skipped.operations` option to
+filter them out"
+([postgresql.adoc](https://raw.githubusercontent.com/debezium/debezium/main/documentation/modules/ROOT/pages/connectors/postgresql.adoc)),
+o que sugere captura por padrão, enquanto a referência do Confluent lista `t` como padrão.
+As duas descrevem distribuições e versões diferentes. Qual vale depende da versão do
+conector que o homelab usar, e ela não foi escolhida. O risco de assumir o padrão é o
+motivo de a configuração ser declarada de forma explícita.
 
 **Pergunta em aberto.** Como os dados de uma execução anterior deixam de contaminar a
 seguinte, e o mecanismo escolhido é observável pelo CDC? A pergunta é `D-DAT-05`, que volta
@@ -960,9 +987,10 @@ seguem o mesmo caminho de `O14`.
 
 ### `C5` fecha, e o que ela produziu
 
-Vinte e duas objeções. Vinte e uma decididas ou cobertas; `O22`, sobre a visibilidade do
-`TRUNCATE` no CDC, fica aberta junto de `D-DAT-05`. As linhas da fila que a decisão fechou,
-destravou ou reabriu:
+Vinte e duas objeções. Vinte e uma decididas ou cobertas; `O22` foi **verificada** em
+2026-08-05 e procede, com correção conhecida — `skipped.operations = none` no conector. O
+mecanismo de isolamento entre execuções continua aberto em `D-DAT-05`. As linhas da fila
+que a decisão fechou, destravou ou reabriu:
 
 | Linha                              | Efeito                                                                              |
 |------------------------------------|-------------------------------------------------------------------------------------|
@@ -1402,25 +1430,51 @@ Este turno não aplicou essa mitigação.
 
 **Quatro citações quebraram; três foram corrigidas.**
 
-| Citação                         | Onde                      | Estado                     |
-|---------------------------------|---------------------------|----------------------------|
-| `decisoes-pendentes.md:254-255` | `../adr/0008-...md:112`   | **quebrada, irreversível** |
-| `decisoes-pendentes.md:203-207` | `contra-avaliacao.md:176` | corrigida para `1202-1206` |
-| `decisoes-pendentes.md:222-223` | `contra-avaliacao.md:156` | corrigida para `1221-1222` |
-| `decisoes-pendentes.md:302-315` | `contra-avaliacao.md:137` | corrigida para `1461-1473` |
+| Citação                         | Onde                      | Estado                       |
+|---------------------------------|---------------------------|------------------------------|
+| `decisoes-pendentes.md:254-255` | `../adr/0008-...md:112`   | **quebrada, irreversível**   |
+| `decisoes-pendentes.md:203-207` | `contra-avaliacao.md:176` | trocada por citação de seção |
+| `decisoes-pendentes.md:222-223` | `contra-avaliacao.md:156` | trocada por citação de seção |
+| `decisoes-pendentes.md:302-315` | `contra-avaliacao.md:137` | trocada por citação de seção |
 
 As três citações restantes de [`contra-avaliacao.md`](contra-avaliacao.md) — linhas 5 a 7,
 22 a 26 e 42 a 48 — apontam para trechos anteriores às inserções e continuam válidas.
 
-**A lição, e ela é de processo, não deste arquivo.** Um documento citado por número de
-linha a partir de um artefato imutável **NÃO DEVE** crescer no meio. Ou ele só recebe
-acréscimo no fim, ou quem o edita corrige toda citação externa no mesmo commit — e a
-segunda opção não existe quando o citador é um ADR aceito.
+**A correção por número de linha foi tentada e falhou duas vezes no mesmo
+turno.** As três
+citações foram recalculadas e corrigidas; edições posteriores no mesmo arquivo, mais a
+reformatação automática de Markdown, as deslocaram de novo antes do commit. A segunda
+tentativa trocou o mecanismo: as três passaram a citar **o título da
+seção**, que nenhuma
+edição desloca.
 
-**Pergunta em aberto.** O repositório adota uma convenção que torne a citação estável —
-âncora nomeada, título de seção, ou identificador de bloco — em vez de número de linha?
-A regra "toda afirmação leva evidência com caminho e linha" ([`../../AGENTS.md`](../../AGENTS.md))
-produz citações que apodrecem, e este turno é a demonstração.
+**O reformatador de Markdown é ele mesmo uma fonte de
+deslocamento.** Ele reflui parágrafos
+e muda o número de linhas de trechos que ninguém editou. Qualquer citação por linha para um
+arquivo que passe por ele é instável por construção, mesmo sem edição de conteúdo.
+
+**A lição, e ela é de processo, não deste
+arquivo.** Um documento citado por número de linha
+a partir de um artefato imutável **NÃO
+DEVE** crescer no meio. Ou ele só recebe acréscimo no
+fim, ou quem o edita corrige toda citação externa no mesmo commit — e a segunda opção não
+existe quando o citador é um ADR aceito.
+
+**Escolha feita por agente em 2026-08-05, e ela precisa de
+revisão.** A troca de citação por
+linha para citação por seção contraria a convenção de
+[`../../AGENTS.md`](../../AGENTS.md), que exige "evidência com caminho de arquivo e linha".
+A escolha foi feita porque a alternativa era manter três citações comprovadamente
+quebradas, e uma citação quebrada não é evidência. Ela alcança
+**apenas** as três citações
+de [`contra-avaliacao.md`](contra-avaliacao.md) para este arquivo, e nenhuma outra do
+repositório.
+
+**Pergunta em
+aberto.** O repositório adota a citação por seção como convenção geral, mantém
+o número de linha e aceita o apodrecimento, ou adota uma terceira forma — âncora nomeada ou
+identificador de bloco? A decisão vale para todo documento vivo citado por outro, e ela não
+foi tomada por pessoa.
 
 ### Lacuna 2 — mover `integrations.md` quebra uma verificação executável
 
@@ -1515,3 +1569,77 @@ Os números são **provisórios**. Um identificador só é definitivo quando a l
 entra em [`integrations.md`](integrations.md), pelo mesmo motivo que
 [`../adr/README.md`](../adr/README.md) não atribui número a decisão que ainda
 não virou ADR: atribuir antes cria buraco na sequência quando a ordem muda.
+
+---
+
+## O que aguarda decisão da pessoa, em 2026-08-05
+
+Índice das pendências que a sessão de 2026-08-04 e 2026-08-05 deixou. **Nenhuma foi
+decidida por
+agente.** Cada linha aponta a seção deste arquivo que a descreve por inteiro.
+
+Esta seção fica no **fim** do arquivo, e não no topo, por consequência direta da lição
+registrada na Lacuna 1: um documento citado por número de linha a partir de um artefato
+imutável NÃO DEVE crescer no meio. Acrescentá-la no topo deslocaria todas as citações
+externas de novo.
+
+### Bloqueiam a escrita dos dois ADRs do lote 1
+
+| Pendência                                                | Onde              |
+|----------------------------------------------------------|-------------------|
+| `O23` — a substituição parcial não existe no vocabulário | seção `C4` e `C7` |
+| o nome do rótulo do estouro de espera pelo CDC           | seção `O19` fecha |
+| `Q-NNNN-K` não cobre questão que não nasceu de ADR       | abaixo            |
+
+**A execução de `C3` está bloqueada por convenção.** A decisão foi tomada: a contradição
+vira arquivo em [`../questions/`](../questions/README.md), com destino em `D-MSG-02`. O
+identificador não pode ser atribuído. [`../questions/README.md`](../questions/README.md),
+linhas 24 a 28, define `Q-NNNN-K` com `NNNN` sendo **o ADR de origem** e `K` o número da
+questão na seção `## Questões em aberto` dele. `C3` não nasceu de ADR nenhum: ela nasceu da
+rodada de arquitetura de 2026-08-03. Nenhum `NNNN` a descreve, e inventar prefixo novo
+criaria espaço de nomes sem decisão — o erro que a seção "Uma nota sobre os identificadores
+`Q-INT-*`" deste arquivo já registra.
+
+### Bloqueiam a pulverização de `docs/architecture/`
+
+| Pendência                                                        | Onde     |
+|------------------------------------------------------------------|----------|
+| o caminho citado por ADR aceito: redirecionar ou aceitar o morto | Lacuna 1 |
+| citação estável por âncora nomeada, em vez de número de linha    | Lacuna 1 |
+| destino de `integrations.md` e do script que o valida            | Lacuna 2 |
+| destino da prosa das oito propostas: apagar ou arquivar          | Lacuna 3 |
+| destino de `contra-avaliacao.md` e das objeções não conferidas   | Lacuna 4 |
+
+### Reabertas ou não tratadas
+
+| Pendência                                                           | Estado             |
+|---------------------------------------------------------------------|--------------------|
+| `D-DAT-05` — isolar execuções consecutivas, e o papel do `TRUNCATE` | reavaliação pedida |
+| fundir esta fila com a de [`../adr/README.md`](../adr/README.md)    | não tratada        |
+| podar as linhas que são comportamento disfarçado de arquitetura     | não tratada        |
+| quem aprova um Feature Card                                         | não tratada        |
+| se um Feature Card PODE contradizer um ADR aceito                   | não tratada        |
+| `D-ARQ-02` e `D-DOM-11` seguem sem estado em bloco nenhum           | não tratada        |
+| Blocos 0, 1 e 2 — 28 linhas do escopo bloqueante                    | não tratadas       |
+
+### Um dano irreversível ocorreu nesta sessão
+
+A citação `decisoes-pendentes.md:254-255`, feita por `../adr/0008-...md:112`, quebrou. O
+ADR é imutável e a citação não pode ser corrigida. O relato completo está na Lacuna 1,
+subseção "O dano já ocorreu".
+
+### Escolhas feitas por agente nesta sessão, que precisam de revisão
+
+Duas. As duas estão descritas por inteiro nas seções acima, e nenhuma fecha decisão de
+arquitetura.
+
+| Escolha                                                              | Onde                          |
+|----------------------------------------------------------------------|-------------------------------|
+| citar por título de seção, em três citações de `contra-avaliacao.md` | Lacuna 1, "O dano já ocorreu" |
+| acrescentar esta seção no fim do arquivo, e não no topo              | esta seção                    |
+
+A primeira contraria a convenção de evidência por caminho e linha. A alternativa era manter
+citações comprovadamente quebradas.
+
+A segunda torna o índice menos visível. A alternativa deslocaria todas as citações externas
+de novo, repetindo o dano no mesmo turno em que ele foi documentado.

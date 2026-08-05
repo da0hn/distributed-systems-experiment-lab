@@ -133,7 +133,8 @@ escritos sem se ver. Rotular a saída de `Proposta` cumpre a etiqueta e viola o
 mecanismo.
 
 **Colisões além da confessada.** A rodada confessa a colisão dos `Q-INT-*`
-(`decisoes-pendentes.md:1461-1473`). Três não confessadas:
+([`decisoes-pendentes.md`](decisoes-pendentes.md), seção
+`## Uma nota sobre os identificadores Q-INT-*`). Três não confessadas:
 
 - **(a) `verificado`** — [`mensageria.md`](mensageria.md) cria `Q-MSG-1` a `Q-MSG-7`, um
   espaço de nomes que nenhum documento do repositório registra. O repositório reconhece
@@ -152,7 +153,8 @@ mecanismo.
 
 `não conferido`.
 
-**O que a rodada afirma.** [`decisoes-pendentes.md:1221-1222`](decisoes-pendentes.md):
+**O que a rodada afirma.** [`decisoes-pendentes.md`](decisoes-pendentes.md), seção
+`## Bloco 3 — pertencem a um ADR já enfileirado`:
 "Aprovar qualquer uma destas antecipa um ADR enfileirado, e é a forma mais provável de
 esta rodada causar dano."
 
@@ -172,7 +174,8 @@ fila, não para decidi-lo por fora.
 
 `moderado` — o achado vale; a formulação do agente foi corrigida.
 
-**O que a rodada afirma.** [`decisoes-pendentes.md:1202-1206`](decisoes-pendentes.md)
+**O que a rodada afirma.** [`decisoes-pendentes.md`](decisoes-pendentes.md), seção
+`## Bloco 2 — destravam o E1 e a etapa 1`,
 chama "o agregado clássico do DDD é antipadrão aqui" de "a descoberta conceitual da
 rodada". A alternativa A de `D-DOM-07` é descartada porque "a fronteira transacional
 impõe a invariante, e impor a invariante torna o write skew irreproduzível".
