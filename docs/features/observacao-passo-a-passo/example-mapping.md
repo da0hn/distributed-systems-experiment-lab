@@ -16,7 +16,7 @@ Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
 - **Exemplo 1.1** — O corpo de `select-resource` executa `SELECT` e devolve os fatos
   `version=1` e `rowsAffected=1`. Ele não sabe que existe uma fronteira depois dele.
 - **Contraexemplo 1.2** — Um corpo de passo que chame o escalonador para se bloquear é
-  Control Plane invadindo o Lab Plane, e invalida a medida. A separação precisa ser
+  system under test invadindo o Lab Plane, e invalida a medida. A separação precisa ser
   imposta por teste, porque os dois planos vivem na mesma JVM.
 
 ### R3 e R4 — O endereço de uma fronteira
@@ -87,8 +87,8 @@ Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
 - **Exemplo 11.2, o que ela pega** — Uma anomalia que apareça só com barreiras indica que
   o runtime fabricou o fenômeno.
 - **Nota** — O [`ADR-0004`](../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)
-  subsumiu esta regra: a execução medida roda sem agendamento, e a cláusula fica atendida
-  por construção. R11 continua valendo com o alcance que o ADR-0004 lhe deu.
+  subsumiu esta regra: a execução medida roda sem agendamento, e a cláusula fica
+  atendida por construção. R11 continua valendo com o alcance que o ADR-0004 lhe deu.
 
 ## Perguntas em aberto
 
@@ -118,5 +118,5 @@ R2 (rótulo único, tipo fechado, corpo opaco) é estrutural: ela descreve a for
 definição, e a violação é pega por P8, que ainda não tem resposta.
 
 R8 (toda observação carrega a tentativa) vira asserção dentro de outros cenários, não um
-cenário próprio — um cenário que só verifique a presença de um campo testa estrutura, não
-comportamento.
+cenário próprio — um cenário que só verifique a presença de um campo testa estrutura,
+não comportamento.
