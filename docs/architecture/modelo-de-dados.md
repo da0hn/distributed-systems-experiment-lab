@@ -1057,6 +1057,14 @@ para "uma conexão por worker"; e Row Level Security com o discriminador vindo d
 da política entrar em todo plano de execução, o que toca o E5 e precisa ser medido antes
 de ser adotado. A escolha não foi feita.
 
+O risco tem uma segunda face, aberta pelas decisões de CDC de `decisoes-pendentes.md`.
+`O19` fez o oráculo comparar **duas** fontes — o banco e o stream do CDC — e o stream
+também deixa de ser limpo entre execuções. As duas fontes precisam do mesmo filtro por
+discriminador, e um filtro correto de um lado com o outro esquecido produz `fontes
+divergentes` sem que nada esteja divergindo de fato. Row Level Security não alcança o
+consumidor de CDC: a política vale para quem consulta a tabela, e o conector lê o WAL.
+Qualquer guarda escolhida precisa cobrir os dois lados, e nenhuma cobre por padrão.
+
 ## Adições propostas a `contracts/README.md`
 
 Este documento **não edita** aquele arquivo. O que segue é o que mudaria nele quando o

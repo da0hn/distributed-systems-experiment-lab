@@ -921,11 +921,16 @@ e misturá-los foi imprecisão do parágrafo anterior a este.
 | Requisito                                          | Quem o exige | Mecanismo              |
 |----------------------------------------------------|--------------|------------------------|
 | o estado inicial nasce dentro da janela de captura | `O20`        | um `INSERT` observável |
-| os dados da execução anterior não contaminam       | `D-DAT-05`   | ainda em aberto        |
+| os dados da execução anterior não contaminam       | `D-DAT-05`   | decidido em 2026-08-05 |
 
-O segundo requisito admite pelo menos quatro mecanismos, e nenhum foi debatido: `TRUNCATE`;
+O segundo requisito admite pelo menos quatro mecanismos: `TRUNCATE`;
 `DROP` e `CREATE` do schema por execução; identificador de execução em cada linha, com
-filtro por execução; ou banco descartável por execução.
+filtro por execução; ou banco descartável por execução. **O terceiro foi escolhido em
+2026-08-05**, mais tarde no mesmo dia — um discriminador UUIDv7 na chave primária das duas
+tabelas, gerado pelo Lab Plane e propagado a tudo que o sistema medido publica. A escolha
+satisfaz o requisito de visibilidade no stream por construção: não há operação de limpeza
+a ser capturada, e todo evento de CDC carrega o discriminador. O registro completo está em
+[`modelo-de-dados.md`](modelo-de-dados.md), `D-DAT-05`.
 
 **O22 — o `TRUNCATE` é descartado pelo Debezium na configuração padrão.** `verificado em
 2026-08-05, por leitura da documentação das duas ferramentas.`
@@ -965,9 +970,12 @@ As duas descrevem distribuições e versões diferentes. Qual vale depende da ve
 conector que o homelab usar, e ela não foi escolhida. O risco de assumir o padrão é o
 motivo de a configuração ser declarada de forma explícita.
 
-**Pergunta em aberto.** Como os dados de uma execução anterior deixam de contaminar a
-seguinte, e o mecanismo escolhido é observável pelo CDC? A pergunta é `D-DAT-05`, que volta
-a ficar aberta, agora com o requisito novo de ser visível no stream.
+**Pergunta em aberto, respondida mais tarde no mesmo dia.** Como os dados de uma execução
+anterior deixam de contaminar a seguinte, e o mecanismo escolhido é observável pelo CDC? A
+pergunta é `D-DAT-05`, que voltou a ficar aberta com o requisito novo de ser visível no
+stream — e foi decidida em 2026-08-05 sem limpeza nenhuma: o discriminador de execução na
+chave primária. Sem operação de limpeza, não há evento que o conector possa deixar de
+capturar, e o requisito de visibilidade deixa de ter objeto.
 
 #### `O19` fecha: o oráculo espera o CDC, com limite declarado
 
@@ -992,17 +1000,17 @@ Vinte e duas objeções. Vinte e uma decididas ou cobertas; `O22` foi **verifica
 mecanismo de isolamento entre execuções continua aberto em `D-DAT-05`. As linhas da fila
 que a decisão fechou, destravou ou reabriu:
 
-| Linha                              | Efeito                                                                              |
-|------------------------------------|-------------------------------------------------------------------------------------|
-| `D-DAT-05`                         | **continua aberta**: só o `INSERT` foi decidido; o `TRUNCATE` fica para reavaliação |
-| `D-DAT-06`                         | fecha: o log durável vive em banco, atrás do serviço de histórico                   |
-| `D-DAT-11`                         | fecha: instância compartilhada, `wal_level` registrado no relatório                 |
-| `D-MSG-06`                         | fecha em parte: confirmação ligada, sem braço de comparação                         |
-| `D-MSG-01`                         | destravada: o gatilho disparou pelo log, e não pela reentrega                       |
-| `D-MSG-03`, `D-MSG-04`, `D-MSG-09` | destravadas: o broker entrou no MVP                                                 |
-| `D-MSG-10`                         | intacta no papel que avaliou; o CDC entra em papel que ela não viu                  |
-| `D-ARQ-15`                         | muda pela quarta vez: `deploy/` ganha o serviço de histórico                        |
-| `D-UI-13`                          | ganha dois campos novos de relatório                                                |
+| Linha                              | Efeito                                                                                     |
+|------------------------------------|--------------------------------------------------------------------------------------------|
+| `D-DAT-05`                         | reaberta aqui, e decidida mais tarde no mesmo dia: não há reset (ver `modelo-de-dados.md`) |
+| `D-DAT-06`                         | fecha: o log durável vive em banco, atrás do serviço de histórico                          |
+| `D-DAT-11`                         | fecha: instância compartilhada, `wal_level` registrado no relatório                        |
+| `D-MSG-06`                         | fecha em parte: confirmação ligada, sem braço de comparação                                |
+| `D-MSG-01`                         | destravada: o gatilho disparou pelo log, e não pela reentrega                              |
+| `D-MSG-03`, `D-MSG-04`, `D-MSG-09` | destravadas: o broker entrou no MVP                                                        |
+| `D-MSG-10`                         | intacta no papel que avaliou; o CDC entra em papel que ela não viu                         |
+| `D-ARQ-15`                         | muda pela quarta vez: `deploy/` ganha o serviço de histórico                               |
+| `D-UI-13`                          | ganha dois campos novos de relatório                                                       |
 
 **Dois ADRs aceitos são substituídos por esta
 decisão.** O ADR-0007, na forma e no lugar do
@@ -1623,15 +1631,15 @@ criaria espaço de nomes sem decisão — o erro que a seção "Uma nota sobre o
 
 ### Reabertas ou não tratadas
 
-| Pendência                                                           | Estado             |
-|---------------------------------------------------------------------|--------------------|
-| `D-DAT-05` — isolar execuções consecutivas, e o papel do `TRUNCATE` | reavaliação pedida |
-| fundir esta fila com a de [`../adr/README.md`](../adr/README.md)    | não tratada        |
-| podar as linhas que são comportamento disfarçado de arquitetura     | não tratada        |
-| quem aprova um Feature Card                                         | não tratada        |
-| se um Feature Card PODE contradizer um ADR aceito                   | não tratada        |
-| `D-ARQ-02` e `D-DOM-11` seguem sem estado em bloco nenhum           | não tratada        |
-| Blocos 0, 1 e 2 — 28 linhas do escopo bloqueante                    | não tratadas       |
+| Pendência                                                           | Estado                 |
+|---------------------------------------------------------------------|------------------------|
+| `D-DAT-05` — isolar execuções consecutivas, e o papel do `TRUNCATE` | decidida em 2026-08-05 |
+| fundir esta fila com a de [`../adr/README.md`](../adr/README.md)    | não tratada            |
+| podar as linhas que são comportamento disfarçado de arquitetura     | não tratada            |
+| quem aprova um Feature Card                                         | não tratada            |
+| se um Feature Card PODE contradizer um ADR aceito                   | não tratada            |
+| `D-ARQ-02` e `D-DOM-11` seguem sem estado em bloco nenhum           | não tratada            |
+| Blocos 0, 1 e 2 — 28 linhas do escopo bloqueante                    | não tratadas           |
 
 ### Um dano irreversível ocorreu nesta sessão
 
