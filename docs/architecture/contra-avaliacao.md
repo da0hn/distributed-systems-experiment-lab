@@ -33,21 +33,21 @@ afirmação não confirmada como `Pergunta em aberto`, nunca como fato.
 
 ```mermaid
 flowchart TB
-    R1["R1 — quatro das seis contradições<br/>são ADR contra plano; C6 é falsa"]
-    R2["R2 — o índice promete 66<br/>decisões e lista 64"]
-    R3["R3 — a rodada reproduziu<br/>a falha da primeira série"]
-    R5["R5 — a justificativa de<br/>D-DOM-07 está errada"]
-    R12["R12 — 55.985 palavras,<br/>1,6x o corpus aceito"]
-    FILA["a fila de ADRs<br/>posições 8 a 11"]
-    APROV["aprovação em bloco<br/>de decisoes-pendentes.md"]
-    R1 --> FILA
-    R2 --> APROV
-    R3 --> APROV
-    R5 --> E5["o E5 perde o braço<br/>de comparação mais didático"]
-    R12 --> APROV
-    style R1 fill: #4a1d1d, stroke: #f87171, color: #e5e7eb
-    style R2 fill: #4a1d1d, stroke: #f87171, color: #e5e7eb
-    style R5 fill: #4a1d1d, stroke: #f87171, color: #e5e7eb
+  R1["R1 — quatro das seis contradições<br/>são ADR contra plano; C6 é falsa"]
+  R2["R2 — o índice promete 66<br/>decisões e lista 64"]
+  R3["R3 — a rodada reproduziu<br/>a falha da primeira série"]
+  R5["R5 — a justificativa de<br/>D-DOM-07 está errada"]
+  R12["R12 — 55.985 palavras,<br/>1,6x o corpus aceito"]
+  FILA["a fila de ADRs<br/>posições 8 a 11"]
+  APROV["aprovação em bloco<br/>de decisoes-pendentes.md"]
+  R1 --> FILA
+  R2 --> APROV
+  R3 --> APROV
+  R5 --> E5["o E5 perde o braço<br/>de comparação mais didático"]
+  R12 --> APROV
+  style R1 fill: #4a1d1d, stroke: #f87171, color: #e5e7eb
+  style R2 fill: #4a1d1d, stroke: #f87171, color: #e5e7eb
+  style R5 fill: #4a1d1d, stroke: #f87171, color: #e5e7eb
 ```
 
 ---
@@ -73,8 +73,7 @@ há o que reconciliar.
 MVP") e conclui que o esquema proíbe `version`. Duas linhas adiante, o mesmo ADR resolve
 o caso: "O esquema NÃO DEVE carregar uma coluna `version`. Quem a acrescenta é o ADR de
 estratégias de concorrência, no mesmo commit em que decidir a política que a lê"
-(`:95-96`). O ADR-0006 cumpriu essa delegação
-(`../adr/0006-a-forma-da-estrategia-de-concorrencia.md:56-58`). Não existe contradição:
+(`:95-96`). O ADR-0006 cumpriu essa delegação (`../adr/0006-a-forma-da-estrategia-de-concorrencia.md:56-58`). Não existe contradição:
 existe delegação explícita, cumprida. O que falta é ferramenta de migração — item de
 tarefa (`D-DAT-04`), não defeito em ADR aceito.
 
@@ -134,7 +133,8 @@ escritos sem se ver. Rotular a saída de `Proposta` cumpre a etiqueta e viola o
 mecanismo.
 
 **Colisões além da confessada.** A rodada confessa a colisão dos `Q-INT-*`
-(`decisoes-pendentes.md:302-315`). Três não confessadas:
+([`decisoes-pendentes.md`](decisoes-pendentes.md), seção
+`## Uma nota sobre os identificadores Q-INT-*`). Três não confessadas:
 
 - **(a) `verificado`** — [`mensageria.md`](mensageria.md) cria `Q-MSG-1` a `Q-MSG-7`, um
   espaço de nomes que nenhum documento do repositório registra. O repositório reconhece
@@ -153,7 +153,8 @@ mecanismo.
 
 `não conferido`.
 
-**O que a rodada afirma.** [`decisoes-pendentes.md:222-223`](decisoes-pendentes.md):
+**O que a rodada afirma.** [`decisoes-pendentes.md`](decisoes-pendentes.md), seção
+`## Bloco 3 — pertencem a um ADR já enfileirado`:
 "Aprovar qualquer uma destas antecipa um ADR enfileirado, e é a forma mais provável de
 esta rodada causar dano."
 
@@ -173,7 +174,8 @@ fila, não para decidi-lo por fora.
 
 `moderado` — o achado vale; a formulação do agente foi corrigida.
 
-**O que a rodada afirma.** [`decisoes-pendentes.md:203-207`](decisoes-pendentes.md)
+**O que a rodada afirma.** [`decisoes-pendentes.md`](decisoes-pendentes.md), seção
+`## Bloco 2 — destravam o E1 e a etapa 1`,
 chama "o agregado clássico do DDD é antipadrão aqui" de "a descoberta conceitual da
 rodada". A alternativa A de `D-DOM-07` é descartada porque "a fronteira transacional
 impõe a invariante, e impor a invariante torna o write skew irreproduzível".
@@ -430,7 +432,7 @@ A lista curta do que o agente tentou derrubar e não conseguiu.
 6. **`D-DOM-01` a `D-DOM-04`.** As colisões de `execução`, `controle`, `barreira` e
    `estratégia` entre ADRs aceitos são reais. São quatro decisões baratas, independentes
    da fila, e caras depois de existir código. É o único bloco aprovável como está — com
-   a ressalva de R3(b): aprovar `D-DOM-03` obriga a reescrever `D-MSG-11` no mesmo
+   a ressalva de R3 (b): aprovar `D-DOM-03` obriga a reescrever `D-MSG-11` no mesmo
    turno.
 
 ## Perguntas em aberto
