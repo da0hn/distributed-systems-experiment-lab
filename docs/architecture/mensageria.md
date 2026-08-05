@@ -483,7 +483,7 @@ O plano adia "o formato interno da injeção de falha" para *"a etapa 6, quando 
 `example-mapping.md` da observação passo a passo repete o adiamento e acrescenta o dos
 tipos `PUBLISH`, `CONSUME` e `ACK` para a etapa 5 (`features/observacao-passo-a-passo/example-mapping.md:110-111`), com a pergunta P7 em
 aberto: *"o tipo de passo é conjunto fechado. Acrescentar `PUBLISH` na etapa 5 muda o
-quê?"* (`example-mapping.md:103`).
+quê?"* (`features/observacao-passo-a-passo/example-mapping.md:103`).
 
 Este documento responde uma parte de P7: acrescentar `PUBLISH` não muda o conjunto
 fechado, porque `PUBLISH`, `CONSUME` e `ACK` já estão nele (`0001-...md:111-112`). O que
@@ -555,13 +555,13 @@ experimento que precisa falhar antes.
 
 | Peça                  | Etapa | Experimento que precisa falhar antes               | Aresta do grafo              |
 |-----------------------|-------|----------------------------------------------------|------------------------------|
-| chave de idempotência | 7     | 8, duplicata de entrega, com efeito dobrado        | `8 → 31` (`plano...md:292`)  |
-| Inbox                 | 7     | 8, duplicata de entrega, com efeito dobrado        | `8 → 30` (`plano...md:293`)  |
-| Outbox                | 6     | 13, dual write, com o evento perdido               | `13 → 29` (`plano...md:294`) |
-| política de retry     | 8     | 14, falha de consumidor, sem nenhuma recuperação   | `14 → 16` (`plano...md:295`) |
-| poison message        | 8     | 16, retry, que precisa existir para nunca terminar | `16 → 18` (`plano...md:295`) |
-| DLQ                   | 8     | 18, poison, que precisa não ter para onde ir       | `18 → 19` (`plano...md:295`) |
-| retry storm           | 10    | 16, retry, que precisa existir para amplificar     | `16 → 17` (`plano...md:296`) |
+| chave de idempotência | 7     | 8, duplicata de entrega, com efeito dobrado        | `8 → 31` (`plano-do-laboratorio.md:292`)  |
+| Inbox                 | 7     | 8, duplicata de entrega, com efeito dobrado        | `8 → 30` (`plano-do-laboratorio.md:293`)  |
+| Outbox                | 6     | 13, dual write, com o evento perdido               | `13 → 29` (`plano-do-laboratorio.md:294`) |
+| política de retry     | 8     | 14, falha de consumidor, sem nenhuma recuperação   | `14 → 16` (`plano-do-laboratorio.md:295`) |
+| poison message        | 8     | 16, retry, que precisa existir para nunca terminar | `16 → 18` (`plano-do-laboratorio.md:295`) |
+| DLQ                   | 8     | 18, poison, que precisa não ter para onde ir       | `18 → 19` (`plano-do-laboratorio.md:295`) |
+| retry storm           | 10    | 16, retry, que precisa existir para amplificar     | `16 → 17` (`plano-do-laboratorio.md:296`) |
 
 A cadeia da etapa 8 se lê de trás para frente e explica a topologia pobre da seção 3.
 Uma DLQ declarada na etapa 5 tira a mensagem envenenada de circulação antes de alguém

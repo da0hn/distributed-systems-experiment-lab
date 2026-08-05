@@ -1971,8 +1971,8 @@ flowchart TD
 ### `C-1` — a citação passa a ser por âncora nomeada, em todo alvo
 
 **Decidido em 2026-08-05, pela pessoa.** Toda citação de evidência escrita a partir de
-agora tem a forma `arquivo.md#slug-do-titulo`. **Uma regra só, sem exceção por tipo de
-alvo.** A convenção de [`../../AGENTS.md`](../../AGENTS.md), "evidência com caminho de
+agora tem a forma do caminho do arquivo, um `#`, e o slug do título da seção
+citada. **Uma regra só, sem exceção por tipo de alvo.** A convenção de [`../../AGENTS.md`](../../AGENTS.md), "evidência com caminho de
 arquivo e linha", passa a ler-se como evidência com caminho de arquivo e âncora.
 
 O argumento que decidiu: a âncora é verificável por script — o slug existe no alvo, ou
