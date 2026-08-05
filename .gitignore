@@ -4,6 +4,9 @@
 # Configuração local de máquina (allowlist de permissões, output style).
 .claude/settings.local.json
 
+# Bytecode dos scripts das skills
+__pycache__/
+
 # Cache incremental
 graphify-out/cache/
 
