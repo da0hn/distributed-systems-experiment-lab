@@ -1927,3 +1927,149 @@ obrigatório, e as duas regras se contradizem. A escolha não foi feita. O cabe�
 ADR-0008 foi escrito de qualquer forma, no mesmo commit do ADR-0009, porque
 `../adr/README.md:203` exige os dois campos "no mesmo commit em que nasce" o ADR que
 altera, sem exceção declarada para o caso de estouro.
+
+---
+
+## As decisões do Lote C, em 2026-08-05
+
+A tabela de "Os seis lotes" nomeia o Lote C e conta seis itens, sem enumerá-los. Esta
+seção os enumera e registra as duas decisões que a pessoa tomou em 2026-08-05. O sétimo
+item nasceu depois de os lotes serem fechados, durante a escrita do ADR-0009.
+
+| Item  | Pendência                                                 | Seção de origem |
+|-------|-----------------------------------------------------------|-----------------|
+| `C-1` | a forma canônica de citação                               | Lacuna 1        |
+| `C-2` | o caminho citado por ADR aceito, quando o arquivo se move | Lacuna 1        |
+| `C-3` | 48 citações sem o prefixo `../adr/` em `mensageria.md`    | auditoria       |
+| `C-4` | 3 citações de `integrations.md` a um `README.md` ambíguo  | auditoria       |
+| `C-5` | versionar o verificador de citações                       | auditoria       |
+| `C-6` | 2 citações mortas dentro dos ADRs 0005 e 0006             | auditoria       |
+| `C-7` | o limite de 9000 caracteres contra o rastro de alterações | ADR-0009        |
+
+`C-1` é a raiz do lote. `C-2`, `C-3`, `C-4` e `C-6` são instâncias do mesmo
+defeito — uma referência que aponta para uma **posição**, e não para um
+**significado**. Corrigi-las
+antes de `C-1` custaria duas passagens sobre as mesmas 53 citações.
+
+```mermaid
+flowchart TD
+    C1["C-1 · a forma<br/>canônica de citação"]
+    C2["C-2 · o caminho movido"]
+    C3["C-3 · 48 citações<br/>sem prefixo"]
+    C4["C-4 · 3 citações<br/>ambíguas"]
+    C6["C-6 · 2 citações<br/>mortas em ADR aceito"]
+    C5["C-5 · o verificador<br/>versionado"]
+    C7["C-7 · o limite de<br/>9000 caracteres"]
+    C1 --> C2
+    C1 --> C3
+    C1 --> C4
+    C1 --> C6
+    C1 --> C5
+    C5 -.->|" não depende de C-1 "| C7
+```
+
+### `C-1` — a citação passa a ser por âncora nomeada, em todo alvo
+
+**Decidido em 2026-08-05, pela pessoa.** Toda citação de evidência escrita a partir de
+agora tem a forma `arquivo.md#slug-do-titulo`. **Uma regra só, sem exceção por tipo de
+alvo.** A convenção de [`../../AGENTS.md`](../../AGENTS.md), "evidência com caminho de
+arquivo e linha", passa a ler-se como evidência com caminho de arquivo e âncora.
+
+O argumento que decidiu: a âncora é verificável por script — o slug existe no alvo, ou
+não existe — e não desloca. O número de linha desloca por três causas independentes, e
+duas delas não envolvem ninguém editando o trecho citado: inserção em qualquer ponto
+acima, e refluxo do reformatador de Markdown, registrado em "O dano já ocorreu".
+
+Descartadas: o **híbrido por mutabilidade do alvo**, que manteria linha para ADR
+aceito e âncora para documento vivo, porque cria duas regras onde uma basta e
+obriga quem escreve
+a classificar o alvo antes de citar; **manter o número de linha com crescimento restrito
+ao fim**, porque o reformatador desloca linhas sem que ninguém edite nada, e a garantia
+dependeria de disciplina humana a cada turno; e a **âncora explícita marcada no texto**,
+por exigir que alguém decida de antemão o que é citável, quando nada no repositório faz
+isso hoje.
+
+#### O alcance de `C-1`, e o que ela NÃO faz
+
+A regra vale para citação **nova**. Ela não reescreve o passado, e o motivo é a
+imutabilidade: o corpo de um ADR aceito NÃO DEVE ser editado, e converter as citações
+por linha que vivem dentro dos oito ADRs aceitos exigiria exatamente isso.
+
+| Alvo                      | Citação existente                      | Citação nova             |
+|---------------------------|----------------------------------------|--------------------------|
+| corpo de ADR aceito       | intocada, por imutabilidade            | não se aplica            |
+| `adr/arquivo/**`          | intocada, por imutabilidade            | não se aplica            |
+| documento vivo em `docs/` | convertida quando o arquivo for tocado | âncora                   |
+| arquivo fora de `docs/`   | intocada                               | âncora, se houver título |
+
+#### Os custos aceitos, nomeados
+
+- **A precisão cai da linha para a seção.** Uma afirmação no meio de uma seção de
+  oitenta linhas passa a ser citada pela seção inteira. Quem confere a evidência lê
+  mais para achar a frase. O ganho que compra esse custo é a citação parar de
+  apodrecer sozinha.
+- **A âncora quebra se o título mudar.** A diferença contra o número de linha é que a
+  quebra é **detectável**: um script compara o slug citado com os títulos do alvo. Uma
+  citação por linha deslocada continua resolvendo, e aponta para o texto errado em
+  silêncio — o modo de falha que a Lacuna 1 registra como o pior dos dois.
+- **Cinquenta e três citações precisam ser convertidas**, e a conversão é `C-3`, `C-4` e
+  `C-6`, que agora dependem desta decisão.
+
+#### `C-1a` — qual convenção de slug, pendência derivada
+
+**Não decidido.** GitHub, IntelliJ e o renderizador do Markdown local geram o slug de um
+título por regras diferentes — tratamento de acento, de crase, de pontuação e de títulos
+repetidos. Sem fixar **uma**, a verificação por script não é possível, e ela é metade do
+argumento que sustentou `C-1`.
+
+A conversão das 53 citações NÃO DEVE começar antes desta escolha, sob pena de precisar
+ser refeita.
+
+### `C-2` — o caminho movido vira lápide com mapa de destinos
+
+**Decidido em 2026-08-05, pela pessoa.** Quando a pulverização mover um arquivo que um
+ADR aceito cita, o caminho antigo **permanece** como um arquivo curto sem conteúdo
+próprio: ele declara que o documento foi pulverizado e nomeia, seção por seção,
+onde cada parte foi parar.
+
+```mermaid
+flowchart LR
+    ADR["ADR-0008 · aceito<br/>cita o caminho antigo"]
+    L["lápide no caminho antigo<br/>mapa seção → destino"]
+    D1["destino em ../adr/"]
+    D2["destino em ../questions/"]
+    D3["destino em ../features/"]
+    ADR -->|" o link resolve "| L
+    L --> D1
+    L --> D2
+    L --> D3
+```
+
+A lápide conserta o **link**. Ela não conserta a citação por **número de linha**:
+a linha 254 de uma lápide não tem o que a linha 254 do documento original tinha,
+e nada a conserta. O que ela muda é que o leitor deixa de chegar a lugar nenhum,
+e passa a chegar a um documento que explica para onde olhar.
+
+Descartadas: **aceitar a referência morta** e registrá-la numa tabela de danos
+conhecidos, porque quem lê o ADR isolado não passa pela tabela e segue um link quebrado
+sem aviso — o mesmo modo de falha da "Errata no índice de ADRs" descartada pelo
+ADR-0009; e **não mover o que ADR aceito cita**, porque `decisoes-pendentes.md` é
+justamente o
+arquivo que a pulverização precisa esvaziar, e a exceção frustraria a instrução que a
+originou.
+
+#### O que `C-2` deixa em aberto
+
+- **A forma da lápide não está decidida.** Nome do arquivo, seções obrigatórias e se ela
+  é artefato previsto por [`../specification-process.md`](../specification-process.md) —
+  que hoje não a prevê, do mesmo modo que não prevê os oito documentos de proposta da
+  Lacuna 3.
+- **O prazo de vida não está decidido.** Uma lápide existe para sempre, ou até o ADR que
+  a citava ser substituído? A segunda opção reintroduz a pergunta quando alguém
+  remover a lápide.
+
+### O que o Lote C ainda exige da pessoa
+
+`C-3` a `C-7` continuam abertas, e `C-1a` nasceu aberta nesta rodada.
+
+**Nenhuma foi decidida por agente.**
