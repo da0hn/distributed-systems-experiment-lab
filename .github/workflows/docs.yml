@@ -1,0 +1,49 @@
+# Verificacao da documentacao. Decisao `C-5`, em
+# `docs/architecture/decisoes-pendentes.md`.
+#
+# Este workflow NAO constroi, NAO empacota e NAO entrega nada: nao existe codigo
+# neste repositorio ainda. Ele verifica os documentos, e so isso. Build,
+# empacotamento e deploy chegam com o modulo, sob a ADR 0017 do
+# `homelab-infrastructure`, que exige GitHub Actions em runner hospedado.
+name: docs
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    name: Citacoes e limites de caracteres
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      # Alvo inexistente, linha citada alem do fim do alvo, e ancora que nao
+      # corresponde a titulo nenhum. A baseline carrega os defeitos conhecidos,
+      # cada um com a decisao que o autorizou.
+      - name: Verificar as citacoes
+        run: >
+          python scripts/check_citations.py
+          --root .
+          --baseline scripts/citations-baseline.txt
+
+      # `ADR_LIMIT` e' 12000 desde a decisao `C-7`. Os ADRs 0001 a 0004 sao
+      # legado isento, e o indice e `docs/adr/arquivo/**` estao fora da regra.
+      - name: Verificar os limites de caracteres dos ADRs
+        run: |
+          set -euo pipefail
+          args=()
+          for f in docs/adr/[0-9]*.md; do
+            args+=(--file "$f")
+          done
+          python .claude/skills/feature-planning/scripts/check_artifact_limits.py \
+            --root . "${args[@]}"

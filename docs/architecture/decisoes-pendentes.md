@@ -2148,23 +2148,89 @@ de um ADR aceito não pode ser editado —, e um verificador permanentemente ver
 deixa de ser lido; e **dois limites por série**, por exigir manutenção manual da
 fronteira toda vez que a série mudar.
 
-### O estado do Lote C ao fim de 2026-08-05
+### A execução do Lote C, em 2026-08-05
 
-| Item    | Estado                            | O que falta                      |
-|---------|-----------------------------------|----------------------------------|
-| `C-1`   | decidido                          | aplicar em `../../AGENTS.md`     |
-| `C-1a`  | decidido                          | nada                             |
-| `C-2`   | decidido                          | a forma e o prazo da lápide      |
-| `C-3`   | destravado por `C-1a`             | converter 48 citações            |
-| `C-4`   | destravado por `C-1a`             | resolver o alvo ambíguo          |
-| `C-5`   | decidido                          | escrever o script e o workflow   |
-| `C-6`   | **não decidido**                  | ver abaixo                       |
-| `C-7`   | decidido                          | alterar `ADR_LIMIT` e o escopo   |
+`C-3`, `C-4`, `C-6` e `C-7` foram executadas no mesmo dia em que foram decididas, e
+`C-5` produziu a ferramenta que mede as três primeiras.
 
-**`C-6` não é conversão, e por isso não foi destravada por `C-1a`.** As duas citações
-mortas vivem **dentro** dos ADRs 0005 e 0006, cujos corpos NÃO DEVEM ser editados. Elas
-não podem ser convertidas para âncora, nem corrigidas para outra linha. O que existe é
-uma escolha sobre o que fazer com uma evidência comprovadamente morta em artefato
-imutável, e ela não foi apresentada nem tomada.
+| Item   | Estado      | Onde vive o resultado                        |
+|--------|-------------|----------------------------------------------|
+| `C-1`  | decidido    | esta seção; falta aplicar no `AGENTS.md`     |
+| `C-1a` | decidido    | esta seção                                   |
+| `C-2`  | decidido    | esta seção; a forma da lápide segue aberta   |
+| `C-3`  | **fechado** | `mensageria.md`                              |
+| `C-4`  | **fechado** | `integrations.md`                            |
+| `C-5`  | **fechado** | `scripts/` e `.github/workflows/docs.yml`    |
+| `C-6`  | **fechado** | cabeçalho dos ADRs 0005 e 0006, e a baseline |
+| `C-7`  | **fechado** | `check_artifact_limits.py`                   |
 
-**Nenhuma decisão deste lote foi tomada por agente.**
+#### `C-3` — as citações de `mensageria.md`
+
+**Fechado.** Sete citações usavam a abreviação `plano...md:NNN`, que não resolve de
+lugar nenhum, e passaram a citar [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md).
+Uma citava um `example-mapping.md` sem dizer de qual capacidade, e ganhou o caminho
+que o parágrafo vizinho já usava.
+
+**A auditoria de 2026-08-05 superestimou o problema por seis vezes.**
+
+| Origem do número                               | Citações defeituosas              |
+|------------------------------------------------|-----------------------------------|
+| auditoria de 2026-08-05, por script descartado | 48, todas em `mensageria.md`      |
+| verificador versionado, em 2026-08-05          | 8 em `mensageria.md`, 23 no total |
+
+O motivo está registrado na própria auditoria: o script que a produziu vivia no
+diretório temporário de uma sessão e nunca foi revisto. É exatamente a fragilidade que
+`C-5` corrige.
+
+#### `C-4` — o alvo das três citações não era o README
+
+**Fechado, e a hipótese registrada estava errada.** Este arquivo supunha que as três
+citavam o `README.md` do
+[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure). A leitura
+daquele arquivo em 2026-08-05 mostra que ele **não sustenta nenhuma das três
+afirmações**: ele não menciona GHCR nem GitHub Actions para build, e atribui a entrega
+de aplicações ao Woodpecker CI.
+
+A evidência real são os ADRs daquele repositório, e as três passaram a citá-los por
+permalink com o SHA do commit:
+
+- GitHub Actions e GHCR: ADR 0017, `cicd-das-aplicacoes-no-github-actions`;
+- RabbitMQ e Valkey: ADR 0011, `dados-com-estado-postgres-valkey-rabbitmq`.
+
+**Pergunta em aberto.** O `README.md` daquele repositório e a ADR 0017 dele descrevem
+esteiras diferentes para entregar aplicação — Woodpecker no primeiro, GitHub Actions na
+segunda. Qual vale para este laboratório não é decidível daqui, e o
+[`AGENTS.md`](../../AGENTS.md) da raiz afirma a segunda.
+
+#### `C-6` — a errata no cabeçalho, e o quarto rótulo
+
+**Fechado.** As duas citações mortas apontavam para seções do índice extraídas para
+[`../questions/`](../questions/README.md) em 2026-08-03: `Q-0002-2`, citada pelo
+ADR-0005, e `Q-0001-2`, citada pelo ADR-0006. O corpo de nenhum dos dois foi editado.
+Cada cabeçalho recebeu `Última atualização` e um campo `Errata` que nomeia a seção
+pretendida e o arquivo para onde ela foi.
+
+**Custo aceito, e ele não estava previsto.** O cabeçalho de um ADR aceito passa a
+admitir um **quarto** tipo de anotação, ao lado de emenda, substituição e subsunção. Os
+três primeiros dizem que uma **decisão** mudou; a errata diz que uma **referência**
+quebrou, sem que decisão nenhuma tenha mudado. A regra do rastro de alterações em
+[`../adr/README.md`](../adr/README.md) ainda não a descreve.
+
+**A errata só coube porque `C-7` subiu o limite no mesmo dia.** O ADR-0005 tinha 11.008
+caracteres e passou a 11.384. Sob o limite antigo de 9000 ele já estava 2.008 acima, e a
+correção seria impossível de aplicar sem violar a regra que a própria correção obedece.
+
+#### O que a execução revelou, e não estava escrito
+
+- **A âncora nomeada não alcança linha dentro de bloco Mermaid.** Sete das citações de
+  `C-3` apontam para arestas do grafo de dependências pedagógicas, dentro de um bloco de
+  diagrama. Convertê-las para âncora as faria apontar para a seção inteira. Elas
+  permanecem por número de linha, e `C-1` não previu o caso.
+- **O verificador continha um defeito que inventava um defeito.** Ele expandia
+  `arquivo/0007-...md` pelo prefixo `0007` e resolvia para o ADR-0007 da série corrente,
+  que é outro documento, reportando quebrada uma citação correta. Uma ferramenta de
+  verificação que erra em silêncio produz confiança falsa, e é pior que nenhuma.
+- **A meta-citação não é distinguível por script.** A tabela da auditoria reproduz as
+  citações quebradas para poder descrevê-las, e o verificador as lê como citações. As
+  cinco entraram na baseline, com o risco nomeado ali: se uma delas passar a ser usada
+  como evidência real no mesmo arquivo, o verificador deixará de vê-la.

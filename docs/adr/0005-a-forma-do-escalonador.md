@@ -11,6 +11,13 @@
   [`Q-0002-2`](../questions/Q-0002-2.md), [`Q-0003-1`](../questions/Q-0003-1.md),
   [`Q-0003-2`](../questions/Q-0003-2.md).
 
+- **Última atualização:** 2026-08-05
+- **Errata:** a citação `README.md:598-609`, na seção `## Contexto`, quebrou em
+  2026-08-03, quando o índice encolheu de 908 para 517 linhas. A seção citada era
+  `### Q-0002-2`, extraída para
+  [`../questions/Q-0002-2.md`](../questions/Q-0002-2.md). O corpo não foi editado.
+  Decisão `C-6`, em `../architecture/decisoes-pendentes.md`.
+
 ## Vocabulário
 
 Este documento pressupõe **passo**, **fronteira** e **tentativa** do ADR-0001;

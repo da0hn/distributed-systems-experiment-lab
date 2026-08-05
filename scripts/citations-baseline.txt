@@ -1,0 +1,37 @@
+# Defeitos de citacao conhecidos e aceitos, um por linha.
+#
+# Formato: <caminho-da-origem>:<citacao>
+# A linha da origem NAO entra na chave, de proposito: ela muda a cada edicao do
+# arquivo, e uma baseline que envelhece a cada commit nao serve para nada.
+#
+# Uma entrada aqui e' uma decisao, e nao um silenciamento. Cada bloco abaixo
+# nomeia a decisao que a autorizou.
+
+# ----------------------------------------------------------------------------
+# `C-6` — duas citacoes mortas dentro de ADRs aceitos, em `docs/adr/`.
+#
+# As duas apontavam para secoes do indice `docs/adr/README.md` que foram
+# extraidas para `docs/questions/` em 2026-08-03, quando o arquivo encolheu de
+# 908 para 517 linhas. O corpo de um ADR aceito NAO DEVE ser editado, entao elas
+# nao podem ser convertidas para ancora nem corrigidas para outra linha.
+#
+# O cabecalho de cada um dos dois recebeu uma errata que nomeia a secao
+# pretendida e o arquivo para onde ela foi. O corpo continua como estava.
+docs/adr/0005-a-forma-do-escalonador.md:README.md:598-609
+docs/adr/0006-a-forma-da-estrategia-de-concorrencia.md:README.md:515-539
+
+# ----------------------------------------------------------------------------
+# Meta-citacao — a tabela da auditoria em `decisoes-pendentes.md`.
+#
+# As entradas abaixo nao sao evidencia: sao *dado sobre defeito*. A secao
+# "Auditoria de citacoes" e a subsecao "O que o Lote A NAO aplicou" reproduzem
+# as citacoes quebradas para poder descreve-las, e o verificador nao distingue
+# uma citacao de uma citacao sobre uma citacao.
+#
+# Risco aceito e nomeado: se alguma destas passar a ser usada como evidencia
+# real dentro do mesmo arquivo, o verificador deixara de ve-la.
+docs/architecture/decisoes-pendentes.md:README.md:598-609
+docs/architecture/decisoes-pendentes.md:README.md:515-539
+docs/architecture/decisoes-pendentes.md:README.md:200-208
+docs/architecture/decisoes-pendentes.md:README.md:180
+docs/architecture/decisoes-pendentes.md:README.md:181

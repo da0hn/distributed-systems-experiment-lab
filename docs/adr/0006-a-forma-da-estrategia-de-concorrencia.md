@@ -7,6 +7,13 @@
   substitui nem subsume nenhum ADR aceito.
 - **Fecha:** [`Q-0001-2`](../questions/Q-0001-2.md), [`Q-0005-1`](../questions/Q-0005-1.md).
 
+- **Última atualização:** 2026-08-05
+- **Errata:** a citação `README.md:515-539`, na seção `## Contexto`, quebrou em
+  2026-08-03, quando o índice encolheu de 908 para 517 linhas. A seção citada era
+  `### Q-0001-2`, extraída para
+  [`../questions/Q-0001-2.md`](../questions/Q-0001-2.md). O corpo não foi editado.
+  Decisão `C-6`, em `../architecture/decisoes-pendentes.md`.
+
 ## Contexto
 
 O ADR-0002 fixou o domínio e parou antes da estratégia: "quem a acrescenta é o ADR de
