@@ -1,8 +1,8 @@
 # Example Mapping — Detecção de proteção presente e inerte
 
 Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
-[`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`, e da seção
-6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
+[`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`, e da
+seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 
 ## História
 
@@ -56,11 +56,11 @@ sequenceDiagram
 ### A parte contraintuitiva — a proteção presente e inerte
 
 - **Exemplo 5.1** — O mesmo experimento com `OPTIMISTIC` ativo produz o **mesmo**
-  resultado. Inserir uma alocação não incrementa a `version` do recurso, porque não existe
-  linha compartilhada para versionar.
+  resultado. Inserir uma alocação não incrementa a `version` do recurso, porque não
+  existe linha compartilhada para versionar.
 - **Exemplo 5.2, por que o lock também não ajuda** — Travar a linha do recurso não resolve:
-  no instante das duas leituras, a linha que quebra a invariante ainda não existe. Não há
-  o que travar.
+  no instante das duas leituras, a linha que quebra a invariante ainda não existe. Não
+  há o que travar.
 - **Exemplo 5.3, o contraste com o E1** — No E1 a proteção funciona, porque as duas
   transações disputam a **mesma linha**. Aqui elas escrevem linhas diferentes, e a
   invariante que elas violam juntas não pertence a nenhuma das duas.
@@ -78,8 +78,8 @@ sequenceDiagram
 - **Exemplo 7.1** — Sob `READ COMMITTED`, as duas transações commitam e a invariante
   quebra.
 - **Exemplo 7.2** — Sob `REPEATABLE READ`, as duas transações commitam e a invariante
-  quebra. O PostgreSQL não detecta write skew nesse nível: as duas leram o mesmo conjunto
-  e escreveram linhas distintas.
+  quebra. O PostgreSQL não detecta write skew nesse nível: as duas leram o mesmo
+  conjunto e escreveram linhas distintas.
 - **Exemplo 7.3** — Sob `SERIALIZABLE`, uma das transações aborta com SQLSTATE `40001`. A
   invariante sobrevive, ao custo de exigir retry na aplicação.
 - **Exemplo 7.4, o que a varredura ensina** — O eixo do isolamento é **ortogonal** ao eixo
@@ -108,6 +108,6 @@ sequenceDiagram
 
 R1 (a verdade derivada) é estrutural e vira `Contexto`.
 
-O comportamento sob `REPEATABLE READ` está no exemplo 7.2 e **virou** cenário, porque é o
-resultado que mais contraria a intuição: o nome do nível sugere proteção que ele não dá
-para este fenômeno.
+O comportamento sob `REPEATABLE READ` está no exemplo 7.2 e **virou** cenário, porque é
+o resultado que mais contraria a intuição: o nome do nível sugere proteção que ele não
+dá para este fenômeno.

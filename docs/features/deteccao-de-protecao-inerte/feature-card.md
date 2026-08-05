@@ -16,7 +16,7 @@ O resultado esperado é a plataforma mostrar que "ter uma estratégia de concorr
 
 ## Atores e gatilho
 
-- **Workers do Control Plane** — executam `allocate(resourceId, amount)`.
+- **Workers do system under test** — executam `allocate(resourceId, amount)`.
 - **O oráculo do predicado** (Lab Plane) — avalia `Σ amount ≤ capacity` depois do fim.
 
 Gatilho: uma execução de experimento sobre a operação `allocate`.
@@ -24,8 +24,8 @@ Gatilho: uma execução de experimento sobre a operação `allocate`.
 ## Escopo
 
 A operação `allocate`. O oráculo do predicado de capacidade. A verdade derivada, que é a
-soma das alocações e não uma coluna. O nível de isolamento como eixo de variação do mesmo
-experimento.
+soma das alocações e não uma coluna. O nível de isolamento como eixo de variação do
+mesmo experimento.
 
 ## Fora de escopo
 
@@ -60,8 +60,8 @@ O nível de isolamento é parâmetro da execução, e nada hoje o declara.
 ## Riscos e decisões pendentes
 
 **O nível de isolamento não tem lugar na fila de decisões.** O E5 varre três níveis, e
-nenhuma linha da fila nomeia esse parâmetro. Três destinos são possíveis, e a escolha não
-foi feita — [`../../adr/README.md`](../../adr/README.md):240-269.
+nenhuma linha da fila nomeia esse parâmetro. Três destinos são possíveis, e a escolha
+não foi feita — [`../../adr/README.md`](../../adr/README.md):240-269.
 
 **A distinção que o E5 existe para mostrar corre risco de ser apagada.** Uma estratégia é
 código da aplicação e muda o SQL emitido. Um nível de isolamento é propriedade da
