@@ -236,6 +236,35 @@ coisa.
 de ADR de `../adr/README.md:13-18`. A escolha foi consciente: o mesmo ADR carrega `C7`,
 que atende, e separar as duas produziria um documento para uma linha.
 
+**Decidido em 2026-08-05: a região de pacote passa a
+ser `dev.da0hn.lab.sut`.** A sigla é
+padrão na literatura de teste, o segmento fica curto e dentro da convenção Java, e
+[`../CONTEXT.md`](../CONTEXT.md) já define o termo por extenso. Descartadas:
+`systemundertest`, por criar o precedente de segmento composto de 15 caracteres que
+nenhuma convenção do repositório trata; `subject`, por criar um terceiro nome para o
+conceito que `D-DOM-02` acabou de unificar; e manter `controlplane`, por violar "um
+conceito tem **um** nome" (`../adr/README.md:32`) de forma visível em todo `import`.
+
+**O23 — a substituição parcial não existe no vocabulário do processo.** O ADR novo
+contradiz **uma** regra do ADR-0008 — o nome da região de pacote (`:70`) — e deixa a
+decisão principal daquele ADR intacta: os dois planos continuam em processos separados.
+
+O processo de `../adr/README.md` só oferece dois caminhos, e nenhum serve.
+
+| Caminho      | O que ele exige                                | Por que não serve                               |
+|--------------|------------------------------------------------|-------------------------------------------------|
+| subsunção    | a regra antiga continua válida no caso que via | ela **não** continua: o nome é trocado          |
+| substituição | `Estado` do antigo recebe `Substituído por`    | derrubaria a decisão de dois processos, vigente |
+
+O precedente mais próximo é o ADR-0005, que acrescentou um sexto rótulo à tabela do
+ADR-0004 e o chamou de subsunção (`../adr/0005-...md:96-104`). Ali a regra antiga
+continuava valendo, e aqui não continua.
+
+**Pergunta em
+aberto.** O ADR-0008 permanece `Aceito` com o rastro registrando substituição
+de uma regra, ou o processo ganha um terceiro caminho nomeado? A escolha vale para todo ADR
+futuro que corrija um detalhe sem derrubar a decisão, e ela não foi feita.
+
 **Pergunta em
 aberto.** O ADR novo renomeia o pacote para `dev.da0hn.lab.systemundertest`,
 ou para outra forma? `systemundertest` tem 17 caracteres sem separador, e nenhuma
@@ -1351,6 +1380,47 @@ caso — ela trata de decisão substituída, e não de caminho movido.
 **Pergunta em
 aberto.** Qual das duas saídas vale, e ela vira regra para todo caminho que
 um ADR aceito cite?
+
+#### O dano já ocorreu, em 2026-08-05, e ele é irreversível
+
+**A citação do ADR-0008 quebrou antes de qualquer pulverização.** O trabalho deste turno
+inseriu cerca de 800 linhas neste arquivo. A citação `decisoes-pendentes.md:254-255` de
+`../adr/0008-...md:112` apontava para o parágrafo sobre as 900 a 1500 observações do E1;
+esse parágrafo está hoje na linha 1100, e as linhas 254 e 255 trazem uma tabela sobre
+subsunção.
+
+**Nenhuma correção é
+possível.** O corpo de um ADR aceito NÃO DEVE ser editado ([`../AGENTS.md`](../AGENTS.md), seção "O que nunca é editado"). A citação permanece
+quebrada, e o leitor que a seguir chega a texto sem relação com a afirmação.
+
+**O repositório tinha previsto exatamente este risco.**
+[`contra-avaliacao.md`](contra-avaliacao.md), seção `R12`, registra que edição em massa
+desloca citações `arquivo:linha` em silêncio. [`../CONTEXT.md`](../CONTEXT.md), linhas 873
+a 877, descreve a mitigação usada na renomeação de `D-DOM-02`: substituição dentro da
+linha, sem inserir nem remover linha nenhuma, com a contagem conferida antes e depois.
+Este turno não aplicou essa mitigação.
+
+**Quatro citações quebraram; três foram corrigidas.**
+
+| Citação                         | Onde                      | Estado                     |
+|---------------------------------|---------------------------|----------------------------|
+| `decisoes-pendentes.md:254-255` | `../adr/0008-...md:112`   | **quebrada, irreversível** |
+| `decisoes-pendentes.md:203-207` | `contra-avaliacao.md:176` | corrigida para `1202-1206` |
+| `decisoes-pendentes.md:222-223` | `contra-avaliacao.md:156` | corrigida para `1221-1222` |
+| `decisoes-pendentes.md:302-315` | `contra-avaliacao.md:137` | corrigida para `1461-1473` |
+
+As três citações restantes de [`contra-avaliacao.md`](contra-avaliacao.md) — linhas 5 a 7,
+22 a 26 e 42 a 48 — apontam para trechos anteriores às inserções e continuam válidas.
+
+**A lição, e ela é de processo, não deste arquivo.** Um documento citado por número de
+linha a partir de um artefato imutável **NÃO DEVE** crescer no meio. Ou ele só recebe
+acréscimo no fim, ou quem o edita corrige toda citação externa no mesmo commit — e a
+segunda opção não existe quando o citador é um ADR aceito.
+
+**Pergunta em aberto.** O repositório adota uma convenção que torne a citação estável —
+âncora nomeada, título de seção, ou identificador de bloco — em vez de número de linha?
+A regra "toda afirmação leva evidência com caminho e linha" ([`../../AGENTS.md`](../../AGENTS.md))
+produz citações que apodrecem, e este turno é a demonstração.
 
 ### Lacuna 2 — mover `integrations.md` quebra uma verificação executável
 
