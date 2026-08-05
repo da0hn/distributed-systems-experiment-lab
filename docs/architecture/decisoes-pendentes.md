@@ -2234,3 +2234,197 @@ correção seria impossível de aplicar sem violar a regra que a própria corre�
   citações quebradas para poder descrevê-las, e o verificador as lê como citações. As
   cinco entraram na baseline, com o risco nomeado ali: se uma delas passar a ser usada
   como evidência real no mesmo arquivo, o verificador deixará de vê-la.
+
+---
+
+## O Lote B, enumerado em 2026-08-05
+
+O Lote C fechou, e com ele a dependência que o precedia. O Lote B é o último portão
+antes do Lote D — a pulverização de `docs/architecture/` — e não por ordem arbitrária:
+quatro das cinco linhas abaixo decidem **onde uma decisão vive** e **quem a aprova**, e
+a pulverização move exatamente isso.
+
+| Item  | Pergunta                                     | Onde ela estava registrada                   |
+|-------|----------------------------------------------|----------------------------------------------|
+| `B-1` | as duas filas de decisão viram uma?          | seção do ciclo de vida, e `../adr/README.md` |
+| `B-2` | podar a fila, ou não podar?                  | `../specification-process.md`                |
+| `B-3` | quem aprova um Feature Card?                 | `../specification-process.md`                |
+| `B-4` | um card PODE contradizer um ADR aceito?      | `../specification-process.md`                |
+| `B-5` | `D-ARQ-02` e `D-DOM-11` entram em que bloco? | a contagem 64 contra 66                      |
+
+**Nenhuma das cinco foi decidida.** As alternativas abaixo foram levantadas por agente;
+a escolha é da pessoa, e cada seção termina numa recomendação que não vale como decisão.
+
+### `B-1` — as duas filas de decisão viram uma, ou continuam duas com papel nomeado
+
+**O problema.** Existem duas listas do mesmo tipo de coisa. A fila de
+[`../adr/README.md`](../adr/README.md#fila-de-decisões) tem onze linhas derivadas do
+plano, ordenadas por dependência. Esta fila tem 64 identificadores `D-*` agrupados em
+sete blocos, vindos da rodada de arquitetura de 2026-08-03.
+
+**A sobreposição é medida, e não suposta.** Os três primeiros assuntos da tabela de
+agrupamento vinham colados na posição 10 da outra fila, que os descreve numa frase só —
+o registro está em
+[o ciclo de vida desta fila](#o-ciclo-de-vida-desta-fila-decidido-em-2026-08-04) .
+Enquanto forem duas, uma decisão PODE ser tomada numa e reaberta na outra.
+
+```mermaid
+flowchart TD
+    P["plano-do-laboratorio.md"] --> F1["fila de adr/README.md<br/>11 linhas"]
+    R["rodada de<br/>arquitetura"] --> F2["esta fila<br/>64 linhas D-*"]
+    F1 -.->|" a posição 10 contém<br/>três assuntos daqui "| F2
+    F1 --> D["a decisão é tomada"]
+    F2 --> D
+    D --> A["o artefato é escolhido<br/>ADR, card, contrato ou tarefa"]
+```
+
+**Alternativa 1 — fundir tudo dentro da fila que já existe em `../adr/README.md`.** A
+favor: nenhum arquivo novo, e a fila herda de graça o ciclo de vida já escrito ali.
+Contra: aquele arquivo já é índice, convenção, histórico e processo de debate; somar 64
+linhas o transforma no maior documento do repositório, e `C-7` já o isentou do limite de
+caracteres por não ser ADR — a isenção viraria licença para crescer sem fim.
+
+**Alternativa 2 — extrair uma fila única para `../adr/fila-de-decisoes.md`.** A favor: a
+fila deixa de ser seção de um arquivo que faz outras quatro coisas; `docs/adr/` não é
+dissolvido pelo Lote D, então a fila sobrevive à pulverização sem precisar de destino
+novo; as duas seções atuais viram lápide, pela decisão `C-2`. Contra: cria um arquivo, e
+o repositório tem histórico de artefato criado antes do conteúdo.
+
+**Alternativa 3 — manter duas, com papel nomeado.** A favor: a de `../adr/README.md`
+enfileira decisão derivada do plano, com ordem; esta enfileira o inventário de uma
+rodada de arquitetura, sem ordem. Contra: nomear o papel descreve a duplicação, e não a
+remove — a reabertura silenciosa continua possível, e o Lote D passa a ter dois destinos
+a decidir em vez de um.
+
+**Recomendação.** Alternativa 2.
+
+### `B-2` — podar a fila, ou deixar a poda acontecer no momento da decisão
+
+**O problema.** A pendência registrada pede podar "as linhas que são comportamento
+disfarçado de arquitetura". Ela nasceu **antes** da decisão de 2026-08-04, que diz o
+contrário: o artefato que uma linha gera é escolhido no momento em que a decisão é
+tomada, e não antes
+([`../specification-process.md`](../specification-process.md#a-decisão-vem-antes-do-artefato)).
+
+**A objeção que a enumeração encontrou.** Podar agora é escolher o artefato antes da
+decisão, que é exatamente o que aquela regra proíbe. As duas não podem valer ao mesmo
+tempo, e a mais nova é a regra.
+
+**Alternativa 1 — não podar; `B-2` fecha por subsunção.** A favor: a poda já acontece,
+uma linha por vez, quando a pessoa escolhe — e acontece com a informação que só existe
+naquele momento. Contra: a fila continua misturando os dois tipos até lá, e quem a lê
+não sabe quais linhas nunca virarão ADR.
+
+**Alternativa 2 — podar agora, com critério escrito.** A favor: a fila encolhe e passa a
+listar só arquitetura. Contra: exige um critério que separe comportamento de arquitetura
+sem ver a decisão — e o teste que o repositório já tem, no
+[`AGENTS.md` de `docs/`](../AGENTS.md), admite explicitamente linha que cai nas duas
+colunas.
+
+**Alternativa 3 — classificar sem podar, com uma coluna "artefato provável".** A favor:
+torna a suspeita visível sem apagar nada. Contra: um palpite escrito ao lado de uma
+linha vira decisão por inércia, e é o mecanismo que este arquivo já registra em outras
+seções.
+
+**Recomendação.** Alternativa 1.
+
+### `B-3` — quem aprova um Feature Card
+
+**O problema.** O processo de ADR exige aprovação explícita e nomeada por pessoa. O
+equivalente para um card não foi definido
+([`../specification-process.md`](../specification-process.md#o-que-este-processo-não-decide)).
+Quatro capacidades estão especificadas e nenhuma foi aprovada — não por descuido, mas
+porque não existe o ato de aprovar.
+
+**A assimetria que justifica a pergunta.** Um ADR aceito é imutável; um card é editável.
+O que um ADR precisa de aprovação para congelar, um card corrige na edição seguinte. Só
+que o card carrega **regra de negócio**, e a regra da raiz é que regra de negócio é
+aprovada por pessoa, explicitamente.
+
+**Alternativa 1 — a pessoa aprova o card inteiro, e o card ganha estado.** A favor: é o
+espelho do processo de ADR, e não inventa vocabulário. Contra: um card muda a cada
+exemplo novo do Example Mapping; estado num artefato mutável obriga a reaprovar o todo a
+cada edição, e o estado envelhece em silêncio quando ninguém reaprova.
+
+**Alternativa 2 — aprova-se cada regra, e não o card.** A tabela de regras ganha a
+marca de quem aprovou, ao lado da evidência. A favor: o que precisa de aprovação é a
+regra; o card é o continente. Contra: a tabela ganha uma coluna, e as quatro capacidades
+existentes precisam ser revisitadas regra a regra.
+
+**Alternativa 3 — a aprovação é o commit da pessoa.** A favor: custo zero, e o Git já
+registra autor e data. Contra: os commits deste repositório são redigidos por agente e
+assinados pela pessoa; a autoria do Git não distingue quem decidiu de quem escreveu, e é
+justamente essa confusão que a seção "Escolhas feitas por agente nesta sessão" existe
+para desfazer.
+
+**Recomendação.** Alternativa 2, com o custo aceito de revisitar os quatro cards.
+
+### `B-4` — se um Feature Card PODE contradizer um ADR aceito
+
+**O problema.** Não aconteceu ainda, e a regra não está escrita. O caminho registrado
+como **provável** é um ADR novo que substitua o antigo
+([`../specification-process.md`](../specification-process.md#o-que-este-processo-não-decide)).
+Provável não é regra.
+
+**Por que a pergunta não é acadêmica.** Este arquivo abre com seis contradições dentro
+de ADRs **aceitos**, encontradas por leitura cruzada. Contradição entre artefatos de
+classes diferentes é a mesma falha um nível acima, e nada hoje a detecta.
+
+```mermaid
+flowchart TD
+    C["um card afirma X;<br/>um ADR aceito afirma não-X"] --> Q{"quem cede?"}
+    Q -->|" alt. 1 "| A1["o card cede;<br/>se o errado for o ADR,<br/>um ADR novo entra"]
+    Q -->|" alt. 2 "| A2["ninguém cede ainda;<br/>a contradição<br/>vira linha na fila"]
+    Q -->|" alt. 3 "| A3["o ADR vence<br/>por precedência"]
+    A3 --> R["o card contraditório<br/>continua sendo lido"]
+```
+
+**Alternativa 1 — não pode; o card cede.** Um card que contradiz um ADR aceito é defeito
+do card. Se o errado for o ADR, a contradição abre decisão e um ADR novo o substitui. A
+favor: mantém uma única fonte para decisão arquitetural. Contra: o card é o lugar onde a
+realidade contradiz a decisão primeiro, e obrigá-lo a ceder de imediato apaga o sinal
+antes de alguém o ler.
+
+**Alternativa 2 — pode, e a contradição é sinal.** Ela vira linha na fila e o trecho
+fica marcado até a decisão. A favor: preserva o sinal. Contra: enquanto durar, duas
+frases do repositório dizem coisas opostas e nenhuma está marcada como falsa.
+
+**Alternativa 3 — precedência automática do ADR, sem artefato.** A favor: custo zero.
+Contra: a contradição fica invisível, e o card errado continua sendo lido como
+especificação.
+
+**Recomendação.** Alternativa 1, com a emenda de que a contradição é registrada como
+pendência no mesmo turno em que é vista — o que a primeira regra do
+[`AGENTS.md` de `docs/`](../AGENTS.md) já exige de qualquer objeção.
+
+### `B-5` — `D-ARQ-02` e `D-DOM-11` não estão em bloco nenhum
+
+**O problema.** As duas têm seção própria no documento-fonte, com problema, alternativas
+e recomendação:
+[`D-ARQ-02`](arquitetura-alvo.md#d-arq-02--onde-a-interface-web-é-construída-e-empacotada)
+e [`D-DOM-11`](modelo-de-dominio.md#d-dom-11--se-o-escalonamento-é-contexto-próprio) .
+Nenhuma das duas aparece nos Blocos 0 a 6 deste arquivo. É a diferença entre 64 e 66 já
+registrada aqui: uma aprovação "das 66" aprova 64 e deixa duas decisões sem estado.
+
+**Por que isso pertence ao Lote B, e não ao Lote E.** A pulverização move os
+documentos-fonte. Uma decisão que existe só na fonte, e não no índice, some junto com o
+arquivo que a carrega — e some sem que ninguém note, porque nenhuma contagem a inclui.
+
+**Alternativa 1 — classificar as duas nos blocos, sem decidi-las.** A evidência sugere
+`D-ARQ-02` junto do assunto "Entrega contínua no homelab", porque ela fixa o
+`Dockerfile` e o número de imagens do dia zero; e `D-DOM-11` no Bloco 4,
+vocabulário, porque [`../CONTEXT.md`](../CONTEXT.md) já carrega o termo
+`scheduling` como `proposto` por ela. A favor: fecha a lacuna de contagem sem
+antecipar o Lote E. Contra: não resolve nada além do estado.
+
+**Alternativa 2 — decidi-las agora.** As duas já têm alternativas escritas e
+recomendação conservadora na fonte. A favor: duas linhas a menos na fila. Contra: são
+decisões de arquitetura, e o Lote B é de governança — decidi-las aqui mistura os dois
+assuntos, que é o erro que a divisão em lotes existe para evitar.
+
+**Alternativa 3 — declará-las fora do escopo bloqueante, com o gatilho que as retoma.**
+A favor: honesto quanto ao dia zero, já que nenhum experimento depende de nenhuma das
+duas. Contra: `D-ARQ-02` decide o `Dockerfile`, e o `Dockerfile` nasce no primeiro
+commit de código pela exigência de entrega do homelab.
+
+**Recomendação.** Alternativa 1.
