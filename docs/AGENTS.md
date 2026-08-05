@@ -8,34 +8,42 @@ Instruções operacionais para editar esta pasta. O contexto do projeto está no
 > **Nada que importa pode existir apenas na conversa.**
 
 O contexto é limpo entre sessões. Toda objeção, alternativa descartada ou pendência é
-escrita no arquivo **no mesmo turno em que é levantada**, antes de responder ou perguntar
+escrita no arquivo **no mesmo turno em que é
+levantada**, antes de responder ou perguntar
 qualquer coisa. Uma objeção que fica só no chat desaparece no próximo compact, em silêncio.
 
-O destino depende do artefato: `## Questões em aberto` do ADR, ou a seção de perguntas em
-aberto do `example-mapping.md`.
+O destino depende do artefato: `## Questões em aberto` do ADR, ou a seção de perguntas
+em aberto do `example-mapping.md`.
 
 ## O que nunca é editado
 
-| Alvo                    | Por quê                                                                                |
-|-------------------------|----------------------------------------------------------------------------------------|
-| `adr/arquivo/**`        | registra o que se pensava naquela data; editar apaga a evidência                       |
-| ADR com estado `Aceito` | para mudar a decisão, escreva um ADR novo e marque o antigo `Substituído por ADR-NNNN` |
+| Alvo                           | Por quê                                                                                |
+|--------------------------------|----------------------------------------------------------------------------------------|
+| `adr/arquivo/**`               | registra o que se pensava naquela data; editar apaga a evidência                       |
+| o **corpo** de um ADR `Aceito` | para mudar a decisão, escreva um ADR novo e marque o antigo `Substituído por ADR-NNNN` |
 
-Um ADR `Proposto` **pode** ser editado. Hoje **nenhum** ADR da série corrente está nesse
-estado: os quatro estão `Aceito`, e nenhum deles pode ser editado.
+Corpo é tudo a partir da primeira seção `##`. Um ADR `Proposto` **pode** ser editado.
+Hoje **nenhum** ADR da série corrente está nesse estado: os oito estão `Aceito`, e o
+corpo de nenhum deles pode ser editado.
+
+**O cabeçalho de um ADR aceito é editável num caso só, desde 2026-08-04.** Quando um ADR
+posterior o substitui ou subsome uma regra dele, o ADR alterado recebe `Última
+atualização` e `Alterado por`, no mesmo commit em que o ADR novo nasce. A regra completa
+está em [`adr/README.md`](adr/README.md), seção "O rastro de alterações, emendado em
+2026-08-04". Nenhuma outra edição de ADR aceito é permitida.
 
 ## Qual artefato criar
 
 ```mermaid
 flowchart TD
-    P["o que preciso registrar?"] --> Q1{"descreve o que o<br/>sistema faz, e é<br/>verificável?"}
-    Q1 -->|" sim "| FC["Feature Card<br/>+ Example Mapping"]
-    Q1 -->|" não "| Q2{"tem alternativa<br/>plausível e impacto<br/>arquitetural duradouro?"}
-    Q2 -->|" sim "| ADR["ADR"]
-    Q2 -->|" não "| NADA["não vira documento<br/>registre no artefato<br/>que já existe"]
-    FC --> Q3{"a regra ainda<br/>está em debate?"}
-    Q3 -->|" sim "| EX["fica como exemplo<br/>e pergunta em aberto"]
-    Q3 -->|" não "| BDD["vira cenário Gherkin"]
+  P["o que preciso registrar?"] --> Q1{"descreve o que o<br/>sistema faz, e é<br/>verificável?"}
+  Q1 -->|" sim "| FC["Feature Card<br/>+ Example Mapping"]
+  Q1 -->|" não "| Q2{"tem alternativa<br/>plausível e impacto<br/>arquitetural duradouro?"}
+  Q2 -->|" sim "| ADR["ADR"]
+  Q2 -->|" não "| NADA["não vira documento<br/>registre no artefato<br/>que já existe"]
+  FC --> Q3{"a regra ainda<br/>está em debate?"}
+  Q3 -->|" sim "| EX["fica como exemplo<br/>e pergunta em aberto"]
+  Q3 -->|" não "| BDD["vira cenário Gherkin"]
 ```
 
 O teste que separa os dois primeiros:
@@ -47,19 +55,20 @@ O teste que separa os dois primeiros:
 | A frase descreve o que o sistema faz, e é verificável?  | —         | sim                |
 | Um teste poderia falhar por causa dela?                 | —         | sim                |
 
-Uma regra que caiba nas duas colunas indica um ADR carregando comportamento: escreva o ADR
-com o porquê, o card com o quê, e faça o card citar o ADR por arquivo e linha.
+Uma regra que caiba nas duas colunas indica um ADR carregando comportamento: escreva o
+ADR com o porquê, o card com o quê, e faça o card citar o ADR por arquivo e linha.
 
 ## Feature Card
 
 Caminho: `features/<slug>/feature-card.md`. Slug em kebab-case, nomeando a capacidade.
 
-Seções obrigatórias, nesta ordem: problema e resultado esperado; atores e gatilho; escopo;
-fora de escopo; regras de negócio; integrações e contratos afetados; riscos e decisões
-pendentes; critérios de pronto; links.
+Seções obrigatórias, nesta ordem: problema e resultado esperado; atores e gatilho;
+escopo; fora de escopo; regras de negócio; integrações e contratos afetados; riscos e
+decisões pendentes; critérios de pronto; links.
 
 - **Máximo 700 palavras.** Um card acima disso cobre mais de uma capacidade — divida. O
-  corte sai da prosa e dos diagramas, **nunca da evidência**. Um diagrama grande vai para
+  corte sai da prosa e dos diagramas, **nunca da
+  evidência**. Um diagrama grande vai para
   o `example-mapping.md`, que não tem limite.
 
   `wc -w` sozinho **superestima**: ele conta os `|` das tabelas como palavras, e um card
@@ -82,8 +91,8 @@ pendentes; critérios de pronto; links.
 
 Caminho: `features/<slug>/example-mapping.md`.
 
-Quatro blocos obrigatórios — história, regras, exemplos concretos, perguntas em aberto — e
-um quinto para o que foi **adiado de propósito**, com o gatilho que o retoma.
+Quatro blocos obrigatórios — história, regras, exemplos concretos, perguntas em aberto —
+e um quinto para o que foi **adiado de propósito**, com o gatilho que o retoma.
 
 - Os exemplos existem para revelar o que a regra não disse: fronteira, erro, autorização,
   repetição, concorrência, idempotência e consistência. Um exemplo que apenas reafirma a
@@ -112,11 +121,13 @@ Caminho: `features/<slug>/behavior.feature`.
 
 Caminho: `contracts/openapi/` e `contracts/asyncapi/`.
 
-- **Um contrato é criado quando a interface existir**, nunca antes. Hoje nenhuma existe, e
+- **Um contrato é criado quando a interface
+  existir**, nunca antes. Hoje nenhuma existe, e
   por isso os dois diretórios **não** foram criados.
-- **Não crie diretório vazio.** Uma pasta `openapi/` sem conteúdo afirma que existem APIs
-  a documentar. O repositório já pagou por esse erro com o `services/` de pastas com nome
-  de dono, apagado em `83fcfc9`.
+- **Não crie diretório
+  vazio.** Uma pasta `openapi/` sem conteúdo afirma que existem APIs
+  a documentar. O repositório já pagou por esse erro com o `services/` de pastas com
+  nome de dono, apagado em `83fcfc9`.
 - O que estiver formalizado num contrato **NÃO DEVE** ser repetido em Markdown.
 - Ao criar o primeiro, atualize [`contracts/README.md`](contracts/README.md), que hoje
   lista os gatilhos de cada um.
@@ -125,10 +136,12 @@ Caminho: `contracts/openapi/` e `contracts/asyncapi/`.
 
 Caminho: `architecture/integrations.md`.
 
-- A matriz separa **fato** de **hipótese**. Fato é verificável hoje, na árvore versionada
+- A matriz separa **fato** de
+  **hipótese**. Fato é verificável hoje, na árvore versionada
   ou num repositório externo nomeado. Hipótese é descrita em documento de planejamento e
   nada a implementa.
-- **Nunca promova hipótese a fato sem evidência nova.** Hoje há uma integração real, e ela
+- **Nunca promova hipótese a fato sem evidência
+  nova.** Hoje há uma integração real, e ela
   está quebrada: o ArgoCD do homelab aponta para um `deploy/` que não existe.
 - Perguntas de integração recebem identificador `Q-INT-N`.
 
@@ -149,17 +162,19 @@ turno em que um termo é resolvido — nunca em lote. O formato está em
 
 ## Convenções de escrita
 
-As convenções gerais estão no [`AGENTS.md` da raiz](../AGENTS.md), seção `## Convenções de
-escrita, válidas em todo documento`, e a lista de palavras proibidas em
+As convenções gerais estão no [`AGENTS.md` da raiz](../AGENTS.md), seção `## Convenções
+de escrita, válidas em todo documento`, e a lista de palavras proibidas em
 [`adr/README.md`](adr/README.md). Elas valem aqui sem alteração.
 
 Dois pontos que só aparecem nesta pasta:
 
-- **Todo fluxo descrito em prosa vai também como diagrama Mermaid**, junto do parágrafo que
+- **Todo fluxo descrito em prosa vai também como diagrama
+  Mermaid**, junto do parágrafo que
   o descreve. `sequenceDiagram` para ordem no tempo, `flowchart` para topologia e
   hierarquia. Excalidraw só para o que o Mermaid não expressa, exportado como
   `.excalidraw.svg` em [`diagrams/`](diagrams/).
-- **Um diagrama que não acrescenta nada à prosa fica de fora.** Repetir a mesma informação
+- **Um diagrama que não acrescenta nada à prosa fica de
+  fora.** Repetir a mesma informação
   em duas formas não é redundância útil quando as duas dizem exatamente o mesmo.
 
 ## Antes de encerrar uma edição
@@ -172,5 +187,4 @@ Dois pontos que só aparecem nesta pasta:
 - O card está dentro de 700 palavras.
 - A capacidade nova aparece nos dois índices: [`features/README.md`](features/README.md) e
   [`README.md`](README.md).
-- `git add` apenas dos arquivos relacionados, e um único commit em Conventional Commits
-  (skill `commit`).
+- `git add` apenas dos arquivos relacionados, e um único commit em Conventional Commits (skill `commit`).

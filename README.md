@@ -75,7 +75,8 @@ O grupo D é o que quebra o modelo de veredito do resto: backpressure não tem e
 errado, tem uma fila de 40 mil mensagens e alguém que precisa decidir se isso é falha.
 Os formatos de veredito existem desde o desenho por causa disso.
 
-Eles são **três**, não dois. O [`ADR-0004`](docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)
+Eles são
+**três**, não dois. O [`ADR-0004`](docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)
 acrescentou a **taxa com limite de confiança** — um número mais uma incerteza, que não é
 caso particular do booleano nem da curva. Como os três convivem é decisão em aberto na
 fila.
@@ -98,7 +99,7 @@ flowchart TB
         VER["Veredito<br/>oráculo · métricas"]
     end
 
-    subgraph SUT["Control Plane — o sistema sob teste"]
+    subgraph SUT["System under test — o sistema medido"]
         OPD["Operação<br/>sequência de passos declarada"]
         STR["Estratégia<br/>NONE · ATOMIC · OPTIMISTIC · PESSIMISTIC"]
         REP["Acesso ao banco<br/>SQL · transação · isolamento"]
@@ -121,16 +122,20 @@ flowchart TB
     style SUT fill: #1e3a5f, stroke: #60a5fa, color: #e5e7eb
 ```
 
-A seta que **não** existe é a mais importante: nenhuma caixa do Control Plane aponta
+A seta que **não** existe é a mais importante: nenhuma caixa do system under test aponta
 para dentro do Lab Plane. O runtime chama a operação; a operação nunca chama o runtime.
 É o que permite injeção de falha dentro do processo sem contaminar o sistema medido.
 
-Nas primeiras etapas os dois planos vivem na **mesma JVM**. A separação precisa ser
-imposta por teste executável, justamente por isso.
+Os dois planos rodam em **processos separados desde o dia zero**, pelo
+[ADR-0008](docs/adr/0008-os-dois-planos-em-processos-separados.md). A separação continua
+sendo imposta também por teste executável: a fronteira de processo impede a chamada, e
+não o acoplamento de desenho.
 
-## O MVP — quatro experimentos, um processo, um banco
+## O MVP — quatro experimentos, dois processos, um banco
 
-Todos no grupo A. Nenhum exige broker, segundo processo ou serviço adicional.
+Todos no grupo A. Nenhum exige broker, segunda instância do sistema medido ou serviço
+adicional. Os dois processos são o sistema medido e o instrumento, pelo ADR-0008; o
+segundo do sistema medido só aparece na etapa 4.
 
 | #  | Experimento                   | O que ele prova                                                  |
 |----|-------------------------------|------------------------------------------------------------------|
@@ -140,24 +145,24 @@ Todos no grupo A. Nenhum exige broker, segundo processo ou serviço adicional.
 | E5 | `write-skew-inert-protection` | a proteção pode estar presente e **não proteger nada**           |
 
 **O E2 deixou de ser um experimento em 2026-08-01.** O
-[`ADR-0004`](docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) o
-rebaixou a **execução de controle positivo** do E1 e do E3: ele responde a uma pergunta
-sobre um resultado zero, e não produz resultado reportável. A numeração dos demais não
-mudou, para que as citações existentes continuem resolvendo.
+[`ADR-0004`](docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)
+o rebaixou a **execução de controle positivo** do E1 e do E3: ele responde a uma
+pergunta sobre um resultado zero, e não produz resultado reportável. A numeração dos
+demais não mudou, para que as citações existentes continuem resolvendo.
 
-O E5 é o resultado que mais justifica o laboratório existir: sob um modelo de verificação
-derivado, inserir uma alocação não incrementa a `version` do recurso. A anotação está lá,
-nenhuma exceção é lançada, e a invariante quebra em silêncio. Nenhum teste de unidade o
-detecta.
+O E5 é o resultado que mais justifica o laboratório existir: sob um modelo de
+verificação derivado, inserir uma alocação não incrementa a `version` do recurso. A
+anotação está lá, nenhuma exceção é lançada, e a invariante quebra em silêncio. Nenhum
+teste de unidade o detecta.
 
 **E1 é obrigado a falhar.** Se ele não falhar, a carga é insuficiente e nenhum resultado
 dos outros significa nada. É a regra que separa um laboratório de uma demonstração, e o
 ADR-0004 a tornou a primeira linha da classificação do veredito zero.
 
 Os experimentos estão especificados em
-[`docs/features/`](docs/features/README.md) — E1 e E3 partilham um card, porque partilham
-o oráculo. O E4 é a capacidade conhecida **sem** card, porque o formato curva não tem
-forma decidida.
+[`docs/features/`](docs/features/README.md) — E1 e E3 partilham um card, porque
+partilham o oráculo. O E4 é a capacidade conhecida **sem** card, porque o formato curva
+não tem forma decidida.
 
 ## Roadmap
 
@@ -250,16 +255,16 @@ O ADR deixou de ser a forma principal de documentação. A divisão é esta:
 
 > **O ADR guarda o porquê da escolha. O Feature Card guarda o quê do comportamento.**
 
-O motivo é medido. O repositório acumulou 3.874 linhas de documentação para zero linha de
-código, e os ADRs passaram a carregar três naturezas no mesmo arquivo: decisão
+O motivo é medido. O repositório acumulou 3.874 linhas de documentação para zero linha
+de código, e os ADRs passaram a carregar três naturezas no mesmo arquivo: decisão
 arquitetural, regra de negócio e tabela de decisão. Só a primeira é decisão — as outras
-duas descrevem comportamento verificável, e comportamento escrito como prosa argumentativa
-não vira teste.
+duas descrevem comportamento verificável, e comportamento escrito como prosa
+argumentativa não vira teste.
 
 O padrão passa a ser **Feature Card mais Example Mapping**, com Gherkin para o
-comportamento estabilizado e OpenAPI/AsyncAPI para o que atravessa fronteira de processo.
-Um ADR continua sendo escrito quando a decisão tem alternativa plausível, impacto
-arquitetural duradouro, cria restrição futura e representa um trade-off.
+comportamento estabilizado e OpenAPI/AsyncAPI para o que atravessa fronteira de
+processo. Um ADR continua sendo escrito quando a decisão tem alternativa plausível,
+impacto arquitetural duradouro, cria restrição futura e representa um trade-off.
 
 **Os ADRs aceitos não mudaram, e continuam imutáveis.** Nenhum foi convertido em
 documentação de feature; os cards os citam por arquivo e linha.
@@ -269,9 +274,10 @@ O processo completo está em [`docs/specification-process.md`](docs/specificatio
 ### A primeira série de ADRs
 
 O repositório teve uma primeira série de 13 ADRs, construída sobre outra pergunta central:
-*quanto custa proteger uma invariante de capacidade sob concorrência?* Nenhum foi aceito.
-Todos foram arquivados em [`docs/adr/arquivo/`](docs/adr/arquivo/README.md) e continuam lá
-pelas seções de alternativas descartadas, que não caducaram junto com as decisões.
+*quanto custa proteger uma invariante de capacidade sob
+concorrência?* Nenhum foi aceito.
+Todos foram arquivados em [`docs/adr/arquivo/`](docs/adr/arquivo/README.md) e continuam
+lá pelas seções de alternativas descartadas, que não caducaram junto com as decisões.
 
 > **Aviso sobre a entrega.** O homelab já tem um `Application` do ArgoCD apontando para
 > o diretório `deploy/` deste repositório, com `prune: true` e `selfHeal: true`. Esse
