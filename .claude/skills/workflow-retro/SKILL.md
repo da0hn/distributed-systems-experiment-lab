@@ -34,8 +34,8 @@ identificador de sessão e trecho citado. Um achado sem evidência é descartado
 
 1. **Sessão atual.** Retrabalho, ferramenta que falhou, ordem que você inverteu e
    correção explícita do usuário.
-2. **Transcritos históricos.** Rode o varredor da última seção. Ele mede recorrência
-   entre sessões, que a sessão atual não enxerga.
+2. **Transcritos históricos.** Rode o varredor da seção "Execute o varredor". Ele mede
+   recorrência entre sessões, que a sessão atual não enxerga.
 3. **Memórias.** Leia `MEMORY.md` e cada arquivo de `memory/`. Pergunte de cada uma:
    esta memória ainda precisa existir, ou já virou regra dentro de uma skill?
 4. **Diff dos artefatos.** Compare o que a skill mandou produzir com o que foi
