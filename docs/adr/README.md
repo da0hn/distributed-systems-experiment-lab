@@ -106,12 +106,24 @@ O motivo do arquivamento e o que sobreviveu estão em
 | [0005](0005-a-forma-do-escalonador.md)                                   | A forma do escalonador: estado, decisão e protocolo de desistência     | `Aceito` |
 | [0006](0006-a-forma-da-estrategia-de-concorrencia.md)                    | A forma da estratégia de concorrência: contrato plugável e calibração  | `Aceito` |
 | [0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md)             | O log de observações: forma, ordem e onde vive                         | `Aceito` |
+| [0008](0008-os-dois-planos-em-processos-separados.md)                    | Os dois planos em processos separados, desde o dia zero                | `Aceito` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele
 **não decide nada** — é a análise que define quais decisões precisam ser tomadas e em
 que ordem.
 
 ## Processo de debate
+
+**Desde 2026-08-04, um ADR nasce `Aceito`.** Ele registra decisão já tomada pela pessoa,
+durante o planejamento, e não decisão em debate. Escrever ADR deixou de ser obrigatório:
+a escolha que não atende aos quatro critérios acima gera artefato de
+[`../features/`](../features/README.md), e nenhum ADR. O processo está em
+[`../specification-process.md`](../specification-process.md), seção "A decisão vem antes
+do artefato".
+
+O debate passou a acontecer na **fila de decisões**, antes de existir documento. As duas
+subseções abaixo descrevem o caminho `Proposto`, que continua disponível e deixou de ser
+o padrão.
 
 Os ADRs são debatidos **um por um**. Nenhum é aceito por omissão, e nenhum é aceito sem
 aprovação explícita.
@@ -159,14 +171,79 @@ Três exigências separam a subsunção da edição disfarçada:
 - ele NÃO DEVE contradizer a regra antiga em caso nenhum. Se contradisser, é
   substituição, e a substituição é o caminho.
 
-O texto do ADR antigo NÃO DEVE ser tocado. Quem o lê isolado lê o que se decidiu na
-época, e o índice diz quais ADRs vieram depois dele.
-
-O custo desta emenda é que a leitura de um ADR aceito deixa de bastar por si. Uma regra
-dele PODE ter alcance recortado por um documento posterior que ele não cita, porque não
-existia quando ele foi escrito.
+O **corpo** do ADR antigo NÃO DEVE ser tocado. Quem o lê isolado lê o que se decidiu na
+época. Corpo é tudo a partir da primeira seção `##`: contexto, problema, decisão,
+justificativa, consequências, trade-offs e alternativas.
 
 Registrado em 2026-07-31, para resolver a questão 1 do ADR-0004.
+
+### O rastro de alterações, emendado em 2026-08-04
+
+Até 2026-08-04 nada era escrito no ADR antigo. O custo estava registrado nesta mesma
+seção: "a leitura de um ADR aceito deixa de bastar por si. Uma regra dele PODE ter
+alcance recortado por um documento posterior que ele não cita, porque não existia quando
+ele foi escrito." O índice desta página lista títulos, e um título não diz qual regra de
+qual ADR foi recortada.
+
+**Instrução do usuário, adotada em 2026-08-04: o ADR alterado passa a apontar para quem
+o alterou.** Vale nos dois casos — substituição e subsunção — e alcança também o ADR
+cuja regra teve o alcance recortado sem ser contradita.
+
+O que muda é o **cabeçalho**, e apenas ele. Dois campos entram, logo depois de
+`Aceito em:`:
+
+```markdown
+- **Última atualização:** AAAA-MM-DD
+- **Alterado por:** [ADR-NNNN](NNNN-titulo.md) — substituição | subsunção; qual regra,
+  com a seção de origem.
+```
+
+Quatro regras governam o rastro:
+
+- O ADR que altera DEVE escrever os dois campos no ADR alterado, **no mesmo commit** em
+  que nasce. Um rastro escrito depois é rastro que alguém esqueceu de escrever.
+- `Última atualização` NÃO DEVE ser confundida com `Data`. `Data` é quando a decisão foi
+  tomada e nunca muda; `Última atualização` é quando o rastro foi acrescentado.
+- Um ADR alterado mais de uma vez acumula linhas em `Alterado por`, em ordem
+  cronológica. A linha antiga NÃO DEVE ser removida quando a nova entra.
+- O campo cita **qual regra** foi alterada e **de qual seção**. "Alterado por ADR-0004"
+  sozinho não resolve o problema que o campo existe para resolver.
+
+Na substituição, o campo `Estado` continua recebendo `Substituído por ADR-NNNN`, como
+antes. Os dois campos novos entram junto, e não no lugar dele.
+
+```mermaid
+flowchart LR
+    N["ADR novo, já Aceito"] --> T{"contradiz a<br/>decisão antiga?"}
+    T -->|" sim "| S["substituição"]
+    T -->|" não, recorta o alcance "| U["subsunção"]
+    S --> E["Estado do antigo:<br/>Substituído por ADR-NNNN"]
+    S --> R["cabeçalho do antigo:<br/>Última atualização + Alterado por"]
+    U --> R
+    R --> C["mesmo commit do ADR novo"]
+```
+
+#### A aplicação retroativa aos oito ADRs está pendente
+
+Decidido em 2026-08-04: o rastro **é** aplicado aos ADRs já aceitos, e a auditoria roda
+em turno próprio. O motivo de separá-la é que ela exige leitura cuidadosa dos oito
+arquivos, e o risco de inventar uma subsunção que ninguém declarou é maior que o custo
+de esperar.
+
+Quatro relações já têm evidência no repositório e são o ponto de partida da auditoria.
+A lista **não** é exaustiva: é o que se sabe hoje, e não o resultado da leitura.
+
+| ADR alterado | Alterado por | O que muda                                                    |
+|--------------|--------------|---------------------------------------------------------------|
+| ADR-0001     | ADR-0003     | `barreira` perde o estatuto de termo (`0001:36`, `0003:43-45`) |
+| ADR-0001     | ADR-0004     | a cláusula de honestidade é subsumida (`0001:280-286`, `0004:345-351`) |
+| ADR-0002     | ADR-0006     | a delegação da coluna `version` é cumprida (`0002:95-96`, `0006:56-58`) |
+| ADR-0004     | ADR-0005     | um sexto rótulo entra na classificação do zero (`0005:96-107`) |
+
+**Pergunta em aberto.** O ADR-0008 alterou algum ADR aceito? Ele contradiz a premissa
+"mesma JVM" que estava na posição 10 desta fila e no `AGENTS.md` da raiz — dois textos
+que não são ADR. Se ele também recortou uma regra de um ADR aceito, isso não foi
+verificado, e a auditoria precisa responder antes de o rastro dele ser escrito.
 
 ### A lição que a primeira série deixou
 
@@ -184,6 +261,18 @@ inteiramente perdido.
 
 Ordem em que as decisões precisam ser tomadas, derivada de
 [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md).
+
+**Esta fila enfileira decisão, e não ADR.** Desde 2026-08-04, o artefato que uma linha
+gera é escolhido no momento em que a decisão é tomada, e não antes: ADR quando a escolha
+atender aos quatro critérios desta página, artefato de
+[`../features/`](../features/README.md) quando não atender. Uma linha PODE gerar os
+dois, e PODE não gerar ADR nenhum. As sete primeiras linhas geraram ADR; as quatro
+restantes ainda não têm artefato definido.
+
+A fila desta página cobre as decisões derivadas do plano. As decisões que a rodada de
+arquitetura de 2026-08-03 produziu vivem em
+[`../architecture/decisoes-pendentes.md`](../architecture/decisoes-pendentes.md), e as
+duas ainda não foram fundidas.
 
 Os números **não** estão atribuídos. Um número é atribuído quando o ADR é escrito —
 atribuir antes cria buracos na sequência quando a ordem muda.
@@ -203,7 +292,7 @@ válida depois da inserção, e passa a apontar para outra decisão.
 | 7     | **O log de observações: forma, ordem e onde vive** — [ADR-0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), `Aceito`  | é o substrato da timeline agora; fechou a metade de controle de [`Q-0003-3`](../questions/Q-0003-3.md) e reencaminhou a identidade de operação de [`Q-0001-1`](../questions/Q-0001-1.md) para Experiment                                                                                         |
 | 8     | **Experiment: definição, semente, hipótese e asserções**                                                                         | precisa resolver a tensão entre Designer na UI e definição versionada; [`Q-0002-4`](../questions/Q-0002-4.md) pede aqui o ciclo de vida de uma execução, [`Q-0003-8`](../questions/Q-0003-8.md) o que `N` conta, e [`Q-0001-1`](../questions/Q-0001-1.md) a identidade de versão de uma operação |
 | 9     | **Os dois formatos de veredito: booleano e curva**                                                                               | se ficar para depois, o grupo D não cabe na arquitetura; [`Q-0002-3`](../questions/Q-0002-3.md) acrescenta o eixo pontual contra contínuo no tempo, e [`Q-0003-3`](../questions/Q-0003-3.md) pede o que "mesma taxa" significa numa execução medida                                              |
-| 10    | **Arquitetura mínima, stack e guardas executáveis**                                                                              | um módulo, dois planos na mesma JVM, separação imposta por teste; [`Q-0002-1`](../questions/Q-0002-1.md) pede a guarda que torna as três regras executáveis                                                                                                                                      |
+| 10    | **Arquitetura mínima, stack e guardas executáveis**                                                                              | **parcialmente consumida** pelo [ADR-0008](0008-os-dois-planos-em-processos-separados.md), que fixou dois processos separados e o pacote raiz; restam o build, o número de módulos e a guarda que [`Q-0002-1`](../questions/Q-0002-1.md) pede para as três regras                                |
 | 11    | **Entrega contínua no homelab desde o dia zero**                                                                                 | o serviço precisa nascer entregando; ratifica ou emenda a ADR 0017 lá                                                                                                                                                                                                                            |
 
 O passo e o domínio mínimo destravam o MVP inteiro. O agendamento e o escalonador
