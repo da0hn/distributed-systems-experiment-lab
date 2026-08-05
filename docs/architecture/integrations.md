@@ -67,8 +67,8 @@ comportamento desejado, e ele significa que arrumar diretórios aqui deixou de s
 barato. Evidência: `plano-do-laboratorio.md:855-858`.
 
 **A fronteira do "nada existe no servidor que não esteja no Git" atravessa dois
-repositórios.** O `.github/workflows/` e o `deploy/` **deste** repositório passaram a ser
-infraestrutura, e reconstruir o ambiente passa a exigir dois `git clone`. Evidência:
+repositórios.** O `.github/workflows/` e o `deploy/` **deste** repositório passaram a
+ser infraestrutura, e reconstruir o ambiente passa a exigir dois `git clone`. Evidência:
 `plano-do-laboratorio.md:773-777`.
 
 **Um experimento destrutivo roda sob um orquestrador que o desfaz.** A etapa 6 mata o
@@ -91,18 +91,18 @@ num polling" (`plano-do-laboratorio.md:611`). O gatilho não define o critério:
 "longa o suficiente" não está escrito.
 
 **Q-INT-3 — O PostgreSQL é dedicado ou compartilhado com a Camada 6 do homelab.** O plano
-recomenda dedicado, porque saturação e deadlock de propósito degradam as outras cargas, e
-as outras cargas viram ruído dentro da medida. A recomendação custa exatamente o que a
+recomenda dedicado, porque saturação e deadlock de propósito degradam as outras cargas,
+e as outras cargas viram ruído dentro da medida. A recomendação custa exatamente o que a
 Camada 6 economizaria, e a decisão não foi tomada. Evidência:
 `plano-do-laboratorio.md:847-853`.
 
 **Q-INT-4 — O build deste repositório foi escolhido em outro repositório.** A ADR 0017 do
-homelab, `Aceita` em 2026-07-26, nomeia Gradle e Toxiproxy para este laboratório. Nenhuma
-das duas passou pelo debate daqui, e o plano presume reactor Maven. Ratificar ou emendar
-é decisão consciente. Evidência: `plano-do-laboratorio.md:806-820`.
+homelab, `Aceita` em 2026-07-26, nomeia Gradle e Toxiproxy para este laboratório.
+Nenhuma das duas passou pelo debate daqui, e o plano presume reactor Maven. Ratificar ou
+emendar é decisão consciente. Evidência: `plano-do-laboratorio.md:806-820`.
 
 **Q-INT-5 — Não há contrato de esquema para `resource` e `allocation`.** O ADR-0002 fixa
-as colunas em prosa (`adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:87-99`). Não existe
-DDL, migração nem JSON Schema. Se o esquema é um contrato entre o Control Plane e o
-oráculo — e ele é, porque os dois leem as mesmas tabelas — ele precisa de forma
+as colunas em prosa (`adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:87-99`). Não
+existe DDL, migração nem JSON Schema. Se o esquema é um contrato entre o system under
+test e o oráculo — e ele é, porque os dois leem as mesmas tabelas — ele precisa de forma
 verificável.
