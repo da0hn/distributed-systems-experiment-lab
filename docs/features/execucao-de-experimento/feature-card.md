@@ -9,13 +9,13 @@ anomalia é impossível ali; a janela nunca abriu; a carga não gerou concorrên
 janela foi declarada errada. A primeira é conhecimento, as outras três são defeito do
 instrumento.
 
-Resultado esperado: todo veredito é **classificado**, e a plataforma recusa reportar como
-proteção o zero que não é proteção.
+Resultado esperado: todo veredito é **classificado**, e a plataforma recusa reportar
+como proteção o zero que não é proteção.
 
 ## Atores e gatilho
 
-Quem monta o experimento declara carga, `N`, janela e estratégia. O runtime conta commits,
-violações e coincidências. O oráculo lê o banco depois da quiescência.
+Quem monta o experimento declara carga, `N`, janela e estratégia. O runtime conta
+commits, violações e coincidências. O oráculo lê o banco depois da quiescência.
 
 ## Escopo
 
@@ -52,8 +52,8 @@ O ciclo em diagrama está no [Example Mapping](example-mapping.md).
 
 ## Integrações e contratos afetados
 
-O relatório atravessa para a interface web e para `docs/experiments/`. **Nenhum contrato o
-formaliza** — `Q-INT-1` em [`integrations.md`](../../architecture/integrations.md).
+O relatório atravessa para a interface web e para `docs/experiments/`. **Nenhum contrato
+o formaliza** — `Q-INT-1` em [`integrations.md`](../../architecture/integrations.md).
 
 ## Riscos e decisões pendentes
 

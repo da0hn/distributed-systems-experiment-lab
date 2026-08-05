@@ -64,8 +64,8 @@ flowchart LR
 - **Exemplo 9.1** — Duas tentativas atravessam `F_abre` antes que qualquer uma alcance
   `F_fecha`, sobre a mesma chave. É uma coincidência.
 - **Exemplo 10.1, borda** — Duas janelas sobrepostas no tempo, sobre recursos diferentes.
-  As chaves de contenção diferem, e o par **não** conta. Num experimento com cem recursos
-  e dez workers, quase toda sobreposição temporal é dessa espécie.
+  As chaves de contenção diferem, e o par **não** conta. Num experimento com cem
+  recursos e dez workers, quase toda sobreposição temporal é dessa espécie.
 - **Exemplo 11.1, erro** — Comparar as coincidências de uma execução com `N = 1000` com
   as de outra com `N = 100`. A plataforma recusa: as cargas declaradas diferem.
 - **Exemplo 9.2, por que a contagem do controle negativo** — `SELECT ... FOR UPDATE`
@@ -83,8 +83,8 @@ um defeito que torna a de baixo ilegível.
   `inválido`.
 - **Exemplo 12.2, ordem 2** — O controle negativo viola, e as coincidências dele dão
   zero. Uma violação exige que a janela real tenha aberto; se a contagem der zero, o par
-  `(F_abre, F_fecha)` declarado não delimita a janela em que a anomalia acontece. Veredito
-  `janela mal declarada`.
+  `(F_abre, F_fecha)` declarado não delimita a janela em que a anomalia acontece.
+  Veredito `janela mal declarada`.
 - **Exemplo 12.3, ordem 3** — `PESSIMISTIC`, coincidências próprias zero. A carga ofereceu
   exposição, e a estratégia a eliminou. A eliminação **é** a proteção. Veredito
   `protegido`, sem controle positivo.
@@ -94,9 +94,9 @@ um defeito que torna a de baixo ilegível.
 - **Exemplo 12.5, ordem 5** — Coincidências maiores que zero, e o controle positivo **não**
   viola. A anomalia é impossível naquela configuração. Veredito `protegido`.
 - **Exemplo 12.6, o que casa duas vezes** — Uma execução em que o controle negativo não
-  viola **e** as coincidências da medida são zero casaria as ordens 1 e 3. A ordem 1 vence,
-  e o veredito é `inválido`: um `protegido` derivado de uma bateria sem carga afirmaria
-  proteção que ninguém mediu.
+  viola **e** as coincidências da medida são zero casaria as ordens 1 e 3. A ordem 1
+  vence, e o veredito é `inválido`: um `protegido` derivado de uma bateria sem carga
+  afirmaria proteção que ninguém mediu.
 
 ### R13 — O controle positivo não é resultado
 
@@ -110,8 +110,8 @@ um defeito que torna a de baixo ilegível.
 ### R14 — Alta resolução para quem pode reportar zero
 
 - **Exemplo 14.1, erro** — Uma operação em baixa resolução é uma sequência de um passo,
-  sem fronteiras internas. `(F_abre, F_fecha)` não tem onde ser ancorado, e a contagem de
-  coincidências não existe. A plataforma recusa o experimento.
+  sem fronteiras internas. `(F_abre, F_fecha)` não tem onde ser ancorado, e a contagem
+  de coincidências não existe. A plataforma recusa o experimento.
 
 ## Perguntas em aberto
 
@@ -143,7 +143,7 @@ um defeito que torna a de baixo ilegível.
 aceito em 2026-08-01, e o motivo que o mantinha fora do Gherkin — a questão 4 em
 `aberto (crítico)` — deixou de valer. O agendamento como conjunto de restrições de
 precedência, o encontro como forma curta e as sete recusas antes de executar são
-comportamento externo estabilizado, e **nenhum cenário foi escrito para eles**. A pergunta
-P11 registra a pendência e o que falta decidir antes de escrevê-los.
+comportamento externo estabilizado, e **nenhum cenário foi escrito para eles**. A
+pergunta P11 registra a pendência e o que falta decidir antes de escrevê-los.
 
 R1 (a medida roda sem agendamento) é premissa de todos os cenários, e vira `Contexto`.
