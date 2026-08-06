@@ -1,17 +1,19 @@
-# Um Dockerfile para os tres executaveis Java. O modulo entra por argumento,
-# e nao por copia-e-cola: tres arquivos identicos divergiriam em silencio na
-# primeira vez que alguem editasse um so.
+# Um Dockerfile para os três executáveis Java. O módulo entra por argumento,
+# e não por copia-e-cola: três arquivos idênticos divergiriam em silêncio na
+# primeira vez que alguém editasse um só.
 #
-# O reactor inteiro e construido de uma vez porque os tres dependem de
-# `shared`, e o Maven precisa dele instalado para resolver a dependencia.
+# Constrói `shared` e depois **apenas** o módulo pedido. Antes o reactor
+# inteiro era construído três vezes, uma por imagem, e uma mudança em
+# qualquer `src/` invalidava a camada de compilação das três.
 ARG JAVA_VERSION=25
 
 FROM maven:3.9-eclipse-temurin-${JAVA_VERSION} AS build
 WORKDIR /build
 
-# As dependencias entram numa camada propria: elas mudam muito menos que o
-# codigo, e o cache do Docker so e reaproveitado se as camadas estaveis vierem
-# antes das volateis.
+# As dependências entram numa camada própria: elas mudam muito menos que o
+# código, e o cache do Docker só é reaproveitado se as camadas estáveis vierem
+# antes das voláteis. Os quatro `pom.xml` entram porque o Maven precisa do
+# reactor completo para resolver o parent e o agregador.
 COPY pom.xml .
 COPY shared/pom.xml shared/
 COPY lab-plane/pom.xml lab-plane/
@@ -19,18 +21,26 @@ COPY lab-journal/pom.xml lab-journal/
 COPY system-under-test/pom.xml system-under-test/
 RUN mvn -B -q dependency:go-offline
 
+# `shared` vem antes, e sozinho. Os três executáveis dependem dele e nenhum
+# depende dos outros dois, então esta camada é idêntica nas três imagens e
+# sobrevive a qualquer mudança em `lab-plane/`, `lab-journal/` ou
+# `system-under-test/`. O `install` o publica no `~/.m2` local da camada, que
+# é como o `package` seguinte resolve a dependência sem `-am`.
 COPY shared/src shared/src
-COPY lab-plane/src lab-plane/src
-COPY lab-journal/src lab-journal/src
-COPY system-under-test/src system-under-test/src
-RUN mvn -B -q -DskipTests package
+RUN mvn -B -q -pl shared -am -DskipTests install
+
+# Só agora entra o código do módulo pedido. É a primeira camada que difere
+# entre as três imagens, e é de propósito que ela seja a última.
+ARG MODULE
+RUN test -n "${MODULE}" || (echo "MODULE é obrigatório" && exit 1)
+COPY ${MODULE}/src ${MODULE}/src
+RUN mvn -B -q -pl ${MODULE} -DskipTests package
 
 FROM eclipse-temurin:${JAVA_VERSION}-jre-alpine AS runtime
 ARG MODULE
-RUN test -n "${MODULE}" || (echo "MODULE e obrigatorio" && exit 1)
 
-# O processo nao roda como root. Um experimento da etapa 6 mata processos de
-# proposito, e um deles com privilegio no host e superficie desnecessaria.
+# O processo não roda como root. Um experimento da etapa 6 mata processos de
+# propósito, e um deles com privilégio no host é superfície desnecessária.
 RUN addgroup -S lab && adduser -S -G lab lab
 USER lab
 
