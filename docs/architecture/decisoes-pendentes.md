@@ -2907,3 +2907,102 @@ aconteceram depois que aquela seção foi escrita:
 **Pergunta em aberto, e ela precede `D-4` e `D-5`.** O Lote A é aplicado antes de este
 arquivo ser tratado? Enquanto ele não for, a premissa da objeção não vale: as seis
 decisões dele não viraram artefato, e apagar ou esvaziar este arquivo as perde.
+
+### `D-4` e `D-5`, decididos em 2026-08-05, contra a recomendação
+
+**As duas escolhas foram outras, e a segunda revoga a premissa da primeira
+pergunta.** Os
+ADRs 0008 e 0009 recebem **adendo** com o conteúdo que hoje citam daqui, e
+`docs/architecture/` é dissolvida — `integrations.md` é a única exceção.
+
+> "Já que existem ADRs que referenciam esse arquivo, adicione adendos nestes ADRs para
+> que a informação permaneça lá. Isso é necessário porque esses arquivos dentro de
+> `docs/architecture` nem deveriam existir (com exceção do `integrations.md`)."
+
+> "Os ADRs 8 e 9 precisam conter todo o conteúdo necessário. Eles podem referenciar
+> outros artefatos, mas não os arquivos que não deveriam existir dentro de
+> `architecture`."
+
+**A escolha inverte a direção do conserto, e isso é o ponto dela.** As três alternativas
+que ofereci tentavam preservar o arquivo citado. A escolha preserva o **ADR**: um ADR
+que depende de um arquivo que não deveria existir não se sustenta sozinho, e a
+dependência é o defeito — não o risco de quebrá-la.
+
+#### O que precisa migrar, conferido linha a linha
+
+São **dez** citações por número de linha, e não nove. A contagem anterior omitia uma do
+ADR-0009.
+
+| Citação      | Onde                | Aponta para                         |
+|--------------|---------------------|-------------------------------------|
+| `:254-255`   | ADR-0008, linha 117 | as 900 a 1500 observações do E1     |
+| `:109-112`   | ADR-0009, linha 18  | a contradição `C4`                  |
+| `:140-169`   | ADR-0009, linha 26  | a contradição `C7`                  |
+| `:1769-1802` | ADR-0009, linha 33  | a decisão `A1`                      |
+| `:1771-1779` | ADR-0009, linha 106 | o corpo de `A1`                     |
+| `:235-237`   | ADR-0009, linha 126 | as alternativas descartadas de `C7` |
+| `:1865-1879` | ADR-0009, linha 148 | o que o Lote A não aplicou          |
+| `:243`       | ADR-0009, linha 166 | a rejeição de `systemundertest`     |
+| `:1797-1800` | ADR-0009, linha 192 | o custo aceito em `A1`              |
+| `:230-233`   | ADR-0009, linha 198 | a escolha de `sut` sobre as outras  |
+
+#### Duas restrições que a escolha encontra, medidas
+
+| Restrição medida                        | Número           | Consequência |
+|-----------------------------------------|------------------|--------------|
+| texto citado, na união dos intervalos   | 5 473 caracteres | não cabe     |
+| folga do ADR-0009 sob o limite de `C-7` | 1 559 caracteres | falta 3 914  |
+| folga do ADR-0008 sob o mesmo limite    | 2 751 caracteres | sobra        |
+
+**O texto integral não cabe, e reproduzi-lo não é o que a escolha pede.** O pedido é que
+o ADR contenha "todo o conteúdo **necessário**" — o necessário para a afirmação do ADR
+se sustentar sem o arquivo, e não a cópia do parágrafo de origem. Cada citação sustenta
+uma frase específica; o adendo incorpora **a afirmação**, e não o texto.
+
+**A citação do ADR-0008 é caso à parte.** Ela já estava quebrada antes desta decisão: as
+linhas 254 e 255 deixaram de trazer o parágrafo das 900 a 1500 observações quando este
+arquivo cresceu, em 2026-08-05. O adendo dela não migra texto — ele registra o número
+que a citação afirmava, que continua verdadeiro.
+
+#### O adendo NÃO É edição do corpo, e é por isso que ele é admissível
+
+A regra de [`../AGENTS.md`](../AGENTS.md) proíbe editar o corpo de um ADR aceito, e a
+razão é que a edição apaga o que se pensava naquela data. Um adendo **acrescentado no
+fim**, datado, não apaga nada: o corpo original permanece byte a byte, e a citação
+original continua no lugar em que foi escrita.
+
+```mermaid
+flowchart TD
+    A["ADR aceito"] --> C["corpo original<br/>intocado"]
+    A --> D["adendo no fim,<br/>datado"]
+    C --> I["o que se pensava<br/>naquela data, preservado"]
+    D --> N["a afirmação que a citação<br/>sustentava, incorporada"]
+    N --> P["o arquivo citado<br/>pode ser apagado"]
+```
+
+**É uma forma nova de alteração, e ela é a quinta.** As quatro que o processo já conhece
+— emenda, substituição, subsunção e errata — alteram o **cabeçalho**. O adendo
+acrescenta **seção**. A regra precisa ser escrita em
+[`../adr/README.md`](../adr/README.md) e em [`../AGENTS.md`](../AGENTS.md) no mesmo
+commit em que o primeiro adendo nascer, senão ela existe só aqui — e este arquivo está
+sendo apagado.
+
+#### `D-5` — um commit por arquivo de origem
+
+**Decidido, e com a recomendação.** Cada movimento é revisável e reversível sozinho.
+
+#### O Lote A é aplicado antes
+
+**Decidido.** As seis decisões do Lote A só existem neste arquivo, e ele vai ser
+apagado. Aplicá-las é pré-condição da pulverização, e não uma tarefa paralela a ela.
+
+#### A contradição que a escolha de `D-5` abre com `D-2`
+
+`D-2` decidiu arquivar a prosa das oito propostas em `architecture/arquivo/`. `D-5`
+decidiu que `docs/architecture/` não deveria conter nada além de `integrations.md`. Uma
+pasta `arquivo/` **dentro** de `architecture/` cabe nas duas leituras ou em nenhuma, e a
+diferença muda o destino de 340 mil caracteres.
+
+**Pergunta em aberto, e ela bloqueia a execução de `D-2`.** A exceção de `D-5` alcança
+uma subpasta de arquivo morto, ou o destino da prosa arquivada fica fora de
+`docs/architecture/` por inteiro?
