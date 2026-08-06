@@ -1155,6 +1155,95 @@ dentro da janela medida, que é o argumento contra registrado em `D-DAT-03`.
 Nenhum dos quatro é decisão. `E-22` é linha nova; os outros três levam `E-9`, `E-10` e
 `E-12` à rodada com o enunciado corrigido.
 
+### A primeira rodada do grupo II, em 2026-08-06
+
+| ID     | Escolha                                                     | Seguiu a recomendação? |
+|--------|-------------------------------------------------------------|------------------------|
+| `E-8`  | `bigint` derivado da semente                                | sim                    |
+| `E-9`  | sem chave estrangeira, com verificação de órfãs             | sim                    |
+| `E-10` | índice `(execution_id, resource_id)`, com o plano efetivo   | sim                    |
+| `E-22` | **continua aberta**; a rodada corrigiu a premissa da escolha| —                      |
+
+**`E-8` — `bigint`.** O único argumento contra era a colisão entre duas execuções da
+mesma semente, e o discriminador de `D-DAT-05` o removeu. O custo já estava registrado
+como consequência aceita no
+[ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md): a geração de identidade sai do
+banco, todo `INSERT` carrega a chave, e uma inserção manual em `psql` durante depuração
+deixa de funcionar sem que alguém escolha um identificador.
+
+#### `E-9` fecha a escolha e abre uma pendência que `E-18` criou
+
+A escolha é **sem chave estrangeira**, e o motivo é o lock: um `INSERT` em `allocation`
+com FK adquire `FOR KEY SHARE` na linha de `resource`, e ele conflita com o `FOR UPDATE`
+da estratégia `PESSIMISTIC`. Um bloqueio vindo da restrição seria atribuído à estratégia,
+e a comparação entre estratégias mediria o esquema em vez do fenômeno.
+
+**A metade que não fecha é onde a verificação de órfãs vive.** A recomendação de
+`D-DAT-02` a punha "no mesmo lugar em que o oráculo já lê o banco" — e esse lugar
+**deixou de existir** em `E-18`. O Lab Plane não faz `SELECT` no schema do system under
+test; ele consome o WAL. Verificar órfã a partir do stream exige reconstruir o conjunto
+de `resource.id` existentes e cruzá-lo com os `INSERT` de `allocation`, que é derivar
+estado a partir de eventos — o mesmo obstáculo que já deixou o oráculo de capacidade sem
+fonte declarada nesta mesma fila.
+
+```mermaid
+flowchart TB
+    E9["E-9: sem FK<br/>a integridade fica com o código"]
+    V["quem verifica a órfã?"]
+    A["SELECT do Lab Plane<br/>proibido por E-18"]
+    B["reconstrução pelo stream<br/>é derivar estado de eventos"]
+    C["semeadura correta por construção<br/>sem verificação nenhuma"]
+    E9 --> V
+    V -.-> A
+    V -.-> B
+    V -.-> C
+```
+
+A terceira saída é a única sem obstáculo declarado, e ela troca verificação por
+confiança no código da semeadura. **Nenhuma das três foi escolhida.** A pendência fica
+vizinha da fonte do oráculo de capacidade, e as duas provavelmente fecham juntas.
+
+**`E-10` — o índice entra, e ele depende de `E-22`.** A obrigação que vem junto é a de
+`D-DAT-03`: o plano de execução efetivo vai no relatório do braço `SERIALIZABLE`, sob
+pena de o número não ser interpretável. O custo é escrita de índice a cada `INSERT` do
+E5, dentro da janela medida. **Se `E-22` escolher `(execution_id, id)`**, a chave
+primária de `allocation` já começa pelo discriminador e este índice é adicional; se
+escolher `(id, execution_id)`, ele passa a ser o único caminho de acesso por execução.
+
+#### `E-22` — as duas premissas que a rodada corrigiu
+
+A pergunta que a linha recebeu foi se a ordem `(id, execution_id)` é o que permite uma
+segunda execução, "já que o `id` é auto-incrementado". As duas metades são falsas, e a
+segunda é a que importa.
+
+**O `id` não é auto-incrementado, e não pode ser.** O
+[ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md) determina que o identificador é
+gerado no código do sistema medido a partir da semente, e que o esquema NÃO DEVE usar
+`SERIAL`, `IDENTITY`, `nextval` nem valor padrão do banco. Duas execuções da mesma
+semente produzem **os mesmos** identificadores, por exigência — e foi precisamente isso
+que obrigou o discriminador a entrar na chave.
+
+**A ordem das colunas não muda o que a chave permite.** `PRIMARY KEY (a, b)` e
+`PRIMARY KEY (b, a)` impõem a mesma restrição: o **par** é único, e nenhuma das duas diz
+nada sobre `a` ou `b` isoladamente. As duas ordens permitem a segunda execução
+igualmente, e o que a permite é o discriminador **estar** na chave — decidido em
+`D-DAT-05`, não nesta linha.
+
+```mermaid
+flowchart LR
+    subgraph U["o que as duas ordens têm em comum"]
+        U1["o par é único"]
+        U2["a segunda execução cabe"]
+    end
+    subgraph D["o que a ordem decide"]
+        D1["qual WHERE o índice serve"]
+        D2["onde a inserção cai na B-tree"]
+    end
+```
+
+`E-22` decide desempenho e caminho de acesso dentro da janela medida, e **não** decide
+capacidade nenhuma do esquema. A escolha continua aberta com esse enunciado.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
