@@ -1293,6 +1293,35 @@ o diagrama — "PK começa pelo discriminador" — e a consequência de que "tod
 a começar pelo discriminador". A frase vencida é "o discriminador é a segunda coluna da
 chave", e ela fica registrada como tal aqui, sem editar o documento arquivado.
 
+#### `E-23` — o nome da coluna do discriminador, aberto ao escrever o primeiro DDL
+
+Com `E-8`, `E-9`, `E-10` e `E-22` fechadas, o `CREATE TABLE` das duas tabelas pode ser
+escrito — e ele trava numa palavra. `D-DAT-05` decidiu que a coluna afirma "discriminador
+de inquilino, com **nome genérico no sistema medido**", e deixou o nome concreto em
+aberto de propósito: o sistema medido não sabe que o valor é uma execução de experimento,
+e para ele aquilo é a partição lógica dos dados.
+
+Chamá-la de `execution_id` nas tabelas do system under test contradiz a decisão na
+palavra exata que ela escolheu evitar. **A ligação com o Lab Plane é justamente o que a
+coluna não pode declarar**, porque declará-la põe vocabulário do instrumento dentro do
+medido — o mesmo custo que `D-DAT-05` nomeou ao aceitar o discriminador na chave, e que
+esta linha decide se paga inteiro ou pela metade.
+
+```mermaid
+flowchart LR
+    LP["lab-plane<br/>sabe: é uma execução"]
+    COL["a coluna nas duas tabelas<br/>do sistema medido"]
+    SUT["system under test<br/>vê: uma partição de dados"]
+    LP -->|" abre a execução com o valor "| COL
+    COL --> SUT
+    SUT -.->|" o nome não pode<br/>dizer 'execução' "| LP
+```
+
+As candidatas visíveis são `tenant_id`, `partition_id` e `run_id`. As duas primeiras
+honram a decisão e custam um salto mental em toda consulta do Lab Plane; a terceira é
+legível dos dois lados e é a que a decisão diz para não usar. **Nenhuma foi escolhida**,
+e o `CREATE TABLE` não pode ser escrito antes disso.
+
 #### `E-12` ganhou uma terceira candidata, e ela não filtra nada
 
 Com Row Level Security fora, `P-DAT-12` deixa uma candidata só — a guarda em teste
