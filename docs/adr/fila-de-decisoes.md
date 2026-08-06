@@ -1244,6 +1244,87 @@ flowchart LR
 `E-22` decide desempenho e caminho de acesso dentro da janela medida, e **não** decide
 capacidade nenhuma do esquema. A escolha continua aberta com esse enunciado.
 
+#### `E-12` ganhou uma terceira candidata, e ela não filtra nada
+
+Com Row Level Security fora, `P-DAT-12` deixa uma candidata só — a guarda em teste
+executável. Duas outras existem, e a segunda muda a natureza do problema.
+
+**Row filter na publicação lógica.** O PostgreSQL aceita `CREATE PUBLICATION ... WHERE`
+desde a versão 15, e o filtro passaria a ser do servidor, e não do consumidor. Contra: o
+predicado teria de citar o discriminador da execução corrente, que muda a cada execução
+— o que exige um `ALTER PUBLICATION` **dentro** da janela medida, e DDL sobre tabela
+publicada durante a medida é exatamente o tipo de perturbação que o instrumento não pode
+introduzir.
+
+**Um slot de replicação por execução.** Um slot lógico nasce marcando o LSN corrente, e
+entrega apenas o que vem depois dele. Se o slot é criado quando a execução abre e
+descartado quando ela fecha, **o stream contém só aquela execução por construção** — não
+há filtro a esquecer, porque não há filtro. O corte é temporal, e não por coluna.
+
+```mermaid
+flowchart TB
+    subgraph F["filtrar por coluna"]
+        F1["stream com todas as execuções"]
+        F2["consumidor aplica WHERE"]
+        F3["esquecer o WHERE<br/>corrompe o veredito em silêncio"]
+        F1 --> F2 --> F3
+    end
+    subgraph S["slot por execução"]
+        S1["slot criado no LSN de abertura"]
+        S2["stream só tem esta execução"]
+        S3["não há WHERE a esquecer"]
+        S1 --> S2 --> S3
+    end
+```
+
+O custo dela é operacional e sério. Um slot lógico **retém WAL** enquanto não for
+consumido: um slot esquecido por uma execução que morreu — e a etapa 6 mata processos de
+propósito — segura o WAL até encher o disco do PostgreSQL, que em `E-5` é o banco
+compartilhado do homelab, com vizinhos. Some-se `max_replication_slots`, que é finito e
+de cluster. A candidata troca uma falha silenciosa por uma ruidosa que atinge terceiros.
+
+**Ela também não resolve `O20`.** Um slot criado na abertura não vê o estado anterior a
+ele, e `value_inicial` continua sem fonte. Nenhuma das três candidatas o resolve.
+
+#### `E-13` — qualificar por plano libera o escalonador, e isso é defeito
+
+`P-DAT-10` enuncia duas saídas para a tensão entre o UUIDv7 do discriminador e as duas
+regras estruturais do [`../../AGENTS.md`](../../AGENTS.md): ou as regras passam a dizer
+que valem sobre o sistema medido e não sobre o instrumento, ou a geração do discriminador
+é exceção nomeada.
+
+**A primeira saída, na letra, libera o que ela não quer liberar.** As regras existem pela
+reprodutibilidade, e o escalonador do Lab Plane é instrumento — mas ele **decide a
+intercalação**. Um `Math.random()` dentro dele quebra a reprodutibilidade tão
+completamente quanto um no sistema medido, e uma regra qualificada por plano deixaria de
+alcançá-lo. O
+[ADR-0005](0005-a-forma-do-escalonador.md) põe o estado do escalonador por execução, e a
+semente do experimento é o que o torna repetível.
+
+**Uma terceira formulação existe: qualificar pelo papel do valor.** As regras alcançam
+todo valor que entra em veredito, em escalonamento ou em identidade derivada da semente —
+independentemente do plano em que ele é produzido. O discriminador não entra em nenhum
+dos três: ele é rótulo de partição, e duas execuções idênticas com discriminadores
+diferentes produzem o mesmo veredito e a mesma intercalação.
+
+```mermaid
+flowchart TB
+    R["a regra alcança o quê?"]
+    P["por plano:<br/>só o sistema medido"]
+    A["por papel:<br/>o que entra em veredito,<br/>escalonamento ou identidade"]
+    E["exceção nomeada<br/>para o discriminador"]
+    R --> P
+    R --> A
+    R --> E
+    P -.->|" libera o escalonador "| X["defeito"]
+    E -.->|" primeira exceção<br/>abre porta para outras "| Y["custo do ADR-0002"]
+```
+
+O argumento contra a exceção nomeada é do próprio
+[ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md), que recusou excluir
+identificadores do critério de igualdade porque "uma exceção nomeada no critério é uma
+porta por onde outras entram". As três continuam abertas.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
