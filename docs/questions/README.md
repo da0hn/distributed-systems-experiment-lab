@@ -79,23 +79,33 @@ identificador.
 
 ## Índice
 
-| ID                        | Questão                                                                           | Origem   | Destino na fila              | Status                 |
-|---------------------------|-----------------------------------------------------------------------------------|----------|------------------------------|------------------------|
-| [`Q-0001-1`](Q-0001-1.md) | O endereço da fronteira precisa sobreviver à edição da operação                   | ADR-0001 | Experiment                   | `pendente`             |
-| [`Q-0001-2`](Q-0001-2.md) | O compartilhamento por colaborador injetado continua sem guarda                   | ADR-0001 | estratégias de concorrência  | resolvida por ADR-0006 |
-| [`Q-0001-3`](Q-0001-3.md) | O critério de igualdade entre dois traços de SQL não está definido                | ADR-0001 | o domínio mínimo             | resolvida por ADR-0002 |
-| [`Q-0001-4`](Q-0001-4.md) | O escalonador precisa de um protocolo de desistência                              | ADR-0001 | a forma do escalonador       | resolvida por ADR-0005 |
-| [`Q-0002-1`](Q-0002-1.md) | A comparação por valor depende de regras que nenhum teste verifica                | ADR-0002 | arquitetura mínima e guardas | `pendente`             |
-| [`Q-0002-2`](Q-0002-2.md) | Quem declara que a execução terminou, e o oráculo lê antes ou depois disso        | ADR-0002 | a forma do escalonador       | resolvida por ADR-0005 |
-| [`Q-0002-3`](Q-0002-3.md) | Os dois oráculos descrevem apenas o estado final quiescente                       | ADR-0002 | os dois formatos de veredito | `pendente`             |
-| [`Q-0002-4`](Q-0002-4.md) | O estado inicial não é estabelecido por ninguém                                   | ADR-0002 | Experiment                   | `pendente`             |
-| [`Q-0003-1`](Q-0003-1.md) | Um worker que nunca chega trava o agendamento, e a recusa por texto não o alcança | ADR-0003 | a forma do escalonador       | resolvida por ADR-0005 |
-| [`Q-0003-2`](Q-0003-2.md) | Um agendamento sobre uma tentativa que talvez não ocorra                          | ADR-0003 | a forma do escalonador       | resolvida por ADR-0005 |
-| [`Q-0003-3`](Q-0003-3.md) | Duas execuções do mesmo experimento não têm critério de igualdade                 | ADR-0003 | os dois formatos de veredito | resolvida por ADR-0007 |
-| [`Q-0003-8`](Q-0003-8.md) | O `N` declarado antes não fecha com uma estratégia que retenta                    | ADR-0003 | Experiment                   | `pendente`             |
-| [`Q-0004-2`](Q-0004-2.md) | Nada obriga o passo a reportar a chave de contenção                               | ADR-0004 | arquitetura mínima e guardas | `pendente`             |
-| [`Q-0004-3`](Q-0004-3.md) | Comparar janelas exige um instante comparável entre workers                       | ADR-0004 | o log de observações         | `pendente`             |
-| [`Q-0004-4`](Q-0004-4.md) | A regra de parada colide com a exigência de nascer entregando                     | ADR-0004 | entrega contínua no homelab  | `pendente`             |
-| [`Q-0004-5`](Q-0004-5.md) | O terceiro formato de veredito precisa caber ao lado dos dois já previstos        | ADR-0004 | os dois formatos de veredito | `pendente`             |
-| [`Q-0004-8`](Q-0004-8.md) | O limite `3/N` pressupõe ensaios independentes                                    | ADR-0004 | os dois formatos de veredito | `pendente`             |
-| [`Q-0005-1`](Q-0005-1.md) | O critério de "falha não recuperada pela estratégia" não está definido            | ADR-0005 | estratégias de concorrência  | resolvida por ADR-0006 |
+| ID                        | Questão                                                                           | Origem       | Destino na fila              | Status                 |
+|---------------------------|-----------------------------------------------------------------------------------|--------------|------------------------------|------------------------|
+| [`Q-0001-1`](Q-0001-1.md) | O endereço da fronteira precisa sobreviver à edição da operação                   | ADR-0001     | Experiment                   | `pendente`             |
+| [`Q-0001-2`](Q-0001-2.md) | O compartilhamento por colaborador injetado continua sem guarda                   | ADR-0001     | estratégias de concorrência  | resolvida por ADR-0006 |
+| [`Q-0001-3`](Q-0001-3.md) | O critério de igualdade entre dois traços de SQL não está definido                | ADR-0001     | o domínio mínimo             | resolvida por ADR-0002 |
+| [`Q-0001-4`](Q-0001-4.md) | O escalonador precisa de um protocolo de desistência                              | ADR-0001     | a forma do escalonador       | resolvida por ADR-0005 |
+| [`Q-0002-1`](Q-0002-1.md) | A comparação por valor depende de regras que nenhum teste verifica                | ADR-0002     | arquitetura mínima e guardas | `pendente`             |
+| [`Q-0002-2`](Q-0002-2.md) | Quem declara que a execução terminou, e o oráculo lê antes ou depois disso        | ADR-0002     | a forma do escalonador       | resolvida por ADR-0005 |
+| [`Q-0002-3`](Q-0002-3.md) | Os dois oráculos descrevem apenas o estado final quiescente                       | ADR-0002     | os dois formatos de veredito | `pendente`             |
+| [`Q-0002-4`](Q-0002-4.md) | O estado inicial não é estabelecido por ninguém                                   | ADR-0002     | Experiment                   | `pendente`             |
+| [`Q-0003-1`](Q-0003-1.md) | Um worker que nunca chega trava o agendamento, e a recusa por texto não o alcança | ADR-0003     | a forma do escalonador       | resolvida por ADR-0005 |
+| [`Q-0003-2`](Q-0003-2.md) | Um agendamento sobre uma tentativa que talvez não ocorra                          | ADR-0003     | a forma do escalonador       | resolvida por ADR-0005 |
+| [`Q-0003-3`](Q-0003-3.md) | Duas execuções do mesmo experimento não têm critério de igualdade                 | ADR-0003     | os dois formatos de veredito | resolvida por ADR-0007 |
+| [`Q-0003-8`](Q-0003-8.md) | O `N` declarado antes não fecha com uma estratégia que retenta                    | ADR-0003     | Experiment                   | `pendente`             |
+| [`Q-0004-2`](Q-0004-2.md) | Nada obriga o passo a reportar a chave de contenção                               | ADR-0004     | arquitetura mínima e guardas | `pendente`             |
+| [`Q-0004-3`](Q-0004-3.md) | Comparar janelas exige um instante comparável entre workers                       | ADR-0004     | o log de observações         | `pendente`             |
+| [`Q-0004-4`](Q-0004-4.md) | A regra de parada colide com a exigência de nascer entregando                     | ADR-0004     | entrega contínua no homelab  | `pendente`             |
+| [`Q-0004-5`](Q-0004-5.md) | O terceiro formato de veredito precisa caber ao lado dos dois já previstos        | ADR-0004     | os dois formatos de veredito | `pendente`             |
+| [`Q-0004-8`](Q-0004-8.md) | O limite `3/N` pressupõe ensaios independentes                                    | ADR-0004     | os dois formatos de veredito | `pendente`             |
+| [`Q-0005-1`](Q-0005-1.md) | O critério de "falha não recuperada pela estratégia" não está definido            | ADR-0005     | estratégias de concorrência  | resolvida por ADR-0006 |
+| [`Q-0019`](Q-0019.md)     | Quatro das seis contradições são divergência entre ADR e plano                    | contra-aval. | os dois ADRs do lote 1       | `pendente`             |
+| [`Q-0020`](Q-0020.md)     | Duas colisões de vocabulário que a rodada não confessou                           | contra-aval. | o ADR de vocabulário         | `pendente`             |
+| [`Q-0021`](Q-0021.md)     | A quarentena do Bloco 3 é sub-inclusiva                                           | contra-aval. | Experiment                   | `pendente`             |
+| [`Q-0022`](Q-0022.md)     | O limiar de SSE de `D-UI-09` não foi medido                                       | contra-aval. | interface web                | `pendente`             |
+| [`Q-0023`](Q-0023.md)     | A doutrina do gatilho foi aplicada uma vez e suspensa cinco                       | contra-aval. | arquitetura mínima e guardas | `pendente`             |
+| [`Q-0024`](Q-0024.md)     | `D-ARQ-12` não tem jurisdição sobre um ADR de outro repositório                   | contra-aval. | entrega contínua no homelab  | `pendente`             |
+| [`Q-0025`](Q-0025.md)     | `D-DAT-02` apaga um fenômeno em vez de observá-lo                                 | contra-aval. | modelo de dados mínimo       | `pendente`             |
+| [`Q-0026`](Q-0026.md)     | `D-MSG-05` decide antes de saber onde um experimento roda                         | contra-aval. | mensageria e etapa 5         | `pendente`             |
+| [`Q-0027`](Q-0027.md)     | `D-MSG-10` gastaria uma aprovação para ratificar a regra vigente                  | contra-aval. | mensageria e etapa 5         | `pendente`             |
+| [`Q-0028`](Q-0028.md)     | Decisões em silêncio, termos sem glossário e números sem origem                   | contra-aval. | arquitetura mínima e guardas | `pendente`             |
