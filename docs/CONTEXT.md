@@ -877,7 +877,7 @@ remover linha nenhuma, e a contagem de linhas de cada arquivo foi conferida ante
 depois. Nenhuma citação externa se deslocou.
 
 **Pergunta em aberto.** Os nomes de pacote propostos em
-[`architecture/modulos-e-fronteiras.md`](architecture/modulos-e-fronteiras.md), linhas
+[`adr/arquivo/proposta-2026-08-03/modulos-e-fronteiras.md`](adr/arquivo/proposta-2026-08-03/modulos-e-fronteiras.md), linhas
 86 a 89 — `controlplane.dominio`, `controlplane.operacao`, `controlplane.estrategia`,
 `controlplane.persistencia` — carregam o termo aposentado. Eles são proposta de uma
 linha que continua aberta, e o ADR-0008 fixou só o pacote raiz. Renomeá-los é decisão da
@@ -928,7 +928,7 @@ Cards e os Example Mappings, 8; `arquitetura-alvo.md`, `contratos-de-api.md` e
 `interface-web.md`, de uma a três cada. Parte é citação legítima — o plano cita o
 briefing, e o card de `execucao-de-experimento` cita o ADR-0001. Parte é termo vivo,
 como em `adr/arquivo/proposta-2026-08-03/arquitetura-alvo.md:390` e
-`architecture/modulos-e-fronteiras.md:207`. Separar as duas exige leitura caso a caso, e
+`adr/arquivo/proposta-2026-08-03/modulos-e-fronteiras.md:207`. Separar as duas exige leitura caso a caso, e
 não foi feita.
 
 ### D-DOM-04 — Como nomear os dois sentidos de `strategy`

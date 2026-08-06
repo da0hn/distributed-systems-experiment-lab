@@ -5,13 +5,13 @@
 - **Escopo:** os módulos nomeados do primeiro artefato compilável, as direções de
   dependência permitidas, e o mecanismo que transforma a separação system under test /
   Lab Plane num teste que falha.
-- **Depende de:** [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md),
-  [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md),
-  [`ADR-0005`](../adr/0005-a-forma-do-escalonador.md),
-  [`ADR-0006`](../adr/0006-a-forma-da-estrategia-de-concorrencia.md),
-  [`ADR-0007`](../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), todos
-  `Aceito`. Responde a [`Q-0002-1`](../questions/Q-0002-1.md) e a
-  [`Q-0004-2`](../questions/Q-0004-2.md), ambas com destino nomeado nesta decisão.
+- **Depende de:** [`ADR-0001`](../../0001-o-passo-como-unidade-de-execucao.md),
+  [`ADR-0002`](../../0002-o-dominio-minimo-e-os-dois-oraculos.md),
+  [`ADR-0005`](../../0005-a-forma-do-escalonador.md),
+  [`ADR-0006`](../../0006-a-forma-da-estrategia-de-concorrencia.md),
+  [`ADR-0007`](../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), todos
+  `Aceito`. Responde a [`Q-0002-1`](../../../questions/Q-0002-1.md) e a
+  [`Q-0004-2`](../../../questions/Q-0004-2.md), ambas com destino nomeado nesta decisão.
 
 ## Vocabulário emprestado
 
@@ -29,17 +29,17 @@ restrito, calibração, observação, estratégia de concorrência — não são
 
 O laboratório tem uma invariante estrutural: **nenhuma classe do system under test
 depende de uma classe do Lab Plane**. Ela vem da regra 6 do `arquivo/0006`, citada como
-restrição pelo ADR-0001 (`../adr/0001-o-passo-como-unidade-de-execucao.md:68-70`) e
+restrição pelo ADR-0001 (`../../0001-o-passo-como-unidade-de-execucao.md:68-70`) e
 verificada por ele em três lugares diferentes (`:422-424`, `:440-442`).
 
 Essa invariante cria um problema que nenhum documento do repositório trata. O runtime
 recebe do system under test uma **definição de operação**, e não uma instância
-(`../adr/0001-o-passo-como-unidade-de-execucao.md:118-124`). O tipo dessa definição
+(`../../0001-o-passo-como-unidade-de-execucao.md:118-124`). O tipo dessa definição
 precisa ser visível dos dois lados. Se ele vive no Lab Plane, o system under test passa
 a importá-lo, e a invariante cai. Se ele vive no system under test, o Lab Plane passa a
 depender da identidade de cada operação, e o ADR-0006 proíbe exatamente esse acoplamento
 para o rótulo de estratégia
-(`../adr/0006-a-forma-da-estrategia-de-concorrencia.md:51-54`).
+(`../../0006-a-forma-da-estrategia-de-concorrencia.md:51-54`).
 
 **Proposta:** três regiões, e não duas. Uma região `compartilhado` carrega os contratos
 que os dois planos precisam enxergar, e não importa nenhum dos dois.
@@ -73,19 +73,19 @@ existem no MVP; nenhum é um processo.
 
 | Módulo                      | Região        | Responsabilidade                                                            | Pode depender de           | Evidência                                                           |
 |-----------------------------|---------------|-----------------------------------------------------------------------------|----------------------------|---------------------------------------------------------------------|
-| `compartilhado.passo`       | compartilhado | contrato de passo, de definição de operação e de escopo de execução         | nada                       | `../adr/0001-o-passo-como-unidade-de-execucao.md:108-124`           |
-| `compartilhado.relogio`     | compartilhado | porta do relógio injetável                                                  | nada                       | `../adr/0005-a-forma-do-escalonador.md:126`                         |
+| `compartilhado.passo`       | compartilhado | contrato de passo, de definição de operação e de escopo de execução         | nada                       | `../../0001-o-passo-como-unidade-de-execucao.md:108-124`           |
+| `compartilhado.relogio`     | compartilhado | porta do relógio injetável                                                  | nada                       | `../../0005-a-forma-do-escalonador.md:126`                         |
 | `compartilhado.aleatorio`   | compartilhado | porta da fonte de aleatoriedade semeada                                     | nada                       | `plano-do-laboratorio.md:594-596`                                   |
-| `labplane.runtime`          | Lab Plane     | executa a sequência de passos, cria o escopo da tentativa, verifica posse   | `compartilhado`            | `../adr/0001-o-passo-como-unidade-de-execucao.md:118-134`           |
-| `labplane.escalonador`      | Lab Plane     | ativos, restrições pendentes, término, desistência                          | `compartilhado`            | `../adr/0005-a-forma-do-escalonador.md:60-80`                       |
-| `labplane.injecao`          | Lab Plane     | decide se uma falha declarada dispara naquela fronteira                     | `compartilhado`            | `../adr/0001-o-passo-como-unidade-de-execucao.md:196-200`           |
-| `labplane.observacao`       | Lab Plane     | sequência apensável de eventos, por execução, com `restrito`                | `compartilhado`            | `../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:56-88` |
-| `labplane.veredito`         | Lab Plane     | oráculo exato, oráculo do predicado, calibração, classificação do zero      | `compartilhado`            | `../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:135-241`        |
+| `labplane.runtime`          | Lab Plane     | executa a sequência de passos, cria o escopo da tentativa, verifica posse   | `compartilhado`            | `../../0001-o-passo-como-unidade-de-execucao.md:118-134`           |
+| `labplane.escalonador`      | Lab Plane     | ativos, restrições pendentes, término, desistência                          | `compartilhado`            | `../../0005-a-forma-do-escalonador.md:60-80`                       |
+| `labplane.injecao`          | Lab Plane     | decide se uma falha declarada dispara naquela fronteira                     | `compartilhado`            | `../../0001-o-passo-como-unidade-de-execucao.md:196-200`           |
+| `labplane.observacao`       | Lab Plane     | sequência apensável de eventos, por execução, com `restrito`                | `compartilhado`            | `../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:56-88` |
+| `labplane.veredito`         | Lab Plane     | oráculo exato, oráculo do predicado, calibração, classificação do zero      | `compartilhado`            | `../../0002-o-dominio-minimo-e-os-dois-oraculos.md:135-241`        |
 | `labplane.experimento`      | Lab Plane     | definição, semente, hipótese, asserções, ciclo de vida da execução          | `compartilhado`            | fila de decisões, posição 8                                         |
 | `labplane.web`              | Lab Plane     | inicia execução, transmite o log, entrega o relatório e a interface         | `compartilhado`            | `plano-do-laboratorio.md:531`, `540`                                |
-| `controlplane.dominio`      | system under test | `Resource` e `Allocation`, sem nome de negócio                              | `compartilhado`            | `../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:87-99`          |
-| `controlplane.operacao`     | system under test | definições de `increment` e `allocate`, nas duas resoluções                 | `compartilhado`, `dominio` | `../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:116-121`        |
-| `controlplane.estrategia`   | system under test | `NONE`, `ATOMIC_UPDATE`, `OPTIMISTIC`, `PESSIMISTIC`, e o critério de retry | `compartilhado`, `dominio` | `../adr/0006-a-forma-da-estrategia-de-concorrencia.md:56-62`        |
+| `controlplane.dominio`      | system under test | `Resource` e `Allocation`, sem nome de negócio                              | `compartilhado`            | `../../0002-o-dominio-minimo-e-os-dois-oraculos.md:87-99`          |
+| `controlplane.operacao`     | system under test | definições de `increment` e `allocate`, nas duas resoluções                 | `compartilhado`, `dominio` | `../../0002-o-dominio-minimo-e-os-dois-oraculos.md:116-121`        |
+| `controlplane.estrategia`   | system under test | `NONE`, `ATOMIC_UPDATE`, `OPTIMISTIC`, `PESSIMISTIC`, e o critério de retry | `compartilhado`, `dominio` | `../../0006-a-forma-da-estrategia-de-concorrencia.md:56-62`        |
 | `controlplane.persistencia` | system under test | SQL, transação, isolamento, uma conexão por worker                          | `compartilhado`, `dominio` | `plano-do-laboratorio.md:579-582`                                   |
 | `aplicacao`                 | composição    | ponto de entrada Spring Boot, ligação entre os dois planos                  | todos                      | —                                                                   |
 
@@ -98,7 +98,7 @@ própria.
 **`compartilhado` carrega contrato, e nunca comportamento de domínio.** `Resource`,
 `Allocation`, a soma das alocações e qualquer regra sobre elas vivem no system under
 test. É a mesma restrição que o `arquivo/0005` já havia fixado para outra topologia
-(`../adr/arquivo/0005-monorepo-com-reactor-unico.md:50-67`), e o motivo continua
+(`../../arquivo/0005-monorepo-com-reactor-unico.md:50-67`), e o motivo continua
 valendo: domínio compartilhado é acoplamento com outro nome.
 
 ## O mecanismo de módulo
@@ -115,7 +115,7 @@ um falha num momento diferente do ciclo, e é isso que os separa.
 **Spring Modulith.** O argumento legítimo é forte: um módulo é declarado onde ele vive,
 a verificação é uma linha de teste, e o modelo de módulos gera documentação que não
 apodrece junto do código. O `arquivo/0006` já previa esse uso, restrito a verificação e
-documentação (`../adr/arquivo/0006-hexagonal-com-archunit.md:186-188`). O limite é o
+documentação (`../../arquivo/0006-hexagonal-com-archunit.md:186-188`). O limite é o
 alcance: Spring Modulith verifica dependências entre módulos, e as regras deste
 laboratório que mais custam caro — aleatoriedade não semeada, relógio, sincronização de
 JVM — não são dependências entre módulos, são chamadas e modificadores dentro de uma
@@ -124,7 +124,7 @@ classe.
 **Maven multi-módulo.** É a forma mais forte: uma violação da direção proibida vira erro
 de compilação, e não teste vermelho. O `arquivo/0006` a descartou por custo, com um
 número explícito — quatro camadas vezes cinco serviços, dezesseis `pom.xml` adicionais
-(`../adr/arquivo/0006-hexagonal-com-archunit.md:207-218`). Esse número não se aplica
+(`../../arquivo/0006-hexagonal-com-archunit.md:207-218`). Esse número não se aplica
 aqui: o mapa acima tem **três** regiões mais a composição, o que custa quatro `pom.xml`
 mais o `pom.xml` raiz. O argumento de custo que derrubou a alternativa em 2026-07-26 foi
 calculado sobre uma arquitetura que o replanejamento arquivou.
@@ -170,14 +170,14 @@ esquecida.
 O segundo lugar é o teste. Duas propriedades que a fronteira de módulo não enxerga já
 são exigidas por ADR aceito: a análise estática que rejeita campo não final, campo de
 tipo mutável e `static` mutável nas classes de definição de operação
-(`../adr/0001-o-passo-como-unidade-de-execucao.md:130-131`), e a prova de que as duas
+(`../../0001-o-passo-como-unidade-de-execucao.md:130-131`), e a prova de que as duas
 resoluções da mesma operação emitem o mesmo traço de SQL
-(`../adr/0001-o-passo-como-unidade-de-execucao.md:296-300`). As duas vivem no mesmo
+(`../../0001-o-passo-como-unidade-de-execucao.md:296-300`). As duas vivem no mesmo
 lugar que as guardas abaixo.
 
 ## As três regras textuais viram guarda executável
 
-Esta seção responde [`Q-0002-1`](../questions/Q-0002-1.md). A questão registra que a
+Esta seção responde [`Q-0002-1`](../../../questions/Q-0002-1.md). A questão registra que a
 justificativa do ADR-0002 se apoia em três regras que hoje são texto em `AGENTS.md`, e
 que uma chamada esquecida a `Instant.now()` faz a prova de equivalência reprovar um par
 correto de forma intermitente.
@@ -192,15 +192,15 @@ Três acréscimos ao que `AGENTS.md` lista, e o motivo de cada um.
 
 **`UUID.randomUUID` entra na primeira regra.** O ADR-0002 exige que o identificador seja
 função da semente e não do instante da execução
-(`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:123-133`). `UUID.randomUUID` não
+(`../../0002-o-dominio-minimo-e-os-dois-oraculos.md:123-133`). `UUID.randomUUID` não
 aparece na lista de `AGENTS.md` e quebra exatamente essa exigência, em silêncio, porque
 o teste de equivalência compara valores ligados.
 
 **`System.nanoTime` entra na segunda regra.** O ADR-0007 exige um instante de parede em
 todo evento do log
-(`../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:58-60`), e o ADR-0005
+(`../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:58-60`), e o ADR-0005
 proíbe medir tempo de parede fora de um adaptador de relógio
-(`../adr/0005-a-forma-do-escalonador.md:126`). Um `System.nanoTime` esquecido dentro do
+(`../../0005-a-forma-do-escalonador.md:126`). Um `System.nanoTime` esquecido dentro do
 Lab Plane produz uma janela de exposição que nenhuma execução reproduz.
 
 **A terceira regra vale só no system under test.** O Lab Plane precisa coordenar
@@ -210,20 +210,20 @@ esse recorte, e é por isso que a região precisa ser identificável no nome do 
 
 A isenção é o ponto frágil de toda guarda deste tipo. Uma lista de classes isentas
 escrita à mão apodrece — foi a objeção que o `arquivo/0006` registrou contra a regra 6
-(`../adr/arquivo/0006-hexagonal-com-archunit.md:109-111`). **Proposta:** a isenção é
+(`../../arquivo/0006-hexagonal-com-archunit.md:109-111`). **Proposta:** a isenção é
 posicional, e não nominal. A guarda isenta um **pacote** (`compartilhado.relogio`,
 `compartilhado.aleatorio`) e uma classe nomeada pela estratégia `JVM_LOCK`, e não aceita
 anotação de supressão. É a decisão `D-ARQ-08`.
 
 Uma ordem importa e não está escrita em lugar nenhum: **o adaptador precisa existir
 antes da proibição**. O `arquivo/0006` registrou a mesma armadilha na questão 2
-(`../adr/arquivo/0006-hexagonal-com-archunit.md:113-119`): uma regra que proíbe
+(`../../arquivo/0006-hexagonal-com-archunit.md:113-119`): uma regra que proíbe
 `Instant.now()` sem oferecer o substituto é inaplicável. Proposta:
 `compartilhado.relogio` e `compartilhado.aleatorio` entram no mesmo commit que a guarda.
 
 ## A guarda que `Q-0004-2` pede não é estática
 
-[`Q-0004-2`](../questions/Q-0004-2.md) pede uma guarda que impeça um passo de deixar de
+[`Q-0004-2`](../../../questions/Q-0004-2.md) pede uma guarda que impeça um passo de deixar de
 reportar a chave de contenção. A própria questão registra a dificuldade: a exigência não
 vale para todo passo, vale para os passos que delimitam uma janela de exposição
 declarada por algum experimento, e "esse ligamento vive no experimento, não na classe".
@@ -233,7 +233,7 @@ experimento a referencia.
 
 **Proposta:** a guarda é de execução, e tem a forma da terceira camada do ADR-0001 — a
 verificação de posse do escopo, que falha na hora e nomeia o passo
-(`../adr/0001-o-passo-como-unidade-de-execucao.md:132-134`). Quando um experimento
+(`../../0001-o-passo-como-unidade-de-execucao.md:132-134`). Quando um experimento
 declara uma janela entre duas fronteiras, o runtime verifica na primeira passagem por
 cada uma delas se o passo reportou a chave de contenção, e recusa a execução nomeando o
 rótulo do passo. A recusa acontece antes de qualquer veredito ser publicado, que é a
@@ -261,7 +261,7 @@ O segmento de região não é estética. As regras 4, 5, 6 e 7 do `arquivo/0006`
 inexprimíveis porque o padrão de pacote não existia, e a questão 1 daquele documento
 registra que a regra 6 exige que o plano seja identificável — ou o pacote o carrega, ou
 o teste precisa listar as classes uma a uma
-(`../adr/arquivo/0006-hexagonal-com-archunit.md:98-111`). Um pacote como
+(`../../arquivo/0006-hexagonal-com-archunit.md:98-111`). Um pacote como
 `dev.da0hn.lab.runtime` deixaria a regra da fronteira dependente de uma lista manual.
 
 **Proposta de artefatos Maven:** `lab-parent` como `pom`, e os módulos
@@ -271,7 +271,7 @@ acompanha o pacote raiz.
 **Proposta de idioma dos identificadores:** inglês para tipos e métodos, com uma tabela
 de correspondência versionada entre o glossário congelado e os nomes de tipo. O motivo é
 que o domínio já está em inglês por ADR aceito — `Resource`, `Allocation`, `value`,
-`capacity`, `amount` (`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:87-99`) — e um
+`capacity`, `amount` (`../../0002-o-dominio-minimo-e-os-dois-oraculos.md:87-99`) — e um
 código que misture `Passo` com `Resource` dá dois idiomas ao mesmo arquivo.
 
 | Glossário   | Tipo proposto | Por que este nome                                                   |
@@ -285,7 +285,7 @@ código que misture `Passo` com `Resource` dá dois idiomas ao mesmo arquivo.
 | observação  | `Observation` | —                                                                   |
 | veredito    | `Verdict`     | —                                                                   |
 | oráculo     | `Oracle`      | —                                                                   |
-| restrito    | `restricted`  | campo booleano do evento, `../adr/0007-...md:62-65`                 |
+| restrito    | `restricted`  | campo booleano do evento, `../../0007-...md:62-65`                 |
 | calibração  | `Calibration` | —                                                                   |
 
 ## Decisões que exigem aprovação humana
@@ -331,7 +331,7 @@ microsserviços, `D-ARQ-01` fica decidida por consequência, sem gatilho.
 ### `D-ARQ-06` — pacote raiz, artefatos e idioma dos identificadores
 
 **O problema.** Nenhum `pom.xml` existe, e o pacote raiz nunca foi escolhido
-(`../adr/arquivo/0005-monorepo-com-reactor-unico.md:100-108`). As guardas são expressas
+(`../../arquivo/0005-monorepo-com-reactor-unico.md:100-108`). As guardas são expressas
 em padrões de pacote, e um padrão ambíguo torna a regra inexprimível.
 
 **Alternativa 1 — `dev.da0hn.lab`, região no primeiro segmento, tipos em inglês.** A
@@ -378,7 +378,7 @@ possível. Contra: duas ferramentas para entender quando algo quebra.
 
 **Recomendação.** Alternativa 3, com `because(...)` obrigatório em toda regra ArchUnit —
 o `arquivo/0006` já registrou que sem isso a mensagem vira obstáculo incompreensível
-(`../adr/arquivo/0006-hexagonal-com-archunit.md:178-180`).
+(`../../arquivo/0006-hexagonal-com-archunit.md:178-180`).
 
 **Se a escolha for outra.** Com tudo em ArchUnit, a fronteira entre regiões deixa de ser
 propriedade do `pom.xml` e `D-ARQ-05` perde o argumento principal.
@@ -443,14 +443,14 @@ verificar se uma leitura de bytecode em busca de `MONITORENTER` cabe no ciclo de
 sem uma dependência nova.
 
 **Não está escrito se um Feature Card pode contradizer um ADR aceito.** A lacuna é do
-processo (`../specification-process.md`), e ela alcança este documento: as guardas
+processo (`../../../specification-process.md`), e ela alcança este documento: as guardas
 propostas aqui derivam de regras que vivem em `AGENTS.md`, e não em ADR aceito. Faltou:
 saber qual documento vence se os dois divergirem.
 
 **A semente atravessa do Lab Plane para o system under test, e nenhum documento diz
 como.** O ADR-0002 exige que o identificador seja função da semente e seja gerado no
 código do sistema sob teste
-(`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:123-126`). A única forma que
+(`../../0002-o-dominio-minimo-e-os-dois-oraculos.md:123-126`). A única forma que
 preserva a direção proibida é a semente chegar como valor, pela definição de operação.
 Faltou: uma linha em ADR aceito que fixe isso, em vez de deixá-lo como consequência
 inferida.
@@ -460,7 +460,7 @@ inferida.
 viram artefatos entregáveis separados, e o `deploy/` muda de forma. Faltou: o gatilho da
 etapa 4, que ainda não disparou.
 
-## Adições propostas a `integrations.md`
+## Adições propostas a `../../../architecture/integrations.md`
 
 As linhas abaixo são propostas. **Nenhuma edição foi feita naquele arquivo.**
 
@@ -470,7 +470,7 @@ que passa a ser fronteira de processo se `D-ARQ-03` escolher Lab Plane único:
 
 | Origem             | Destino                 | Tipo                | Operação/tópico   | Finalidade                                      | Contrato                     | Autenticação | Confiabilidade                      | Evidência                                                          |
 |--------------------|-------------------------|---------------------|-------------------|-------------------------------------------------|------------------------------|--------------|-------------------------------------|--------------------------------------------------------------------|
-| `labplane.runtime` | `controlplane.operacao` | chamada em processo | executar um passo | executar a sequência de passos de uma tentativa | interface em `compartilhado` | —            | direção proibida no sentido inverso | hipótese — `../adr/0001-o-passo-como-unidade-de-execucao.md:93-95` |
+| `labplane.runtime` | `controlplane.operacao` | chamada em processo | executar um passo | executar a sequência de passos de uma tentativa | interface em `compartilhado` | —            | direção proibida no sentido inverso | hipótese — `../../0001-o-passo-como-unidade-de-execucao.md:93-95` |
 
 Propostas de perguntas novas naquele arquivo, no formato `Q-INT-N`:
 
@@ -478,7 +478,7 @@ Propostas de perguntas novas naquele arquivo, no formato `Q-INT-N`:
 atravessa a fronteira entre os dois planos e é a interface mais citada por ADR aceito, e
 nenhum documento fixa a assinatura dele. Enquanto isso, `contracts/` não tem onde
 registrá-lo, porque a fronteira não é de processo — a regra de criação de contrato hoje
-só cobre travessia de processo (`../contracts/README.md:9`).
+só cobre travessia de processo (`../../../contracts/README.md:9`).
 
 **`Q-INT-8` — a semente atravessa do Lab Plane para o system under test sem forma
 declarada.** O ADR-0002 exige identidade em função da semente, gerada no system under
