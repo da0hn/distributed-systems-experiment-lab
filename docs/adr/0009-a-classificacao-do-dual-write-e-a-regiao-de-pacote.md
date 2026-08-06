@@ -5,7 +5,7 @@
 - **Etapa do roadmap:** 1 e 6
 - **Relacionado:** emenda o [ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md) e o
   [ADR-0008](0008-os-dois-planos-em-processos-separados.md). O caminho de emenda foi
-  decidido em `docs/architecture/decisoes-pendentes.md`, seção `A1`
+  decidido em `docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md`, seção `A1`
   (linhas 1769-1802).
 
 - **Última atualização:** 2026-08-05, pelo adendo no fim deste arquivo.

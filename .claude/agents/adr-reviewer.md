@@ -18,7 +18,7 @@ defeitos que o `adr-writer` vai aplicar.
    neste repositório, porque ela sobrevive à revisão humana.
 2. **Invenção.** Alguma integração, contrato, coluna, interface ou regra aparece como
    fato sem evidência? Alguma lacuna foi fechada por decisão do escritor, em vez de virar
-   linha em `docs/architecture/decisoes-pendentes.md`?
+   linha em `docs/adr/fila-de-decisoes.md`?
 3. **Contradição.** O ADR contraria algum ADR aceito de `docs/adr/`? Se contraria, o
    texto marca o antigo como substituído, ou a contradição é silenciosa? Confira também
    contra `AGENTS.md` da raiz e `docs/plano-do-laboratorio.md`.

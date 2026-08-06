@@ -21,17 +21,35 @@ docs/adr/0005-a-forma-do-escalonador.md:README.md:598-609
 docs/adr/0006-a-forma-da-estrategia-de-concorrencia.md:README.md:515-539
 
 # ----------------------------------------------------------------------------
-# Meta-citacao — a tabela da auditoria em `decisoes-pendentes.md`.
+# Meta-citacao — as cinco entradas de `decisoes-pendentes.md` sairam daqui.
 #
-# As entradas abaixo nao sao evidencia: sao *dado sobre defeito*. A secao
-# "Auditoria de citacoes" e a subsecao "O que o Lote A NAO aplicou" reproduzem
-# as citacoes quebradas para poder descreve-las, e o verificador nao distingue
-# uma citacao de uma citacao sobre uma citacao.
+# Aquele arquivo foi arquivado em `docs/adr/arquivo/proposta-2026-08-03/` pela
+# decisao `D-4`, em 2026-08-05, e o verificador passou a isentar toda citacao
+# que PARTE de `docs/adr/arquivo/**`. As cinco entradas viraram redundantes e
+# foram removidas: mante-las seria uma baseline que descreve um caminho que nao
+# existe mais.
+
+# ----------------------------------------------------------------------------
+# `D-4` — dez citacoes por linha, dentro dos ADRs 0008 e 0009.
 #
-# Risco aceito e nomeado: se alguma destas passar a ser usada como evidencia
-# real dentro do mesmo arquivo, o verificador deixara de ve-la.
-docs/architecture/decisoes-pendentes.md:README.md:598-609
-docs/architecture/decisoes-pendentes.md:README.md:515-539
-docs/architecture/decisoes-pendentes.md:README.md:200-208
-docs/architecture/decisoes-pendentes.md:README.md:180
-docs/architecture/decisoes-pendentes.md:README.md:181
+# As duas citavam `docs/architecture/decisoes-pendentes.md`, e o ADR-0008 citava
+# tambem `arquitetura-alvo.md` e `modelo-de-dados.md`. Os tres arquivos foram
+# arquivados em `docs/adr/arquivo/proposta-2026-08-03/` pela decisao `D-4`, e o
+# corpo de um ADR aceito NAO DEVE ser editado.
+#
+# Cada um dos dois ADRs recebeu um **adendo** — a quarta forma de alteracao,
+# criada no mesmo dia — que incorpora a afirmacao que cada citacao sustentava.
+# O ADR se sustenta sem o documento citado; a citacao permanece quebrada no
+# corpo, e o adendo diz o que ela dizia.
+docs/adr/0008-os-dois-planos-em-processos-separados.md:../architecture/arquitetura-alvo.md:29-34
+docs/adr/0008-os-dois-planos-em-processos-separados.md:../architecture/decisoes-pendentes.md:254-255
+docs/adr/0008-os-dois-planos-em-processos-separados.md:../architecture/modelo-de-dados.md:154-158
+docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:109-112
+docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:140-169
+docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:1769-1802
+docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:1771-1779
+docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:235-237
+docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:1865-1879
+docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:243
+docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:1797-1800
+docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:230-233

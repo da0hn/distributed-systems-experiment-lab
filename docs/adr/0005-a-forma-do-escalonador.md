@@ -16,7 +16,7 @@
   2026-08-03, quando o índice encolheu de 908 para 517 linhas. A seção citada era
   `### Q-0002-2`, extraída para
   [`../questions/Q-0002-2.md`](../questions/Q-0002-2.md). O corpo não foi editado.
-  Decisão `C-6`, em `../architecture/decisoes-pendentes.md`.
+  Decisão `C-6`, em `arquivo/proposta-2026-08-03/decisoes-pendentes.md`.
 
 ## Vocabulário
 

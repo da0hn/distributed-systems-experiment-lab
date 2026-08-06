@@ -22,7 +22,7 @@ fenômenos de sistemas distribuídos. Não há domínio de negócio aqui, por de
 
 **Os termos são em inglês; as explicações, em português.** Regra adotada em 2026-08-04
 junto da decisão `D-ARQ-06` de
-[`architecture/decisoes-pendentes.md`](architecture/decisoes-pendentes.md): todo
+[`adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md`](adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md): todo
 identificador de código deste laboratório — pacote, classe, método, constante — é
 escrito em inglês. Este glossário nomeia o que vira código, e por isso o nome do termo é
 o nome que o código usa.
@@ -871,7 +871,7 @@ foram tocadas, e a distinção é o que separa renomear de falsificar:
 | o enunciado histórico desta seção `D-DOM-02`      | ele registra o problema como ele era             |
 
 **O risco de desalinhamento, medido.** A contra-avaliação registra que edição em massa
-desloca citações `arquivo:linha` em silêncio ([`architecture/contra-avaliacao.md`](architecture/contra-avaliacao.md),
+desloca citações `arquivo:linha` em silêncio ([`adr/arquivo/proposta-2026-08-03/contra-avaliacao.md`](adr/arquivo/proposta-2026-08-03/contra-avaliacao.md),
 seção `R12`). A conversão foi feita por substituição dentro da linha, sem inserir nem
 remover linha nenhuma, e a contagem de linhas de cada arquivo foi conferida antes e
 depois. Nenhuma citação externa se deslocou.
@@ -917,7 +917,7 @@ documento novo.
 [`adr/arquivo/proposta-2026-08-03/mensageria.md`](adr/arquivo/proposta-2026-08-03/mensageria.md) usava `barreira` como termo
 vivo e normativo em oito pontos, inclusive no enunciado e nas três alternativas de
 `D-MSG-11`. A ressalva estava em
-[`architecture/contra-avaliacao.md`](architecture/contra-avaliacao.md), linhas 143 a
+[`adr/arquivo/proposta-2026-08-03/contra-avaliacao.md`](adr/arquivo/proposta-2026-08-03/contra-avaliacao.md), linhas 143 a
 145. Aqueles pontos passaram a dizer `restrição de precedência`, e o mérito de
 `D-MSG-11` não mudou: a colisão continua sendo entre o que o escalonador segura e o
 relógio que o broker não deixa injetar.

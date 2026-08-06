@@ -26,7 +26,8 @@ CONTRACT_LIMIT = 16000
 # Um ADR e' `docs/adr/NNNN-titulo.md`. O indice e o historico congelado de
 # `docs/adr/arquivo/**` vivem na mesma pasta e nao sao documentos de decisao
 # unica: o indice cresce por construcao a cada ADR novo, e o arquivo morto nao
-# pode ser encolhido. Decisao `C-7`, em `docs/architecture/decisoes-pendentes.md`.
+# pode ser encolhido. Decisao `C-7`, em
+# `docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md`.
 ADR_FILENAME = re.compile(r"^\d{4}-.+\.md$")
 
 # Os quatro primeiros ADRs foram escritos sob outra pratica e tem cerca de 35 mil

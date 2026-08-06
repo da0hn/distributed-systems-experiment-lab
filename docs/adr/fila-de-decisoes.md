@@ -1,7 +1,7 @@
 # Fila de decisões
 
 Fila única deste repositório. Criada em 2026-08-05 pela decisão `B-1`, registrada em
-[`../architecture/decisoes-pendentes.md`](../architecture/decisoes-pendentes.md).
+[`arquivo/proposta-2026-08-03/decisoes-pendentes.md`](arquivo/proposta-2026-08-03/decisoes-pendentes.md).
 
 Antes dela existiam duas listas do mesmo tipo de coisa, e a sobreposição era medida: os
 três primeiros assuntos da rodada de arquitetura vinham colados numa linha só da fila
@@ -233,7 +233,7 @@ Estas quatro existem porque **os ADRs aceitos já colidem entre si no
 vocabulário**. Decidi-las é barato agora e caro depois de existir código.
 
 **A contra-avaliação sustenta este bloco.** Ele é "o único bloco aprovável como está"
-([`../architecture/contra-avaliacao.md`](../architecture/contra-avaliacao.md), linhas 430 a 434), porque as quatro
+([`arquivo/proposta-2026-08-03/contra-avaliacao.md`](arquivo/proposta-2026-08-03/contra-avaliacao.md), linhas 430 a 434), porque as quatro
 colisões são reais entre ADRs aceitos, independem da fila e ficam caras depois de
 existir código. Nenhuma das quatro pode ser resolvida editando um ADR.
 
@@ -249,7 +249,7 @@ não pode depender da memória de quem editou.
 **Aprovar `D-DOM-03` obriga reescrever [`arquivo/proposta-2026-08-03/mensageria.md`](arquivo/proposta-2026-08-03/mensageria.md) no mesmo
 turno.** A palavra é termo vivo e normativo ali:
 `arquivo/proposta-2026-08-03/mensageria.md:520`, `:539`, `:548-553`, `:805` e `:1034-1054`,
-inclusive no enunciado e nas três alternativas de `D-MSG-11`. A ressalva está em [`../architecture/contra-avaliacao.md`](../architecture/contra-avaliacao.md), linhas 143
+inclusive no enunciado e nas três alternativas de `D-MSG-11`. A ressalva está em [`arquivo/proposta-2026-08-03/contra-avaliacao.md`](arquivo/proposta-2026-08-03/contra-avaliacao.md), linhas 143
 a 145; o inventário de linhas é novo.
 
 ### Bloco 5 — etapa 4 e adiante, sem gatilho disparado hoje
@@ -524,7 +524,7 @@ As duas origens continuam no repositório, e as duas viram lápide pela decisão
 | Origem                                                                                                   | O que ficou lá                                                    |
 |------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
 | [`README.md`](README.md), seção "Fila de decisões"                                                          | uma lápide; o conteúdo veio inteiro para cá                       |
-| [`../architecture/decisoes-pendentes.md`](../architecture/decisoes-pendentes.md), Blocos 0 a 6              | o texto original, congelado; a fila viva é esta                   |
+| [`arquivo/proposta-2026-08-03/decisoes-pendentes.md`](arquivo/proposta-2026-08-03/decisoes-pendentes.md), Blocos 0 a 6              | o texto original, congelado; a fila viva é esta                   |
 
 **A segunda não pôde ser esvaziada, e o motivo é técnico.** Nove citações por número de
 linha apontam para `decisoes-pendentes.md` a partir dos ADRs 0008 e 0009, a maior em

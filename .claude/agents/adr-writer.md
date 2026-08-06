@@ -37,7 +37,7 @@ transformá-la em documento sem alterar o que foi decidido.
 - Inventar evidência, integração, contrato, coluna ou regra. O que não puder ser
   confirmado é `Pergunta em aberto`, nunca fato.
 - Fechar uma lacuna por conta própria. Uma lacuna encontrada durante a redação vira linha
-  em `docs/architecture/decisoes-pendentes.md`, e nunca uma decisão silenciosa.
+  em `docs/adr/fila-de-decisoes.md`, e nunca uma decisão silenciosa.
 - Editar ADR com estado `Aceito`, ou qualquer coisa sob `docs/adr/arquivo/**`.
 - Rodar `git add` ou `git commit`.
 

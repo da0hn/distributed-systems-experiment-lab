@@ -6,11 +6,11 @@
   escritos em 2026-08-03, com evidência, e separar o que foi verificado por leitura
   direta do que não foi.
 - **Depende de:** os dez arquivos da rodada, e a regra de processo de
-  [`../adr/README.md`](../adr/README.md).
+  [`../../README.md`](../../README.md).
 
 ## Por que este documento existe
 
-A regra de [`../AGENTS.md`](../AGENTS.md) — "Nada que importa pode existir apenas na
+A regra de [`../../../AGENTS.md`](../../../AGENTS.md) — "Nada que importa pode existir apenas na
 conversa" — vale para objeção tanto quanto para decisão. As objeções abaixo foram
 produzidas por um agente adversarial instruído a refutar a rodada inteira, sem buscar
 equilíbrio. Elas **não são veredito**: são o material que uma pessoa precisa ter lido
@@ -62,18 +62,18 @@ uma subsunção".
 
 **Por que está errado.** Quatro das seis não são contradições entre ADRs aceitos, e sim
 divergências entre um ADR aceito e o `plano-do-laboratorio.md` — que
-[`../adr/README.md`](../adr/README.md) declara não decidir nada. C1, C2, C4 e C5 têm
+[`../../README.md`](../../README.md) declara não decidir nada. C1, C2, C4 e C5 têm
 essa forma. Quando um ADR posterior diverge do plano, isso não é defeito: é o processo
 funcionando. C5 é o caso mais nítido — o plano dizia que o log é persistido no fim da
 execução; o ADR-0007, posterior e aceito, decidiu que a persistência é da etapa 6. Não
 há o que reconciliar.
 
 **C6 é falsa, e foi verificada linha a linha.** A rodada cita
-`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:93` ("Nenhuma outra coluna entra no
+`../../0002-o-dominio-minimo-e-os-dois-oraculos.md:93` ("Nenhuma outra coluna entra no
 MVP") e conclui que o esquema proíbe `version`. Duas linhas adiante, o mesmo ADR resolve
 o caso: "O esquema NÃO DEVE carregar uma coluna `version`. Quem a acrescenta é o ADR de
 estratégias de concorrência, no mesmo commit em que decidir a política que a lê"
-(`:95-96`). O ADR-0006 cumpriu essa delegação (`../adr/0006-a-forma-da-estrategia-de-concorrencia.md:56-58`). Não existe contradição:
+(`:95-96`). O ADR-0006 cumpriu essa delegação (`../../0006-a-forma-da-estrategia-de-concorrencia.md:56-58`). Não existe contradição:
 existe delegação explícita, cumprida. O que falta é ferramenta de migração — item de
 tarefa (`D-DAT-04`), não defeito em ADR aceito.
 
@@ -101,7 +101,7 @@ nenhum:
   [`arquitetura-alvo.md`](arquitetura-alvo.md).
 - **`D-DOM-11`** — `escalonamento` como bounded context, com seção própria em
   [`modelo-de-dominio.md:628`](modelo-de-dominio.md) e citada no glossário em
-  [`../CONTEXT.md:571`](../CONTEXT.md).
+  [`../../../CONTEXT.md:571`](../../../CONTEXT.md).
 
 **Consequência.** O índice é o único artefato que alguém leria antes de aprovar. Uma
 aprovação "das 66" aprova 64 e deixa duas decisões sem estado.
@@ -121,7 +121,7 @@ a lição do `adr/README.md` como "a razão de esta rodada ter produzido propost
 decisão".
 
 **Por que é frágil.** A regra citada não é "produza proposta em vez de decisão". Ela é
-literal em [`../adr/README.md:181`](../adr/README.md):
+literal em [`../../README.md:181`](../../README.md):
 
 > **Um ADR por vez. Nenhum rascunho antecipado.**
 
@@ -141,7 +141,7 @@ mecanismo.
   `Q-INT-N` para integração e `Q-NNNN-K` para questão encaminhada. `Q-MSG-*` não é
   nenhum dos dois, e não é mencionado uma única vez no índice.
 - **(b) `não conferido`** — `barreira` é `aposentado` em
-  [`../CONTEXT.md:220`](../CONTEXT.md) e termo vivo e normativo em `D-MSG-11`. Se
+  [`../../../CONTEXT.md:220`](../../../CONTEXT.md) e termo vivo e normativo em `D-MSG-11`. Se
   `D-DOM-03` for aprovado, `D-MSG-11` precisa ser reescrito no mesmo turno.
 - **(c) `não conferido`** — [`modelo-de-dados.md`](modelo-de-dados.md) fecha `D-DAT-05`
   dizendo que a decisão pertence ao ADR de Experiment; o índice a coloca no Bloco 1,
@@ -188,7 +188,7 @@ estoura e nenhuma exceção é lançada — que é o resultado esperado do E5. F
 agregado é construção de aplicação: ela não coordena nada entre transações.
 
 **A evidência citada aponta o mesmo mecanismo, contra a tese.** `D-DOM-08` invoca
-`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:566-574`. Aquele trecho descarta a
+`../../0002-o-dominio-minimo-e-os-dois-oraculos.md:566-574`. Aquele trecho descarta a
 trigger no banco, e o segundo motivo, verificado aqui, é: "uma trigger que soma as
 alocações roda dentro da mesma transação e sob o mesmo isolamento, e portanto sofre o
 mesmo write skew. Ela não veria a linha da transação concorrente, e deixaria passar
@@ -338,7 +338,7 @@ precisa de decisão: a regra do plano já a mantém fora.
 | Rodada de 2026-08-03 (10 arquivos)         | 7.186  | **55.985** |
 | Sete ADRs aceitos mais o plano             | —      | 35.084     |
 | Os quatro Feature Cards juntos             | —      | 2.878      |
-| Limite de um Feature Card (`../AGENTS.md`) | —      | **700**    |
+| Limite de um Feature Card (`../../../AGENTS.md`) | —      | **700**    |
 
 A rodada é **1,6x** todo o corpus decisório acumulado, escrita em um dia, e **19,5x** a
 soma dos quatro cards. `mensageria.md` sozinha é mais de treze vezes o limite de um
@@ -369,7 +369,7 @@ R2). Uma condição nova de recusa de relatório, introduzida como cláusula sub
 uma recomendação em `D-MSG-11`. Um teste de alocações órfãs que é, na prática, um
 terceiro oráculo.
 
-**Termos usados sem entrada no glossário**, embora [`../CONTEXT.md`](../CONTEXT.md)
+**Termos usados sem entrada no glossário**, embora [`../../../CONTEXT.md`](../../../CONTEXT.md)
 tenha sido escrito na mesma rodada: `seam` (usado para definir outro termo, e sem
 entrada própria), `Shared Kernel`, `posicao` como identificador de evento, e `modo ordem
 garantida`.
@@ -438,7 +438,7 @@ A lista curta do que o agente tentou derrubar e não conseguiu.
 ## Perguntas em aberto
 
 **P1 — A regra "um ADR por vez, nenhum rascunho antecipado" alcança documento de
-arquitetura que não é ADR?** O texto de [`../adr/README.md:181`](../adr/README.md) não
+arquitetura que não é ADR?** O texto de [`../../README.md:181`](../../README.md) não
 faz a distinção, e a rodada de 2026-08-03 a assumiu sozinha. Ou a regra vale para todo
 documento de arquitetura — e a rodada é reprocessada um assunto por vez — ou ela é
 emendada por decisão explícita do usuário.
@@ -450,4 +450,4 @@ assuntos.
 
 **P3 — Quem aprova esta contra-avaliação?** A mesma lacuna que
 `specification-process.md` registra para o Feature Card, e que
-[`../CONTEXT.md`](../CONTEXT.md) registra em `P1`, alcança este arquivo.
+[`../../../CONTEXT.md`](../../../CONTEXT.md) registra em `P1`, alcança este arquivo.

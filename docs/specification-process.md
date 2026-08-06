@@ -234,7 +234,8 @@ tensão 1.
 ## Quem aprova o que, decidido em 2026-08-05
 
 **Aprova-se a regra, e não o card.** É a decisão `B-3`, registrada em
-[`architecture/decisoes-pendentes.md`](architecture/decisoes-pendentes.md). A tabela de
+[`decisoes-pendentes.md`](adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md),
+arquivado em 2026-08-05 pela decisão `D-4`. A tabela de
 regras de negócio de um Feature Card ganha uma coluna com quem aprovou cada regra, ao
 lado da coluna de evidência. O card em si **NÃO DEVE** ganhar estado nem ato de
 aprovação.

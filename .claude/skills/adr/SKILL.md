@@ -59,7 +59,8 @@ detalhe do loop está em `CLAUDE.md`, seção "Os dois agentes registrados, e o 
 eles".
 
 O sub-agente NÃO DEVE escolher entre alternativas nem fechar lacuna sozinho. Uma lacuna
-encontrada durante a redação vira linha em `docs/architecture/decisoes-pendentes.md`.
+encontrada durante a redação vira linha em
+`docs/adr/fila-de-decisoes.md`.
 
 ## Use o template obrigatório
 

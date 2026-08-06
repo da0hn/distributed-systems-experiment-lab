@@ -265,7 +265,7 @@ seção é uma lápide, na forma que a decisão `C-2` fixou: ela nomeia o destin
 estava aqui, e não some.
 
 **Por que ela saiu.** É a decisão `B-1`, registrada em
-[`../architecture/decisoes-pendentes.md`](../architecture/decisoes-pendentes.md).
+[`arquivo/proposta-2026-08-03/decisoes-pendentes.md`](arquivo/proposta-2026-08-03/decisoes-pendentes.md).
 Existiam duas filas do mesmo tipo de coisa — esta e os blocos `D-*` daquele arquivo — e
 enquanto foram duas, uma decisão PODE ter sido tomada numa e reaberta na outra. Esta
 página já era índice, convenção, histórico e processo de debate; a fila era a quinta

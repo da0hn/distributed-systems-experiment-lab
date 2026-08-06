@@ -173,8 +173,17 @@ def main() -> int:
             if entry and not entry.startswith("#"):
                 accepted.add(entry)
 
+    # `docs/adr/arquivo/**` nunca e' editado: ele registra o que se pensava
+    # naquela data, e editar apaga a evidencia (`docs/AGENTS.md`, secao "O que
+    # nunca e' editado"). As citacoes que PARTEM de la' apontam para um mundo
+    # que mudou, e sao inconsertaveis por construcao — acusa-las deixa o
+    # verificador permanentemente vermelho, que e' o mesmo argumento com que
+    # `C-7` isentou os quatro ADRs legados. Citacao que APONTA para la'
+    # continua verificada normalmente.
+    morto = root / "docs" / "adr" / "arquivo"
     sources = sorted(root.glob("docs/**/*.md")) + sorted(root.glob("*.md"))
-    defects = [d for source in sources for d in inspect(source, root)]
+    vivos = [s for s in sources if morto not in s.parents]
+    defects = [d for source in vivos for d in inspect(source, root)]
 
     remaining, waived = [], []
     for defect in defects:
@@ -187,7 +196,7 @@ def main() -> int:
         print(f"DEFEITO: {label} — {defect.reason}")
     if waived:
         print(f"\n{len(waived)} defeito(s) conhecido(s) e aceito(s) na baseline.")
-    print(f"\n{len(sources)} arquivo(s) varrido(s); "
+    print(f"\n{len(vivos)} arquivo(s) varrido(s); "
           f"{len(remaining)} defeito(s) nao aceito(s).")
     return 1 if remaining else 0
 

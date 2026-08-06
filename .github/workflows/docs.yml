@@ -1,5 +1,5 @@
 # Verificacao da documentacao. Decisao `C-5`, em
-# `docs/architecture/decisoes-pendentes.md`.
+# `docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md`.
 #
 # Este workflow NAO constroi, NAO empacota e NAO entrega nada: nao existe codigo
 # neste repositorio ainda. Ele verifica os documentos, e so isso. Build,

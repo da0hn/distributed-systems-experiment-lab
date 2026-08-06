@@ -193,7 +193,7 @@ As perguntas levantadas durante o Example Mapping vivem nos próprios `example-m
 
 - **A fila é uma só, e vive em
   [`docs/adr/fila-de-decisoes.md`](docs/adr/fila-de-decisoes.md).** As duas origens
-  viraram lápide. A de `docs/architecture/decisoes-pendentes.md` guarda o texto
+  viraram lápide. A de `docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md` guarda o texto
   congelado, porque aquele arquivo é append-only: nove citações por número de linha,
   vindas dos ADRs 0008 e 0009, apontam para ele.
 - **A poda não acontece antes da decisão.** Podar hoje as linhas que são comportamento

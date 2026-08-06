@@ -20,14 +20,14 @@ a única análise que nenhum dos cinco documentos podia fazer: **o que cada deci
 destrava**, visto de cima dos cinco.
 
 Nenhum documento desta rodada é ADR. A fila de decisões de
-[`../adr/README.md`](../adr/README.md) continua sendo a única fonte de decisão
+[`../../README.md`](../../README.md) continua sendo a única fonte de decisão
 arquitetural, e o processo continua sendo **um ADR por vez**. A lição registrada
-em [`../adr/README.md`](../adr/README.md), seção "A lição que a primeira série
+em [`../../README.md`](../../README.md), seção "A lição que a primeira série
 deixou", é a razão de esta rodada ter produzido proposta, e não decisão.
 
 | Documento                                            | Prefixo | Decisões |
 |------------------------------------------------------|---------|----------|
-| [`../CONTEXT.md`](../CONTEXT.md)                     | `D-DOM` | 6        |
+| [`../../../CONTEXT.md`](../../../CONTEXT.md)                     | `D-DOM` | 6        |
 | [`modelo-de-dominio.md`](modelo-de-dominio.md)       | `D-DOM` | 10       |
 | [`modelo-de-dados.md`](modelo-de-dados.md)           | `D-DAT` | 11       |
 | [`arquitetura-alvo.md`](arquitetura-alvo.md)         | `D-ARQ` | 4        |
@@ -44,7 +44,7 @@ deixou", é a razão de esta rodada ter produzido proposta, e não decisão.
 Estas **não são decisões de proposta**. São defeitos que os agentes encontraram
 nos documentos que já estão em vigor, e que nenhuma aprovação de proposta
 resolve. Um ADR aceito não pode ser editado — cada uma exige ADR novo, ou uma
-subsunção, no sentido de [`../adr/README.md`](../adr/README.md), seção
+subsunção, no sentido de [`../../README.md`](../../README.md), seção
 "Substituição e subsunção são coisas diferentes".
 
 Elas vêm primeiro porque mudam o que vale a pena aprovar nas tabelas abaixo.
@@ -70,9 +70,9 @@ flowchart TB
 ### C1 — O escalonador não sobrevive à etapa 4
 
 O ADR-0005 mantém, **por execução e em
-memória**, um contador de workers ativos (`../adr/0005-a-forma-do-escalonador.md:60-61`), e o zero desse contador é o
+memória**, um contador de workers ativos (`../../0005-a-forma-do-escalonador.md:60-61`), e o zero desse contador é o
 sinal que o oráculo aguarda antes de ler o banco (`:77-80`). A etapa 4 põe os
-workers em dois processos (`../plano-do-laboratorio.md:344`). O contador de um
+workers em dois processos (`../../../plano-do-laboratorio.md:344`). O contador de um
 processo não enxerga os workers do outro, e o sinal de término nunca chega.
 
 Nenhum documento do repositório registrava isso. Detalhe em `D-ARQ-03`.
@@ -80,25 +80,25 @@ Nenhum documento do repositório registrava isso. Detalhe em `D-ARQ-03`.
 ### C2 — O desenho mais pedagógico do laboratório não cabe na execução que o reporta
 
 O plano exige, para o E1, uma timeline mostrando "dois `READ version=N` antes de
-dois `WRITE version=N+1`" (`../plano-do-laboratorio.md:395-396`), e para o E5 os
+dois `WRITE version=N+1`" (`../../../plano-do-laboratorio.md:395-396`), e para o E5 os
 dois `SELECT sum` antes de qualquer `INSERT` (`:469-471`). Os dois são
 afirmações de **precedência entre workers**.
 
 A execução medida roda **sem agendamento**
-(`../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md:101`),
+(`../../0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md:101`),
 logo nenhum evento dela tem `restrito = verdadeiro`. Sem isso, o log **não
 garante ordem entre workers**, e a timeline "NÃO DEVE ser lida como prova de
 precedência"
-(`../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:80-83`). A
+(`../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:80-83`). A
 execução em que a ordem é real é o controle positivo — e ela "NÃO DEVE ser
-reportada como resultado do experimento" (`../adr/0004-...md:258`).
+reportada como resultado do experimento" (`../../0004-...md:258`).
 
 Detalhe em `D-UI-04` e `D-UI-05`.
 
 ### C3 — O oráculo exato é cego para a entrega duplicada
 
 `perdidas = commits − (value_final − value_inicial)`
-(`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:140`). Uma mensagem
+(`../../0002-o-dominio-minimo-e-os-dois-oraculos.md:140`). Uma mensagem
 reentregue faz o worker commitar de novo: `commits` sobe, `value_final` sobe, e a
 diferença fica zero. A outra métrica, `commits − sucessos`, mede o caso oposto —
 o commit sem sucesso reportado.
@@ -109,14 +109,14 @@ A etapa 5 estuda a duplicata de entrega e **não tem veredito**. Detalhe em
 ### C4 — O dual write está classificado em dois grupos diferentes
 
 O ADR-0002 chama o dual write de "o fenômeno do grupo B que a etapa 6 estuda"
-(`../adr/0002-...md:175`). O plano o classifica no grupo C, escrita parcial (`../plano-do-laboratorio.md:204-207`). O ADR está aceito e não é editável.
+(`../../0002-...md:175`). O plano o classifica no grupo C, escrita parcial (`../../../plano-do-laboratorio.md:204-207`). O ADR está aceito e não é editável.
 
 ### C5 — O log é persistido no fim, ou é perdível?
 
 O plano diz que no MVP o log "vive em memória e é persistido no fim da execução"
-(`../plano-do-laboratorio.md:589-592`). O ADR-0007, posterior e aceito, diz que a
+(`../../../plano-do-laboratorio.md:589-592`). O ADR-0007, posterior e aceito, diz que a
 persistência durável está fora de escopo até a etapa 6 e aceita que "o log é
-perdível" (`../adr/0007-...md:86-88`, `:152-153`).
+perdível" (`../../0007-...md:86-88`, `:152-153`).
 
 Duas telas propostas dependem de qual leitura vale. Detalhe em `D-DAT-10` e
 `D-UI-12` da numeração de `interface-web.md`.
@@ -126,10 +126,10 @@ Duas telas propostas dependem de qual leitura vale. Detalhe em `D-DAT-10` e
 **Esta contradição não existe.** A verificação está na seção seguinte, e o restante
 deste bloco registra o que se afirmava antes dela.
 
-"Nenhuma outra coluna entra no MVP" (`../adr/0002-...md:93`). O E3 roda
+"Nenhuma outra coluna entra no MVP" (`../../0002-...md:93`). O E3 roda
 `OPTIMISTIC`, que "exige `version` em `Resource`"
-(`../adr/0006-a-forma-da-estrategia-de-concorrencia.md:56-57`), e o E3 está na
-etapa 2 — dentro do MVP (`../plano-do-laboratorio.md:356-357`).
+(`../../0006-a-forma-da-estrategia-de-concorrencia.md:56-57`), e o E3 está na
+etapa 2 — dentro do MVP (`../../../plano-do-laboratorio.md:356-357`).
 
 O próprio ADR-0002 registra a consequência (`:465-466`), o que sugere que a
 frase descreve o esquema **inicial**. A leitura não está escrita, e o ADR-0006
@@ -144,19 +144,19 @@ preferência de ferramenta.
 retomada.
 
 `D-DOM-02` aposentou `Control Plane` e renomeou o plano medido para `system under test`
-([`../CONTEXT.md`](../CONTEXT.md), linha 193). O
-[ADR-0008](../adr/0008-os-dois-planos-em-processos-separados.md), aceito no **mesmo
+([`../../../CONTEXT.md`](../../../CONTEXT.md), linha 193). O
+[ADR-0008](../../0008-os-dois-planos-em-processos-separados.md), aceito no **mesmo
 dia**,
-fixa a região de pacote `dev.da0hn.lab.controlplane` (`../adr/0008-...md:70`).
+fixa a região de pacote `dev.da0hn.lab.controlplane` (`../../0008-...md:70`).
 
 As 18 ocorrências em prosa dentro de ADRs aceitos são caso resolvido: elas não mudam
 porque o corpo de um ADR aceito não é editado, e a tabela de
-[`../CONTEXT.md`](../CONTEXT.md), linhas 867 a 871, registra a escolha. **Um nome de
+[`../../../CONTEXT.md`](../../../CONTEXT.md), linhas 867 a 871, registra a escolha. **Um nome de
 pacote não é prosa.** Ele vira diretório, `import` e regra de ArchUnit, e o custo de
 trocá-lo cresce com a primeira linha de código.
 
 O glossário afirma que "o ADR-0008 fixou só o pacote raiz"
-(`../CONTEXT.md:883`). A linha 70 daquele ADR contradiz a afirmação: ela fixa quatro
+(`../../../CONTEXT.md:883`). A linha 70 daquele ADR contradiz a afirmação: ela fixa quatro
 regiões, e uma delas é `controlplane`. A pergunta em aberto do glossário alcança
 [`modulos-e-fronteiras.md`](modulos-e-fronteiras.md), linhas 86 a 89, que são
 **proposta**,
@@ -166,15 +166,15 @@ e não alcança a linha do ADR, que é **decisão aceita**.
 identificador conserva `controlplane` de propósito? A primeira exige um ADR novo, porque
 a tabela de regiões está dentro de um ADR aceito. A segunda cria um par permanente entre
 o nome do glossário e o nome do código, que a regra "um conceito tem **um** nome"
-(`../adr/README.md:32`) proíbe.
+(`../../README.md:32`) proíbe.
 
 ### O estado das sete contradições
 
 | ID   | Situação em 2026-08-04 | Onde                                                      |
 |------|------------------------|-----------------------------------------------------------|
-| `C1` | **fechada**            | `../adr/0008-...md:128-129`, como neutra                  |
+| `C1` | **fechada**            | `../../0008-...md:128-129`, como neutra                  |
 | `C2` | **decidida**           | controle positivo rotulado; ver abaixo                    |
-| `C3` | **adiada, com forma**  | vira arquivo em [`../questions/`](../questions/README.md) |
+| `C3` | **adiada, com forma**  | vira arquivo em [`../../../questions/`](../../../questions/README.md) |
 | `C4` | **decidida**           | ADR novo, junto de `C7`                                   |
 | `C5` | **fechada**            | log orientado a evento; 21 objeções decididas             |
 | `C6` | **refutada**           | seção seguinte deste arquivo                              |
@@ -182,7 +182,7 @@ o nome do glossário e o nome do código, que a regra "um conceito tem **um** no
 
 `C1` fechou por consequência, e não por escolha. O ADR-0008 manteve os workers num
 processo só — o do Lab Plane — e o contador de ativos do ADR-0005 sobrevive. A seção
-`### Neutras` daquele ADR registra o fato (`../adr/0008-...md:128-129`).
+`### Neutras` daquele ADR registra o fato (`../../0008-...md:128-129`).
 
 ## As escolhas do lote 1, tomadas em 2026-08-04
 
@@ -199,7 +199,7 @@ Descartadas, com o motivo técnico de cada uma:
 
 - **Detecção de exposição a posteriori.** O log medido seria varrido depois para achar
   pares `READ`/`WRITE` sobrepostos. Perde porque exige a métrica de exposição que
-  [a anomalia por frequência](../adr/fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira)
+  [a anomalia por frequência](../../fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira)
   declara não nomeada em documento nenhum — e decidir aqui seria decidir duas coisas.
 - **Emendar o plano e retirar o requisito.** Perde porque o cenário 25 é o único desenho
   que explica por que travar uma linha não ajuda no E5.
@@ -212,7 +212,7 @@ forma dele é decisão de `D-UI-05`, que continua aberta.
 
 A etapa 5 não tem gatilho disparado: o RabbitMQ não entrou, e `D-MSG-01` ainda não
 nomeou o gatilho que o libera. A contradição **NÃO DEVE** desaparecer com este índice.
-Ela vira arquivo próprio em [`../questions/`](../questions/README.md), com o enunciado
+Ela vira arquivo próprio em [`../../../questions/`](../../../questions/README.md), com o enunciado
 inteiro e destino nomeado em `D-MSG-02`.
 
 Descartadas: a contagem de comandos distintos aceitos, porque exige identidade de
@@ -224,7 +224,7 @@ qual etapa, e essa regra não tem dono.
 
 O ADR novo corrige a classificação do dual write e renomeia a região de pacote. Os dois
 ADRs alterados — ADR-0002 e ADR-0008 — recebem `Última atualização` e `Alterado por` no
-cabeçalho, no mesmo commit, pela regra de `../adr/README.md`, seção "O rastro de
+cabeçalho, no mesmo commit, pela regra de `../../README.md`, seção "O rastro de
 alterações, emendado em 2026-08-04".
 
 Descartadas: a errata no índice de ADRs, porque quem lê um ADR isolado continua lendo a
@@ -233,23 +233,23 @@ uma regra de processo aceita no dia anterior e faz o cabeçalho carregar dois ti
 coisa.
 
 **Custo aceito e nomeado.** Corrigir um rótulo de grupo não atende aos quatro critérios
-de ADR de `../adr/README.md:13-18`. A escolha foi consciente: o mesmo ADR carrega `C7`,
+de ADR de `../../README.md:13-18`. A escolha foi consciente: o mesmo ADR carrega `C7`,
 que atende, e separar as duas produziria um documento para uma linha.
 
 **Decidido em 2026-08-05: a região de pacote passa a
 ser `dev.da0hn.lab.sut`.** A sigla é
 padrão na literatura de teste, o segmento fica curto e dentro da convenção Java, e
-[`../CONTEXT.md`](../CONTEXT.md) já define o termo por extenso. Descartadas:
+[`../../../CONTEXT.md`](../../../CONTEXT.md) já define o termo por extenso. Descartadas:
 `systemundertest`, por criar o precedente de segmento composto de 15 caracteres que
 nenhuma convenção do repositório trata; `subject`, por criar um terceiro nome para o
 conceito que `D-DOM-02` acabou de unificar; e manter `controlplane`, por violar "um
-conceito tem **um** nome" (`../adr/README.md:32`) de forma visível em todo `import`.
+conceito tem **um** nome" (`../../README.md:32`) de forma visível em todo `import`.
 
 **O23 — a substituição parcial não existe no vocabulário do processo.** O ADR novo
 contradiz **uma** regra do ADR-0008 — o nome da região de pacote (`:70`) — e deixa a
 decisão principal daquele ADR intacta: os dois planos continuam em processos separados.
 
-O processo de `../adr/README.md` só oferece dois caminhos, e nenhum serve.
+O processo de `../../README.md` só oferece dois caminhos, e nenhum serve.
 
 | Caminho      | O que ele exige                                | Por que não serve                               |
 |--------------|------------------------------------------------|-------------------------------------------------|
@@ -257,7 +257,7 @@ O processo de `../adr/README.md` só oferece dois caminhos, e nenhum serve.
 | substituição | `Estado` do antigo recebe `Substituído por`    | derrubaria a decisão de dois processos, vigente |
 
 O precedente mais próximo é o ADR-0005, que acrescentou um sexto rótulo à tabela do
-ADR-0004 e o chamou de subsunção (`../adr/0005-...md:96-104`). Ali a regra antiga
+ADR-0004 e o chamou de subsunção (`../../0005-...md:96-104`). Ali a regra antiga
 continuava valendo, e aqui não continua.
 
 **Pergunta em
@@ -282,7 +282,7 @@ feita.
 
 A escolha não é nenhuma das três alternativas apresentadas. Ela é mais forte que as três,
 e **substitui** o ADR-0007 em dois pontos. Substituição, e não subsunção: as duas regras
-abaixo passam a ser contraditas, e `../adr/README.md`, seção "Substituição e subsunção
+abaixo passam a ser contraditas, e `../../README.md`, seção "Substituição e subsunção
 são coisas diferentes", exige que a contradição siga o caminho da substituição.
 
 | Regra do ADR-0007                                   | Origem     | O que a escolha faz                     |
@@ -314,7 +314,7 @@ decidido, e a diferença é observável na timeline.
 
 **O3 — "tempo real" e "não perturbar a medida"
 competem.** O log não escreve no banco sob
-teste porque isso adiciona contenção (`../plano-do-laboratorio.md:588-589`). A emissão
+teste porque isso adiciona contenção (`../../../plano-do-laboratorio.md:588-589`). A emissão
 assíncrona tira o trabalho do caminho quente, e é argumento **a favor** da escolha. Mas
 o E1 emite entre 900 e 1500 observações, e o custo de enfileirar cada uma continua dentro
 do Lab Plane. A fronteira de processo do ADR-0008 reduz o dano, e não o elimina.
@@ -329,13 +329,13 @@ foi escolhida.
 6.** `D-DAT-10`, o que do log
 entra no Git, e `D-DAT-06`, onde o log durável vive, tinham gatilho na etapa 6. A escolha
 os traz para o MVP. `D-DAT-06` já estava sem forma: ele recomenda instância separada, e o
-homelab terá uma instância só de PostgreSQL (`../adr/0008-...md:27-28`).
+homelab terá uma instância só de PostgreSQL (`../../0008-...md:27-28`).
 
 **O6 — onde o log durável vive continua sem resposta.** Gravá-lo na mesma instância do
-system under test contraria a regra de `../plano-do-laboratorio.md:588-589`. Schema
+system under test contraria a regra de `../../../plano-do-laboratorio.md:588-589`. Schema
 separado não isola contenção ([`modelo-de-dados.md`](modelo-de-dados.md), linhas 154 a
 158). Um destino fora do PostgreSQL não foi proposto por documento nenhum, e a regra
-"nenhuma tecnologia entra por estar disponível" ([`../../AGENTS.md`](../../AGENTS.md))
+"nenhuma tecnologia entra por estar disponível" ([`../../../../AGENTS.md`](../../../../AGENTS.md))
 exige nomear a limitação concreta antes de propor um.
 
 #### As quatro escolhas que fecham `C5`, tomadas em 2026-08-04
@@ -356,7 +356,7 @@ entendo que o melhor aqui seria um serviço responsável por fazer append e expo
 histórico e comparações entre históricos."
 
 **A topologia passa a ter três
-processos.** O ADR-0008 fixou dois (`../adr/0008-...md:44-47`) e não proíbe um terceiro. O diagrama daquele ADR deixa de
+processos.** O ADR-0008 fixou dois (`../../0008-...md:44-47`) e não proíbe um terceiro. O diagrama daquele ADR deixa de
 descrever a topologia inteira, sem que decisão nenhuma dele seja contradita.
 
 ```mermaid
@@ -399,7 +399,7 @@ de entrega, e a etapa 8 estuda DLQ e poison message. Com o log no mesmo RabbitMQ
 experimento que sature ou derrube o broker derruba o **instrumento que o observa**. A
 deduplicação de `C5.1` cobre a mensagem duplicada; ela não cobre a saturação nem a queda.
 É a confusão system under test / Lab Plane um nível abaixo, que
-[`../../AGENTS.md`](../../AGENTS.md) já registra sem solução para o caso do orquestrador.
+[`../../../../AGENTS.md`](../../../../AGENTS.md) já registra sem solução para o caso do orquestrador.
 
 **O8 — a contrapressão de `C5.3` passa a atravessar a rede.** "O consumidor durável
 bloqueia" era barato com um buffer em memória. Com o broker no meio, o bloqueio chega ao
@@ -408,12 +408,12 @@ serviço de histórico lento passa a atrasar a fronteira entre passos do experim
 
 **O9 — o `deploy/` nasce com
 três `Deployment`.** `D-ARQ-15` foi escrita sob a hipótese de
-um; o ADR-0008 a levou para dois (`../adr/0008-...md:123-124`); esta escolha leva para
+um; o ADR-0008 a levou para dois (`../../0008-...md:123-124`); esta escolha leva para
 três, mais o RabbitMQ. A forma do `deploy/` no primeiro commit muda pela terceira vez, e
 `D-ARQ-15` continua aberta.
 
 **O10 — a regra de tecnologia exige a limitação concreta, e ela precisa ser honesta.**
-[`../../AGENTS.md`](../../AGENTS.md) exige nomear qual limitação da stack atual a
+[`../../../../AGENTS.md`](../../../../AGENTS.md) exige nomear qual limitação da stack atual a
 tecnologia resolve. Um SSE direto do Lab Plane atenderia o tempo real **sem broker**. O
 que o broker acrescenta é o desacoplamento entre quem emite e o serviço de histórico, mais
 a entrega ao segundo consumidor sem o Lab Plane conhecê-lo. Esse é o argumento, e ele
@@ -422,10 +422,10 @@ NÃO DEVE ser escrito como se o tempo real sozinho o exigisse.
 **Pergunta em
 aberto.** O log usa o mesmo RabbitMQ dos experimentos, um vhost separado, ou
 um broker separado? A escolha decide se `O7` é mitigada ou aceita. O homelab já tem
-RabbitMQ (`../plano-do-laboratorio.md:848`), e nenhum documento propõe um segundo.
+RabbitMQ (`../../../plano-do-laboratorio.md:848`), e nenhum documento propõe um segundo.
 
 **Pergunta em aberto.** O serviço de histórico usa a mesma instância de PostgreSQL do
-system under test? Ela é uma só (`../adr/0008-...md:27-28`), e schema ou banco separado
+system under test? Ela é uma só (`../../0008-...md:27-28`), e schema ou banco separado
 não isola contenção ([`modelo-de-dados.md`](modelo-de-dados.md), linhas 154 a 158). A
 escrita é assíncrona e fora do caminho quente, o que reduz o dano sem eliminá-lo.
 
@@ -448,7 +448,7 @@ origem no instrumento, e a plataforma não distingue.
 **`O9` fecha sem plano novo.** O serviço de histórico **é** o Lab Plane, num segundo
 processo. O pacote fica sob `dev.da0hn.lab.labplane`, a regra do ADR-0008 vale sem emenda
 — o system under test não chama o Lab Plane, em processo nenhum — e nenhuma região de
-pacote nova entra. A guarda de [`Q-0002-1`](../questions/Q-0002-1.md) continua exprimível
+pacote nova entra. A guarda de [`Q-0002-1`](../../../questions/Q-0002-1.md) continua exprimível
 pelo padrão de pacote que o ADR-0008 já fixou.
 
 **`O8` fecha `D-MSG-06` em parte.** A confirmação de publicador entra **ligada**, e a
@@ -491,8 +491,8 @@ aplicação, com permissão restrita ao próprio schema. A objeção deixa de va
 
 **O11 — o oráculo do Lab Plane precisa ler o schema do system under test.** O ADR-0008
 fixa essa leitura no diagrama da decisão: `RUN -->|" SELECT após a quiescência "| PG`
-(`../adr/0008-...md:60`). O ADR-0002 exige a mesma leitura para `value_inicial` e
-`value_final` (`../adr/0002-...md:143-145`). A regra "leitura apenas no schema da
+(`../../0008-...md:60`). O ADR-0002 exige a mesma leitura para `value_inicial` e
+`value_final` (`../../0002-...md:143-145`). A regra "leitura apenas no schema da
 aplicação" proíbe exatamente isso, salvo exceção declarada. A exceção é
 **obrigatória**, e
 ela não está escrita.
@@ -507,7 +507,7 @@ flowchart LR
 ```
 
 **O12 — "policiada durante o planejamento e implementação" é guarda humana.**
-[`Q-0002-1`](../questions/Q-0002-1.md) existe porque três regras deste repositório são
+[`Q-0002-1`](../../../questions/Q-0002-1.md) existe porque três regras deste repositório são
 texto e não regra executável, e o custo registrado ali é que uma violação passa em
 silêncio e aparece meses depois. Esta política é a quarta regra textual. Se ela é
 verificável — por permissão do próprio PostgreSQL, que recusa o acesso, e não por revisão
@@ -519,7 +519,7 @@ Decidido em 2026-08-04. As permissões são versionadas na migração, e o Postg
 a consulta proibida. O policiamento no planejamento e na implementação continua, como
 segunda camada.
 
-**Isto resolve, para esta regra, o problema que [`Q-0002-1`](../questions/Q-0002-1.md)
+**Isto resolve, para esta regra, o problema que [`Q-0002-1`](../../../questions/Q-0002-1.md)
 levanta.** Aquela questão registra que três regras deste repositório são texto e não regra
 executável, e que uma violação passa em silêncio e aparece meses depois. Esta política não
 entra na mesma condição: `GRANT` e `REVOKE` fazem a violação falhar no instante da
@@ -549,24 +549,24 @@ responde, e a resposta é normativa.
 
 **O ADR-0002 tem uma seção com esse
 título:** "O oráculo lê o banco, e NÃO DEVE ler o log
-de observações" (`../adr/0002-...md:218-241`). O diagrama daquela seção marca a aresta do
+de observações" (`../../0002-...md:218-241`). O diagrama daquela seção marca a aresta do
 log para o oráculo como **proibida**, e a aresta do oráculo para as tabelas como a única
 fonte do estado final.
 
 Três razões técnicas sustentam a regra, e as três estão dentro do ADR.
 
 - **O oráculo é independente do runtime, por trade-off declarado**
-  (`../adr/0002-...md:493-495`). Se o sistema medido reportasse `value_final`, um defeito
+  (`../../0002-...md:493-495`). Se o sistema medido reportasse `value_final`, um defeito
   nele produziria um oráculo que concorda com o defeito. É o erro que o laboratório existe
   para detectar.
-- **O oráculo tem transação própria** (`../adr/0002-...md:474-476`): "O `SELECT sum` do
+- **O oráculo tem transação própria** (`../../0002-...md:474-476`): "O `SELECT sum` do
   oráculo roda numa transação própria do Lab Plane, depois da execução. O nível de
   isolamento dessa transação não afeta o resultado sobre um banco quiescente." Uma leitura
   feita pelo system under test herdaria o nível de isolamento que o E3 e o E5 **variam
   de
   propósito**, e um snapshot antigo viraria veredito.
 - **O oráculo de capacidade não lê estado; ele calcula um agregado.**
-  `SELECT sum(amount) WHERE resource_id = r` (`../adr/0002-...md:208`). Não existe valor
+  `SELECT sum(amount) WHERE resource_id = r` (`../../0002-...md:208`). Não existe valor
   materializado que o system under test pudesse reportar.
 
 **A exceção é obrigatória.** Negá-la exigiria um ADR que substituísse o ADR-0002, e a
@@ -589,7 +589,7 @@ flowchart TB
 
 **O gatilho como evento é compatível, e melhora o desenho.** O ADR-0005 já fixa que o
 contador de ativos, ao chegar a zero, sinaliza "execução terminada", e que é esse sinal que
-o oráculo aguarda antes de ler o banco (`../adr/0005-a-forma-do-escalonador.md:77-80`).
+o oráculo aguarda antes de ler o banco (`../../0005-a-forma-do-escalonador.md:77-80`).
 `C5` acabou de tornar o log orientado a evento; transformar esse sinal num evento do mesmo
 canal elimina um mecanismo de sincronização in-process que a fronteira de rede do ADR-0008
 já tornava frágil. **O `SELECT` continua existindo**, e a permissão de `O11` continua
@@ -598,7 +598,7 @@ necessária.
 **O dado como evento contradiz um ADR
 aceito.** O ADR-0002 é explícito: "Os dois oráculos
 consultam o PostgreSQL. Nenhum dos dois deriva o estado final do log de observações do
-runtime" (`../adr/0002-...md:219-220`). Um evento que carregue `value_final` é o estado
+runtime" (`../../0002-...md:219-220`). Um evento que carregue `value_final` é o estado
 final derivado de um stream, que é o caso proibido.
 
 Três consequências técnicas seguem, além da regra:
@@ -608,7 +608,7 @@ Três consequências técnicas seguem, além da regra:
   componente, ele precisa de `SELECT` no schema do system under test — a permissão de `O11`
   muda de dono, e não desaparece.
 - **O oráculo de capacidade não tem estado para transportar.** Ele calcula
-  `SELECT sum(amount)` (`../adr/0002-...md:208`). Reconstruir essa soma a partir de eventos
+  `SELECT sum(amount)` (`../../0002-...md:208`). Reconstruir essa soma a partir de eventos
   de `INSERT` é derivar o estado final de um stream, que é o caso proibido.
 - **CDC não é
   saída.** `D-MSG-10` já decidiu que o Debezium não entra, porque o CDC apaga
@@ -642,7 +642,7 @@ existir. Aquela objeção cai.
   test**. Pedir
   a essa camada que reporte o resultado é pedir ao componente sob suspeita que produza a
   prova. O ADR-0002 registra o oposto como benefício aceito: "o oráculo é independente do
-  runtime" (`../adr/0002-...md:493-495`).
+  runtime" (`../../0002-...md:493-495`).
 - **Transação nova não é sessão
   nova.** Uma leitura consolidada emitida de dentro do system
   under test PODE atravessar cache de primeiro ou de segundo nível do mapeador e devolver
@@ -654,7 +654,7 @@ custo.** O que se evita é um `GRANT SELECT` em duas tabelas. O que se paga
 é o trade-off que o ADR-0002 declara ter aceito. As duas grandezas não são comparáveis.
 
 **Esta contraproposta exige um ADR que substitua o ADR-0002.** Ela contradiz
-`../adr/0002-...md:219-220` de forma direta, e contradição é substituição, e não subsunção (`../adr/README.md`, seção "Substituição e subsunção são coisas diferentes"). O ADR-0002
+`../../0002-...md:219-220` de forma direta, e contradição é substituição, e não subsunção (`../../README.md`, seção "Substituição e subsunção são coisas diferentes"). O ADR-0002
 receberia `Substituído por ADR-NNNN`, e os dois oráculos seriam redefinidos.
 
 #### `O11` fecha: as duas fontes convivem, e a divergência vira sinal
@@ -736,7 +736,7 @@ mantém o ponto de injeção.
 **`D-DAT-11`
 fecha.** A linha oferecia instância dedicada ou instância compartilhada com o
 `wal_level` registrado, e recomendava a dedicada. A escolha é a **segunda**, porque o
-homelab terá uma instância só (`../adr/0008-...md:27-28`).
+homelab terá uma instância só (`../../0008-...md:27-28`).
 
 **As três fontes, e o que cada uma pode dizer.**
 
@@ -747,7 +747,7 @@ homelab terá uma instância só (`../adr/0008-...md:27-28`).
 | CDC sobre o WAL                | sim, e mais que o `SELECT`  | não; serve de conferência       |
 
 **O CDC NÃO DEVE virar fonte do veredito.** O oráculo de capacidade calcula
-`SELECT sum(amount)` (`../adr/0002-...md:208`). Reconstruir essa soma a partir de eventos
+`SELECT sum(amount)` (`../../0002-...md:208`). Reconstruir essa soma a partir de eventos
 de `INSERT` do CDC é derivar o estado final de um stream, que o ADR-0002 proíbe (`:219-220`). O CDC confere; ele não decide.
 
 **Quatro consequências novas, e nenhuma tem decisão.**
@@ -768,7 +768,7 @@ linha de base apodrece e o relatório atribui a degradação ao experimento.
 
 **O17 — o Debezium entra na stack sem linha na matriz de integrações.** Ele é componente
 novo, com `Deployment` próprio no `deploy/`, e `D-ARQ-15` muda pela quarta vez. Nenhuma
-linha de [`integrations.md`](integrations.md) o descreve.
+linha de [`../../../architecture/integrations.md`](../../../architecture/integrations.md) o descreve.
 
 **O18 — todo relatório passa a carregar um campo
 novo.** O `wal_level` vigente vira parte
@@ -782,7 +782,7 @@ Decidido em 2026-08-05. Uma divergência entre as fontes invalida a execução e
 separado dos seis existentes.
 
 O critério que sustenta a separação é o mesmo que o ADR-0005 usou para distinguir
-`agendamento não cumprido` de `exposição insuficiente` (`../adr/0005-...md:106-107`): um
+`agendamento não cumprido` de `exposição insuficiente` (`../../0005-...md:106-107`): um
 rótulo fala do **fenômeno**, o outro fala do
 **instrumento**. Uma divergência entre fontes
 diz que o instrumento e o medido discordam sobre o fato básico, e nenhum veredito sobre o
@@ -791,7 +791,7 @@ fenômeno é confiável nessa condição.
 **Pergunta em
 aberto.** Qual é o nome do rótulo, e ele entra na tabela do ADR-0004 ou numa
 tabela nova? O ADR-0004 está aceito, e o ADR-0005 já acrescentou um sexto valor àquela
-classificação por subsunção (`../adr/0005-...md:96-104`). O caminho existe; a escolha não
+classificação por subsunção (`../../0005-...md:96-104`). O caminho existe; a escolha não
 foi feita.
 
 #### Decidido em 2026-08-05: o oráculo deixa de consultar o banco
@@ -814,15 +814,15 @@ objetivo da contraproposta, e ele foi alcançado.
 
 **O argumento sobre a camada do banco tem mérito, e ele não estava escrito.** O ADR-0002
 proíbe derivar o estado final "do log de observações do **runtime**"
-(`../adr/0002-...md:219-220`). O CDC não é esse log: ele é o WAL do PostgreSQL, e o WAL
+(`../../0002-...md:219-220`). O CDC não é esse log: ele é o WAL do PostgreSQL, e o WAL
 registra o que o cluster aplicou, sem passar por código do system under test. O trade-off
 que o ADR-0002 declara — "o oráculo é independente do runtime" (`:493-495`) — é
 **preservado** por esta escolha, e não revogado.
 
 **Ainda assim, é substituição, e não
 subsunção.** O diagrama da seção "O oráculo lê o banco"
-mostra `OR -->|" SELECT após a quiescência "| T` como a única aresta do oráculo (`../adr/0002-...md:230-241`). Remover essa aresta contradiz o desenho, e contradição segue
-o caminho da substituição (`../adr/README.md`, seção "Substituição e subsunção são coisas
+mostra `OR -->|" SELECT após a quiescência "| T` como a única aresta do oráculo (`../../0002-...md:230-241`). Remover essa aresta contradiz o desenho, e contradição segue
+o caminho da substituição (`../../README.md`, seção "Substituição e subsunção são coisas
 diferentes"). O ADR-0002 recebe `Substituído por ADR-NNNN`.
 
 **`O15` fecha por consequência.** Com duas fontes, a regra é a que a pessoa declarou:
@@ -878,7 +878,7 @@ execução correta, e não degradação silenciosa.
 Decidido em 2026-08-05. O nome descreve o fato observado, sem interpretar de que lado está
 o defeito. Ele entra na tabela de classificação do ADR-0004 por
 **subsunção**, pelo mesmo
-caminho que o ADR-0005 usou para acrescentar o sexto valor (`../adr/0005-...md:96-104`): o
+caminho que o ADR-0005 usou para acrescentar o sexto valor (`../../0005-...md:96-104`): o
 ADR-0004 permanece `Aceito`, os cinco valores dele continuam válidos para o caso que
 enxergavam, e o rótulo novo cobre o caso que nenhum previa.
 
@@ -887,7 +887,7 @@ fala do instrumento. `fontes divergentes` NÃO DEVE ser lido como resultado do e
 
 #### `O17` e `O18` são execução, e ficam registradas como tarefa
 
-**`O17`.** [`integrations.md`](integrations.md) ganha as linhas do RabbitMQ, do Debezium e
+**`O17`.** [`../../../architecture/integrations.md`](../../../architecture/integrations.md) ganha as linhas do RabbitMQ, do Debezium e
 do serviço de histórico, como **fato** a partir do commit que os criar, e como
 **hipótese** até lá. `D-ARQ-15` muda pela quarta vez, e `deploy/` passa a declarar os dois
 artefatos do ADR-0008 mais o serviço de histórico.
@@ -985,7 +985,7 @@ comparar as duas fontes. A espera tem limite declarado por execução.
 **O limite é exigência, e não
 precaução.** O ADR-0005 fixa a terminação como critério: "Uma
 restrição sem antecedente não pode travar a execução para sempre"
-(`../adr/0005-...md:53`). Um consumidor de CDC morto na etapa 6 é exatamente esse caso.
+(`../../0005-...md:53`). Um consumidor de CDC morto na etapa 6 é exatamente esse caso.
 
 **O estouro do limite recebe rótulo próprio**, distinto de `fontes divergentes`. Os dois
 falam do instrumento, e dizem coisas diferentes: um diz que o CDC não alcançou o commit
@@ -1027,9 +1027,9 @@ foram reconferidas por leitura direta, e as duas procedem.
 **C6 não é contradição.** O ADR-0002 delega a coluna `version` de forma explícita:
 "O esquema NÃO DEVE carregar uma coluna `version`. Quem a acrescenta é o ADR de
 estratégias de concorrência, no mesmo commit em que decidir a política que a lê"
-(`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:95-96`). O ADR-0006 aceita a
+(`../../0002-o-dominio-minimo-e-os-dois-oraculos.md:95-96`). O ADR-0006 aceita a
 delegação e nomeia a condição: "quando a arquitetura mínima existir"
-(`../adr/0006-a-forma-da-estrategia-de-concorrencia.md:56-58`). Existe delegação
+(`../../0006-a-forma-da-estrategia-de-concorrencia.md:56-58`). Existe delegação
 cumprida. O que resta de C6 é a ferramenta de migração, que já é `D-DAT-04`.
 
 **A contagem é 64, e não 66.** Os identificadores únicos deste arquivo somam 64, e
@@ -1042,13 +1042,13 @@ decisões sem estado.
 Levantado em 2026-08-04, no turno em que a resolução do arquivo foi pedida: nenhuma
 tabela deste índice tinha coluna de estado, e nenhuma seção dizia onde uma aprovação
 era escrita. Uma decisão aprovada apenas na conversa desaparece no próximo compact,
-que é o que [`../AGENTS.md`](../AGENTS.md) proíbe na primeira regra.
+que é o que [`../../../AGENTS.md`](../../../AGENTS.md) proíbe na primeira regra.
 
 A lacuna foi fechada no mesmo dia. Uma linha desta fila fecha quando a pessoa
 escolhe, e a escolha nomeia o artefato que a registra — ADR quando atender aos
-quatro critérios de [`../adr/README.md`](../adr/README.md), artefato de
-[`../features/`](../features/README.md) quando não atender. O processo está em
-[`../specification-process.md`](../specification-process.md), seção "A decisão vem
+quatro critérios de [`../../README.md`](../../README.md), artefato de
+[`../../../features/`](../../../features/README.md) quando não atender. O processo está em
+[`../../../specification-process.md`](../../../specification-process.md), seção "A decisão vem
 antes do artefato".
 
 ```mermaid
@@ -1062,7 +1062,7 @@ flowchart LR
 ```
 
 **Três linhas já fecharam: `D-ARQ-05`, `D-ARQ-06` e `D-ARQ-01`**, todas pelo
-[ADR-0008](../adr/0008-os-dois-planos-em-processos-separados.md), aceito em 2026-08-04.
+[ADR-0008](../../0008-os-dois-planos-em-processos-separados.md), aceito em 2026-08-04.
 As demais não têm artefato definido. A tabela abaixo agrupa as 64 linhas por assunto. O
 agrupamento não é o documento que cada assunto vai gerar: esse só existe depois da
 escolha.
@@ -1075,17 +1075,17 @@ escolha.
 | A guarda executável das três regras            | `D-ARQ-07`, `D-ARQ-08`, `D-ARQ-09`, `D-DOM-15`                                                  |
 | O esquema e a primeira migração                | `D-DAT-01` a `D-DAT-04`, `D-DAT-08`, `D-DAT-09`, `D-DOM-07`, `D-DOM-08`, `D-DOM-13`, `D-DOM-14` |
 | Entrega contínua no homelab                    | `D-ARQ-12`, `D-ARQ-14`, `D-ARQ-15`, `D-ARQ-10`, `D-ARQ-11`, `D-ARQ-13`                          |
-| Vocabulário                                    | Bloco 4, com destino em [`../CONTEXT.md`](../CONTEXT.md)                                        |
+| Vocabulário                                    | Bloco 4, com destino em [`../../../CONTEXT.md`](../../../CONTEXT.md)                                        |
 | Mensageria, sem gatilho hoje                   | Bloco 6                                                                                         |
 | Interface web                                  | `D-UI-02` a `D-UI-13`, menos as que R4 move para o Bloco 3                                      |
 
 Os três primeiros assuntos da coluna esquerda vinham colados na posição 10 da fila de
-[`../adr/README.md`](../adr/README.md), que os descreve como "um módulo, dois planos na
-mesma JVM, separação imposta por teste" (`../adr/README.md:273`). São três assuntos, e
+[`../../README.md`](../../README.md), que os descreve como "um módulo, dois planos na
+mesma JVM, separação imposta por teste" (`../../README.md:273`). São três assuntos, e
 o checklist daquela página (`:66`) pergunta, antes de apresentar um ADR: "existe **uma**
 decisão só?". O esquema, em particular, não tem linha própria em fila nenhuma.
 
-**Pergunta em aberto.** Esta fila e a de [`../adr/README.md`](../adr/README.md) são duas
+**Pergunta em aberto.** Esta fila e a de [`../../README.md`](../../README.md) são duas
 listas do mesmo tipo de coisa, e não foram fundidas. Enquanto forem duas, uma decisão
 PODE ser tomada numa e reaberta na outra.
 
@@ -1104,7 +1104,7 @@ leituras com custos muito diferentes.
 
 **O argumento a favor da instrução é real e não estava escrito.** Na mesma JVM, os dois
 planos compartilham destino: uma pausa de GC, um pool esgotado ou um vazamento no
-instrumento perturba o sistema medido. O [`../AGENTS.md`](../AGENTS.md) reconhece a
+instrumento perturba o sistema medido. O [`../../../AGENTS.md`](../../../AGENTS.md) reconhece a
 convivência na mesma JVM como compromisso — "o que torna a separação por teste
 executável mais necessária, não menos" — e não como virtude.
 
@@ -1115,7 +1115,7 @@ rede, e essa latência entra na medida de todo experimento. Além disso, o plano
 nenhum segundo processo até a etapa 4, e antecipar a decomposição é `D-ARQ-01`.
 
 **Decisão tomada em 2026-08-04: processos separados**, desde o dia zero. Ela está
-registrada no [ADR-0008](../adr/0008-os-dois-planos-em-processos-separados.md), `Aceito`,
+registrada no [ADR-0008](../../0008-os-dois-planos-em-processos-separados.md), `Aceito`,
 que fecha `D-ARQ-05`, `D-ARQ-06` e, por consequência, `D-ARQ-01`. O usuário declarou
 também uma restrição de infraestrutura: **o homelab terá uma instância de PostgreSQL**,
 e a escolha entre schema separado e dois bancos na mesma instância ainda não foi feita.
@@ -1167,7 +1167,7 @@ separação por processo a contradiz sem que ninguém tenha decidido a forma nov
 
 ## Bloco 0 — sem estas seis, nenhuma linha de código é escrita
 
-São as que a fila de [`../adr/README.md`](../adr/README.md) enfileira nas
+São as que a fila de [`../../README.md`](../../README.md) enfileira nas
 posições 10 e 11, e a exigência de nascer entregando as torna as primeiras.
 
 | ID         | Decisão                                  | Recomendação da proposta                          | Onde                                                 |
@@ -1180,7 +1180,7 @@ posições 10 e 11, e a exigência de nascer entregando as torna as primeiras.
 | `D-DAT-04` | ferramenta de migração                   | Flyway com SQL versionado                         | [`modelo-de-dados.md`](modelo-de-dados.md)           |
 
 **`D-ARQ-05` e `D-ARQ-06` estão fechadas** pelo
-[ADR-0008](../adr/0008-os-dois-planos-em-processos-separados.md), `Aceito` em
+[ADR-0008](../../0008-os-dois-planos-em-processos-separados.md), `Aceito` em
 2026-08-04. A escolha não foi a recomendação da linha: o mecanismo de módulo é a
 **fronteira de processo**, e não Maven multi-módulo. O pacote raiz `dev.da0hn.lab` com a
 região no primeiro segmento foi aceito como recomendado, com os identificadores
@@ -1244,21 +1244,21 @@ estão em [`modelo-de-dados.md`](modelo-de-dados.md), seção 7, `D-DAT-05`, `P-
 | `D-UI-12`  | compatibilidade e enumeração do veredito | enumeração aberta, cliente falha fechado            |
 
 `D-ARQ-07` e `D-ARQ-08` são a resposta proposta a
-[`Q-0002-1`](../questions/Q-0002-1.md), que pede a guarda executável das três
+[`Q-0002-1`](../../../questions/Q-0002-1.md), que pede a guarda executável das três
 regras hoje textuais. `D-ARQ-09` responde
-[`Q-0004-2`](../questions/Q-0004-2.md).
+[`Q-0004-2`](../../../questions/Q-0004-2.md).
 
 `D-DOM-07` e `D-DOM-08` carregam a descoberta conceitual da rodada: **o
 agregado clássico do DDD é antipadrão aqui.** Um `Resource` que impusesse
 `Σ amount ≤ capacity` na fronteira transacional tornaria o E5 irreproduzível,
 pelo mesmo argumento com que o ADR-0002 descartou a constraint no banco —
-confundir observar com impedir (`../adr/0002-...md:566-574`).
+confundir observar com impedir (`../../0002-...md:566-574`).
 
 ## Bloco 3 — pertencem a um ADR já enfileirado, e a recomendação é não decidir agora
 
 | ID         | Decisão                                  | Destino na fila de ADRs                                       |
 |------------|------------------------------------------|---------------------------------------------------------------|
-| `D-DOM-06` | o que `N` conta                          | Experiment, posição 8; [`Q-0003-8`](../questions/Q-0003-8.md) |
+| `D-DOM-06` | o que `N` conta                          | Experiment, posição 8; [`Q-0003-8`](../../../questions/Q-0003-8.md) |
 | `D-DOM-09` | se `Experimento` é raiz das execuções    | Experiment, posição 8                                         |
 | `D-DAT-07` | onde vive a definição de experimento     | Experiment, posição 8                                         |
 | `D-UI-01`  | fonte de verdade da definição            | Experiment, posição 8                                         |
@@ -1273,7 +1273,7 @@ provável de esta rodada causar dano. A recomendação de cada uma é adiar.
 ## Bloco 4 — vocabulário, decidível a qualquer momento e barato
 
 **As quatro estão fechadas desde 2026-08-04.** As escolhas e as consequências de cada
-uma vivem em [`../CONTEXT.md`](../CONTEXT.md), seção "As seis decisões de vocabulário".
+uma vivem em [`../../../CONTEXT.md`](../../../CONTEXT.md), seção "As seis decisões de vocabulário".
 
 | ID         | Decisão                                             | Escolha                                                 | Seguiu a recomendação? |
 |------------|-----------------------------------------------------|---------------------------------------------------------|------------------------|
@@ -1287,14 +1287,14 @@ uma vivem em [`../CONTEXT.md`](../CONTEXT.md), seção "As seis decisões de voc
 `restrição de precedência` ou `espera`, e o mérito de `D-MSG-11` não mudou.
 
 `D-DOM-02` foi decidida contra a recomendação, e abriu duas perguntas que a alternativa
-A não tratava. As duas estão em [`../CONTEXT.md`](../CONTEXT.md), na seção `D-DOM-02`:
+A não tratava. As duas estão em [`../../../CONTEXT.md`](../../../CONTEXT.md), na seção `D-DOM-02`:
 se `Lab Plane` acompanha a renomeação, e se ela alcança as 95 ocorrências em texto
 editável ou só o glossário.
 
 **Pergunta em aberto.** Qual artefato registra estas quatro? O processo de
-[`../adr/README.md`](../adr/README.md) prevê ADR ou artefato de
-[`../features/`](../features/README.md), e vocabulário não é nem um nem outro — ele vive
-no glossário, por instrução de [`../AGENTS.md`](../AGENTS.md), seção `## Glossário de
+[`../../README.md`](../../README.md) prevê ADR ou artefato de
+[`../../../features/`](../../../features/README.md), e vocabulário não é nem um nem outro — ele vive
+no glossário, por instrução de [`../../../AGENTS.md`](../../../AGENTS.md), seção `## Glossário de
 domínio`. `D-DOM-02` é a que mais puxa para ADR: ela renomeia um termo presente em
 quatro ADRs aceitos, e o rastro de alterações adotado em 2026-08-04 obrigaria a carimbar
 os quatro.
@@ -1310,7 +1310,7 @@ existir código. Nenhuma das quatro pode ser resolvida editando um ADR.
 Dois fatos levantados em 2026-08-04, antes de qualquer escolha.
 
 **O glossário já aplicou a recomendação de `D-DOM-03` sem a decisão existir.**
-[`../CONTEXT.md`](../CONTEXT.md), linha 355, marca `barrier` como `aposentado`, e a
+[`../../../CONTEXT.md`](../../../CONTEXT.md), linha 355, marca `barrier` como `aposentado`, e a
 tabela de estados daquele arquivo (linha 49) reserva esse rótulo para o que "existiu em
 ADR aceito e foi retirado da linguagem por outro ADR". A recomendação virou texto antes
 de virar escolha. Se a decisão for outra, aquela entrada muda junto, e o registro disso
@@ -1343,7 +1343,7 @@ artefato e decompor quando o experimento `JVM_LOCK` ficar vermelho com duas
 instâncias. Aprovar o contrário é legítimo e tem custo nomeado no documento.
 
 **`D-ARQ-01` está fechada, contra a recomendação**, pelo
-[ADR-0008](../adr/0008-os-dois-planos-em-processos-separados.md). A decomposição deixou
+[ADR-0008](../../0008-os-dois-planos-em-processos-separados.md). A decomposição deixou
 de esperar o gatilho da etapa 4: os dois planos rodam em processos separados desde o dia
 zero. `D-ARQ-03` continua aberta e muda de sentido — ela deixa de perguntar onde o Lab
 Plane vive quando existirem dois processos e passa a perguntar o que muda quando o
@@ -1375,7 +1375,7 @@ DLX e limite de entregas até a etapa 8, porque com eles ligados os cenários 18
 `D-MSG-10` é a resposta à instrução sobre Debezium. O argumento decisivo não é de
 custo: o CDC **apaga os pontos `BEFORE_PUBLISH` e `AFTER_PUBLISH` do ADR-0001**,
 porque sem passo `PUBLISH` na operação a etapa 6 perde o gatilho que o plano lhe
-dá (`../plano-do-laboratorio.md:609`). Os dois gatilhos que criariam o CDC estão
+dá (`../../../plano-do-laboratorio.md:609`). Os dois gatilhos que criariam o CDC estão
 registrados em [`mensageria.md`](mensageria.md).
 
 ---
@@ -1384,13 +1384,13 @@ registrados em [`mensageria.md`](mensageria.md).
 
 Instrução do usuário, registrada no turno em que a resolução desta fila foi retomada:
 **quando as pendências fecharem, `docs/architecture/` é pulverizada** em
-[`../features/`](../features/README.md), [`../questions/`](../questions/README.md),
-[`../contracts/`](../contracts/README.md), `../diagrams/` e
-[`../adr/`](../adr/README.md).
+[`../../../features/`](../../../features/README.md), [`../../../questions/`](../../../questions/README.md),
+[`../../../contracts/`](../../../contracts/README.md), `../../../diagrams/` e
+[`../../`](../../README.md).
 
 A instrução tem motivo verificável. Esta pasta é a única de `docs/` cujo conteúdo não é
-nenhum dos artefatos que [`../specification-process.md`](../specification-process.md)
-prevê, e a árvore daquele documento (`../specification-process.md:224-225`) declara que
+nenhum dos artefatos que [`../../../specification-process.md`](../../../specification-process.md)
+prevê, e a árvore daquele documento (`../../../specification-process.md:224-225`) declara que
 `architecture/` contém a matriz de integrações — e nada mais. Os outros dez arquivos
 existem fora do processo escrito.
 
@@ -1411,17 +1411,17 @@ flowchart LR
 
 ### Lacuna 1 — um ADR aceito cita esta pasta por arquivo e linha
 
-[`../adr/0008-os-dois-planos-em-processos-separados.md`](../adr/0008-os-dois-planos-em-processos-separados.md)
+[`../../0008-os-dois-planos-em-processos-separados.md`](../../0008-os-dois-planos-em-processos-separados.md)
 cita [`decisoes-pendentes.md`](decisoes-pendentes.md) duas vezes: na linha 9, por link, e
-na linha 112, por **número de linha** (`../architecture/decisoes-pendentes.md:254-255`).
+na linha 112, por **número de linha** (`../../../architecture/decisoes-pendentes.md:254-255`).
 
-O corpo de um ADR aceito NÃO DEVE ser editado ([`../AGENTS.md`](../AGENTS.md), seção "O
+O corpo de um ADR aceito NÃO DEVE ser editado ([`../../../AGENTS.md`](../../../AGENTS.md), seção "O
 que nunca é editado"). Apagar ou mover este arquivo cria duas referências mortas dentro
 de um documento que ninguém pode corrigir.
 
 Duas saídas existem, e nenhuma foi escolhida: deixar um arquivo neste caminho apontando
 para o destino novo, ou aceitar as referências mortas e registrar o motivo. A regra do
-rastro de alterações (`../adr/README.md`, seção "O rastro de alterações") não cobre o
+rastro de alterações (`../../README.md`, seção "O rastro de alterações") não cobre o
 caso — ela trata de decisão substituída, e não de caminho movido.
 
 **Pergunta em
@@ -1432,17 +1432,17 @@ um ADR aceito cite?
 
 **A citação do ADR-0008 quebrou antes de qualquer pulverização.** O trabalho deste turno
 inseriu cerca de 800 linhas neste arquivo. A citação `decisoes-pendentes.md:254-255` de
-`../adr/0008-...md:112` apontava para o parágrafo sobre as 900 a 1500 observações do E1;
+`../../0008-...md:112` apontava para o parágrafo sobre as 900 a 1500 observações do E1;
 esse parágrafo está hoje na linha 1100, e as linhas 254 e 255 trazem uma tabela sobre
 subsunção.
 
 **Nenhuma correção é
-possível.** O corpo de um ADR aceito NÃO DEVE ser editado ([`../AGENTS.md`](../AGENTS.md), seção "O que nunca é editado"). A citação permanece
+possível.** O corpo de um ADR aceito NÃO DEVE ser editado ([`../../../AGENTS.md`](../../../AGENTS.md), seção "O que nunca é editado"). A citação permanece
 quebrada, e o leitor que a seguir chega a texto sem relação com a afirmação.
 
 **O repositório tinha previsto exatamente este risco.**
 [`contra-avaliacao.md`](contra-avaliacao.md), seção `R12`, registra que edição em massa
-desloca citações `arquivo:linha` em silêncio. [`../CONTEXT.md`](../CONTEXT.md), linhas 873
+desloca citações `arquivo:linha` em silêncio. [`../../../CONTEXT.md`](../../../CONTEXT.md), linhas 873
 a 877, descreve a mitigação usada na renomeação de `D-DOM-02`: substituição dentro da
 linha, sem inserir nem remover linha nenhuma, com a contagem conferida antes e depois.
 Este turno não aplicou essa mitigação.
@@ -1451,7 +1451,7 @@ Este turno não aplicou essa mitigação.
 
 | Citação                         | Onde                      | Estado                       |
 |---------------------------------|---------------------------|------------------------------|
-| `decisoes-pendentes.md:254-255` | `../adr/0008-...md:112`   | **quebrada, irreversível**   |
+| `decisoes-pendentes.md:254-255` | `../../0008-...md:112`   | **quebrada, irreversível**   |
 | `decisoes-pendentes.md:203-207` | `contra-avaliacao.md:176` | trocada por citação de seção |
 | `decisoes-pendentes.md:222-223` | `contra-avaliacao.md:156` | trocada por citação de seção |
 | `decisoes-pendentes.md:302-315` | `contra-avaliacao.md:137` | trocada por citação de seção |
@@ -1482,7 +1482,7 @@ existe quando o citador é um ADR aceito.
 **Escolha feita por agente em 2026-08-05, e ela precisa de
 revisão.** A troca de citação por
 linha para citação por seção contraria a convenção de
-[`../../AGENTS.md`](../../AGENTS.md), que exige "evidência com caminho de arquivo e linha".
+[`../../../../AGENTS.md`](../../../../AGENTS.md), que exige "evidência com caminho de arquivo e linha".
 A escolha foi feita porque a alternativa era manter três citações comprovadamente
 quebradas, e uma citação quebrada não é evidência. Ela alcança
 **apenas** as três citações
@@ -1502,13 +1502,13 @@ são texto. A décima segunda não é.
 
 | Texto                                      | Linhas  | O que ele afirma                          |
 |--------------------------------------------|---------|-------------------------------------------|
-| `../../AGENTS.md`                          | 226     | é onde a matriz separa fato de hipótese   |
-| `../../README.md`                          | 297     | é a leitura 4 do roteiro                  |
-| `../AGENTS.md`                             | 137,185 | é o caminho canônico da matriz            |
-| `../README.md`                             | 15      | é o conteúdo declarado de `architecture/` |
-| `../contracts/README.md`                   | 53      | é a matriz que os contratos citam         |
-| `../features/README.md`                    | 57      | sustenta uma decisão de card              |
-| quatro `../features/*/feature-card.md`     | 56–66   | citam `Q-INT-1` e `Q-INT-5` por ele       |
+| `../../../../AGENTS.md`                          | 226     | é onde a matriz separa fato de hipótese   |
+| `../../../../README.md`                          | 297     | é a leitura 4 do roteiro                  |
+| `../../../AGENTS.md`                             | 137,185 | é o caminho canônico da matriz            |
+| `../../../README.md`                             | 15      | é o conteúdo declarado de `architecture/` |
+| `../../../contracts/README.md`                   | 53      | é a matriz que os contratos citam         |
+| `../../../features/README.md`                    | 57      | sustenta uma decisão de card              |
+| quatro `../../../features/*/feature-card.md`     | 56–66   | citam `Q-INT-1` e `Q-INT-5` por ele       |
 | `.claude/skills/feature-planning/SKILL.md` | 20,96   | manda ler e atualizar este caminho        |
 | `check_artifact_limits.py`, da mesma skill | 18      | aplica o limite ao caminho literal        |
 
@@ -1518,12 +1518,12 @@ erro e sem aviso. É a única quebra desta lista que não aparece na leitura.
 
 **Pergunta em aberto.** A matriz de integrações é um dos cinco destinos nomeados na
 instrução? `contracts/` é o candidato, porque a matriz descreve o que atravessa uma
-fronteira. Nenhum dos cinco destinos a acomoda sem que `../AGENTS.md:137` e o script
+fronteira. Nenhum dos cinco destinos a acomoda sem que `../../../AGENTS.md:137` e o script
 mudem no mesmo commit.
 
 ### Lacuna 3 — os oito documentos de proposta não são artefato previsto
 
-[`../specification-process.md`](../specification-process.md) prevê seis artefatos:
+[`../../../specification-process.md`](../../../specification-process.md) prevê seis artefatos:
 Feature Card, Example Mapping, BDD, contrato, ADR e glossário. Um documento de proposta
 de arquitetura não é nenhum deles.
 
@@ -1538,7 +1538,7 @@ Os oito carregam três naturezas misturadas, e cada uma tem destino diferente:
 **Pergunta em
 aberto.** A prosa que não sustenta decisão nenhuma é apagada, ou preservada
 como registro do que se pensava em 2026-08-03? O precedente do repositório é
-[`../adr/arquivo/`](../adr/README.md), que preserva; o custo é uma pasta nova que a
+[`../../arquivo/`](../../README.md), que preserva; o custo é uma pasta nova que a
 instrução não previu.
 
 ### Lacuna 4 — `contra-avaliacao.md` critica um documento que deixará de existir
@@ -1563,13 +1563,13 @@ feita, e cada arquivo de destino DEVE dizer que a linha da fila continua aberta.
 
 ## O que esta rodada não produziu
 
-- **Nenhum ADR.** O processo de [`../adr/README.md`](../adr/README.md) é um por
+- **Nenhum ADR.** O processo de [`../../README.md`](../../README.md) é um por
   vez, com contexto limpo, e cinco documentos escritos em paralelo são
   exatamente o que produziu as três contradições da primeira série.
 - **Nenhum contrato em `contracts/`.** Os esboços de OpenAPI, AsyncAPI, JSON
   Schema e DDL vivem em bloco cercado dentro dos documentos de proposta. Um
-  contrato nasce quando a interface existir ([`../contracts/README.md`](../contracts/README.md)).
-- **Nenhuma edição em `integrations.md`.** As linhas de matriz propostas estão
+  contrato nasce quando a interface existir ([`../../../contracts/README.md`](../../../contracts/README.md)).
+- **Nenhuma edição em `../../../architecture/integrations.md`.** As linhas de matriz propostas estão
   nas seções `## Adições propostas` de cada documento.
 - **Nenhum código, nenhum `pom.xml`, nenhum `deploy/`.** A árvore continua só com
   `docs/`.
@@ -1577,7 +1577,7 @@ feita, e cada arquivo de destino DEVE dizer que a linha da fila continua aberta.
 ## Uma nota sobre os identificadores `Q-INT-*`
 
 Quatro documentos atribuíram `Q-INT-6`, `Q-INT-7` e `Q-INT-8` a questões
-diferentes, porque foram escritos sem se ver. `integrations.md` vai até
+diferentes, porque foram escritos sem se ver. `../../../architecture/integrations.md` vai até
 `Q-INT-5` e é ele que define o espaço de nomes.
 
 A colisão foi resolvida por faixas disjuntas: `arquitetura-alvo.md` e
@@ -1585,8 +1585,8 @@ A colisão foi resolvida por faixas disjuntas: `arquitetura-alvo.md` e
 `interface-web.md` com 12 a 15 e `contratos-de-api.md` com 16 e 17.
 
 Os números são **provisórios**. Um identificador só é definitivo quando a linha
-entra em [`integrations.md`](integrations.md), pelo mesmo motivo que
-[`../adr/README.md`](../adr/README.md) não atribui número a decisão que ainda
+entra em [`../../../architecture/integrations.md`](../../../architecture/integrations.md), pelo mesmo motivo que
+[`../../README.md`](../../README.md) não atribui número a decisão que ainda
 não virou ADR: atribuir antes cria buraco na sequência quando a ordem muda.
 
 ---
@@ -1611,8 +1611,8 @@ externas de novo.
 | `Q-NNNN-K` não cobre questão que não nasceu de ADR       | abaixo            |
 
 **A execução de `C3` está bloqueada por convenção.** A decisão foi tomada: a contradição
-vira arquivo em [`../questions/`](../questions/README.md), com destino em `D-MSG-02`. O
-identificador não pode ser atribuído. [`../questions/README.md`](../questions/README.md),
+vira arquivo em [`../../../questions/`](../../../questions/README.md), com destino em `D-MSG-02`. O
+identificador não pode ser atribuído. [`../../../questions/README.md`](../../../questions/README.md),
 linhas 24 a 28, define `Q-NNNN-K` com `NNNN` sendo **o ADR de origem** e `K` o número da
 questão na seção `## Questões em aberto` dele. `C3` não nasceu de ADR nenhum: ela nasceu da
 rodada de arquitetura de 2026-08-03. Nenhum `NNNN` a descreve, e inventar prefixo novo
@@ -1625,7 +1625,7 @@ criaria espaço de nomes sem decisão — o erro que a seção "Uma nota sobre o
 |------------------------------------------------------------------|----------|
 | o caminho citado por ADR aceito: redirecionar ou aceitar o morto | Lacuna 1 |
 | citação estável por âncora nomeada, em vez de número de linha    | Lacuna 1 |
-| destino de `integrations.md` e do script que o valida            | Lacuna 2 |
+| destino de `../../../architecture/integrations.md` e do script que o valida            | Lacuna 2 |
 | destino da prosa das oito propostas: apagar ou arquivar          | Lacuna 3 |
 | destino de `contra-avaliacao.md` e das objeções não conferidas   | Lacuna 4 |
 
@@ -1634,7 +1634,7 @@ criaria espaço de nomes sem decisão — o erro que a seção "Uma nota sobre o
 | Pendência                                                           | Estado                 |
 |---------------------------------------------------------------------|------------------------|
 | `D-DAT-05` — isolar execuções consecutivas, e o papel do `TRUNCATE` | decidida em 2026-08-05 |
-| fundir esta fila com a de [`../adr/README.md`](../adr/README.md)    | não tratada            |
+| fundir esta fila com a de [`../../README.md`](../../README.md)    | não tratada            |
 | podar as linhas que são comportamento disfarçado de arquitetura     | não tratada            |
 | quem aprova um Feature Card                                         | não tratada            |
 | se um Feature Card PODE contradizer um ADR aceito                   | não tratada            |
@@ -1643,7 +1643,7 @@ criaria espaço de nomes sem decisão — o erro que a seção "Uma nota sobre o
 
 ### Um dano irreversível ocorreu nesta sessão
 
-A citação `decisoes-pendentes.md:254-255`, feita por `../adr/0008-...md:112`, quebrou. O
+A citação `decisoes-pendentes.md:254-255`, feita por `../../0008-...md:112`, quebrou. O
 ADR é imutável e a citação não pode ser corrigida. O relato completo está na Lacuna 1,
 subseção "O dano já ocorreu".
 
@@ -1677,17 +1677,17 @@ julgamento.
 
 | Origem                                                    | Citação             | O alvo tem |
 |-----------------------------------------------------------|---------------------|------------|
-| `../adr/0005-a-forma-do-escalonador.md:34`                | `README.md:598-609` | 517 linhas |
-| `../adr/0006-a-forma-da-estrategia-de-concorrencia.md:22` | `README.md:515-539` | 517 linhas |
-| `integrations.md:26`                                      | `README.md:200-208` | ambíguo    |
-| `integrations.md:32`                                      | `README.md:180`     | ambíguo    |
-| `integrations.md:33`                                      | `README.md:181`     | ambíguo    |
+| `../../0005-a-forma-do-escalonador.md:34`                | `README.md:598-609` | 517 linhas |
+| `../../0006-a-forma-da-estrategia-de-concorrencia.md:22` | `README.md:515-539` | 517 linhas |
+| `../../../architecture/integrations.md:26`                                      | `README.md:200-208` | ambíguo    |
+| `../../../architecture/integrations.md:32`                                      | `README.md:180`     | ambíguo    |
+| `../../../architecture/integrations.md:33`                                      | `README.md:181`     | ambíguo    |
 
 **As duas primeiras eram válidas quando foram escritas.** O histórico do Git mostra que
-[`../adr/README.md`](../adr/README.md) tinha **908 linhas** em 2026-08-01, data em que o
+[`../../README.md`](../../README.md) tinha **908 linhas** em 2026-08-01, data em que o
 ADR-0005 e o ADR-0006 foram aceitos, e tem
 **517** hoje. O arquivo encolheu em 2026-08-03,
-no commit que extraiu as questões para [`../questions/`](../questions/README.md).
+no commit que extraiu as questões para [`../../../questions/`](../../../questions/README.md).
 
 **Isto prova que o problema é sistêmico, e anterior a esta
 sessão.** Duas citações dentro
@@ -1695,7 +1695,7 @@ de ADRs imutáveis quebraram por uma refatoração de documentação, e nenhum d
 repositório registrava a quebra. O dano causado nesta sessão à citação do ADR-0008 é o
 terceiro caso, e não o primeiro.
 
-**As três de [`integrations.md`](integrations.md) são ambíguas, e não comprovadamente
+**As três de [`../../../architecture/integrations.md`](../../../architecture/integrations.md) são ambíguas, e não comprovadamente
 quebradas.** Elas citam `README.md` sem caminho, e o repositório tem quatro arquivos com
 esse nome. A citação `README.md:180` sustenta uma afirmação sobre o RabbitMQ; a linha 180
 do `README.md` da raiz trata da etapa 7 do roadmap. A intenção provável é o `README.md` do
@@ -1705,8 +1705,8 @@ repositório não versiona e cujo conteúdo não pode ser conferido daqui.
 ### Quarenta e oito citações não resolvem o caminho
 
 Todas em [`mensageria.md`](mensageria.md), e todas com a mesma forma: o ADR é citado como
-`0001-...md:NN`, sem o prefixo `../adr/`. De `docs/architecture/`, esse caminho não resolve.
-São citações em texto, e não links Markdown, mas [`../AGENTS.md`](../AGENTS.md) exige que os
+`0001-...md:NN`, sem o prefixo `../../`. De `docs/architecture/`, esse caminho não resolve.
+São citações em texto, e não links Markdown, mas [`../../../AGENTS.md`](../../../AGENTS.md) exige que os
 links relativos resolvam.
 
 ### O verificador não está versionado
@@ -1724,7 +1724,7 @@ cinco passos, e reconstruí-la é barato:
 **Pergunta em
 aberto.** O repositório versiona esse verificador e o roda no pipeline? Ele
 transformaria a regra "toda afirmação leva evidência com caminho e linha" em regra
-executável, que é o que [`../questions/Q-0002-1.md`](../questions/Q-0002-1.md) pede para
+executável, que é o que [`../../../questions/Q-0002-1.md`](../../../questions/Q-0002-1.md) pede para
 outras três regras. Acrescentá-lo é decisão, e ela não foi tomada.
 
 ---
@@ -1771,14 +1771,14 @@ foram decididas na mesma sessão.
 **Decidido.** Um ADR novo que contradiga uma regra **acessória** de um ADR aceito, sem
 contradizer a decisão principal dele, o **emenda**. O ADR antigo permanece `Aceito` e
 recebe `Última atualização` e `Alterado por: ADR-NNNN — emenda; qual regra, com a seção
-de origem`, pela mecânica de [`../adr/README.md`](../adr/README.md), seção "O rastro de
+de origem`, pela mecânica de [`../../README.md`](../../README.md), seção "O rastro de
 alterações, emendado em 2026-08-04".
 
 A fronteira é objetiva, e não julgamento: a regra emendada **NÃO DEVE** ser a que dá
 título ao ADR, nem a que está na seção `## Decisão`. Qualquer outra afirmação normativa
 dele **PODE** ser emendada.
 
-Descartadas: a substituição pela letra da regra atual — `../adr/README.md:171-172` manda
+Descartadas: a substituição pela letra da regra atual — `../../README.md:171-172` manda
 "se contradisser, é substituição" —, porque o `Estado` do ADR-0008 passaria a dizer que
 a decisão dos dois planos em processos separados saiu de vigor, e ela não saiu; alargar
 a subsunção trocando a terceira exigência de `:171-172` por "não contradiz a decisão
@@ -1791,13 +1791,13 @@ retornaria nos quatro ADRs que `D-DOM-02` alcança.
 
 **Decidido.** Uma questão nova recebe identificador plano, `Q-NNNN`, sem sufixo, e a
 origem passa a ser **coluna** do índice de
-[`../questions/README.md`](../questions/README.md). A sequência nova começa em
+[`../../../questions/README.md`](../../../questions/README.md). A sequência nova começa em
 `Q-0019`, para não colidir visualmente com os dezoito identificadores existentes.
 
 **Os dezoito não são renomeados.** A medição de 2026-08-05: `Q-NNNN-K` aparece 255 vezes
 em `docs/` e no `AGENTS.md` da raiz, e **66 dessas ocorrências estão dentro dos oito
 ADRs aceitos** — 11 no ADR-0001, 14 no ADR-0002, 16 no ADR-0007, e assim por diante. O
-corpo de um ADR aceito não pode ser editado ([`../AGENTS.md`](../AGENTS.md), seção "O
+corpo de um ADR aceito não pode ser editado ([`../../../AGENTS.md`](../../../AGENTS.md), seção "O
 que nunca é editado"). Renomear produziria 66 citações mortas em artefato imutável: o
 dano da Lacuna 1, repetido 66 vezes.
 
@@ -1812,7 +1812,7 @@ ADR, e o identificador seguiria inatribuível; e `C3` permanecer como linha de f
 contrariar a decisão já registrada e porque a fila não é citável de forma estável.
 
 **`C3` é a primeira questão da sequência nova.** O número é atribuído no ato da criação
-do arquivo, e o dono da atribuição é `../questions/README.md`.
+do arquivo, e o dono da atribuição é `../../../questions/README.md`.
 
 #### `A3` — o rótulo do estouro de espera pelo CDC é `fonte atrasada`
 
@@ -1829,12 +1829,12 @@ por ser longo demais para um rótulo que aparece em relatório ao lado de `prote
 #### `A4` — um ADR de vocabulário cobre as quatro decisões do Bloco 4
 
 **Decidido.** `D-DOM-01` a `D-DOM-04` são registradas num ADR de vocabulário. O
-glossário [`../CONTEXT.md`](../CONTEXT.md) continua sendo a fonte operacional, e passa a
+glossário [`../../../CONTEXT.md`](../../../CONTEXT.md) continua sendo a fonte operacional, e passa a
 citá-lo.
 
-O motivo é que **o glossário já exige um ADR e não o tem**. `../CONTEXT.md:51` define o
+O motivo é que **o glossário já exige um ADR e não o tem**. `../../../CONTEXT.md:51` define o
 estado `aposentado` como "existiu em ADR aceito e foi retirado da linguagem por outro
-ADR", e `../CONTEXT.md:64` e `:193` marcam `Control Plane` como aposentado por
+ADR", e `../../../CONTEXT.md:64` e `:193` marcam `Control Plane` como aposentado por
 `D-DOM-02` — que é linha de fila, e não ADR. Sem o ADR, o glossário permanece falso
 contra a própria definição de estado, e o campo `Alterado por` dos ADRs alcançados não
 tem `ADR-NNNN` para receber.
@@ -1857,7 +1857,7 @@ separação.
 A tensão foi levantada em 2026-08-05: a escolha do pacote se justifica dizendo que o
 glossário "já define o termo por extenso", enquanto a entrada `system under test`
 daquele arquivo lista `SUT` sob `_Evite_`, "por ser sigla sem expansão"
-(`../CONTEXT.md:180`). Sem a separação declarada, o ADR novo e o glossário nascem se
+(`../../../CONTEXT.md:180`). Sem a separação declarada, o ADR novo e o glossário nascem se
 contradizendo.
 
 Descartadas: rever o nome do pacote, por reabrir uma decisão do dia anterior e trazer de
@@ -1867,12 +1867,12 @@ ADR novo nascer carregando contradição conhecida com o glossário.
 ### O que o Lote A NÃO aplicou, e a cadeia causal
 
 As seis decisões estão registradas aqui e **não** foram aplicadas em
-[`../adr/README.md`](../adr/README.md),
-[`../questions/README.md`](../questions/README.md) e [`../CONTEXT.md`](../CONTEXT.md).
+[`../../README.md`](../../README.md),
+[`../../../questions/README.md`](../../../questions/README.md) e [`../../../CONTEXT.md`](../../../CONTEXT.md).
 O motivo é medido, e não cautela genérica.
 
-**`../adr/README.md` tem 517 linhas, e dois ADRs aceitos citam além desse fim.**
-`../adr/0005-...md:34` cita `README.md:598-609`; `../adr/0006-...md:22` cita
+**`../../README.md` tem 517 linhas, e dois ADRs aceitos citam além desse fim.**
+`../../0005-...md:34` cita `README.md:598-609`; `../../0006-...md:22` cita
 `README.md:515-539`. As duas quebraram quando aquele arquivo encolheu de 908 para 517
 linhas, em 2026-08-03, e estão na auditoria acima. Acrescentar a regra da emenda no fim
 dele faria as duas **voltarem a resolver** — para a regra da emenda, que nada tem a ver
@@ -1895,29 +1895,29 @@ flowchart TD
     M --> I
 ```
 
-**`../questions/README.md` e `../CONTEXT.md` são citados por linha em prosa.** A
+**`../../../questions/README.md` e `../../../CONTEXT.md` são citados por linha em prosa.** A
 execução de `A2` acrescenta texto na seção `## Identificador`, que este arquivo cita
 como "linhas 24 a 28"; a de `A5` altera a entrada `system under test`, e este arquivo
-cita `../CONTEXT.md`, linha 355 e linha 49. Deslocar qualquer uma exige corrigir as
+cita `../../../CONTEXT.md`, linha 355 e linha 49. Deslocar qualquer uma exige corrigir as
 referências no mesmo turno, e a convenção que dispensa esse acerto — citação por âncora
 nomeada — é pendência do Lote C.
 
 **A escrita dos dois ADRs do lote 1 continua destravada.** Eles são arquivos novos e não
 deslocam linha de arquivo citado. Enquanto `A1` não estiver aplicada em
-`../adr/README.md`, o ADR que emenda o ADR-0008 **DEVE** citar esta seção como a decisão
+`../../README.md`, o ADR que emenda o ADR-0008 **DEVE** citar esta seção como a decisão
 que criou a emenda.
 
 ## O limite de 9000 caracteres colide com o rastro de alterações, achado na escrita
 ## do ADR-0009
 
 **Lacuna, não decisão.** Ao aplicar o cabeçalho de emenda no ADR-0008
-(`../adr/0008-os-dois-planos-em-processos-separados.md`), pela mecânica de
-`../adr/README.md`, seção "O rastro de alterações" (linhas 195-199), o arquivo passou
+(`../../0008-os-dois-planos-em-processos-separados.md`), pela mecânica de
+`../../README.md`, seção "O rastro de alterações" (linhas 195-199), o arquivo passou
 de 8985 para 9249 caracteres — 249 acima do `ADR_LIMIT = 9000` de
 `.claude/skills/feature-planning/scripts/check_artifact_limits.py:21`. O corpo de um
-ADR `Aceito` NÃO DEVE ser editado (`../adr/README.md:153` e `:174`), e nenhuma forma do
+ADR `Aceito` NÃO DEVE ser editado (`../../README.md:153` e `:174`), e nenhuma forma do
 cabeçalho de emenda que ainda cite a regra e a seção de origem, exigidas por
-`../adr/README.md:209-210`, cabe na margem de 15 caracteres que sobrou.
+`../../README.md:209-210`, cabe na margem de 15 caracteres que sobrou.
 
 **Pergunta em aberto.** O limite de 9000 caracteres vale só no nascimento de um ADR, ou
 para o arquivo inteiro em qualquer momento posterior — inclusive depois de um cabeçalho
@@ -1925,7 +1925,7 @@ de rastro obrigatório ser acrescentado por emenda ou subsunção? Se valer semp
 ADR aceito perto do limite fica impedido de receber o rastro que o processo torna
 obrigatório, e as duas regras se contradizem. A escolha não foi feita. O cabeçalho do
 ADR-0008 foi escrito de qualquer forma, no mesmo commit do ADR-0009, porque
-`../adr/README.md:203` exige os dois campos "no mesmo commit em que nasce" o ADR que
+`../../README.md:203` exige os dois campos "no mesmo commit em que nasce" o ADR que
 altera, sem exceção declarada para o caso de estouro.
 
 ---
@@ -1940,8 +1940,8 @@ item nasceu depois de os lotes serem fechados, durante a escrita do ADR-0009.
 |-------|-----------------------------------------------------------|-----------------|
 | `C-1` | a forma canônica de citação                               | Lacuna 1        |
 | `C-2` | o caminho citado por ADR aceito, quando o arquivo se move | Lacuna 1        |
-| `C-3` | 48 citações sem o prefixo `../adr/` em `mensageria.md`    | auditoria       |
-| `C-4` | 3 citações de `integrations.md` a um `README.md` ambíguo  | auditoria       |
+| `C-3` | 48 citações sem o prefixo `../../` em `mensageria.md`    | auditoria       |
+| `C-4` | 3 citações de `../../../architecture/integrations.md` a um `README.md` ambíguo  | auditoria       |
 | `C-5` | versionar o verificador de citações                       | auditoria       |
 | `C-6` | 2 citações mortas dentro dos ADRs 0005 e 0006             | auditoria       |
 | `C-7` | o limite de 9000 caracteres contra o rastro de alterações | ADR-0009        |
@@ -1972,7 +1972,7 @@ flowchart TD
 
 **Decidido em 2026-08-05, pela pessoa.** Toda citação de evidência escrita a partir de
 agora tem a forma do caminho do arquivo, um `#`, e o slug do título da seção
-citada. **Uma regra só, sem exceção por tipo de alvo.** A convenção de [`../../AGENTS.md`](../../AGENTS.md), "evidência com caminho de
+citada. **Uma regra só, sem exceção por tipo de alvo.** A convenção de [`../../../../AGENTS.md`](../../../../AGENTS.md), "evidência com caminho de
 arquivo e linha", passa a ler-se como evidência com caminho de arquivo e âncora.
 
 O argumento que decidiu: a âncora é verificável por script — o slug existe no alvo, ou
@@ -2070,7 +2070,7 @@ originou.
 #### O que `C-2` deixa em aberto
 
 - **A forma da lápide não está decidida.** Nome do arquivo, seções obrigatórias e se ela
-  é artefato previsto por [`../specification-process.md`](../specification-process.md) —
+  é artefato previsto por [`../../../specification-process.md`](../../../specification-process.md) —
   que hoje não a prevê, do mesmo modo que não prevê os oito documentos de proposta da
   Lacuna 3.
 - **O prazo de vida não está decidido.** Uma lápide existe para sempre, ou até o ADR que
@@ -2084,7 +2084,7 @@ entra no repositório e é executado pelo GitHub Actions a cada push, falhando q
 citação aponta para âncora que não existe no alvo.
 
 A decisão transforma "toda afirmação leva evidência com caminho e linha" em regra
-executável, que é o que [`../questions/Q-0002-1.md`](../questions/Q-0002-1.md) pede para
+executável, que é o que [`../../../questions/Q-0002-1.md`](../../../questions/Q-0002-1.md) pede para
 outras três regras do repositório. Sem ela, a convenção continua sendo texto, e o
 modo de falha já está medido: as citações dos ADRs 0005 e 0006 quebraram em
 2026-08-03 e ninguém notou até a auditoria de 2026-08-05, dois dias depois.
@@ -2103,7 +2103,7 @@ e nada mais.
 
 **Decidido em 2026-08-05, pela pessoa.** `ADR_LIMIT` passa de 9000 para **12.000**
 caracteres. Os ADRs `0001` a `0004` ficam **isentos**, nomeados no script, e o limite
-passa a alcançar apenas `docs/adr/NNNN-*.md` — o índice e `../adr/arquivo/**` saem da
+passa a alcançar apenas `docs/adr/NNNN-*.md` — o índice e `../../arquivo/**` saem da
 regra.
 
 #### O achado que reenquadrou esta pendência
@@ -2125,14 +2125,14 @@ ADRs já o violavam**, quatro deles por quase quatro vezes.
 | `0007` | 8.404      | cabe        |
 
 O script mede o arquivo inteiro, na linha 90 de
-`../../.claude/skills/feature-planning/scripts/check_artifact_limits.py`, e aplica
+`../../../../.claude/skills/feature-planning/scripts/check_artifact_limits.py`, e aplica
 `ADR_LIMIT` a qualquer `.md` sob `docs/adr/`, nas linhas 54 e 55. Isso significa que ele
 nunca foi executado sobre essa pasta: um limite que ninguém mede não é limite, é
 comentário. O ADR-0008 só pareceu especial porque foi o primeiro caso em que alguém
 contou os caracteres.
 
-O mesmo defeito de escopo alcançava o índice [`../adr/README.md`](../adr/README.md), com
-35.482 caracteres, e todo o histórico congelado de `../adr/arquivo/**` — nenhum dos dois
+O mesmo defeito de escopo alcançava o índice [`../../README.md`](../../README.md), com
+35.482 caracteres, e todo o histórico congelado de `../../arquivo/**` — nenhum dos dois
 é um documento de decisão única, e o índice cresce por construção a cada ADR novo.
 
 #### O que 12.000 compra
@@ -2159,7 +2159,7 @@ fronteira toda vez que a série mudar.
 | `C-1a` | decidido    | esta seção                                   |
 | `C-2`  | decidido    | esta seção; a forma da lápide segue aberta   |
 | `C-3`  | **fechado** | `mensageria.md`                              |
-| `C-4`  | **fechado** | `integrations.md`                            |
+| `C-4`  | **fechado** | `../../../architecture/integrations.md`                            |
 | `C-5`  | **fechado** | `scripts/` e `.github/workflows/docs.yml`    |
 | `C-6`  | **fechado** | cabeçalho dos ADRs 0005 e 0006, e a baseline |
 | `C-7`  | **fechado** | `check_artifact_limits.py`                   |
@@ -2167,7 +2167,7 @@ fronteira toda vez que a série mudar.
 #### `C-3` — as citações de `mensageria.md`
 
 **Fechado.** Sete citações usavam a abreviação `plano...md:NNN`, que não resolve de
-lugar nenhum, e passaram a citar [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md).
+lugar nenhum, e passaram a citar [`../../../plano-do-laboratorio.md`](../../../plano-do-laboratorio.md).
 Uma citava um `example-mapping.md` sem dizer de qual capacidade, e ganhou o caminho
 que o parágrafo vizinho já usava.
 
@@ -2200,12 +2200,12 @@ permalink com o SHA do commit:
 **Pergunta em aberto.** O `README.md` daquele repositório e a ADR 0017 dele descrevem
 esteiras diferentes para entregar aplicação — Woodpecker no primeiro, GitHub Actions na
 segunda. Qual vale para este laboratório não é decidível daqui, e o
-[`AGENTS.md`](../../AGENTS.md) da raiz afirma a segunda.
+[`AGENTS.md`](../../../../AGENTS.md) da raiz afirma a segunda.
 
 #### `C-6` — a errata no cabeçalho, e o quarto rótulo
 
 **Fechado.** As duas citações mortas apontavam para seções do índice extraídas para
-[`../questions/`](../questions/README.md) em 2026-08-03: `Q-0002-2`, citada pelo
+[`../../../questions/`](../../../questions/README.md) em 2026-08-03: `Q-0002-2`, citada pelo
 ADR-0005, e `Q-0001-2`, citada pelo ADR-0006. O corpo de nenhum dos dois foi editado.
 Cada cabeçalho recebeu `Última atualização` e um campo `Errata` que nomeia a seção
 pretendida e o arquivo para onde ela foi.
@@ -2214,7 +2214,7 @@ pretendida e o arquivo para onde ela foi.
 admitir um **quarto** tipo de anotação, ao lado de emenda, substituição e subsunção. Os
 três primeiros dizem que uma **decisão** mudou; a errata diz que uma **referência**
 quebrou, sem que decisão nenhuma tenha mudado. A regra do rastro de alterações em
-[`../adr/README.md`](../adr/README.md) ainda não a descreve.
+[`../../README.md`](../../README.md) ainda não a descreve.
 
 **A errata só coube porque `C-7` subiu o limite no mesmo dia.** O ADR-0005 tinha 11.008
 caracteres e passou a 11.384. Sob o limite antigo de 9000 ele já estava 2.008 acima, e a
@@ -2246,10 +2246,10 @@ a pulverização move exatamente isso.
 
 | Item  | Pergunta                                     | Onde ela estava registrada                   |
 |-------|----------------------------------------------|----------------------------------------------|
-| `B-1` | as duas filas de decisão viram uma?          | seção do ciclo de vida, e `../adr/README.md` |
-| `B-2` | podar a fila, ou não podar?                  | `../specification-process.md`                |
-| `B-3` | quem aprova um Feature Card?                 | `../specification-process.md`                |
-| `B-4` | um card PODE contradizer um ADR aceito?      | `../specification-process.md`                |
+| `B-1` | as duas filas de decisão viram uma?          | seção do ciclo de vida, e `../../README.md` |
+| `B-2` | podar a fila, ou não podar?                  | `../../../specification-process.md`                |
+| `B-3` | quem aprova um Feature Card?                 | `../../../specification-process.md`                |
+| `B-4` | um card PODE contradizer um ADR aceito?      | `../../../specification-process.md`                |
 | `B-5` | `D-ARQ-02` e `D-DOM-11` entram em que bloco? | a contagem 64 contra 66                      |
 
 **Nenhuma das cinco foi decidida.** As alternativas abaixo foram levantadas por agente;
@@ -2258,7 +2258,7 @@ a escolha é da pessoa, e cada seção termina numa recomendação que não vale
 ### `B-1` — as duas filas de decisão viram uma, ou continuam duas com papel nomeado
 
 **O problema.** Existem duas listas do mesmo tipo de coisa. A fila de
-[`../adr/README.md`](../adr/README.md#fila-de-decisões) tem onze linhas derivadas do
+[`../../README.md`](../../README.md#fila-de-decisões) tem onze linhas derivadas do
 plano, ordenadas por dependência. Esta fila tem 64 identificadores `D-*` agrupados em
 sete blocos, vindos da rodada de arquitetura de 2026-08-03.
 
@@ -2278,19 +2278,19 @@ flowchart TD
     D --> A["o artefato é escolhido<br/>ADR, card, contrato ou tarefa"]
 ```
 
-**Alternativa 1 — fundir tudo dentro da fila que já existe em `../adr/README.md`.** A
+**Alternativa 1 — fundir tudo dentro da fila que já existe em `../../README.md`.** A
 favor: nenhum arquivo novo, e a fila herda de graça o ciclo de vida já escrito ali.
 Contra: aquele arquivo já é índice, convenção, histórico e processo de debate; somar 64
 linhas o transforma no maior documento do repositório, e `C-7` já o isentou do limite de
 caracteres por não ser ADR — a isenção viraria licença para crescer sem fim.
 
-**Alternativa 2 — extrair uma fila única para `../adr/fila-de-decisoes.md`.** A favor: a
+**Alternativa 2 — extrair uma fila única para `../../fila-de-decisoes.md`.** A favor: a
 fila deixa de ser seção de um arquivo que faz outras quatro coisas; `docs/adr/` não é
 dissolvido pelo Lote D, então a fila sobrevive à pulverização sem precisar de destino
 novo; as duas seções atuais viram lápide, pela decisão `C-2`. Contra: cria um arquivo, e
 o repositório tem histórico de artefato criado antes do conteúdo.
 
-**Alternativa 3 — manter duas, com papel nomeado.** A favor: a de `../adr/README.md`
+**Alternativa 3 — manter duas, com papel nomeado.** A favor: a de `../../README.md`
 enfileira decisão derivada do plano, com ordem; esta enfileira o inventário de uma
 rodada de arquitetura, sem ordem. Contra: nomear o papel descreve a duplicação, e não a
 remove — a reabertura silenciosa continua possível, e o Lote D passa a ter dois destinos
@@ -2304,7 +2304,7 @@ a decidir em vez de um.
 disfarçado de arquitetura". Ela nasceu **antes** da decisão de 2026-08-04, que diz o
 contrário: o artefato que uma linha gera é escolhido no momento em que a decisão é
 tomada, e não antes
-([`../specification-process.md`](../specification-process.md#a-decisão-vem-antes-do-artefato)).
+([`../../../specification-process.md`](../../../specification-process.md#a-decisão-vem-antes-do-artefato)).
 
 **A objeção que a enumeração encontrou.** Podar agora é escolher o artefato antes da
 decisão, que é exatamente o que aquela regra proíbe. As duas não podem valer ao mesmo
@@ -2318,7 +2318,7 @@ não sabe quais linhas nunca virarão ADR.
 **Alternativa 2 — podar agora, com critério escrito.** A favor: a fila encolhe e passa a
 listar só arquitetura. Contra: exige um critério que separe comportamento de arquitetura
 sem ver a decisão — e o teste que o repositório já tem, no
-[`AGENTS.md` de `docs/`](../AGENTS.md), admite explicitamente linha que cai nas duas
+[`AGENTS.md` de `docs/`](../../../AGENTS.md), admite explicitamente linha que cai nas duas
 colunas.
 
 **Alternativa 3 — classificar sem podar, com uma coluna "artefato provável".** A favor:
@@ -2332,7 +2332,7 @@ seções.
 
 **O problema.** O processo de ADR exige aprovação explícita e nomeada por pessoa. O
 equivalente para um card não foi definido
-([`../specification-process.md`](../specification-process.md#o-que-este-processo-não-decide)).
+([`../../../specification-process.md`](../../../specification-process.md#o-que-este-processo-não-decide)).
 Quatro capacidades estão especificadas e nenhuma foi aprovada — não por descuido, mas
 porque não existe o ato de aprovar.
 
@@ -2363,7 +2363,7 @@ para desfazer.
 
 **O problema.** Não aconteceu ainda, e a regra não está escrita. O caminho registrado
 como **provável** é um ADR novo que substitua o antigo
-([`../specification-process.md`](../specification-process.md#o-que-este-processo-não-decide)).
+([`../../../specification-process.md`](../../../specification-process.md#o-que-este-processo-não-decide)).
 Provável não é regra.
 
 **Por que a pergunta não é acadêmica.** Este arquivo abre com seis contradições dentro
@@ -2395,7 +2395,7 @@ especificação.
 
 **Recomendação.** Alternativa 1, com a emenda de que a contradição é registrada como
 pendência no mesmo turno em que é vista — o que a primeira regra do
-[`AGENTS.md` de `docs/`](../AGENTS.md) já exige de qualquer objeção.
+[`AGENTS.md` de `docs/`](../../../AGENTS.md) já exige de qualquer objeção.
 
 ### `B-5` — `D-ARQ-02` e `D-DOM-11` não estão em bloco nenhum
 
@@ -2413,7 +2413,7 @@ arquivo que a carrega — e some sem que ninguém note, porque nenhuma contagem 
 **Alternativa 1 — classificar as duas nos blocos, sem decidi-las.** A evidência sugere
 `D-ARQ-02` junto do assunto "Entrega contínua no homelab", porque ela fixa o
 `Dockerfile` e o número de imagens do dia zero; e `D-DOM-11` no Bloco 4,
-vocabulário, porque [`../CONTEXT.md`](../CONTEXT.md) já carrega o termo
+vocabulário, porque [`../../../CONTEXT.md`](../../../CONTEXT.md) já carrega o termo
 `scheduling` como `proposto` por ela. A favor: fecha a lacuna de contagem sem
 antecipar o Lote E. Contra: não resolve nada além do estado.
 
@@ -2436,7 +2436,7 @@ trade-offs, e decididas na mesma sessão em que foram enumeradas.
 
 | Item  | Escolha da pessoa                                         | Seguiu a recomendação? |
 |-------|-----------------------------------------------------------|------------------------|
-| `B-1` | fila única, extraída para `../adr/fila-de-decisoes.md`    | sim                    |
+| `B-1` | fila única, extraída para `../../fila-de-decisoes.md`    | sim                    |
 | `B-2` | não podar; a linha fecha por subsunção                    | sim                    |
 | `B-3` | aprova-se cada regra, e não o card                        | sim                    |
 | `B-4` | a contradição **é** decisão arquitetural nova, e gera ADR | **não**                |
@@ -2462,7 +2462,7 @@ existe naquele momento.
 **O custo aceito.** Até que cada linha feche, a fila continua misturando os dois tipos,
 e quem a lê não sabe quais nunca virarão ADR. A alternativa era um critério que
 separasse comportamento de arquitetura sem ver a decisão — e o teste que
-[`../AGENTS.md`](../AGENTS.md) já tem admite explicitamente linha que cai nas duas
+[`../../../AGENTS.md`](../../../AGENTS.md) já tem admite explicitamente linha que cai nas duas
 colunas.
 
 #### `B-3` — aprova-se a regra, e não o card
@@ -2484,7 +2484,7 @@ ADR aceito, então existe ali uma decisão arquitetural nova, e ela gera ADR.
 **Por que isso não colide com a regra de 2026-08-04.** Aquela regra diz que o artefato é
 escolhido no momento da decisão, e não antes. Aqui o artefato não está sendo escolhido
 de antemão por preferência: a contradição atende, por construção, aos quatro critérios
-de [`../adr/README.md`](../adr/README.md#uma-decisão-merece-adr-quando) — existe
+de [`../../README.md`](../../README.md#uma-decisão-merece-adr-quando) — existe
 alternativa que alguém defende com argumento, e a escolha restringe o que se pode
 construir depois. O ADR decorre dos critérios, e não de uma escolha antecipada.
 
@@ -2499,7 +2499,7 @@ flowchart TD
 ```
 
 **Pergunta em aberto.** O que acontece com o card enquanto o ADR não existe. A regra do
-registro no mesmo turno, em [`../AGENTS.md`](../AGENTS.md), obriga a escrever a
+registro no mesmo turno, em [`../../../AGENTS.md`](../../../AGENTS.md), obriga a escrever a
 contradição; ela não diz se o trecho contraditório do card fica marcado, sai, ou
 permanece como está.
 
@@ -2507,7 +2507,7 @@ permanece como está.
 
 **Decidido.** `D-ARQ-02` entra no assunto "Entrega contínua no homelab", porque ela fixa
 o `Dockerfile` e o número de imagens do dia zero. `D-DOM-11` entra no Bloco 4,
-vocabulário, porque [`../CONTEXT.md`](../CONTEXT.md) já carrega o termo `scheduling`
+vocabulário, porque [`../../../CONTEXT.md`](../../../CONTEXT.md) já carrega o termo `scheduling`
 como `proposto` por ela. Nenhuma das duas foi decidida: a classificação fecha a
 diferença entre 64 e 66, e nada mais.
 
@@ -2521,8 +2521,8 @@ aceitos**, cujo corpo NÃO PODE ser editado.
 
 | Origem                                                                        | Citações | A maior linha citada    |
 |-------------------------------------------------------------------------------|----------|-------------------------|
-| [ADR-0008](../adr/0008-os-dois-planos-em-processos-separados.md)              | 1        | `:254-255`, já quebrada |
-| [ADR-0009](../adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md) | 8        | `:1865-1879`            |
+| [ADR-0008](../../0008-os-dois-planos-em-processos-separados.md)              | 1        | `:254-255`, já quebrada |
+| [ADR-0009](../../0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md) | 8        | `:1865-1879`            |
 
 A maior linha citada é 1879. Qualquer edição que **desloque** uma linha até 1879 quebra
 pelo menos uma citação que ninguém pode corrigir — e isso vale para inserir, remover e
@@ -2558,16 +2558,16 @@ citação por linha vinda de ADR aceito. Os outros oito podem ser movidos sem da
 
 ### A lápide desta fila, em 2026-08-05
 
-**A fila viva é [`../adr/fila-de-decisoes.md`](../adr/fila-de-decisoes.md) .** É a
+**A fila viva é [`../../fila-de-decisoes.md`](../../fila-de-decisoes.md) .** É a
 execução da decisão `B-1`, e a lápide segue a forma que `C-2` fixou: ela nomeia o
 destino de cada parte, e não some.
 
 | O que estava aqui                                | Onde está agora                                                                                       |
 |--------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| os Blocos 0 a 6, com as 64 linhas `D-*`          | [as decisões da rodada de arquitetura](../adr/fila-de-decisoes.md#as-decisões-da-rodada-de-arquitetura-de-2026-08-03) |
-| o agrupamento por assunto                        | [o agrupamento por assunto](../adr/fila-de-decisoes.md#o-agrupamento-por-assunto)                        |
-| `D-ARQ-02` e `D-DOM-11`, que não tinham bloco    | [as duas linhas sem bloco](../adr/fila-de-decisoes.md#as-duas-linhas-sem-bloco-classificadas-em-2026-08-05) |
-| o ciclo de vida de uma linha da fila             | [o que esta fila enfileira](../adr/fila-de-decisoes.md#o-que-esta-fila-enfileira)                        |
+| os Blocos 0 a 6, com as 64 linhas `D-*`          | [as decisões da rodada de arquitetura](../../fila-de-decisoes.md#as-decisões-da-rodada-de-arquitetura-de-2026-08-03) |
+| o agrupamento por assunto                        | [o agrupamento por assunto](../../fila-de-decisoes.md#o-agrupamento-por-assunto)                        |
+| `D-ARQ-02` e `D-DOM-11`, que não tinham bloco    | [as duas linhas sem bloco](../../fila-de-decisoes.md#as-duas-linhas-sem-bloco-classificadas-em-2026-08-05) |
+| o ciclo de vida de uma linha da fila             | [o que esta fila enfileira](../../fila-de-decisoes.md#o-que-esta-fila-enfileira)                        |
 
 **O texto dos blocos continua acima, e isso não é duplicação por descuido.** Este
 arquivo é append-only até a linha 1879, pelo achado registrado logo acima: nove citações
@@ -2581,8 +2581,8 @@ da rodada de 2026-08-03, e uma decisão que mude de estado muda lá, nunca aqui.
 ### A execução de `B-3` e `B-4`, em 2026-08-05
 
 As duas viraram regra escrita no mesmo dia, em
-[`../specification-process.md`](../specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05)
-e em [`../AGENTS.md`](../AGENTS.md). A seção "O que este processo não decide" encolheu de
+[`../../../specification-process.md`](../../../specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05)
+e em [`../../../AGENTS.md`](../../../AGENTS.md). A seção "O que este processo não decide" encolheu de
 três parágrafos para um.
 
 **A coluna `Aprovada por` entrou nos quatro cards, e as 48 regras nasceram `pendente`.**
@@ -2599,7 +2599,7 @@ seria exatamente o que a regra proíbe.
 #### Pendência nova: um card viola o limite de 700 palavras
 
 **Medido em 2026-08-05, pelo comando que o próprio
-[`../AGENTS.md`](../AGENTS.md) prescreve.**
+[`../../../AGENTS.md`](../../../AGENTS.md) prescreve.**
 O card de detecção de atualização perdida tinha **743 palavras** antes de `B-3`, e ficou
 com **761** depois da coluna. O limite é 700, e ele nunca havia sido medido — a mesma
 falha que `C-7` encontrou no limite de caracteres dos ADRs.
@@ -2630,7 +2630,7 @@ quando `B-1` mediu as citações, e a ordem de execução, que nenhuma lacuna co
 
 | Item  | Pendência                                               | Origem          |
 |-------|---------------------------------------------------------|-----------------|
-| `D-1` | o destino de `integrations.md`, e o limite que não roda | Lacuna 2        |
+| `D-1` | o destino de `../../../architecture/integrations.md`, e o limite que não roda | Lacuna 2        |
 | `D-2` | o destino da prosa das oito propostas                   | Lacuna 3        |
 | `D-3` | o destino de `contra-avaliacao.md` e das objeções       | Lacuna 4        |
 | `D-4` | o destino de `decisoes-pendentes.md`, congelado         | achado de `B-1` |
@@ -2651,7 +2651,7 @@ muda a leitura: o arquivo mais citado de fora não é o maior.
 | `arquitetura-alvo.md`     | 28 411     | 3 arquivos                        |
 | `entrega-continua.md`     | 26 333     | 1 arquivo                         |
 | `contra-avaliacao.md`     | 24 388     | 2 arquivos                        |
-| `integrations.md`         | 11 838     | 13 arquivos                       |
+| `../../../architecture/integrations.md`         | 11 838     | 13 arquivos                       |
 
 ```mermaid
 flowchart TD
@@ -2676,7 +2676,7 @@ sem aviso.
 **O achado deste turno, e ele reduz o peso da Lacuna 2.** Esse limite **já não é
 exercido por nada automático**. O workflow `docs` roda o script sobre
 `docs/adr/[0-9]*.md` e mais nada
-([`.github/workflows/docs.yml`](../../.github/workflows/docs.yml)); a única outra
+([`.github/workflows/docs.yml`](../../../../.github/workflows/docs.yml)); a única outra
 invocação é manual, prescrita pela skill `feature-planning`. O arquivo está hoje em 11
 838 caracteres contra um limite de 12 000, a 162 caracteres de estourar, e nenhuma
 execução do repositório perceberia.
@@ -2688,13 +2688,13 @@ apenas o tornaria permanente em vez de latente.
 | Alternativa                               | A favor                                           | Contra                                                |
 |-------------------------------------------|---------------------------------------------------|-------------------------------------------------------|
 | fica onde está; a pasta sobrevive por ele | 13 citações externas não mudam; o script não muda | a pasta continua existindo para um arquivo só         |
-| vai para `../contracts/integrations.md`   | a matriz descreve o que atravessa fronteira       | 13 citações e a chave do script mudam no mesmo commit |
-| vira `../contracts/README.md`, fundido    | o índice de contratos já cita a matriz            | funde dois documentos com propósitos diferentes       |
+| vai para `../../../contracts/integrations.md`   | a matriz descreve o que atravessa fronteira       | 13 citações e a chave do script mudam no mesmo commit |
+| vira `../../../contracts/README.md`, fundido    | o índice de contratos já cita a matriz            | funde dois documentos com propósitos diferentes       |
 
 **Recomendação: fica onde está.** As outras duas movem treze citações e a chave do
 script para ganhar o quê — a matriz não é contrato, é o inventário do que ainda não é
 contrato. `docs/architecture/` sobreviver com um arquivo só é exatamente o que
-[`../specification-process.md`](../specification-process.md) já declara que a pasta
+[`../../../specification-process.md`](../../../specification-process.md) já declara que a pasta
 contém.
 
 ### `D-2` — o destino da prosa das oito propostas
@@ -2714,13 +2714,13 @@ o que se perde.
 | Alternativa                                       | A favor                                     | Contra                                                |
 |---------------------------------------------------|---------------------------------------------|-------------------------------------------------------|
 | apagar a prosa que não sustenta decisão           | a árvore só guarda o que o processo prevê   | descarta a única leitura contínua de cada assunto     |
-| arquivar em `architecture/arquivo/`               | o precedente de `../adr/arquivo/` já existe | cria pasta que a instrução da pulverização não previu |
-| arquivar em `../adr/arquivo/proposta-2026-08-03/` | usa a pasta de arquivo morto que já existe  | aquela pasta guarda ADR, e nenhum destes é ADR        |
+| arquivar em `architecture/arquivo/`               | o precedente de `../../arquivo/` já existe | cria pasta que a instrução da pulverização não previu |
+| arquivar em `../../arquivo/proposta-2026-08-03/` | usa a pasta de arquivo morto que já existe  | aquela pasta guarda ADR, e nenhum destes é ADR        |
 
 **Recomendação: arquivar em `architecture/arquivo/`.** O repositório já paga o custo de
 uma pasta de arquivo morto e já sabe lê-la. Apagar é irreversível e a rodada de
 2026-08-03 é a única leitura contínua que existe de cada assunto; jogar em
-`../adr/arquivo/` mente sobre a natureza do que está lá.
+`../../arquivo/` mente sobre a natureza do que está lá.
 
 **O que a recomendação NÃO resolve.** Uma pasta de arquivo dentro de `architecture/`
 mantém a pasta viva por um terceiro motivo, e a instrução da pulverização pediu que ela
@@ -2731,7 +2731,7 @@ fosse dissolvida. Isso é tensão real, e `D-5` a herda.
 **O problema.** O documento carrega treze objeções contra a rodada de 2026-08-03. Três
 estão `verificado`, uma está `moderado`, e **nove estão `não conferido`** — plausíveis,
 com citações que ninguém checou uma a uma. Ele critica `decisoes-pendentes.md`, que é o
-documento cuja fila acabou de sair para `../adr/fila-de-decisoes.md`.
+documento cuja fila acabou de sair para `../../fila-de-decisoes.md`.
 
 **Uma objeção não conferida não é achado nem ruído.** É trabalho de revisão adversarial
 parado no meio. Apagá-la descarta o trabalho; promovê-la a fato viola a regra de que o
@@ -2740,10 +2740,10 @@ que não se confirma é `Pergunta em aberto`.
 | Alternativa                                      | A favor                                              | Contra                                             |
 |--------------------------------------------------|------------------------------------------------------|----------------------------------------------------|
 | conferir as nove antes de pulverizar             | nenhuma objeção some sem veredito                    | nove verificações antes de qualquer movimento      |
-| mover as nove para `../questions/`, sem conferir | o estado `não conferido` é preservado e fica visível | nove questões novas numa pasta que hoje tem poucas |
+| mover as nove para `../../../questions/`, sem conferir | o estado `não conferido` é preservado e fica visível | nove questões novas numa pasta que hoje tem poucas |
 | apagar junto com o que ele critica               | o alvo da crítica deixa de existir                   | descarta revisão adversarial que ninguém repetiu   |
 
-**Recomendação: mover as nove para `../questions/`, sem conferir.** A pasta de questões
+**Recomendação: mover as nove para `../../../questions/`, sem conferir.** A pasta de questões
 existe exatamente para o que está encaminhado e não resolvido, e cada questão nasce com
 identificador citável. Conferir as nove agora é uma sessão inteira que não pulveriza
 nada; apagar descarta o único ataque adversarial que a rodada recebeu.
@@ -2763,7 +2763,7 @@ D — que continuam sendo escritas no fim, porque é o único lugar seguro.
 | Alternativa                                              | A favor                                          | Contra                                        |
 |----------------------------------------------------------|--------------------------------------------------|-----------------------------------------------|
 | fica onde está, congelado, com nota de encerramento      | as 9 citações por linha continuam resolvendo     | a pasta sobrevive por ele também              |
-| move para `../adr/arquivo/`, aceitando 9 citações mortas | a pasta some, e o arquivo fica onde mora o morto | dano irreversível dentro de dois ADRs aceitos |
+| move para `../../arquivo/`, aceitando 9 citações mortas | a pasta some, e o arquivo fica onde mora o morto | dano irreversível dentro de dois ADRs aceitos |
 | fica, e um stub de lápide substitui o conteúdo           | a pasta encolhe para dois arquivos               | quebra as 9 citações do mesmo jeito           |
 
 **Recomendação: fica onde está, congelado, com nota de encerramento no fim.** As outras
@@ -2773,7 +2773,7 @@ Não há troca aceitável aí.
 ### `D-5` — a ordem de execução, e o que sobra da pasta
 
 **O problema.** As quatro recomendações acima deixam `docs/architecture/` com três
-coisas: `integrations.md`, `decisoes-pendentes.md` e uma pasta `arquivo/`. A instrução
+coisas: `../../../architecture/integrations.md`, `decisoes-pendentes.md` e uma pasta `arquivo/`. A instrução
 de 2026-08-04 pediu que a pasta fosse pulverizada nos cinco destinos, e o que as
 recomendações produzem é uma pasta menor — não a ausência dela.
 
@@ -2811,7 +2811,7 @@ quinta depende dela.
 
 | Item  | Escolha da pessoa                        | Seguiu a recomendação? |
 |-------|------------------------------------------|------------------------|
-| `D-1` | `integrations.md` fica onde está         | sim                    |
+| `D-1` | `../../../architecture/integrations.md` fica onde está         | sim                    |
 | `D-2` | a prosa é arquivada em `arquivo/`        | sim                    |
 | `D-3` | as nove objeções viram questões          | sim                    |
 | `D-4` | **objeção ao enquadramento**, ver abaixo | não escolheu           |
@@ -2825,7 +2825,7 @@ continuam válidas, e a chave literal do `check_artifact_limits.py` continua cas
 **O que a decisão não conserta.** O limite de 12 000 caracteres associado àquela chave
 **não é exercido por nada automático**. O workflow `docs` roda o script sobre
 `docs/adr/[0-9]*.md` e mais nada
-([`.github/workflows/docs.yml`](../../.github/workflows/docs.yml)); a outra invocação é
+([`.github/workflows/docs.yml`](../../../../.github/workflows/docs.yml)); a outra invocação é
 manual, prescrita pela skill `feature-planning`. O arquivo está em 11 838 caracteres, a
 162 de estourar, e nenhuma execução do repositório perceberia. Isso é pendência nova, e
 ela não pertence ao Lote D: é a mesma classe de `C-5`, um verificador que existe e não
@@ -2834,7 +2834,7 @@ roda.
 #### `D-2` — a prosa das oito propostas é arquivada em `architecture/arquivo/`
 
 **Decidido, e com a recomendação.** A prosa que não sustenta decisão nenhuma não é
-apagada. O precedente é [`../adr/arquivo/`](../adr/README.md), que o repositório já
+apagada. O precedente é [`../../arquivo/`](../../README.md), que o repositório já
 mantém e já sabe ler.
 
 **O custo aceito, e ele foi nomeado antes da escolha.** Uma pasta de arquivo dentro de
@@ -2845,7 +2845,7 @@ pediu que ela fosse dissolvida. A tensão é real, e `D-5` a herda.
 
 **Decidido, e com a recomendação.** As nove objeções em estado `não conferido` de
 [`contra-avaliacao.md`](contra-avaliacao.md) migram para
-[`../questions/`](../questions/README.md), cada uma com identificador próprio, e **o
+[`../../../questions/`](../../../questions/README.md), cada uma com identificador próprio, e **o
 estado `não conferido` viaja junto**. Nenhuma é conferida nesta passagem, e nenhuma é
 promovida a fato.
 
@@ -2879,7 +2879,7 @@ uma —, e esse debate não cabe no artefato de regra por construção.
 
 **As seis decisões do Lote A são a exceção, e ela é grave.** Elas não foram aplicadas em
 lugar nenhum. A seção "O que o Lote A NÃO aplicou, e a cadeia causal" registra o motivo:
-acrescentar a regra da emenda no fim de [`../adr/README.md`](../adr/README.md) faria
+acrescentar a regra da emenda no fim de [`../../README.md`](../../README.md) faria
 duas citações quebradas **voltarem a resolver** — para o texto errado.
 
 ```mermaid
@@ -2897,7 +2897,7 @@ flowchart TD
 **O bloqueio do Lote A mudou de tamanho, e ninguém tinha medido.** Duas coisas
 aconteceram depois que aquela seção foi escrita:
 
-- [`../adr/README.md`](../adr/README.md) encolheu de 517 para 317 linhas, quando `B-1`
+- [`../../README.md`](../../README.md) encolheu de 517 para 317 linhas, quando `B-1`
   extraiu a fila. A citação do ADR-0006 àquele arquivo, às linhas 515 a 539, agora
   precisa de **duzentas linhas novas** para voltar a resolver, e não de vinte.
 - `C-6` acrescentou **errata** no cabeçalho dos ADRs 0005 e 0006, declarando as duas
@@ -2913,11 +2913,11 @@ decisões dele não viraram artefato, e apagar ou esvaziar este arquivo as perde
 **As duas escolhas foram outras, e a segunda revoga a premissa da primeira
 pergunta.** Os
 ADRs 0008 e 0009 recebem **adendo** com o conteúdo que hoje citam daqui, e
-`docs/architecture/` é dissolvida — `integrations.md` é a única exceção.
+`docs/architecture/` é dissolvida — `../../../architecture/integrations.md` é a única exceção.
 
 > "Já que existem ADRs que referenciam esse arquivo, adicione adendos nestes ADRs para
 > que a informação permaneça lá. Isso é necessário porque esses arquivos dentro de
-> `docs/architecture` nem deveriam existir (com exceção do `integrations.md`)."
+> `docs/architecture` nem deveriam existir (com exceção do `../../../architecture/integrations.md`)."
 
 > "Os ADRs 8 e 9 precisam conter todo o conteúdo necessário. Eles podem referenciar
 > outros artefatos, mas não os arquivos que não deveriam existir dentro de
@@ -2966,7 +2966,7 @@ que a citação afirmava, que continua verdadeiro.
 
 #### O adendo NÃO É edição do corpo, e é por isso que ele é admissível
 
-A regra de [`../AGENTS.md`](../AGENTS.md) proíbe editar o corpo de um ADR aceito, e a
+A regra de [`../../../AGENTS.md`](../../../AGENTS.md) proíbe editar o corpo de um ADR aceito, e a
 razão é que a edição apaga o que se pensava naquela data. Um adendo **acrescentado no
 fim**, datado, não apaga nada: o corpo original permanece byte a byte, e a citação
 original continua no lugar em que foi escrita.
@@ -2983,7 +2983,7 @@ flowchart TD
 **É uma forma nova de alteração, e ela é a quinta.** As quatro que o processo já conhece
 — emenda, substituição, subsunção e errata — alteram o **cabeçalho**. O adendo
 acrescenta **seção**. A regra precisa ser escrita em
-[`../adr/README.md`](../adr/README.md) e em [`../AGENTS.md`](../AGENTS.md) no mesmo
+[`../../README.md`](../../README.md) e em [`../../../AGENTS.md`](../../../AGENTS.md) no mesmo
 commit em que o primeiro adendo nascer, senão ela existe só aqui — e este arquivo está
 sendo apagado.
 
@@ -2999,7 +2999,7 @@ apagado. Aplicá-las é pré-condição da pulverização, e não uma tarefa par
 #### A contradição que a escolha de `D-5` abre com `D-2`
 
 `D-2` decidiu arquivar a prosa das oito propostas em `architecture/arquivo/`. `D-5`
-decidiu que `docs/architecture/` não deveria conter nada além de `integrations.md`. Uma
+decidiu que `docs/architecture/` não deveria conter nada além de `../../../architecture/integrations.md`. Uma
 pasta `arquivo/` **dentro** de `architecture/` cabe nas duas leituras ou em nenhuma, e a
 diferença muda o destino de 340 mil caracteres.
 

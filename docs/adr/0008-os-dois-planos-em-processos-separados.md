@@ -6,8 +6,8 @@
 - **Relacionado:** [ADR-0001](0001-o-passo-como-unidade-de-execucao.md),
   [ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md) e
   [ADR-0005](0005-a-forma-do-escalonador.md). Fecha `D-ARQ-05` e `D-ARQ-06` de
-  [`decisoes-pendentes.md`](../architecture/decisoes-pendentes.md), e `D-ARQ-01` por
-  consequência.
+  [`decisoes-pendentes.md`](arquivo/proposta-2026-08-03/decisoes-pendentes.md), e
+  `D-ARQ-01` por consequência.
 
 - **Última atualização:** 2026-08-05
 - **Alterado por:** [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)

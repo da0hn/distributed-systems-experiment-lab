@@ -27,7 +27,7 @@ O que o sub-agente DEVE receber no prompt: a decisão tomada, as alternativas de
 com o motivo técnico de cada uma, as evidências com caminho e linha, e o estado inicial
 `Aceito`. O que ele NÃO DEVE fazer: escolher entre alternativas, inventar evidência, ou
 fechar lacuna por conta própria — uma lacuna vira linha em
-[`docs/architecture/decisoes-pendentes.md`](docs/architecture/decisoes-pendentes.md), e
+[`fila-de-decisoes.md`](docs/adr/fila-de-decisoes.md), e
 nunca uma decisão silenciosa.
 
 ### Os dois agentes registrados, e o loop entre eles
