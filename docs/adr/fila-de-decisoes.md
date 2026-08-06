@@ -316,7 +316,7 @@ abertas** — `B-5` classificou, e não decidiu.
 
 | ID         | Decisão                                    | Assunto                     | Onde                                                                                                                       |
 |------------|--------------------------------------------|-----------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| `D-ARQ-02` | onde a interface web é construída          | Entrega contínua no homelab | [`../architecture/arquitetura-alvo.md`](../architecture/arquitetura-alvo.md#d-arq-02--onde-a-interface-web-é-construída-e-empacotada) |
+| `D-ARQ-02` | onde a interface web é construída          | Entrega contínua no homelab | [`arquivo/proposta-2026-08-03/arquitetura-alvo.md`](arquivo/proposta-2026-08-03/arquitetura-alvo.md#d-arq-02--onde-a-interface-web-é-construída-e-empacotada) |
 | `D-DOM-11` | se o escalonamento é contexto próprio      | Bloco 4, vocabulário        | [`../architecture/modelo-de-dominio.md`](../architecture/modelo-de-dominio.md#d-dom-11--se-o-escalonamento-é-contexto-próprio)        |
 
 `D-ARQ-02` entrou em "Entrega contínua no homelab" porque fixa o `Dockerfile` e o número

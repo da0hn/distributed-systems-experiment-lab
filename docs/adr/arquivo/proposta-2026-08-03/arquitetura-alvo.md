@@ -4,11 +4,11 @@
 - **Data:** 2026-08-03
 - **Escopo:** a forma do sistema em cada etapa do roadmap, e o gatilho observável que
   libera cada peça nova.
-- **Depende de:** [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md),
-  [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md),
-  [`ADR-0005`](../adr/0005-a-forma-do-escalonador.md),
-  [`ADR-0006`](../adr/0006-a-forma-da-estrategia-de-concorrencia.md),
-  [`ADR-0007`](../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), todos
+- **Depende de:** [`ADR-0001`](../../0001-o-passo-como-unidade-de-execucao.md),
+  [`ADR-0002`](../../0002-o-dominio-minimo-e-os-dois-oraculos.md),
+  [`ADR-0005`](../../0005-a-forma-do-escalonador.md),
+  [`ADR-0006`](../../0006-a-forma-da-estrategia-de-concorrencia.md),
+  [`ADR-0007`](../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), todos
   `Aceito`.
 
 ## O que este documento é, e o que ele não decide
@@ -93,7 +93,7 @@ Um processo JVM, um PostgreSQL, um navegador. O processo contém os dois planos,
 interface web é servida por ele (`plano-do-laboratorio.md:531-532`). O log de
 observações vive em memória, uma sequência por execução, e a persistência durável está
 fora de escopo até a etapa 6
-(`../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:86-88`).
+(`../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:86-88`).
 
 ```mermaid
 flowchart TB
@@ -131,11 +131,11 @@ flowchart TB
 ```
 
 Três setas do desenho são normativas e vêm de ADR aceito. O runtime chama o passo, e o
-passo não chama o runtime (`../adr/0001-o-passo-como-unidade-de-execucao.md:93-95`). O
+passo não chama o runtime (`../../0001-o-passo-como-unidade-de-execucao.md:93-95`). O
 oráculo lê o PostgreSQL e não lê o log de observações
-(`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:216-241`). O Lab Plane trata a
+(`../../0002-o-dominio-minimo-e-os-dois-oraculos.md:216-241`). O Lab Plane trata a
 estratégia como rótulo opaco e nenhum componente dele ramifica por esse rótulo
-(`../adr/0006-a-forma-da-estrategia-de-concorrencia.md:51-54`).
+(`../../0006-a-forma-da-estrategia-de-concorrencia.md:51-54`).
 
 O que a topologia não mostra é que os dois planos dividem o mesmo `ClassLoader`. Sem
 fronteira física, a separação existe apenas se um teste falhar quando ela for violada —
@@ -146,13 +146,13 @@ fronteira física, a separação existe apenas se um teste falhar quando ela for
 O gatilho é observável e já está escrito: o experimento `JVM_LOCK` passa com uma
 instância e falha com duas (`plano-do-laboratorio.md:312-316`, `607`). O ADR-0006 não
 avalia `JVM_LOCK` e nomeia esse mesmo sinal como o momento de revisar a forma da
-estratégia (`../adr/0006-a-forma-da-estrategia-de-concorrencia.md:162-166`).
+estratégia (`../../0006-a-forma-da-estrategia-de-concorrencia.md:162-166`).
 
 A etapa 4 introduz um problema que nenhum documento do repositório registra hoje. O
 escalonador mantém, **por execução**, um contador de workers ativos e um conjunto de
-restrições pendentes (`../adr/0005-a-forma-do-escalonador.md:60-61`), e o contador
+restrições pendentes (`../../0005-a-forma-do-escalonador.md:60-61`), e o contador
 zerado é o sinal que o oráculo aguarda antes de ler o banco
-(`../adr/0005-a-forma-do-escalonador.md:77-80`). Esse estado é de memória de um
+(`../../0005-a-forma-do-escalonador.md:77-80`). Esse estado é de memória de um
 processo. Com workers em dois processos, ou o Lab Plane fica num processo só e os dois
 processos do system under test reportam chegada e término a ele por uma fronteira de
 rede, ou passa a haver dois escalonadores sem visão um do outro — e o segundo caso torna
@@ -199,7 +199,7 @@ A etapa 6 pergunta o que acontece se o processo morre entre o commit e o publish
 escritas em outro lugar:
 
 - o log de observações deixa de poder viver só em memória
-  (`../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:177-181`);
+  (`../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:177-181`);
 - onde o log é persistido passa a ser decisão obrigatória
   (`plano-do-laboratorio.md:610`), e o plano já proíbe gravá-lo no banco sob teste
   durante a execução, por contenção (`plano-do-laboratorio.md:589-592`);
@@ -226,14 +226,14 @@ acrescenta contêiner.
 | Peça                                  | Entra na etapa | Gatilho concreto e observável                                                  | Evidência                                                             |
 |---------------------------------------|----------------|--------------------------------------------------------------------------------|-----------------------------------------------------------------------|
 | aplicação Spring Boot, processo único | 1              | o primeiro experimento do MVP precisa de um runtime que execute passos         | `plano-do-laboratorio.md:531-532`                                     |
-| PostgreSQL                            | 1              | o passo executa SQL real, em transação real                                    | `../adr/0001-o-passo-como-unidade-de-execucao.md:115-117`             |
+| PostgreSQL                            | 1              | o passo executa SQL real, em transação real                                    | `../../0001-o-passo-como-unidade-de-execucao.md:115-117`             |
 | interface web servida pela aplicação  | 1              | a timeline do cenário 25 precisa ser exibida durante a execução                | `plano-do-laboratorio.md:531`, `540`                                  |
 | imagem OCI, `deploy/` e workflow      | 1              | o serviço nasce entregando; o `Application` do ArgoCD já aponta para `deploy/` | `plano-do-laboratorio.md:757-771`                                     |
-| coluna `version` e migração           | 2              | a estratégia `OPTIMISTIC` entra no E3                                          | `../adr/0006-a-forma-da-estrategia-de-concorrencia.md:56-60`          |
+| coluna `version` e migração           | 2              | a estratégia `OPTIMISTIC` entra no E3                                          | `../../0006-a-forma-da-estrategia-de-concorrencia.md:56-60`          |
 | nível de isolamento como parâmetro    | 3              | o E5 varre `READ COMMITTED`, `REPEATABLE READ` e `SERIALIZABLE`                | `plano-do-laboratorio.md:472-474`                                     |
 | segunda instância do processo         | 4              | o experimento `JVM_LOCK` passa com uma instância e falha com duas              | `plano-do-laboratorio.md:312-316`, `607`                              |
 | RabbitMQ com CloudEvents              | 5              | o primeiro experimento em que a operação vira mensagem                         | `plano-do-laboratorio.md:345`, `608`                                  |
-| persistência durável do log           | 6              | um experimento derruba o processo de propósito                                 | `../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:177-181` |
+| persistência durável do log           | 6              | um experimento derruba o processo de propósito                                 | `../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:177-181` |
 | segunda representação do estado       | 9              | o experimento precisa medir o que o usuário viu, e não o que ficou gravado     | `plano-do-laboratorio.md:349`                                         |
 | Valkey                                | 11             | um experimento prova que o advisory lock do PostgreSQL não basta               | `plano-do-laboratorio.md:613`                                         |
 | OpenTelemetry, Prometheus, Grafana    | sem etapa      | um fenômeno que a timeline própria não consiga explicar                        | `plano-do-laboratorio.md:615`                                         |
@@ -360,7 +360,7 @@ agregador da ADR 0017 passa a depender das duas.
 ### `D-ARQ-03` — onde o Lab Plane vive quando existirem dois processos
 
 **O problema.** O escalonador guarda estado por execução em memória
-(`../adr/0005-a-forma-do-escalonador.md:60-61`), e o sinal de execução terminada vem do
+(`../../0005-a-forma-do-escalonador.md:60-61`), e o sinal de execução terminada vem do
 contador de ativos chegar a zero (`:77-80`). Com workers em dois processos, esse
 contador deixa de enxergar todos os workers.
 
@@ -385,7 +385,7 @@ entre escalonadores, e o ADR-0005 passa a valer apenas dentro de um processo.
 **O problema.** O ADR-0001 fixa uma thread por worker, com a transação e a conexão
 ligadas a ela do início ao fim do escopo, e delega explicitamente a esta decisão se
 essas threads são de plataforma ou virtuais
-(`../adr/0001-o-passo-como-unidade-de-execucao.md:507-515`).
+(`../../0001-o-passo-como-unidade-de-execucao.md:507-515`).
 
 **Alternativa 1 — threads de plataforma.** A favor: o bloqueio numa barreira segura os
 locks de linha do PostgreSQL de forma que o ADR-0001 já descreve como desejada, e o
@@ -430,15 +430,15 @@ exige que a projeção esteja em outro processo, ou se a assincronia pelo broker
 pipeline, é a mesma pergunta que `Q-INT-3` faz por outro ângulo. Tratado em
 [`entrega-continua.md`](entrega-continua.md#d-arq-11--postgresql-dedicado-contra-compartilhado).
 
-## Adições propostas a `integrations.md`
+## Adições propostas a `../../../architecture/integrations.md`
 
 As linhas abaixo são propostas. **Nenhuma edição foi feita naquele arquivo.**
 
 | Origem                   | Destino                        | Tipo         | Operação/tópico                  | Finalidade                                        | Contrato | Autenticação | Confiabilidade                                  | Evidência                                                                               |
 |--------------------------|--------------------------------|--------------|----------------------------------|---------------------------------------------------|----------|--------------|-------------------------------------------------|-----------------------------------------------------------------------------------------|
 | navegador                | aplicação do laboratório       | HTTP         | página da interface web          | servir a interface a partir do mesmo artefato     | nenhum   | não decidido | depende de `D-ARQ-02`                           | hipótese — `plano-do-laboratorio.md:531`                                                |
-| Lab Plane, instância 1   | system under test, instância 2     | não decidido | chamada de passo entre processos | executar um passo num segundo processo na etapa 4 | nenhum   | não decidido | entra só se `D-ARQ-03` escolher Lab Plane único | hipótese — `plano-do-laboratorio.md:607`; `../adr/0005-a-forma-do-escalonador.md:60-61` |
-| aplicação do laboratório | destino de persistência do log | não decidido | escrita do log de observações    | sobreviver ao processo que o experimento derruba  | nenhum   | não decidido | gatilho: etapa 6                                | hipótese — `../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:177-181`        |
+| Lab Plane, instância 1   | system under test, instância 2     | não decidido | chamada de passo entre processos | executar um passo num segundo processo na etapa 4 | nenhum   | não decidido | entra só se `D-ARQ-03` escolher Lab Plane único | hipótese — `plano-do-laboratorio.md:607`; `../../0005-a-forma-do-escalonador.md:60-61` |
+| aplicação do laboratório | destino de persistência do log | não decidido | escrita do log de observações    | sobreviver ao processo que o experimento derruba  | nenhum   | não decidido | gatilho: etapa 6                                | hipótese — `../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:177-181`        |
 
 Proposta de pergunta nova naquele arquivo, no formato `Q-INT-N`:
 

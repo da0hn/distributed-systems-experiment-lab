@@ -927,7 +927,7 @@ decisão nomeou `mensageria.md` apenas. O plano do laboratório a usa 15 vezes; 
 Cards e os Example Mappings, 8; `arquitetura-alvo.md`, `contratos-de-api.md` e
 `interface-web.md`, de uma a três cada. Parte é citação legítima — o plano cita o
 briefing, e o card de `execucao-de-experimento` cita o ADR-0001. Parte é termo vivo,
-como em `architecture/arquitetura-alvo.md:390` e
+como em `adr/arquivo/proposta-2026-08-03/arquitetura-alvo.md:390` e
 `architecture/modulos-e-fronteiras.md:207`. Separar as duas exige leitura caso a caso, e
 não foi feita.
 
