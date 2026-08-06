@@ -825,6 +825,73 @@ enfileira a observação num buffer local e um remetente próprio a envia, de mo
 runtime nunca espera a rede. O custo é que uma queda do `lab-plane` perde o buffer, e a
 etapa 6 mata o processo de propósito.
 
+### A sexta rodada, em 2026-08-06: o CDC vira fonte do veredito
+
+| ID     | Escolha                                                   | Estado                       |
+|--------|-----------------------------------------------------------|------------------------------|
+| `E-18` | o CDC é a fonte do veredito; não há `SELECT` cruzado      | fechada, contra recomendação |
+| `E-20` | sem BFF: comando no `lab-plane`, leitura no `lab-journal` | fechada                      |
+
+**`E-20` fecha sem custo novo.** O frontend pede execução ao `lab-plane` e lê histórico
+e streaming do `lab-journal`, que já recebe as observações ao vivo por `E-19`. É CQRS
+que a topologia já impunha. O recurso de exposição rotea dois caminhos, e nenhum serviço
+novo entra.
+
+#### O que `E-18` preserva, e o que ela desmonta
+
+A escolha mantém a regra de schema sem exceção nenhuma: uma conexão de replicação lógica
+consome o WAL, e não faz `SELECT` em tabela alheia.
+
+**A guarda que protege o número já existe, e ela sobrevive.** `O19` fechou em 2026-08-05
+decidindo que o oráculo **aguarda o CDC alcançar o LSN do commit final** antes de
+comparar, com limite declarado por execução, e que o estouro desse limite recebe rótulo
+próprio, distinto de `fontes divergentes`. Com essa espera, um slot atrasado não entrega
+soma incompleta: ele estoura o limite e a execução é rotulada. O risco de número errado
+por atraso continua coberto.
+
+**O que se desmonta é a detecção cruzada.** O texto de `O19` diz que "o mecanismo de
+duas fontes protege o veredito" e que um atraso do CDC "não produz número errado: ele
+produz invalidação, que é o comportamento seguro". Com o CDC como fonte **única**, o
+rótulo `fontes divergentes` perde sujeito para o veredito: não há segunda leitura
+independente com que comparar. O consolidado publicado pelo system under test continua
+servindo de conferência, mas ele **não** é independente do código medido — é a própria
+tabela das três fontes que registra isso.
+
+**`O20` deixa de ser uma objeção e vira bloqueio.** Ela registra que o `value_inicial`
+não tem fonte: o ADR-0002 o exige lido antes de o primeiro worker começar, e o CDC
+reporta mudanças, não estado. Enquanto o `SELECT` existia, essa lacuna tinha remédio
+óbvio. As duas saídas que `O20` nomeia continuam sem escolha — o CDC roda com snapshot
+inicial, ou o estado inicial vem de outro lugar.
+
+**O oráculo de capacidade fica sem fonte declarada.** O ADR-0002 tem dois oráculos. O
+exato usa `value_final`, que é o último valor de `resource.value` no stream — leitura
+direta. O de capacidade calcula `Σ amount ≤ capacity`, e somar eventos de `INSERT` é
+derivar estado final de um stream, que aquele ADR proíbe. O E5 depende do segundo, e
+**nada neste lote lhe deu fonte**.
+
+```mermaid
+flowchart TB
+    W[("WAL")]
+    LP["lab-plane"]
+    OE["oráculo exato<br/>value_final = último UPDATE"]
+    OC["oráculo de capacidade<br/>Σ amount ≤ capacity"]
+    W --> LP
+    LP --> OE
+    LP -.->|" sem fonte declarada "| OC
+```
+
+**Duas decisões anteriores precisam de ato formal.** A de 2026-08-05, que diz que o CDC
+confere e não decide, fica revertida na parte do veredito — ela vive em documento
+arquivado, e a reversão é esta linha. O
+[ADR-0008](0008-os-dois-planos-em-processos-separados.md) está `Aceito` e declara no
+diagrama da seção `## Decisão` a aresta `SELECT após a quiescência`: ele precisa de
+**emenda ou substituição**, e o corpo dele não pode ser editado.
+
+**O CDC passa a ser infraestrutura do dia zero.** Conector, `wal_level = logical` e slot
+de replicação deixam de ser da etapa 5 e entram no primeiro `compose.yaml` e no primeiro
+`deploy/`. `O17` já registrava que o Debezium entra na stack sem linha na matriz de
+integrações, e agora ele entra antes de qualquer experimento existir.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
