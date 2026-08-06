@@ -191,3 +191,18 @@ volta a depender de uma lista de classes que apodrece.
 - **O mecanismo que mantém a transação aberta entre chamadas exigir que o Control Plane
   chame o Lab Plane.** A direção de dependência do ADR-0001 não sobreviveria à fronteira
   de rede, e a topologia muda antes do mecanismo.
+
+## Adendo de 2026-08-05 — a afirmação citada de `decisoes-pendentes.md`
+
+Aquele arquivo saiu de `docs/architecture/` pela decisão `D-4`, e a citação abaixo, na
+seção `## Consequências`, deixou de resolver. O corpo acima **não foi tocado**: este
+adendo incorpora a afirmação que a citação sustentava, para que este ADR se sustente sem
+ela.
+
+| Citação do corpo | A afirmação que ela sustentava                              |
+|------------------|-------------------------------------------------------------|
+| `:254-255`       | o E1 do MVP emite entre 900 e 1500 observações por execução |
+
+A citação já estava quebrada antes desta decisão. As linhas 254 e 255 deixaram de trazer
+aquele parágrafo quando o arquivo de origem cresceu, em 2026-08-05, e o número que ela
+afirmava continua verdadeiro.

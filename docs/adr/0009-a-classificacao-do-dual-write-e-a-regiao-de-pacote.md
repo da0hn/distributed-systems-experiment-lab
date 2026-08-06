@@ -8,6 +8,8 @@
   decidido em `docs/architecture/decisoes-pendentes.md`, seção `A1`
   (linhas 1769-1802).
 
+- **Última atualização:** 2026-08-05, pelo adendo no fim deste arquivo.
+
 ## Contexto
 
 O plano do laboratório classifica o dual write no grupo C, escrita parcial, ao lado de
@@ -213,3 +215,23 @@ propõe esse sexto grupo hoje.
 Reveja o nome do pacote se `system under test` for aposentado por um ADR de
 vocabulário futuro. O sinal é o mesmo que produziu esta decisão: um termo do
 código sobrevivendo à aposentadoria do termo do glossário que o originou.
+
+## Adendo de 2026-08-05 — as afirmações citadas de `decisoes-pendentes.md`
+
+Aquele arquivo saiu de `docs/architecture/` pela decisão `D-4`, e as nove citações
+abaixo deixaram de resolver. O corpo acima **não foi tocado**: este adendo incorpora a
+afirmação que cada uma sustentava.
+
+- `:109-112` — `C4`: o plano põe o dual write no grupo C e o ADR-0002 no grupo B.
+- `:140-169` — `C7`: o ADR-0008 fixou pacote com o termo que `D-DOM-02` aposentou.
+- `:1769-1802` — `A1`: a emenda serve a regra acessória, com fronteira objetiva.
+- `:1771-1779` — a emenda contradiz regra acessória, e não a decisão principal.
+- `:235-237` — separar as duas partes produziria um documento para uma linha.
+- `:1865-1879` — o glossário precisa declarar à parte que `SUT` é permitido em código.
+- `:243` — `systemundertest` perde por ser segmento composto de quinze caracteres.
+- `:1797-1800` — alargar a subsunção perde: `Alterado por` deixaria de dizer se vale.
+- `:230-233` — a errata no índice perde: quem lê o ADR isolado lê a afirmação errada.
+
+`A1` a `A5` foram aplicadas em 2026-08-05, em
+[`README.md`](README.md#a-emenda-terceira-forma-ao-lado-da-substituição-e-da-subsunção)
+e em [`../CONTEXT.md`](../CONTEXT.md#a-sigla-sut-no-código-decidida-em-2026-08-05).
