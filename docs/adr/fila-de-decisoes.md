@@ -1043,6 +1043,118 @@ reportado em [`githubstatus.com`](https://www.githubstatus.com/) na mesma data. 
 neste repositório o provoca e nada aqui o resolve; a medição espera o serviço
 normalizar.
 
+### O grupo II, reaberto em 2026-08-06: quatro achados antes de qualquer escolha
+
+As seis linhas `E-8` a `E-13` foram enunciadas em 2026-08-03, e três decisões
+posteriores mudaram o terreno delas sem que nenhuma fosse reescrita: `D-DAT-05` pôs um
+discriminador de execução na chave primária das duas tabelas, `E-5` pôs um schema por
+serviço, e `E-18` tirou o `SELECT` cruzado do oráculo e pôs o CDC no lugar. O que segue
+é o efeito disso, registrado antes da rodada e **sem decidir nada**.
+
+| Achado                                              | Linha atingida | Efeito                       |
+|-----------------------------------------------------|----------------|------------------------------|
+| a ordem das colunas da chave primária é ambígua     | linha nova     | `E-22`                       |
+| Row Level Security deixou de alcançar o veredito    | `E-12`         | uma das duas candidatas cai  |
+| a chave estrangeira teria de ser composta           | `E-9`          | o argumento contra cresce    |
+| o índice em debate não é sobre `(resource_id)`      | `E-10`         | enunciado corrigido, e barato|
+
+#### `E-22` — a própria `D-DAT-05` diz duas coisas sobre a ordem da chave
+
+A tabela da decisão diz que "a chave primária das duas tabelas passa a incluir a
+execução". O diagrama da mesma seção rotula a tabela como "PK começa pelo
+discriminador". As consequências dizem que "todo índice passa a começar pelo
+discriminador" e, na frase seguinte, que "o discriminador é a **segunda** coluna da
+chave". Começar e ser segundo não são compatíveis, e as três frases estão em
+[`modelo-de-dados.md`](arquivo/proposta-2026-08-03/modelo-de-dados.md#d-dat-05--reset-entre-execuções).
+
+A escolha não é cosmética, e o motivo é o mesmo pelo qual aquela decisão preferiu
+UUIDv7 a UUIDv4. Com `(execution_id, id)`, o prefixo de instante do UUIDv7 é crescente
+e toda inserção cai no fim da B-tree. Com `(id, execution_id)`, a coluna à esquerda é o
+`bigint` derivado da semente — valores pequenos que **se repetem** a cada execução —, e
+as inserções se espalham pelo índice inteiro. É exatamente a fragmentação dentro da
+janela de medida que a decisão diz querer evitar.
+
+```mermaid
+flowchart TB
+    subgraph A["(execution_id, id)"]
+        A1["UUIDv7 à esquerda<br/>prefixo cresce no tempo"]
+        A2["inserção no fim da B-tree"]
+        A3["consulta por execução<br/>usa o prefixo"]
+        A1 --> A2
+        A1 --> A3
+    end
+    subgraph B["(id, execution_id)"]
+        B1["bigint da semente à esquerda<br/>repete a cada execução"]
+        B2["inserção espalhada<br/>fragmenta durante a medida"]
+        B1 --> B2
+    end
+```
+
+O acesso do `increment` conhece os dois valores e funciona em qualquer das duas ordens,
+então nada quebra — o custo é só de desempenho, dentro da janela medida.
+
+#### `E-12` mudou de lugar, e não de necessidade
+
+`P-DAT-12` nomeia duas candidatas de guarda: um teste executável, na linha de
+`D-DAT-09`, e Row Level Security com o discriminador vindo de `current_setting`. **A
+segunda caiu**, e não por preferência.
+
+Row Level Security aplica um predicado a quem consulta a tabela. Depois de `E-18` o
+oráculo não consulta tabela nenhuma: ele consome o WAL por replicação lógica. O próprio
+`P-DAT-12` já registrava isso na segunda face do risco — "Row Level Security não alcança
+o consumidor de CDC: a política vale para quem consulta a tabela, e o conector lê o WAL"
+([`modelo-de-dados.md`](arquivo/proposta-2026-08-03/modelo-de-dados.md#perguntas-em-aberto)).
+Com o CDC como fonte única do veredito, a segunda face virou a única.
+
+O risco não saiu junto com o `SELECT`. Um consumidor de CDC que não filtre por
+discriminador soma eventos de execuções anteriores ao `value_final`, e o veredito sai
+errado **sem sintoma** — a mesma falha silenciosa, um componente adiante.
+
+```mermaid
+flowchart LR
+    S[("resource, allocation<br/>histórico de N execuções")]
+    W[("WAL")]
+    C["consumidor de CDC<br/>no lab-plane"]
+    V["veredito"]
+    S -->|" toda mudança, de toda execução "| W
+    W --> C
+    C -->|" filtra por discriminador? "| V
+    RLS["Row Level Security"] -.->|" não alcança "| W
+```
+
+#### `E-9` — a chave estrangeira teria de ser composta
+
+`D-DAT-02` pesou uma chave estrangeira simples, de `allocation.resource_id` para
+`resource.id`. Com o discriminador na chave primária, `resource.id` sozinho deixa de ser
+único, e a referência passa a ser `(resource_id, execution_id)` para `(id,
+execution_id)` — o que exige a coluna do discriminador também em `allocation`, e ela já
+está lá pela mesma decisão.
+
+O argumento contra cresce em duas frentes. O lock `FOR KEY SHARE` que
+[`D-DAT-02`](arquivo/proposta-2026-08-03/modelo-de-dados.md#d-dat-02--chave-estrangeira-de-allocationresource_id)
+nomeia continua igual, e agora o vocabulário do Lab Plane — que `D-DAT-05` aceitou pôr
+na chave do sistema medido — passa a aparecer também na restrição de integridade dele.
+
+#### `E-10` — o índice em debate é `(execution_id, resource_id)`
+
+[`D-DAT-03`](arquivo/proposta-2026-08-03/modelo-de-dados.md#d-dat-03--índice-sobre-allocationresource_id)
+debate um índice sobre `allocation(resource_id)`. A consequência de `D-DAT-05` diz que
+todo índice começa pelo discriminador, então o índice em debate é
+`(execution_id, resource_id)`, e o enunciado de 2026-08-03 está vencido na letra.
+
+**A decisão ficou mais barata do que era.** Sem o discriminador, o índice servia a uma
+finalidade só, e discutível: aproximar o predicate lock do `SERIALIZABLE` do conflito
+real. Com ele, o índice também é o que impede uma consulta por execução de varrer o
+histórico inteiro — o crescimento monotônico que `P-DAT-11` aceitou sem particionamento
+e sem retenção.
+
+**O que não mudou:** a replicação lógica decodifica mudança de heap, e não de índice. O
+índice não altera o que o oráculo de `E-18` enxerga. Ele altera o custo de escrita
+dentro da janela medida, que é o argumento contra registrado em `D-DAT-03`.
+
+Nenhum dos quatro é decisão. `E-22` é linha nova; os outros três levam `E-9`, `E-10` e
+`E-12` à rodada com o enunciado corrigido.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
