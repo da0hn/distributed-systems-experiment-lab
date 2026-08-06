@@ -27,10 +27,19 @@ Hoje **nenhum** ADR da série corrente está nesse estado: os oito estão `Aceit
 corpo de nenhum deles pode ser editado.
 
 **O cabeçalho de um ADR aceito é editável num caso só, desde 2026-08-04.** Quando um ADR
-posterior o substitui ou subsome uma regra dele, o ADR alterado recebe `Última
+posterior o substitui, o emenda ou subsome uma regra dele, o ADR alterado recebe `Última
 atualização` e `Alterado por`, no mesmo commit em que o ADR novo nasce. A regra completa
 está em [`adr/README.md`](adr/README.md), seção "O rastro de alterações, emendado em
-2026-08-04". Nenhuma outra edição de ADR aceito é permitida.
+2026-08-04"; a **emenda** entrou em 2026-08-05, pela decisão `A1`, e está descrita em
+[`adr/README.md`](adr/README.md#a-emenda-terceira-forma-ao-lado-da-substituição-e-da-subsunção).
+
+**O adendo é a única alteração que acrescenta seção, e ele nasceu em 2026-08-05.** Ele
+serve a um caso só: um ADR aceito que cita um documento que vai deixar de existir. O
+adendo entra como **última seção** do arquivo, datado, e incorpora a afirmação que a
+citação sustentava — nunca o parágrafo de origem. O corpo permanece byte a byte, e por
+isso ele não é edição: nada do que se pensava naquela data é apagado. A regra está em
+[`adr/README.md`](adr/README.md#o-adendo-quarta-forma-e-a-única-que-acrescenta-seção).
+Nenhuma outra alteração de ADR aceito é permitida.
 
 ## Qual artefato criar
 

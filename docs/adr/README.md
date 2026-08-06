@@ -315,3 +315,112 @@ fila que o citava fica pendurada.
 O formato do identificador `Q-NNNN-K`, o ciclo de vida `pendente` → `resolvida por
 ADR-NNNN` e o índice completo — enunciado, origem, destino na fila e status de cada
 questão — vivem em [`docs/questions/README.md`](../questions/README.md).
+
+## A emenda e o adendo, decididos em 2026-08-05
+
+Duas formas novas de alteração entram no processo. As duas nasceram do mesmo problema:
+um ADR aceito que precisa mudar sem que o corpo dele seja tocado.
+
+### Esta página tem um teto de 514 linhas, e ele não é escolha
+
+**Sete citações por número de linha apontam para cá, e todas vêm de ADRs aceitos.** Seis
+estão no [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md), às
+linhas 13-18, 32, 153, 169-172, 171-172, 174 e 226-231. Nenhuma pode ser corrigida.
+
+**Por isso esta seção está no fim, e não onde ela pertenceria.** A emenda pertence ao
+lado de "Substituição e subsunção são coisas diferentes". Escrevê-la ali deslocaria
+quatro das sete citações, e um ADR aceito não pode ser corrigido.
+
+**O teto superior é 514 linhas, e ele é mais perigoso que o inferior.** Duas citações
+quebradas apontam além do fim desta página: às linhas 515 a 539, pelo ADR-0006, e às
+linhas 598 a 609, pelo ADR-0005. As duas quebraram quando esta página encolheu de 908
+para 517 linhas, em 2026-08-03, e a errata de `C-6` as declara no cabeçalho dos dois
+ADRs.
+
+**Os dois números acima estão escritos por extenso de propósito.** Escrevê-los na forma
+`arquivo:linha` faria o verificador de citações lê-los como citações reais desta página
+para si mesma, e acusar dois defeitos que não existem. A primeira versão desta seção
+cometeu esse erro.
+
+Se esta página voltar a passar de 514 linhas, aquelas citações **voltam a resolver** —
+para o texto que estiver ali, que não é o que elas citavam. O verificador de citações
+ficaria **verde no momento exato em que o dano acontece**, porque ele detecta linha além
+do fim, e não linha que resolve para o texto errado.
+
+```mermaid
+flowchart TD
+    A["esta página<br/>tem N linhas"] --> B{"N ≤ 514?"}
+    B -->|" sim "| C["as 2 citações quebradas<br/>continuam detectáveis"]
+    B -->|" não "| D["elas voltam a resolver<br/>para o texto errado"]
+    D --> E["o verificador fica verde<br/>e o leitor é enganado"]
+```
+
+**Regra.** Esta página NÃO DEVE passar de 514 linhas enquanto os ADRs 0005 e 0006
+existirem. Conteúdo novo que não caiba vai para arquivo próprio, com lápide aqui — como
+`B-1` fez com a fila.
+
+### A emenda, terceira forma ao lado da substituição e da subsunção
+
+Um ADR novo que contradiga uma regra **acessória** de um ADR aceito, sem contradizer a
+decisão principal dele, o **emenda**. O ADR antigo permanece `Aceito` e recebe `Última
+atualização` e `Alterado por: ADR-NNNN — emenda; qual regra, com a seção de origem`,
+pela mecânica da seção "O rastro de alterações, emendado em 2026-08-04".
+
+**A fronteira é objetiva, e não julgamento.** A regra emendada **NÃO DEVE** ser a que dá
+título ao ADR, nem a que está na seção `## Decisão`. Qualquer outra afirmação normativa
+dele **PODE** ser emendada.
+
+Descartadas três alternativas. A substituição pela letra da regra atual — "se
+contradisser, é substituição" —, porque o `Estado` do ADR-0008 passaria a dizer que a
+decisão dos dois planos em processos separados saiu de vigor, e ela não saiu. Alargar a
+subsunção trocando a terceira exigência por "não contradiz a decisão principal", porque
+`Alterado por: subsunção` deixaria de dizer se a regra antiga ainda vale — que é a
+informação que o campo existe para carregar. E tirar a renomeação do ADR novo, porque a
+contradição continuaria aberta dentro de um ADR aceito.
+
+### O adendo, quarta forma, e a única que acrescenta seção
+
+As três primeiras alteram o **cabeçalho**. O adendo acrescenta uma **seção no fim** do
+ADR aceito, e é a única forma que toca o arquivo abaixo do cabeçalho.
+
+**Ele não é edição do corpo.** A proibição existe porque a edição apaga o que se pensava
+naquela data. Uma seção acrescentada no fim não apaga nada: o corpo original permanece
+byte a byte, e a citação original continua no lugar em que foi escrita.
+
+**Quando usar.** Quando um ADR aceito cita um documento que vai deixar de existir. O
+adendo incorpora **a afirmação que a citação sustentava**, e não o parágrafo de origem —
+o ADR passa a se sustentar sozinho, e o documento citado pode ser apagado.
+
+Quatro regras governam o adendo:
+
+- O título DEVE ser `## Adendo de AAAA-MM-DD — <o que ele incorpora>`, e ele DEVE ser a
+  última seção do arquivo.
+- O adendo NÃO DEVE contradizer o corpo. Se contradisser, o caminho é emenda ou
+  substituição, e não adendo.
+- Ele DEVE dizer qual citação do corpo ele torna dispensável, pelo texto da citação.
+- O cabeçalho recebe `Última atualização`, e `Alterado por` **não** — nenhum ADR o
+  alterou, e o campo mentiria sobre a origem.
+
+```mermaid
+flowchart TD
+    F["um ADR cita documento<br/>que vai sumir"] --> A["adendo no fim,<br/>datado"]
+    A --> I["a afirmação que a citação<br/>sustentava, incorporada"]
+    I --> S["o ADR se sustenta sozinho"]
+    S --> D["o documento citado<br/>pode ser apagado"]
+    A --> H["cabeçalho: Última atualização,<br/>sem Alterado por"]
+```
+
+### O ADR de vocabulário, decidido junto
+
+`D-DOM-01` a `D-DOM-04` são registradas num ADR de vocabulário, e não uma a uma. O
+glossário [`../CONTEXT.md`](../CONTEXT.md) continua sendo a fonte operacional, e passa a
+citá-lo.
+
+**O motivo é que o glossário já exige um ADR e não o tem.** Ele define o estado
+`aposentado` como "existiu em ADR aceito e foi retirado da linguagem por outro ADR", e
+marca `Control Plane` como aposentado por `D-DOM-02` — que é linha de fila, e não ADR.
+Sem o ADR, o glossário permanece falso contra a própria definição de estado, e o campo
+`Alterado por` dos ADRs alcançados não tem `ADR-NNNN` para receber.
+
+Custo aceito e nomeado: quatro decisões num ADR, contra "um ADR por decisão". As quatro
+partilham tema, e separá-las faria o critério nomear casos em vez de enunciar regra.
