@@ -1030,13 +1030,18 @@ escolha explícita na mesma data.
 **Gatilho que reabre esta linha:** a primeira execução real do workflow produzir um
 tempo de build, ou `E-3` fechar. O que vier primeiro.
 
-**Pergunta em aberto:** por que os jobs de imagem não obtêm runner. Em 2026-08-06 os
+**Por que ainda não há número, e o motivo não é deste repositório.** Em 2026-08-06 os
 dois workflows passaram a executar — o `docs` fechou verde em 7s, e no `build` o job
 `provas` obteve runner e `mvn verify` passou em 1m16s. Os quatro jobs `imagem`, que
 rodam em paralelo depois dele, ficaram quinze minutos na fila e terminaram com
-`The job was not acquired by Runner of type hosted even after multiple attempts`. A
-causa não foi confirmada, e ela não é conteúdo desta linha — mas enquanto nenhum job de
-imagem completar não há tempo a medir, e sem medir esta linha não fecha.
+`The job was not acquired by Runner of type hosted even after multiple attempts`. Uma
+reexecução passou mais de quarenta minutos sem sequer criar os jobs, e o cancelamento
+foi recusado com `Cannot cancel a workflow re-run that has not yet queued` enquanto a
+API do próprio run continuava a reportar `queued` — dois subsistemas do GitHub
+discordando sobre o mesmo objeto. A causa é incidente de plataforma no GitHub Actions,
+reportado em [`githubstatus.com`](https://www.githubstatus.com/) na mesma data. Nada
+neste repositório o provoca e nada aqui o resolve; a medição espera o serviço
+normalizar.
 
 ## O nível de isolamento não tem lugar nesta fila
 
