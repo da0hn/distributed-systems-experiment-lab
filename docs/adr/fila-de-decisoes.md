@@ -982,6 +982,61 @@ conjunto com `wal_level=logical`.
 Não prova nada sobre consistência distribuída. Nenhum dos 42 fenômenos é reproduzível, o
 oráculo não existe, e o CDC está provisionado mas não consumido.
 
+### `E-21`: pular o build do módulo que não mudou, aberto em 2026-08-06
+
+Metade deste assunto já fechou sem decisão, porque não havia alternativa a debater. O
+[`Dockerfile`](../../Dockerfile) copiava os quatro `src/` numa camada só e construía o
+reactor inteiro uma vez por imagem; como as três imagens Java partilham o arquivo, uma
+mudança em qualquer módulo alterava o hash daquela camada nas três e invalidava o cache
+de todas. O `cache-from: type=gha` do workflow existia e nunca era aproveitado entre
+commits. Hoje `shared` é camada própria e cada imagem compila só o módulo pedido —
+medido com Docker 29.5.3, tocar `lab-plane/src` deixa o build de `lab-journal` inteiro
+em cache.
+
+**O que sobra é decisão, e é isto: pular o job do módulo intocado.** Os quatro jobs da
+matriz continuam rodando sempre. O do módulo que não mudou agora é barato, mas não é
+grátis — ele resolve o cache, exporta um manifesto idêntico ao anterior e ocupa um
+runner.
+
+**O obstáculo não é o GitHub Actions, é a regra de tag.** A tag é o SHA do commit, e o
+motivo está escrito no próprio workflow: uma tag móvel torna impossível dizer qual
+imagem produziu um resultado de experimento, que é a propriedade que este repositório
+existe para ter. Um job pulado deixa `ghcr.io/.../<módulo>:<sha>` sem existir, e todo
+manifest que referencie o SHA do commit para os quatro serviços aponta para o vazio.
+
+```mermaid
+flowchart TD
+    C["commit toca só lab-plane"]
+    C --> B["build de lab-plane<br/>publica :sha-novo"]
+    C --> P{"pular os outros três?"}
+    P -->|" sim, sem mais nada "| X["lab-journal:sha-novo<br/>NÃO EXISTE"]
+    P -->|" sim, com retag "| R["imagetools create<br/>copia o manifesto anterior"]
+    P -->|" não, como hoje "| T["build cacheado<br/>publica :sha-novo"]
+    X --> F["deploy/ aponta para o vazio"]
+```
+
+| Alternativa                        | A favor                                          | Contra                                            |
+|------------------------------------|--------------------------------------------------|---------------------------------------------------|
+| 1. matriz dinâmica com retag       | todo SHA continua tendo as quatro imagens        | achar o SHA anterior depende de retenção no GHCR  |
+| 2. matriz dinâmica, tag por módulo | mais barato e mais honesto                       | transfere a complexidade inteira para `E-3`       |
+| 3. não fazer nada                  | zero mecanismo novo; a regra de tag fica intacta | um job redundante por módulo intocado, por commit |
+
+**A recomendação é a 3, e o motivo é que não há número.** Nenhuma execução do workflow
+existe no GitHub até hoje — a contagem de runs do repositório é zero, e os dois
+workflows foram registrados no push de 2026-08-06 sem que nenhum fosse disparado.
+Escolher entre 1 e 2 antes da primeira medição é optar pela complexidade no escuro. E a
+alternativa 2 decide na prática a forma da tag, que é conteúdo de `E-3` — adiada por
+escolha explícita na mesma data.
+
+**Gatilho que reabre esta linha:** a primeira execução real do workflow produzir um
+tempo de build, ou `E-3` fechar. O que vier primeiro.
+
+**Pergunta em aberto:** por que os dois workflows não foram executados no push que os
+criou. Actions está habilitado, o repositório é público, os dois estão `active` e
+nenhuma mensagem de commit contém marcador de `skip ci`. A causa não foi confirmada, e
+ela não é conteúdo desta linha — mas sem ela não há como medir, e sem medir esta linha
+não fecha.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
