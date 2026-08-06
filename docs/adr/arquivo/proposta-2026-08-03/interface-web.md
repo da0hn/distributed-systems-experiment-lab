@@ -4,13 +4,13 @@
 - **Data:** 2026-08-03
 - **Escopo:** as telas da interface web do laboratório, o que cada uma exibe, e como
   a timeline projeta o log de observações sem prometer ordem que o log não garante.
-- **Depende de:** [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md),
-  [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md),
-  [`ADR-0003`](../adr/0003-a-linguagem-do-agendamento.md),
-  [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md),
-  [`ADR-0005`](../adr/0005-a-forma-do-escalonador.md),
-  [`ADR-0006`](../adr/0006-a-forma-da-estrategia-de-concorrencia.md) e
-  [`ADR-0007`](../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), todos
+- **Depende de:** [`ADR-0001`](../../0001-o-passo-como-unidade-de-execucao.md),
+  [`ADR-0002`](../../0002-o-dominio-minimo-e-os-dois-oraculos.md),
+  [`ADR-0003`](../../0003-a-linguagem-do-agendamento.md),
+  [`ADR-0004`](../../0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md),
+  [`ADR-0005`](../../0005-a-forma-do-escalonador.md),
+  [`ADR-0006`](../../0006-a-forma-da-estrategia-de-concorrencia.md) e
+  [`ADR-0007`](../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), todos
   `Aceito`.
 
 ## O que este documento é, e o que ele não decide
@@ -28,18 +28,18 @@ lista as opções e o que cada uma implica para a interface, e remete a escolha.
 Três coisas fixam quase tudo o que segue.
 
 **A timeline é a projeção direta do log de observações**
-(`../adr/0001-o-passo-como-unidade-de-execucao.md:450-451`). Não existe um segundo
+(`../../0001-o-passo-como-unidade-de-execucao.md:450-451`). Não existe um segundo
 modelo de evento para a interface desenhar.
 
 **O log só garante ordem entre workers para o par que um evento com
 `restrito = verdadeiro` produz**
-(`../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:80-83`). Para o resto, o
+(`../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:80-83`). Para o resto, o
 instante de parede é metadado de exibição.
 
 **Um zero não é uma observação — é a ausência de uma**
-(`../plano-do-laboratorio.md:520-525`). Uma tela que exiba `0 violações` sem o veredito
+(`../../../plano-do-laboratorio.md:520-525`). Uma tela que exiba `0 violações` sem o veredito
 classificado, sem a exposição e sem o limite de confiança apaga o
-[`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)
+[`ADR-0004`](../../0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)
 inteiro.
 
 ## O inventário de telas
@@ -55,7 +55,7 @@ inteiro.
 | T7 caderno de laboratório     | o que já foi medido, e quando                    | processo       | `AGENTS.md`, regra de `docs/experiments/`    |
 
 **T6 não é especificável hoje.** O formato de veredito em curva não foi decidido, e o E4
-não tem Feature Card por esse motivo (`../features/README.md:35-48`). A seção
+não tem Feature Card por esse motivo (`../../../features/README.md:35-48`). A seção
 [`## T6 — a curva do E4`](#t6--a-curva-do-e4) registra o que se sabe e o que falta.
 
 ### Mapa de navegação
@@ -82,7 +82,7 @@ flowchart TB
 
 A seta ausente importa: nenhuma tela escreve no system under test. A interface
 inicia execuções e lê o que o Lab Plane produziu. O runtime chama a operação; a operação
-nunca chama o runtime (`../adr/0001-o-passo-como-unidade-de-execucao.md:94-95`), e a
+nunca chama o runtime (`../../0001-o-passo-como-unidade-de-execucao.md:94-95`), e a
 interface fica um nível acima dos dois.
 
 ## T2 — o Experiment Designer
@@ -106,7 +106,7 @@ que a plataforma recusa antes de rodar.
 
 **Um endereço de fronteira tem três componentes**, e o terceiro não tem valor padrão: a
 plataforma recusa `AFTER_READ` sem seletor de tentativa em qualquer operação que possa
-tentar mais de uma vez (`../adr/0001-o-passo-como-unidade-de-execucao.md:185-188`).
+tentar mais de uma vez (`../../0001-o-passo-como-unidade-de-execucao.md:185-188`).
 Proposta: o campo de tentativa nasce vazio e o formulário não submete enquanto ele
 estiver vazio, em vez de preencher `1` por conveniência.
 
@@ -114,19 +114,19 @@ estiver vazio, em vez de preencher `1` por conveniência.
 motivo declarado pelo qual o ADR-0001 descartou ganchos inline no código do sistema sob
 teste: "um método linear com ganchos só revela seus pontos de pausa executando (...) o
 Experiment Designer da UI não consegue oferecer os pontos de barreira"
-(`../adr/0001-o-passo-como-unidade-de-execucao.md:582-587`). A tela existe porque aquela
+(`../../0001-o-passo-como-unidade-de-execucao.md:582-587`). A tela existe porque aquela
 alternativa foi recusada; ela não é conveniência de formulário.
 
 ### O botão `iniciar` dispara quatro execuções, não uma
 
 Um experimento tem quatro execuções, e o ADR-0003 nomeia as quatro: calibração, controle
 negativo, execução medida e controle positivo
-(`../adr/0003-a-linguagem-do-agendamento.md:155-167`). A calibração roda com
-`ATOMIC_UPDATE` (`../adr/0006-a-forma-da-estrategia-de-concorrencia.md:79-81`), e a
+(`../../0003-a-linguagem-do-agendamento.md:155-167`). A calibração roda com
+`ATOMIC_UPDATE` (`../../0006-a-forma-da-estrategia-de-concorrencia.md:79-81`), e a
 plataforma recusa o relatório quando `commits` divergir de `value_final − value_inicial`
-(`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:179-185`). O controle positivo roda
+(`../../0002-o-dominio-minimo-e-os-dois-oraculos.md:179-185`). O controle positivo roda
 apenas quando a execução medida termina com zero violações e coincidências próprias
-maiores que zero (`../adr/0004-...md:250-259`).
+maiores que zero (`../../0004-...md:250-259`).
 
 ```mermaid
 flowchart LR
@@ -174,7 +174,7 @@ sabe qual delas é o resultado.
 ### A validação acontece antes de executar, e nomeia o culpado
 
 A plataforma recusa, sem executar nada, sete classes de agendamento inválido, e a recusa
-nomeia a restrição culpada (`../adr/0003-a-linguagem-do-agendamento.md:281-293`).
+nomeia a restrição culpada (`../../0003-a-linguagem-do-agendamento.md:281-293`).
 Proposta: o botão `validar` faz a mesma travessia que o `iniciar` faria e exibe a recusa
 ancorada no campo que a causou — endereço não resolvido, papel não declarado, encontro
 fora de `F_abre`, ciclo no grafo de precedências. Uma recusa exibida como texto solto no
@@ -187,7 +187,7 @@ topo da tela perde o endereço que o ADR obriga a plataforma a produzir.
 O ADR-0007 fixa a forma de um evento: tentativa, worker, endereço de fronteira completo,
 tipo, instante de parede e — apenas em `RESULTADO_DE_PASSO` — os fatos brutos, payload
 opaco que o runtime não interpreta
-(`../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:58-65`).
+(`../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:58-65`).
 
 | Tipo                 | O que a tela desenha                                           | O que ela não pode acrescentar                     |
 |----------------------|----------------------------------------------------------------|----------------------------------------------------|
@@ -214,23 +214,23 @@ flowchart LR
 
 **Uma faixa por worker, e a ordem só é real dentro da faixa.** Dentro de um mesmo worker
 a ordem de emissão é a ordem de execução, por construção
-(`../adr/0007-...md:79-80`). Entre faixas, nada é ordenado por vizinhança visual.
+(`../../0007-...md:79-80`). Entre faixas, nada é ordenado por vizinhança visual.
 
 **A aresta causal é a única afirmação de precedência entre faixas.** Ela é desenhada
 apenas para o par que um evento com `restrito = verdadeiro` produz: a liberação está
-causalmente depois do evento que a autorizou (`../adr/0007-...md:80-82`). Um par sem
+causalmente depois do evento que a autorizou (`../../0007-...md:80-82`). Um par sem
 aresta não está ordenado, e a ausência da aresta é a informação.
 
 **O instante de parede é uma coluna, e não o eixo.** O ADR-0007 o classifica como
-metadado de exibição (`../adr/0007-...md:82-83`), e o ADR-0004 registra que nenhum
+metadado de exibição (`../../0007-...md:82-83`), e o ADR-0004 registra que nenhum
 documento do repositório decidiu qual relógio o produz
-(`../adr/0004-...md:414-416`). Uma linha do tempo cujo eixo é um número que ninguém
+(`../../0004-...md:414-416`). Uma linha do tempo cujo eixo é um número que ninguém
 definiu afirma precedência a partir de uma quantidade sem origem.
 
 Proposta: um **modo ordem garantida**, acionável por um controle da própria tela, que
 oculta tudo exceto os eventos com `restrito = verdadeiro` e suas arestas. O que sobra é
 exatamente a subsequência que o ADR-0007 usa para decidir se duas execuções de controle
-com a mesma semente são equivalentes (`../adr/0007-...md:90-95`). O modo não é um filtro
+com a mesma semente são equivalentes (`../../0007-...md:90-95`). O modo não é um filtro
 de conveniência: ele é a projeção da única ordem que o laboratório afirma.
 
 ### Wireframe
@@ -262,25 +262,25 @@ Os números do wireframe são ilustrativos. Nenhuma execução existe.
 
 O plano exige, para o E1, "timeline mostrando dois `READ version=N` antes de dois `WRITE
 version=N+1`, com o segundo marcado como sobrescrita"
-(`../plano-do-laboratorio.md:395-396`), e para o E5, "a timeline precisa mostrar os dois
+(`../../../plano-do-laboratorio.md:395-396`), e para o E5, "a timeline precisa mostrar os dois
 `SELECT sum` retornando o mesmo valor **antes** de qualquer `INSERT`"
-(`../plano-do-laboratorio.md:469-471`). As duas frases afirmam precedência entre
+(`../../../plano-do-laboratorio.md:469-471`). As duas frases afirmam precedência entre
 workers.
 
 Três decisões aceitas tornam essas frases irrepresentáveis na execução que o experimento
 reporta:
 
-1. a execução medida roda **sem agendamento** (`../adr/0004-...md:100-102`), logo nenhum
+1. a execução medida roda **sem agendamento** (`../../0004-...md:100-102`), logo nenhum
    evento dela tem `restrito = verdadeiro`;
 2. sem `restrito = verdadeiro`, o log não garante ordem entre workers
-   (`../adr/0007-...md:80-83`);
+   (`../../0007-...md:80-83`);
 3. a execução em que essa ordem é garantida é o controle positivo, e ele **não é
-   reportado como resultado do experimento** (`../adr/0004-...md:256-259`).
+   reportado como resultado do experimento** (`../../0004-...md:256-259`).
 
 Há ainda uma quarta colisão, menor e já registrada: `version` não existe no esquema
-(`../adr/0002-...md:94-95`), e o próprio ADR-0002 anota que o exemplo do briefing "passa
+(`../../0002-...md:94-95`), e o próprio ADR-0002 anota que o exemplo do briefing "passa
 a descrever um estado do laboratório que ainda não existe"
-(`../adr/0002-...md:470-471`).
+(`../../0002-...md:470-471`).
 
 Isto é uma contradição entre o plano e três ADRs aceitos, e a interface é onde ela
 aparece. A escolha está registrada em
@@ -289,8 +289,8 @@ aparece. A escolha está registrada em
 ## O resultado zero na interface
 
 O ADR-0004 classifica um zero em cinco vereditos, avaliados **na ordem da tabela**
-(`../adr/0004-...md:207-222`), e o ADR-0005 acrescentou o sexto, `agendamento não
-cumprido` (`../adr/0005-a-forma-do-escalonador.md:98-107`). Três dos seis não sustentam
+(`../../0004-...md:207-222`), e o ADR-0005 acrescentou o sexto, `agendamento não
+cumprido` (`../../0005-a-forma-do-escalonador.md:98-107`). Três dos seis não sustentam
 afirmação de proteção.
 
 | Veredito                   | Sustenta comparação entre estratégias | Origem                      |
@@ -305,14 +305,14 @@ Proposta, em quatro regras de renderização:
 
 - **O número `0` nunca aparece sozinho.** Ele é renderizado junto do veredito, do limite
   superior a 95% e das duas contagens de coincidência — a da execução medida e a do
-  controle negativo, que é a exposição de referência (`../adr/0004-...md:167-175`).
+  controle negativo, que é a exposição de referência (`../../0004-...md:167-175`).
 - **A tela mostra a travessia da tabela**, condição por condição, com a resposta de cada
   uma. É a diferença entre exibir um rótulo e explicar de onde ele veio.
 - **Os quatro vereditos que não sustentam proteção** recebem tratamento visual próprio e
   texto que diz o que consertar. `inválido` e `janela mal declarada` apontam para o
   autor do experimento, não para a estratégia.
 - **A interface não ramifica pelo rótulo da estratégia.** O ADR-0006 proíbe qualquer
-  componente do Lab Plane de inspecionar esse rótulo (`../adr/0006-...md:51-54`). Uma
+  componente do Lab Plane de inspecionar esse rótulo (`../../0006-...md:51-54`). Uma
   tela que esconda o painel de controle positivo "porque é `PESSIMISTIC`" reintroduz a
   ramificação um nível acima; ela deve ler o veredito, que já diz que a ordem 3 encerrou
   a classificação.
@@ -344,20 +344,20 @@ Proposta, em quatro regras de renderização:
 ## T5 — a comparação entre execuções
 
 O E3 roda a carga do E1 quatro vezes, trocando apenas a estratégia
-(`../plano-do-laboratorio.md:428-429`). A tabela comparativa é o resultado do
+(`../../../plano-do-laboratorio.md:428-429`). A tabela comparativa é o resultado do
 experimento.
 
 Duas recusas vêm de ADR aceito e precisam existir na tela:
 
 **A plataforma não compara contagens de execuções cuja carga declarada diferir**
-(`../adr/0004-...md:188-190`). Proposta: a tela recusa montar a tabela e nomeia o campo
+(`../../0004-...md:188-190`). Proposta: a tela recusa montar a tabela e nomeia o campo
 divergente — `N`, número de workers ou operação —, em vez de exibir células que não se
 relacionam.
 
 **O controle positivo não entra na tabela.** Ele declara carga própria
-(`../adr/0003-...md:183-196`) e não é resultado (`../adr/0004-...md:256-259`). O
+(`../../0003-...md:183-196`) e não é resultado (`../../0004-...md:256-259`). O
 ADR-0003 registra a consequência: "os dois relatórios de um mesmo experimento descrevem
-cargas diferentes" (`../adr/0003-...md:456-458`). Proposta: o controle positivo aparece
+cargas diferentes" (`../../0003-...md:456-458`). Proposta: o controle positivo aparece
 como um detalhe expansível dentro da linha da estratégia que o exigiu, rotulado como
 execução de controle, e nunca como uma quinta coluna.
 
@@ -377,22 +377,22 @@ execução de controle, e nunca como uma quinta coluna.
 
 Números ilustrativos. O limite superior aparece **junto** do zero, e não numa coluna
 distante: sem ele, "zero em cem tentativas" e "zero em um milhão" afirmam a mesma coisa
-(`../adr/0004-...md:358-361`).
+(`../../0004-...md:358-361`).
 
 ## T6 — a curva do E4
 
 O E4 é o primeiro experimento cujo resultado é uma curva, e não um veredito
-(`../plano-do-laboratorio.md:443-449`). O formato não foi decidido, e o E4 não tem
-Feature Card por isso (`../features/README.md:35-48`).
+(`../../../plano-do-laboratorio.md:443-449`). O formato não foi decidido, e o E4 não tem
+Feature Card por isso (`../../../features/README.md:35-48`).
 
 O que se sabe hoje sobre o estímulo e a forma esperada: `OPTIMISTIC` fixo, workers de 2
 a 50 sobre o mesmo recurso; correção sempre verde; retries por operação crescendo mais
 rápido que linearmente; throughput com pico e queda.
 
 O que falta para a tela existir: como uma curva é declarada, comparada e reprovada; o
-limiar, que alguém precisa declarar (`../plano-do-laboratorio.md:700-704`); e como o
+limiar, que alguém precisa declarar (`../../../plano-do-laboratorio.md:700-704`); e como o
 terceiro formato de veredito — taxa com limite de confiança — convive com os outros dois
-(`../features/README.md:38-43`).
+(`../../../features/README.md:38-43`).
 
 Proposta: T6 não é desenhada agora. Um eixo escolhido hoje congelaria a decisão de
 formato, que é o erro que o índice de capacidades registra ao explicar por que o E4 não
@@ -403,7 +403,7 @@ tem card.
 ### A ordem de grandeza
 
 O cálculo abaixo usa a operação `increment` do ADR-0001, com três passos
-(`../adr/0001-...md:100-106`), em alta resolução — seis fronteiras por tentativa.
+(`../../0001-...md:100-106`), em alta resolução — seis fronteiras por tentativa.
 
 | Origem                                                     | Eventos por tentativa |
 |------------------------------------------------------------|-----------------------|
@@ -412,11 +412,11 @@ O cálculo abaixo usa a operação `increment` do ADR-0001, com três passos
 | `BLOQUEIO`, se emitido também quando o worker não é retido | 6                     |
 
 O ADR-0007 descreve `BLOQUEIO` e `LIBERACAO` carregando `restrito = falso` "quando o
-worker só consultou e seguiu" (`../adr/0007-...md:63-66`), sem dizer se os dois eventos
+worker só consultou e seguiu" (`../../0007-...md:63-66`), sem dizer se os dois eventos
 são emitidos nesse caso. O piso é 9 eventos por tentativa; o teto, 15.
 
 Com o E1 declarado no plano — 100 operações, 10 workers
-(`../plano-do-laboratorio.md:391`) — a execução emite entre 900 e 1 500 eventos. O E4,
+(`../../../plano-do-laboratorio.md:391`) — a execução emite entre 900 e 1 500 eventos. O E4,
 com 50 workers e um `N` que ninguém fixou, cruza a casa das dezenas de milhares.
 
 ### O que isso exige da tela
@@ -529,7 +529,7 @@ A escolha não é feita aqui.
 **Problema.** O plano registra a tensão: uma interface onde o engenheiro seleciona o
 cenário, configura e clica em iniciar implica que a definição nasce no banco; o
 `arquivo/0004` decidiu que ela é arquivo versionado no Git, e que os relatórios formam
-um caderno de laboratório (`../plano-do-laboratorio.md:693-698`). A regra estrutural do
+um caderno de laboratório (`../../../plano-do-laboratorio.md:693-698`). A regra estrutural do
 repositório repete a divisão: `experiments/` guarda definições, `docs/experiments/`
 guarda resultados, e os dois entram no Git.
 
@@ -549,8 +549,8 @@ versionado, somente leitura na interface: operação, papéis disponíveis, jane
 exposição, resolução. Os **parâmetros da execução** — semente, `N`, cardinalidade,
 estratégia, isolamento — nascem na interface e vivem no banco. A favor: a separação já
 existe nos ADRs aceitos. O ADR-0003 diz que o experimento declara a carga e que **cada
-execução declara as próprias restrições** (`../adr/0003-...md:155-167`), e o ADR-0004
-atribui `N` à execução medida (`../adr/0004-...md:127-129`). Contra: uma execução deixa
+execução declara as próprias restrições** (`../../0003-...md:155-167`), e o ADR-0004
+atribui `N` à execução medida (`../../0004-...md:127-129`). Contra: uma execução deixa
 de ser reproduzível por `checkout` sozinho — ela exige o arquivo mais a linha do banco,
 e o relatório precisa carregar os dois para o caderno significar alguma coisa.
 
@@ -566,11 +566,11 @@ de ser uma leitura do Git e passa a ser uma listagem de banco, e a regra de
 
 **Problema.** O plano fixa uma aplicação Spring Boot, um PostgreSQL e uma interface web
 servida pela própria aplicação, sem segundo processo
-(`../plano-do-laboratorio.md:531-532`). Next.js com App Router e Server Components exige
+(`../../../plano-do-laboratorio.md:531-532`). Next.js com App Router e Server Components exige
 um runtime Node em execução.
 
 **Alternativa A — export estático servido pela aplicação.** A favor: preserva "um
-processo, um banco, um navegador" (`../plano-do-laboratorio.md:486`); mesma origem,
+processo, um banco, um navegador" (`../../../plano-do-laboratorio.md:486`); mesma origem,
 nenhuma configuração de CORS, nenhuma URL base. Contra: sem Server Components com dados
 de requisição, sem Route Handlers, sem renderização no servidor; T1, T4 e T5 passam a
 buscar dados no cliente, com um estado de carregamento a mais em cada uma.
@@ -609,19 +609,19 @@ tela cresce e a tabela do T5 é escrita à mão.
 ### D-UI-04 — o eixo padrão da timeline
 
 **Problema.** O briefing pede `12:01:00.100 Worker-1 READ resource=42 version=1`
-(`../plano-do-laboratorio.md:77-78`), que é uma linha do tempo por instante de parede. O
+(`../../../plano-do-laboratorio.md:77-78`), que é uma linha do tempo por instante de parede. O
 ADR-0007 classifica esse instante como metadado de exibição
-(`../adr/0007-...md:82-83`), e o ADR-0004 registra que o relógio que o produz não foi
-decidido (`../adr/0004-...md:414-416`).
+(`../../0007-...md:82-83`), e o ADR-0004 registra que o relógio que o produz não foi
+decidido (`../../0004-...md:414-416`).
 
 **Alternativa A — instante de parede como eixo.** A favor: é o pedido literal, e é a
 forma que qualquer leitor reconhece. Contra: ordena visualmente eventos que o log não
 ordena, e o faz a partir de um número cuja origem nenhum documento fixou.
 
 **Alternativa B — posição no log como ordem de linha, com arestas causais e modo ordem
-garantida.** A favor: a posição é estrutura do próprio log (`../adr/0007-...md:85-88`),
+garantida.** A favor: a posição é estrutura do próprio log (`../../0007-...md:85-88`),
 e o modo ordem garantida projeta exatamente a subsequência que o ADR-0007 usa como
-critério de equivalência (`../adr/0007-...md:90-95`). Contra: a posição também não é
+critério de equivalência (`../../0007-...md:90-95`). Contra: a posição também não é
 prova de precedência entre faixas — ela reflete a ordem de apensação —, e a interface
 precisa dizer isso de forma persistente, não uma vez.
 
@@ -634,7 +634,7 @@ coluna.
 
 **O que muda se a escolha for outra.** Com A, a interface precisa primeiro fechar a
 questão do relógio, e ela pertence ao ADR-0004
-(`../adr/0004-...md:414-416`). Com C, o desenho do E5 deixa de ser possível em qualquer
+(`../../0004-...md:414-416`). Com C, o desenho do E5 deixa de ser possível em qualquer
 execução.
 
 ### D-UI-05 — onde o desenho pedagógico vive
@@ -646,21 +646,21 @@ workers, e a que tem não é reportada.
 
 **Alternativa A — o desenho existe só no controle positivo.** A favor: ali o encontro
 força a coincidência, os eventos são `restrito = verdadeiro`, e a ordem é real. Contra:
-o controle positivo só roda em parte dos casos (`../adr/0004-...md:250-253`), e ele não
+o controle positivo só roda em parte dos casos (`../../0004-...md:250-253`), e ele não
 é resultado — a lição mais valiosa do laboratório passa a viver numa execução que o
 relatório não reporta.
 
 **Alternativa B — derivar o desenho das coincidências da execução medida.** A favor: uma
 coincidência é, por definição, um par de tentativas cujas janelas se sobrepõem
-(`../adr/0004-...md:160-163`), que é exatamente "as duas leram antes que qualquer uma
+(`../../0004-...md:160-163`), que é exatamente "as duas leram antes que qualquer uma
 gravasse". Contra: a contagem de coincidências compara instantes entre threads a partir
-de um relógio não decidido (`../adr/0004-...md:414-416`); o desenho herdaria essa
+de um relógio não decidido (`../../0004-...md:414-416`); o desenho herdaria essa
 indefinição e a apresentaria como fato visual.
 
 **Alternativa C — os dois, com procedência declarada em cada um.** A favor: atende o
 plano sem esconder a diferença. Contra: dois desenhos do mesmo fenômeno na mesma tela
 exigem que o leitor saiba qual afirma o quê, e o repositório já registra esse custo ao
-manter duas notações de agendamento (`../adr/0003-...md:434-436`).
+manter duas notações de agendamento (`../../0003-...md:434-436`).
 
 **Recomendação:** alternativa A no MVP. A execução medida exibe as contagens de
 coincidência, que é o que ela pode afirmar; o desenho aparece na tela do controle
@@ -678,7 +678,7 @@ produzir dezenas de milhares de eventos, e a aba precisa continuar utilizável.
 **Alternativa A — paginação contra o servidor acima do teto.** A favor: nenhum evento é
 descartado, e o modo ordem garantida continua exato. Contra: exige que o log de uma
 execução terminada continue consultável, e o destino dele não está decidido
-(`../plano-do-laboratorio.md:589-592`, `../adr/0007-...md:85-88`).
+(`../../../plano-do-laboratorio.md:589-592`, `../../0007-...md:85-88`).
 
 **Alternativa B — amostragem.** A favor: uma tela sempre responsiva, sem servidor a
 mais. Contra: uma amostra descarta eventos com `restrito = verdadeiro`, e com eles a
@@ -700,7 +700,7 @@ no E4.
 
 **Problema.** A interface inicia execuções que saturam o banco de propósito e, a partir
 da etapa 6, derrubam o processo. O PostgreSQL pode ser compartilhado com outra camada do
-homelab — é a `Q-INT-3` de [`integrations.md`](integrations.md):93-97. Ao mesmo tempo, o
+homelab — é a `Q-INT-3` de [`../../../architecture/integrations.md`](../../../architecture/integrations.md):93-97. Ao mesmo tempo, o
 relatório é peça de caderno de laboratório, e um caderno sem autor perde metade do
 valor.
 
@@ -729,34 +729,34 @@ segurança e o relatório ganha um campo de autor, e a decisão de entrega ganha
 
 **O log de uma execução terminada não tem destino consultável.** O plano diz que o log
 vive em memória e é persistido no fim da execução
-(`../plano-do-laboratorio.md:589-592`); o ADR-0007 diz que a persistência durável está
-fora de escopo até a etapa 6 (`../adr/0007-...md:85-88`). T7 lista execuções antigas e
+(`../../../plano-do-laboratorio.md:589-592`); o ADR-0007 diz que a persistência durável está
+fora de escopo até a etapa 6 (`../../0007-...md:85-88`). T7 lista execuções antigas e
 T3 desenha a timeline delas, e nenhum documento diz de onde esses eventos vêm. Proposta
 de registro como `Q-INT-12`.
 
 **O relógio que produz o instante de parede não foi decidido.** O ADR-0004 registra a
-lacuna (`../adr/0004-...md:414-416`), e a interface exibe esse instante em toda linha da
+lacuna (`../../0004-...md:414-416`), e a interface exibe esse instante em toda linha da
 timeline. Proposta de registro como `Q-INT-13`.
 
 **A interface é system under test, Lab Plane, ou nenhum dos dois?** O ADR-0002 proíbe o
-oráculo de derivar o estado final do log (`../adr/0002-...md:216-219`), e o ADR-0006
+oráculo de derivar o estado final do log (`../../0002-...md:216-219`), e o ADR-0006
 proíbe componentes do Lab Plane de ramificar pelo rótulo da estratégia
-(`../adr/0006-...md:51-54`). Nenhuma das duas regras nomeia a interface. Uma tela que
+(`../../0006-...md:51-54`). Nenhuma das duas regras nomeia a interface. Uma tela que
 marque um `WRITE` como sobrescrita está derivando um veredito do log. Proposta de
 registro como `Q-INT-14`.
 
 **O ADR-0007 não diz se `BLOQUEIO` é emitido quando o worker não é retido.** O texto
 descreve o campo `restrito = falso` para o caso em que o worker "só consultou e seguiu"
-(`../adr/0007-...md:63-66`), o que admite as duas leituras. A diferença é de 40% no
+(`../../0007-...md:63-66`), o que admite as duas leituras. A diferença é de 40% no
 volume de eventos por tentativa, e ela recai sobre o critério numérico de streaming.
 
 **O E4 não tem `N` declarado em documento nenhum.** O ADR-0004 exige que `N` seja
-declarado antes (`../adr/0004-...md:127-129`), e o plano descreve o E4 apenas pelo eixo
-de workers (`../plano-do-laboratorio.md:443-445`). O teto de eventos da timeline depende
+declarado antes (`../../0004-...md:127-129`), e o plano descreve o E4 apenas pelo eixo
+de workers (`../../../plano-do-laboratorio.md:443-445`). O teto de eventos da timeline depende
 desse número.
 
 **Nenhum documento diz quantos experimentos aparecem em T1.** Os 42 fenômenos do escopo
-não têm card (`../features/README.md:60-61`), e o MVP tem quatro experimentos. A tela
+não têm card (`../../../features/README.md:60-61`), e o MVP tem quatro experimentos. A tela
 precisa saber se lista o que existe ou o que está previsto.
 
 ## Adições propostas a `contracts/README.md`
@@ -765,16 +765,16 @@ Nada aqui edita aquele arquivo. As linhas abaixo são propostas.
 
 - Acrescentar, na tabela `## Estado: nenhum contrato existe`, uma coluna ou nota que
   aponte, para os gatilhos `OpenAPI` e `JSON Schema do relatório`, o esboço em
-  [`../architecture/contratos-de-api.md`](contratos-de-api.md) como o lugar onde a forma
+  [`../../../architecture/contratos-de-api.md`](contratos-de-api.md) como o lugar onde a forma
   é discutida até o contrato nascer. O esboço não é contrato, e a nota precisa dizer
   isso.
 - Acrescentar uma linha à tabela `## O que existe hoje no lugar de contrato`:
 
   | Fronteira                          | Onde está descrita                 | Forma                                              |
   |------------------------------------|------------------------------------|----------------------------------------------------|
-  | telas e navegação da interface web | `../architecture/interface-web.md` | prosa, wireframes e Mermaid, em estado de proposta |
+  | telas e navegação da interface web | `../../../architecture/interface-web.md` | prosa, wireframes e Mermaid, em estado de proposta |
 
-## Adições propostas a `integrations.md`
+## Adições propostas a `../../../architecture/integrations.md`
 
 Nada aqui edita aquele arquivo. As linhas abaixo são propostas.
 
@@ -782,7 +782,7 @@ Nada aqui edita aquele arquivo. As linhas abaixo são propostas.
   ou WebSocket` por uma referência à proposta de
   [`contratos-de-api.md`](contratos-de-api.md), mantendo a marca **hipótese**.
 - Acrescentar quatro perguntas em aberto. **Os números são provisórios até a linha
-  entrar em `integrations.md`**: o identificador só é definitivo quando o índice o
+  entrar em `../../../architecture/integrations.md`**: o identificador só é definitivo quando o índice o
   registra, e a faixa 12 a 17 foi atribuída para evitar colisão com outras propostas em
   curso.
 
