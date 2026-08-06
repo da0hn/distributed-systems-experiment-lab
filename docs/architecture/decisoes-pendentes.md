@@ -2617,3 +2617,293 @@ tirar prosa, já que a regra manda cortar prosa e diagrama, nunca evidência. No
 card cobre **dois** oráculos do ADR-0002 — o exato e o de dual write — o que torna a
 divisão a leitura mais provável, mas ela contraria a regra de um card por oráculo apenas
 se os dois forem considerados um só.
+
+## O Lote D, enumerado em 2026-08-05
+
+Os Lotes C e B fecharam, e com eles os dois portões que precediam este. O Lote D executa
+a instrução registrada na seção "A pulverização de `docs/architecture/`, pedida em
+2026-08-04".
+
+A tabela de "Os seis lotes" conta três itens para o Lote D — as Lacunas 2, 3 e 4. Dois
+outros nasceram depois: o destino de `decisoes-pendentes.md`, que só ficou visível
+quando `B-1` mediu as citações, e a ordem de execução, que nenhuma lacuna cobre.
+
+| Item  | Pendência                                               | Origem          |
+|-------|---------------------------------------------------------|-----------------|
+| `D-1` | o destino de `integrations.md`, e o limite que não roda | Lacuna 2        |
+| `D-2` | o destino da prosa das oito propostas                   | Lacuna 3        |
+| `D-3` | o destino de `contra-avaliacao.md` e das objeções       | Lacuna 4        |
+| `D-4` | o destino de `decisoes-pendentes.md`, congelado         | achado de `B-1` |
+| `D-5` | a ordem de execução, e o que sobra da pasta             | este turno      |
+
+**O que está em jogo, medido.** Onze arquivos, 464 mil caracteres, e uma assimetria que
+muda a leitura: o arquivo mais citado de fora não é o maior.
+
+| Arquivo                   | Caracteres | Citado de fora de `architecture/` |
+|---------------------------|------------|-----------------------------------|
+| `decisoes-pendentes.md`   | 156 656    | 16 arquivos                       |
+| `modelo-de-dados.md`      | 71 860     | 2 arquivos                        |
+| `mensageria.md`           | 68 139     | 2 arquivos                        |
+| `interface-web.md`        | 53 739     | 1 arquivo                         |
+| `modelo-de-dominio.md`    | 51 038     | 2 arquivos                        |
+| `contratos-de-api.md`     | 47 499     | 1 arquivo                         |
+| `modulos-e-fronteiras.md` | 34 171     | 2 arquivos                        |
+| `arquitetura-alvo.md`     | 28 411     | 3 arquivos                        |
+| `entrega-continua.md`     | 26 333     | 1 arquivo                         |
+| `contra-avaliacao.md`     | 24 388     | 2 arquivos                        |
+| `integrations.md`         | 11 838     | 13 arquivos                       |
+
+```mermaid
+flowchart TD
+    P["a pulverização"] --> D1["D-1 · integrations.md<br/>13 citações externas"]
+    P --> D2["D-2 · 8 propostas<br/>340 mil caracteres"]
+    P --> D3["D-3 · contra-avaliacao<br/>9 objeções não conferidas"]
+    P --> D4["D-4 · decisoes-pendentes<br/>congelado até 1879"]
+    D1 --> O["D-5 · em que ordem,<br/>e o que sobra da pasta"]
+    D2 --> O
+    D3 --> O
+    D4 --> O
+```
+
+### `D-1` — o destino de `integrations.md`, e um limite que não roda
+
+**O problema.** A matriz de integrações é citada treze vezes de fora desta pasta, e uma
+das citações é executável: `check_artifact_limits.py` associa o limite de 12 000
+caracteres à chave literal `Path("docs/architecture/integrations.md")`. Um arquivo
+movido deixa de casar com a chave, e o verificador passa a não medir nada — sem erro e
+sem aviso.
+
+**O achado deste turno, e ele reduz o peso da Lacuna 2.** Esse limite **já não é
+exercido por nada automático**. O workflow `docs` roda o script sobre
+`docs/adr/[0-9]*.md` e mais nada
+([`.github/workflows/docs.yml`](../../.github/workflows/docs.yml)); a única outra
+invocação é manual, prescrita pela skill `feature-planning`. O arquivo está hoje em 11
+838 caracteres contra um limite de 12 000, a 162 caracteres de estourar, e nenhuma
+execução do repositório perceberia.
+
+**O que isso muda.** A Lacuna 2 descreve o risco como consequência de mover o arquivo.
+Ele não depende de mover: o limite está frouxo desde que o workflow foi escrito. Mover
+apenas o tornaria permanente em vez de latente.
+
+| Alternativa                               | A favor                                           | Contra                                                |
+|-------------------------------------------|---------------------------------------------------|-------------------------------------------------------|
+| fica onde está; a pasta sobrevive por ele | 13 citações externas não mudam; o script não muda | a pasta continua existindo para um arquivo só         |
+| vai para `../contracts/integrations.md`   | a matriz descreve o que atravessa fronteira       | 13 citações e a chave do script mudam no mesmo commit |
+| vira `../contracts/README.md`, fundido    | o índice de contratos já cita a matriz            | funde dois documentos com propósitos diferentes       |
+
+**Recomendação: fica onde está.** As outras duas movem treze citações e a chave do
+script para ganhar o quê — a matriz não é contrato, é o inventário do que ainda não é
+contrato. `docs/architecture/` sobreviver com um arquivo só é exatamente o que
+[`../specification-process.md`](../specification-process.md) já declara que a pasta
+contém.
+
+### `D-2` — o destino da prosa das oito propostas
+
+**O problema.** Os oito documentos de proposta somam cerca de 340 mil caracteres e não
+são nenhum dos seis artefatos que o processo prevê. A Lacuna 3 já separou as três
+naturezas misturadas neles: o enunciado de uma decisão vai para a fila, a evidência vai
+para o artefato que a decisão gerar, e a prosa que não sustenta decisão nenhuma **não
+tem destino**.
+
+**O que a pulverização faz com o volume.** Um Feature Card tem limite de 5 500
+caracteres e um Example Mapping, 4 500. Qualquer `.md` sem regra própria cai no limite
+genérico de 4 000. A prosa das oito propostas não cabe em destino nenhum de
+`docs/features/` sem corte de uma ordem de grandeza, e o corte não é edição — é decidir
+o que se perde.
+
+| Alternativa                                       | A favor                                     | Contra                                                |
+|---------------------------------------------------|---------------------------------------------|-------------------------------------------------------|
+| apagar a prosa que não sustenta decisão           | a árvore só guarda o que o processo prevê   | descarta a única leitura contínua de cada assunto     |
+| arquivar em `architecture/arquivo/`               | o precedente de `../adr/arquivo/` já existe | cria pasta que a instrução da pulverização não previu |
+| arquivar em `../adr/arquivo/proposta-2026-08-03/` | usa a pasta de arquivo morto que já existe  | aquela pasta guarda ADR, e nenhum destes é ADR        |
+
+**Recomendação: arquivar em `architecture/arquivo/`.** O repositório já paga o custo de
+uma pasta de arquivo morto e já sabe lê-la. Apagar é irreversível e a rodada de
+2026-08-03 é a única leitura contínua que existe de cada assunto; jogar em
+`../adr/arquivo/` mente sobre a natureza do que está lá.
+
+**O que a recomendação NÃO resolve.** Uma pasta de arquivo dentro de `architecture/`
+mantém a pasta viva por um terceiro motivo, e a instrução da pulverização pediu que ela
+fosse dissolvida. Isso é tensão real, e `D-5` a herda.
+
+### `D-3` — o destino de `contra-avaliacao.md` e das nove objeções não conferidas
+
+**O problema.** O documento carrega treze objeções contra a rodada de 2026-08-03. Três
+estão `verificado`, uma está `moderado`, e **nove estão `não conferido`** — plausíveis,
+com citações que ninguém checou uma a uma. Ele critica `decisoes-pendentes.md`, que é o
+documento cuja fila acabou de sair para `../adr/fila-de-decisoes.md`.
+
+**Uma objeção não conferida não é achado nem ruído.** É trabalho de revisão adversarial
+parado no meio. Apagá-la descarta o trabalho; promovê-la a fato viola a regra de que o
+que não se confirma é `Pergunta em aberto`.
+
+| Alternativa                                      | A favor                                              | Contra                                             |
+|--------------------------------------------------|------------------------------------------------------|----------------------------------------------------|
+| conferir as nove antes de pulverizar             | nenhuma objeção some sem veredito                    | nove verificações antes de qualquer movimento      |
+| mover as nove para `../questions/`, sem conferir | o estado `não conferido` é preservado e fica visível | nove questões novas numa pasta que hoje tem poucas |
+| apagar junto com o que ele critica               | o alvo da crítica deixa de existir                   | descarta revisão adversarial que ninguém repetiu   |
+
+**Recomendação: mover as nove para `../questions/`, sem conferir.** A pasta de questões
+existe exatamente para o que está encaminhado e não resolvido, e cada questão nasce com
+identificador citável. Conferir as nove agora é uma sessão inteira que não pulveriza
+nada; apagar descarta o único ataque adversarial que a rodada recebeu.
+
+### `D-4` — o destino de `decisoes-pendentes.md`, que não pode ser encolhido
+
+**O problema.** Este arquivo tem 156 mil caracteres, é citado de dezesseis arquivos, e
+**nove dessas citações são por número de linha, vindas dos ADRs 0008 e
+0009** — a maior em
+`:1879`. O corpo de um ADR aceito não pode ser corrigido. Mover, apagar ou encolher este
+arquivo quebra citação que ninguém repara.
+
+**O que ele é hoje.** Depois de `B-1`, a fila viva não mora mais aqui. O que resta é
+registro histórico de duas rodadas de arquitetura, mais as decisões dos Lotes A, B, C e
+D — que continuam sendo escritas no fim, porque é o único lugar seguro.
+
+| Alternativa                                              | A favor                                          | Contra                                        |
+|----------------------------------------------------------|--------------------------------------------------|-----------------------------------------------|
+| fica onde está, congelado, com nota de encerramento      | as 9 citações por linha continuam resolvendo     | a pasta sobrevive por ele também              |
+| move para `../adr/arquivo/`, aceitando 9 citações mortas | a pasta some, e o arquivo fica onde mora o morto | dano irreversível dentro de dois ADRs aceitos |
+| fica, e um stub de lápide substitui o conteúdo           | a pasta encolhe para dois arquivos               | quebra as 9 citações do mesmo jeito           |
+
+**Recomendação: fica onde está, congelado, com nota de encerramento no fim.** As outras
+duas quebram nove citações dentro de artefato imutável para ganhar uma pasta mais limpa.
+Não há troca aceitável aí.
+
+### `D-5` — a ordem de execução, e o que sobra da pasta
+
+**O problema.** As quatro recomendações acima deixam `docs/architecture/` com três
+coisas: `integrations.md`, `decisoes-pendentes.md` e uma pasta `arquivo/`. A instrução
+de 2026-08-04 pediu que a pasta fosse pulverizada nos cinco destinos, e o que as
+recomendações produzem é uma pasta menor — não a ausência dela.
+
+**Isso não é falha das recomendações.** É o que as restrições permitem. Duas delas são
+duras e nenhuma decisão as remove: um ADR aceito não pode ser corrigido, e um documento
+citado por linha não pode se mover. A instrução foi dada antes de essas restrições serem
+medidas.
+
+```mermaid
+flowchart LR
+    I["instrução:<br/>dissolver a pasta"] --> R1["ADR aceito<br/>é imutável"]
+    I --> R2["9 citações por linha<br/>apontam para cá"]
+    R1 --> S["a pasta encolhe<br/>de 11 para 2 + arquivo/"]
+    R2 --> S
+```
+
+| Alternativa                     | A favor                                          | Contra                                                |
+|---------------------------------|--------------------------------------------------|-------------------------------------------------------|
+| um commit por arquivo de origem | cada movimento é revisável, e reversível sozinho | dez commits, e a árvore fica inconsistente entre eles |
+| um commit por destino           | cada destino nasce completo                      | um commit toca oito origens ao mesmo tempo            |
+| um commit só                    | a árvore nunca fica inconsistente                | um diff que ninguém revisa de verdade                 |
+
+**Recomendação: um commit por arquivo de origem.** É a forma que o repositório já usa, e
+a única em que um movimento errado é revertido sem desfazer os outros. A inconsistência
+entre commits é aceitável porque nenhum código depende destes arquivos.
+
+**Pergunta que a pessoa precisa responder junto.** A pasta encolhida satisfaz a
+instrução, ou a instrução é revista para dizer o que ela realmente pede? Um agente não
+decide isso: a instrução é do usuário.
+
+### As decisões do Lote D, em 2026-08-05
+
+Três das cinco foram decididas. A quarta recebeu uma objeção que muda o desenho, e a
+quinta depende dela.
+
+| Item  | Escolha da pessoa                        | Seguiu a recomendação? |
+|-------|------------------------------------------|------------------------|
+| `D-1` | `integrations.md` fica onde está         | sim                    |
+| `D-2` | a prosa é arquivada em `arquivo/`        | sim                    |
+| `D-3` | as nove objeções viram questões          | sim                    |
+| `D-4` | **objeção ao enquadramento**, ver abaixo | não escolheu           |
+| `D-5` | aguarda `D-4`                            | —                      |
+
+#### `D-1` — `integrations.md` fica onde está
+
+**Decidido, e com a recomendação.** A matriz não se move. As treze citações externas
+continuam válidas, e a chave literal do `check_artifact_limits.py` continua casando.
+
+**O que a decisão não conserta.** O limite de 12 000 caracteres associado àquela chave
+**não é exercido por nada automático**. O workflow `docs` roda o script sobre
+`docs/adr/[0-9]*.md` e mais nada
+([`.github/workflows/docs.yml`](../../.github/workflows/docs.yml)); a outra invocação é
+manual, prescrita pela skill `feature-planning`. O arquivo está em 11 838 caracteres, a
+162 de estourar, e nenhuma execução do repositório perceberia. Isso é pendência nova, e
+ela não pertence ao Lote D: é a mesma classe de `C-5`, um verificador que existe e não
+roda.
+
+#### `D-2` — a prosa das oito propostas é arquivada em `architecture/arquivo/`
+
+**Decidido, e com a recomendação.** A prosa que não sustenta decisão nenhuma não é
+apagada. O precedente é [`../adr/arquivo/`](../adr/README.md), que o repositório já
+mantém e já sabe ler.
+
+**O custo aceito, e ele foi nomeado antes da escolha.** Uma pasta de arquivo dentro de
+`architecture/` mantém a pasta viva por um terceiro motivo, e a instrução de 2026-08-04
+pediu que ela fosse dissolvida. A tensão é real, e `D-5` a herda.
+
+#### `D-3` — as nove objeções não conferidas viram questões
+
+**Decidido, e com a recomendação.** As nove objeções em estado `não conferido` de
+[`contra-avaliacao.md`](contra-avaliacao.md) migram para
+[`../questions/`](../questions/README.md), cada uma com identificador próprio, e **o
+estado `não conferido` viaja junto**. Nenhuma é conferida nesta passagem, e nenhuma é
+promovida a fato.
+
+As três `verificado` e a `moderado` não são questões: elas já têm veredito. O destino
+delas é a linha da fila ou o artefato que a decisão gerar, pela mesma regra da Lacuna 3.
+
+#### `D-4` — a objeção da pessoa, e o que ela revelou
+
+**Não foi escolha entre as três alternativas.** A resposta foi outra: *"após resolver
+uma decisão ela deve virar um artefato, então ficaria redundante"*.
+
+**A objeção está correta, e o desenho da pergunta estava errado.** As três alternativas
+que ofereci tratavam o destino **físico** do arquivo — fica, move, vira stub. A objeção
+trata do **estatuto** dele: um arquivo que guarda decisão já resolvida é redundante com
+o artefato que a decisão gerou, e a redundância não se resolve movendo nada.
+
+**O que este arquivo guarda hoje, conferido.**
+
+| O que este arquivo guarda                  | Já existe em artefato próprio?         |
+|--------------------------------------------|----------------------------------------|
+| as seis decisões do Lote A                 | **não** — só aqui                      |
+| as sete decisões do Lote C                 | sim, em `AGENTS.md` e nos dois scripts |
+| as cinco decisões do Lote B                | sim, em quatro arquivos de regra       |
+| as três decisões do Lote D                 | ainda não; o lote está aberto          |
+| o registro das duas rodadas de arquitetura | não é decisão; é histórico             |
+
+**A objeção vale para três das quatro linhas, e não para a primeira.** As decisões dos
+Lotes B e C já vivem em arquivo de regra: quem precisa da regra não vem aqui. O que
+resta aqui é o debate que as produziu — as alternativas descartadas e o motivo de cada
+uma —, e esse debate não cabe no artefato de regra por construção.
+
+**As seis decisões do Lote A são a exceção, e ela é grave.** Elas não foram aplicadas em
+lugar nenhum. A seção "O que o Lote A NÃO aplicou, e a cadeia causal" registra o motivo:
+acrescentar a regra da emenda no fim de [`../adr/README.md`](../adr/README.md) faria
+duas citações quebradas **voltarem a resolver** — para o texto errado.
+
+```mermaid
+flowchart TD
+    O["objeção: decisão resolvida<br/>vira artefato, e o resto é redundante"]
+    B["Lotes B e C:<br/>aplicados em arquivo de regra"]
+    A["Lote A:<br/>não aplicado em lugar nenhum"]
+    O --> B
+    O --> A
+    B --> R["aqui só sobra<br/>o debate, não a regra"]
+    A --> U["aqui é a ÚNICA fonte<br/>de seis decisões"]
+    U --> P["aplicar o Lote A<br/>antes de tratar este arquivo"]
+```
+
+**O bloqueio do Lote A mudou de tamanho, e ninguém tinha medido.** Duas coisas
+aconteceram depois que aquela seção foi escrita:
+
+- [`../adr/README.md`](../adr/README.md) encolheu de 517 para 317 linhas, quando `B-1`
+  extraiu a fila. A citação do ADR-0006 àquele arquivo, às linhas 515 a 539, agora
+  precisa de **duzentas linhas novas** para voltar a resolver, e não de vinte.
+- `C-6` acrescentou **errata** no cabeçalho dos ADRs 0005 e 0006, declarando as duas
+  citações quebradas. O leitor que chegar ao texto errado foi avisado no topo do
+  documento — que era exatamente o dano que a seção temia.
+
+**Pergunta em aberto, e ela precede `D-4` e `D-5`.** O Lote A é aplicado antes de este
+arquivo ser tratado? Enquanto ele não for, a premissa da objeção não vale: as seis
+decisões dele não viraram artefato, e apagar ou esvaziar este arquivo as perde.
