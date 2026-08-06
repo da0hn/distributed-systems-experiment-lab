@@ -21,11 +21,43 @@ devagar.
 
 ## Identificador
 
-Cada questão recebe um identificador `Q-NNNN-K`: `NNNN` é o ADR de origem, `K` é o
-número que a questão tinha na seção `## Questões em aberto` dele. Os dois são congelados
-no ato da aceitação, e o identificador nunca é reutilizado. **Cite uma questão por esse
-identificador**, nunca por "a questão K do ADR-NNNN" — aquela seção deixa de existir
-quando o ADR é aceito, e a citação passaria a apontar para nada.
+**Desde 2026-08-05, pela decisão `A2`, o identificador é plano: `Q-NNNN`, sem sufixo.**
+Ele não codifica mais a origem. A origem é a coluna `Origem` do índice abaixo, que já
+existia e passa a ser o único lugar onde ela vive.
+
+**A sequência nova começa em `Q-0019`**, para não colidir visualmente com os dezoito
+identificadores existentes. O número é atribuído no ato da criação do arquivo, e o dono
+da atribuição é este índice.
+
+**Cite uma questão pelo identificador**, nunca por "a questão K do ADR-NNNN" — aquela
+seção deixa de existir quando o ADR é aceito, e a citação passaria a apontar para nada.
+
+### O formato antigo `Q-NNNN-K` fica congelado como legado
+
+Nele, `NNNN` era o ADR de origem e `K` o número que a questão tinha na seção `## Questões
+em aberto` dele. **Os dezoito identificadores existentes não são renomeados**, e o
+formato não é reutilizado, não é estendido, e nenhuma questão nova o recebe.
+
+O motivo é medido. `Q-NNNN-K` aparece 255 vezes em `docs/` e no `AGENTS.md` da raiz, e
+**66 dessas ocorrências estão dentro dos oito ADRs aceitos** — 11 no ADR-0001, 14 no
+ADR-0002, 16 no ADR-0007, e assim por diante. O corpo de um ADR aceito não pode ser
+editado. Renomear produziria 66 citações mortas dentro de artefato imutável.
+
+```mermaid
+flowchart TD
+    R["renomear os 18 para<br/>o formato plano"] --> D["66 citações em<br/>8 ADRs aceitos"]
+    D --> I["nenhuma pode<br/>ser corrigida"]
+    I --> C["o formato antigo fica<br/>congelado, e convivem os dois"]
+```
+
+O custo aceito é que dois formatos convivem no índice por tempo indeterminado. A coluna
+`ID` os distingue à vista, e nenhum leitor precisa saber a regra para ler a tabela.
+
+Descartadas três alternativas. Um prefixo próprio `Q-ARQ-K`, por criar um terceiro
+espaço de nomes ao lado de `Q-NNNN-K` e `Q-INT-*`. `NNNN` passando a ser o de
+**destino**,
+porque uma questão cujo destino é linha de fila sem número de ADR seguiria inatribuível.
+E a questão permanecer como linha de fila, porque a fila não é citável de forma estável.
 
 ## Ciclo de vida
 

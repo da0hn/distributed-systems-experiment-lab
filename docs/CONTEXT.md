@@ -1060,3 +1060,63 @@ com os termos portugueses. Nenhum ADR aceito pode ser editado (`docs/AGENTS.md`,
 `## O que nunca é editado`), então a divergência entre este glossário e o corpus é
 permanente por construção. Não está decidido se os documentos editáveis — plano, Feature
 Cards, documentos de arquitetura — são convertidos, nem quando.
+
+## Os dois rótulos do instrumento, decididos em 2026-08-05
+
+Entram pela decisão `A3`. Os dois falam do **instrumento**, e nenhum é veredito sobre o
+system under test — confundir isso transforma falha de medição em resultado de
+consistência.
+
+**fontes divergentes** — `estabelecido` desde `O14`, em 2026-08-05
+As duas fontes de observação alcançaram o commit final e **discordam**. O nome
+descreve o fato observado, sem interpretar de que lado está o defeito.
+_Evite_: divergent sources, mismatch, inconsistência de leitura.
+
+**fonte atrasada** — `estabelecido` desde `A3`, em 2026-08-05
+Uma das fontes **não alcançou** o ponto declarado no tempo declarado. O caso
+concreto é o consumidor de CDC que não chega ao commit final antes do limite de espera.
+_Evite_: `CDC não alcançou`, por amarrar o vocabulário a uma tecnologia — se a segunda
+fonte deixar de ser CDC, o rótulo mente; `espera do observador esgotada`, longo demais
+para um rótulo que aparece ao lado de `protegido` e `violado`; `observação incompleta`,
+por não dizer o que falhou nem por quê.
+
+**Os dois formam um par legível, e é por isso que são dois.** Uma fonte diverge; a outra
+não chega. Um rótulo só esconderia qual componente falhou.
+
+```mermaid
+flowchart TD
+    E["a execução termina"] --> Q{"as duas fontes<br/>alcançaram o commit final?"}
+    Q -->|" não "| A["fonte atrasada"]
+    Q -->|" sim "| D{"elas concordam?"}
+    D -->|" não "| F["fontes divergentes"]
+    D -->|" sim "| V["o veredito do experimento"]
+```
+
+Os dois entram na tabela de classificação do ADR-0004 por **subsunção**, pelo caminho
+que o ADR-0005 usou para acrescentar o sexto valor: o ADR-0004 permanece `Aceito`, os
+cinco valores dele continuam válidos para o caso que enxergavam, e os rótulos novos
+cobrem o caso que nenhum previa.
+
+## A sigla `SUT` no código, decidida em 2026-08-05
+
+Entra pela decisão `A5`. **A proibição de `SUT` na entrada `system under test` vale para
+prosa, e NÃO DEVE alcançar identificador de código.** O pacote `dev.da0hn.lab.sut` fica
+de pé.
+
+**Por que a separação precisou ser declarada.** A escolha do pacote se justifica dizendo
+que o glossário já define o termo por extenso, enquanto a entrada `system under test`
+lista `SUT` sob `_Evite_`, "por ser sigla sem expansão". Sem esta seção, o ADR que fixa
+o pacote e o glossário nascem se contradizendo — e a contradição estaria dentro de um
+ADR aceito, onde ninguém pode corrigi-la.
+
+**A regra, enunciada.** Em prosa, escreva `system under test` por extenso. Em nome de
+pacote, classe, variável ou coluna, `sut` é permitido e preferido — a sigla é padrão na
+literatura de teste, e o nome por extenso não cabe num segmento de pacote.
+
+Descartadas: rever o nome do pacote, por reabrir uma decisão do dia anterior e trazer de
+volta três alternativas já descartadas; e registrar como pergunta em aberto, por fazer o
+ADR nascer carregando contradição conhecida com este glossário.
+
+**A entrada `system under test` não foi editada, e isso é deliberado.** Ela está nas
+linhas que o ADR-0009 cita por número, e deslocá-las quebraria quatro citações dentro de
+um ADR aceito. Esta seção é o lugar onde a exceção vive.
