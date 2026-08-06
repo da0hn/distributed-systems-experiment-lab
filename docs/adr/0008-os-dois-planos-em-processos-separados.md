@@ -192,17 +192,29 @@ volta a depender de uma lista de classes que apodrece.
   chame o Lab Plane.** A direção de dependência do ADR-0001 não sobreviveria à fronteira
   de rede, e a topologia muda antes do mecanismo.
 
-## Adendo de 2026-08-05 — a afirmação citada de `decisoes-pendentes.md`
+## Adendo de 2026-08-05 — as afirmações citadas de `docs/architecture/`
 
-Aquele arquivo saiu de `docs/architecture/` pela decisão `D-4`, e a citação abaixo, na
-seção `## Consequências`, deixou de resolver. O corpo acima **não foi tocado**: este
-adendo incorpora a afirmação que a citação sustentava, para que este ADR se sustente sem
-ela.
+A pasta foi dissolvida pela decisão `D-4`, e as quatro referências abaixo deixaram de
+resolver. O corpo acima **não foi tocado**: este adendo incorpora a afirmação que cada
+uma sustentava, para que este ADR se sustente sem elas.
 
-| Citação do corpo | A afirmação que ela sustentava                              |
-|------------------|-------------------------------------------------------------|
-| `:254-255`       | o E1 do MVP emite entre 900 e 1500 observações por execução |
+Os caminhos abaixo estão escritos por extenso de propósito. Na forma `arquivo:linha` o
+verificador de citações os leria como citações reais e acusaria defeito inexistente.
 
-A citação já estava quebrada antes desta decisão. As linhas 254 e 255 deixaram de trazer
-aquele parágrafo quando o arquivo de origem cresceu, em 2026-08-05, e o número que ela
-afirmava continua verdadeiro.
+- `decisoes-pendentes.md`, linhas 254-255, em `## Consequências` — o E1 do MVP emite
+  entre 900 e 1500 observações por execução.
+- `arquitetura-alvo.md`, linhas 29-34, em `## Contexto` — o plano fixa o MVP como uma
+  aplicação Spring Boot, um PostgreSQL, uma interface web servida por ela, nenhum broker
+  e nenhum segundo processo. A decomposição em serviços é provocada por experimento
+  vermelho e nunca agendada; o gatilho é `JVM_LOCK` falhar com duas instâncias, na
+  etapa 4.
+- `arquitetura-alvo.md`, por link em `## Consequências` — a mesma afirmação: aquele
+  documento recomendava esperar o experimento vermelho, e este ADR decide contra ela.
+- `modelo-de-dados.md`, linhas 154-158, em `## Consequências` — um schema separado
+  **não** isola contenção. Dois schemas do mesmo banco compartilham buffer pool, WAL,
+  checkpointer, autovacuum e a tabela de locks; schema é espaço de nomes, e a fronteira
+  de contenção é a instância.
+
+A primeira já estava quebrada antes desta decisão: as linhas 254 e 255 deixaram de
+trazer aquele parágrafo quando o arquivo de origem cresceu, em 2026-08-05. O número que
+ela afirmava continua verdadeiro.
