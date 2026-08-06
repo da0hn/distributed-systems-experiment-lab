@@ -5,11 +5,11 @@
 - **Escopo:** o que ratificar e o que emendar da ADR 0017 do `homelab-infrastructure`, a
   forma do `deploy/` que conserta o `ComparisonError`, e o workflow que empacota o
   primeiro módulo.
-- **Depende de:** [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md),
-  [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md),
-  [`ADR-0007`](../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), todos
-  `Aceito`. Responde a [`Q-0004-4`](../questions/Q-0004-4.md) e trata `Q-INT-3` e
-  `Q-INT-4` de [`integrations.md`](integrations.md).
+- **Depende de:** [`ADR-0002`](../../0002-o-dominio-minimo-e-os-dois-oraculos.md),
+  [`ADR-0004`](../../0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md),
+  [`ADR-0007`](../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), todos
+  `Aceito`. Responde a [`Q-0004-4`](../../../questions/Q-0004-4.md) e trata `Q-INT-3` e
+  `Q-INT-4` de [`../../../architecture/integrations.md`](../../../architecture/integrations.md).
 
 ## O ponto de partida é um erro em produção
 
@@ -17,7 +17,7 @@ O `Application` do ArgoCD está commitado em
 `kubernetes/applications/apps/distributed-consistency-lab.yaml`, aponta para
 `path: deploy` deste repositório com `prune: true` e `selfHeal: true`, e esse diretório
 foi apagado nos commits `83fcfc9` e `e1c88ae`. O cluster reporta `ComparisonError` para
-este app hoje (`integrations.md:25`, `39-60`; `plano-do-laboratorio.md:757-771`).
+este app hoje (`../../../architecture/integrations.md:25`, `39-60`; `plano-do-laboratorio.md:757-771`).
 
 O conserto é o primeiro entregável desta decisão, e ele não espera o primeiro módulo
 compilável — `D-ARQ-15`.
@@ -141,7 +141,7 @@ sequenceDiagram
 
 O que o job de teste executa é decisão aberta, e não detalhe: um experimento é uma
 medida, e uma medida que precisa ficar verde deixa de ser medida. É `D-ARQ-14`, e ela
-responde [`Q-0004-4`](../questions/Q-0004-4.md).
+responde [`Q-0004-4`](../../../questions/Q-0004-4.md).
 
 ## Decisões que exigem aprovação humana
 
@@ -162,7 +162,7 @@ requisito do CI deste laboratório. Nenhum documento daqui o pediu.
 **Alternativa 1 — emendar e retirar até haver gatilho.** A favor: nenhum experimento
 antes da etapa 5 usa rede entre partes, e o `arquivo/0012` já concluiu que a falha na
 rede não produz duplicata nem reordenação semântica, que são os casos do grupo B
-(`../adr/arquivo/0006-hexagonal-com-archunit.md:140-143`). Contra: emendar exige tocar
+(`../../arquivo/0006-hexagonal-com-archunit.md:140-143`). Contra: emendar exige tocar
 um documento aceito em outro repositório, com o processo que aquele repositório tiver.
 
 **Alternativa 2 — manter e usar na etapa 5.** A favor: atraso, partição e queda de
@@ -222,7 +222,7 @@ debate aqui, e o repositório tem uma regra dura contra absorver isso em silênc
 [`modulos-e-fronteiras.md`](modulos-e-fronteiras.md#d-arq-05--o-mecanismo-de-módulo-do-primeiro-artefato)
 propõe a fronteira entre regiões como dependência declarada entre módulos, e o
 repositório já tem uma decisão arquivada com a forma do reactor
-(`../adr/arquivo/0005-monorepo-com-reactor-unico.md:29-49`). Contra: emendar um
+(`../../arquivo/0005-monorepo-com-reactor-unico.md:29-49`). Contra: emendar um
 documento aceito em outro repositório tem custo de processo, e o argumento técnico a
 favor de Maven não é decisivo — Gradle expressa a mesma fronteira entre módulos.
 
@@ -252,11 +252,11 @@ comparáveis, e a entrega no cluster vira vitrine para uma parte do roadmap.
 **Alternativa 2 — matar a operação, e não o processo.** A favor: a fronteira
 `AFTER_COMMIT` existe exatamente para isso, e o ADR-0001 a descreve como o instante em
 que o commit aconteceu e a falha injetada logo depois produz o dual write
-(`../adr/0001-o-passo-como-unidade-de-execucao.md:416-419`). O orquestrador não reage,
+(`../../0001-o-passo-como-unidade-de-execucao.md:416-419`). O orquestrador não reage,
 porque o processo não morre. Contra: não é o mesmo fenômeno. Um processo que morre perde
 o log em memória e as conexões abertas, e o ADR-0007 fixa a etapa 6 como o gatilho da
 persistência durável justamente por isso
-(`../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:177-181`).
+(`../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:177-181`).
 
 **Alternativa 3 — desligar `selfHeal` durante a execução.** A favor: o processo morre de
 verdade e o experimento é fiel. Contra: o Lab Plane passa a escrever no `Application` do
@@ -274,7 +274,7 @@ repositório.
 
 ### `D-ARQ-14` — o que o pipeline executa
 
-**O problema.** [`Q-0004-4`](../questions/Q-0004-4.md) registra que `N` declarado antes
+**O problema.** [`Q-0004-4`](../../../questions/Q-0004-4.md) registra que `N` declarado antes
 cria um custo de tempo, que um `N` alto ocupa o runner e um `N` baixo produz um
 experimento que passa numa execução e falha na seguinte. Nenhum dos dois repositórios
 decidiu se um experimento roda no pipeline.
@@ -288,7 +288,7 @@ carga concorrente só é vista quando alguém executar o experimento.
 
 **Alternativa 2 — experimentos com `N` declarado no pipeline.** A favor: toda mudança é
 medida, e o caderno de laboratório cresce sozinho. Contra: a calibração dobra a duração
-de toda execução (`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:445-446`), e um
+de toda execução (`../../0002-o-dominio-minimo-e-os-dois-oraculos.md:445-446`), e um
 veredito probabilístico num check obrigatório é falha intermitente por construção — que
 a tensão 2 do plano chama do pior resultado possível num instrumento de medida.
 
@@ -327,7 +327,7 @@ a ADR 0017 criou; quando o módulo existir, alguém precisa lembrar de recriá-l
 que cria o módulo — o que faz o `ImagePullBackOff` durar apenas o tempo do primeiro
 build.
 
-**Se a escolha for outra.** A alternativa 3 exige registrar em `integrations.md` que a
+**Se a escolha for outra.** A alternativa 3 exige registrar em `../../../architecture/integrations.md` que a
 única integração real deixou de existir, e não apenas que ela está quebrada.
 
 ## Perguntas em aberto
@@ -358,20 +358,20 @@ foi executado. Faltou: a primeira curva de saturação.
 decide o significado de `D-ARQ-14`: um experimento sob demanda precisa de um lugar para
 rodar.
 
-## Adições propostas a `integrations.md`
+## Adições propostas a `../../../architecture/integrations.md`
 
 As linhas abaixo são propostas. **Nenhuma edição foi feita naquele arquivo.**
 
 | Origem         | Destino                      | Tipo   | Operação/tópico                  | Finalidade                                 | Contrato  | Autenticação          | Confiabilidade                                               | Evidência                                  |
 |----------------|------------------------------|--------|----------------------------------|--------------------------------------------|-----------|-----------------------|--------------------------------------------------------------|--------------------------------------------|
 | kubelet do K3s | aplicação do laboratório     | HTTP   | probe de liveness e de readiness | decidir se o pod é reiniciado              | nenhum    | nenhuma               | reinicia o pod durante um experimento do grupo D             | hipótese — esta proposta, seção `Artefato` |
-| ArgoCD         | namespace do laboratório     | GitOps | `prune` de recursos removidos    | reconciliar o que o `deploy/` declara      | Kustomize | leitura anônima       | `prune: true` alcança o namespace, se ele for declarado aqui | **fato** — `integrations.md:25`            |
+| ArgoCD         | namespace do laboratório     | GitOps | `prune` de recursos removidos    | reconciliar o que o `deploy/` declara      | Kustomize | leitura anônima       | `prune: true` alcança o namespace, se ele for declarado aqui | **fato** — `../../../architecture/integrations.md:25`            |
 | GitHub Actions | PostgreSQL do Testcontainers | JDBC   | testes de integração no runner   | executar as provas exigidas por ADR aceito | —         | efêmera, do contêiner | independente do PostgreSQL do cluster                        | hipótese — ADR 0017, contexto, requisito 1 |
 
 Proposta de mudança de estado numa linha existente: quando `D-ARQ-15` for aprovada e o
 `deploy/` existir, a primeira linha da matriz deixa de ser **fato quebrado** e passa a
 ser **fato**. A frase "A única integração real está quebrada" e o diagrama que a
-acompanha saem junto (`integrations.md:39-60`).
+acompanha saem junto (`../../../architecture/integrations.md:39-60`).
 
 Proposta de encaminhamento: `Q-INT-3` e `Q-INT-4` passam a ter destino nomeado —
 `D-ARQ-11` e `D-ARQ-12` deste documento — e continuam `pendente` enquanto ninguém as
