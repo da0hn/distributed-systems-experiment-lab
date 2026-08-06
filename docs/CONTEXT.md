@@ -660,7 +660,7 @@ _Evidência_: `docs/plano-do-laboratorio.md:339-352`
 
 Os seis nomes abaixo nascem nesta proposta e nomeiam bounded contexts, não módulos nem
 processos. O desenho está em
-[`architecture/modelo-de-dominio.md`](architecture/modelo-de-dominio.md).
+[`adr/arquivo/proposta-2026-08-03/modelo-de-dominio.md`](adr/arquivo/proposta-2026-08-03/modelo-de-dominio.md).
 
 **measured domain** — `proposto` (`D-DOM-07`)
 O contexto do system under test: `Resource`, `Allocation`, `increment`, `allocate` e as

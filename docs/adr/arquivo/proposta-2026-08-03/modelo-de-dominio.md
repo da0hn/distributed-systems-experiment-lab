@@ -4,14 +4,14 @@
 - **Data:** 2026-08-03
 - **Escopo:** propor os agregados, as fronteiras de contexto e as relações entre elas,
   sem decidir módulo, tabela, fila ou tela.
-- **Depende de:** [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md),
-  [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md),
-  [`ADR-0003`](../adr/0003-a-linguagem-do-agendamento.md),
-  [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md),
-  [`ADR-0005`](../adr/0005-a-forma-do-escalonador.md),
-  [`ADR-0006`](../adr/0006-a-forma-da-estrategia-de-concorrencia.md),
-  [`ADR-0007`](../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md) — todos
-  `Aceito`. O vocabulário está em [`../CONTEXT.md`](../CONTEXT.md).
+- **Depende de:** [`ADR-0001`](../../0001-o-passo-como-unidade-de-execucao.md),
+  [`ADR-0002`](../../0002-o-dominio-minimo-e-os-dois-oraculos.md),
+  [`ADR-0003`](../../0003-a-linguagem-do-agendamento.md),
+  [`ADR-0004`](../../0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md),
+  [`ADR-0005`](../../0005-a-forma-do-escalonador.md),
+  [`ADR-0006`](../../0006-a-forma-da-estrategia-de-concorrencia.md),
+  [`ADR-0007`](../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md) — todos
+  `Aceito`. O vocabulário está em [`../../../CONTEXT.md`](../../../CONTEXT.md).
 
 ## O que este documento decide, e o que ele não toca
 
@@ -124,7 +124,7 @@ identidade de uma entidade do system under test é **função de um dado do Lab 
 
 A semente pertence à definição de experimento. O identificador pertence ao domínio
 medido. Quem faz a travessia entre os dois não está decidido, e
-[`Q-0002-4`](../questions/Q-0002-4.md) mostra o custo: duas execuções da mesma semente
+[`Q-0002-4`](../../../questions/Q-0002-4.md) mostra o custo: duas execuções da mesma semente
 produzem os mesmos identificadores, e a segunda colide com as linhas deixadas pela
 primeira. A decisão é `D-DOM-14`.
 
@@ -317,8 +317,8 @@ Designer na UI é tensão aberta (`docs/plano-do-laboratorio.md:693-698`).
 e o nível de isolamento, para todos os outros contextos.
 
 **Por que a fronteira cai aqui.** Ele é upstream de todos os demais, e três questões
-pendentes moram nele: [`Q-0002-4`](../questions/Q-0002-4.md),
-[`Q-0003-8`](../questions/Q-0003-8.md) e [`Q-0001-1`](../questions/Q-0001-1.md). A
+pendentes moram nele: [`Q-0002-4`](../../../questions/Q-0002-4.md),
+[`Q-0003-8`](../../../questions/Q-0003-8.md) e [`Q-0001-1`](../../../questions/Q-0001-1.md). A
 decisão está na fila, posição 8 (`docs/adr/README.md:204`).
 
 ## Context map
@@ -455,7 +455,7 @@ existam desde o desenho, e a decisão está na fila, posição 9. A decisão é 
 **O grupo C exige um mecanismo que nenhum contexto tem.** A amostragem no tempo é a
 lacuna mais antiga do repositório, e nenhum mecanismo foi proposto
 (`plano:706-709`). Ela alcança o registro e o diagnóstico ao mesmo tempo:
-[`Q-0002-3`](../questions/Q-0002-3.md) registra que os dois oráculos descrevem apenas o
+[`Q-0002-3`](../../../questions/Q-0002-3.md) registra que os dois oráculos descrevem apenas o
 estado final quiescente.
 
 **O grupo E é o único cuja separação de processos não é opcional** (`plano:241-243`).
@@ -470,15 +470,15 @@ Nenhum deles foi inventado aqui.
 | Conceito                               | Por que falta                                                              | Questão                                | Destino na fila                |
 |----------------------------------------|----------------------------------------------------------------------------|----------------------------------------|--------------------------------|
 | `Experimento` como agregado            | a forma dele não está decidida; três questões mudam o escopo antes         | Q-0002-4, Q-0003-8, Q-0001-1           | Experiment, posição 8          |
-| estado inicial e reset entre execuções | ninguém escreve `value_inicial`, e a identidade da semente colide          | [`Q-0002-4`](../questions/Q-0002-4.md) | Experiment                     |
-| o que `N` conta                        | tentativa do ADR-0001 inclui retry, que é resultado e não entrada          | [`Q-0003-8`](../questions/Q-0003-8.md) | Experiment                     |
-| identidade de versão de uma operação   | o corpo do passo muda com o rótulo intacto, e o replay mede outra operação | [`Q-0001-1`](../questions/Q-0001-1.md) | Experiment                     |
+| estado inicial e reset entre execuções | ninguém escreve `value_inicial`, e a identidade da semente colide          | [`Q-0002-4`](../../../questions/Q-0002-4.md) | Experiment                     |
+| o que `N` conta                        | tentativa do ADR-0001 inclui retry, que é resultado e não entrada          | [`Q-0003-8`](../../../questions/Q-0003-8.md) | Experiment                     |
+| identidade de versão de uma operação   | o corpo do passo muda com o rótulo intacto, e o replay mede outra operação | [`Q-0001-1`](../../../questions/Q-0001-1.md) | Experiment                     |
 | formato curva do veredito              | o E4 não tem card, porque a forma do resultado não foi decidida            | Q-0002-3, Q-0004-5, Q-0004-8           | dois formatos, posição 9       |
-| amostragem no tempo                    | uma violação transitória não sobrevive até o estado final                  | [`Q-0002-3`](../questions/Q-0002-3.md) | dois formatos, posição 9       |
+| amostragem no tempo                    | uma violação transitória não sobrevive até o estado final                  | [`Q-0002-3`](../../../questions/Q-0002-3.md) | dois formatos, posição 9       |
 | nível de isolamento como eixo          | o E5 varre três níveis, e nenhuma linha da fila nomeia esse parâmetro      | `docs/adr/README.md:260-291`           | não decidido                   |
-| obrigação de reportar a chave          | um passo que não reporte a chave produz contagem errada sem falhar         | [`Q-0004-2`](../questions/Q-0004-2.md) | arquitetura mínima, posição 10 |
-| relógio do log                         | comparar janelas entre workers exige um instante ordenável entre eles      | [`Q-0004-3`](../questions/Q-0004-3.md) | log de observações             |
-| guardas executáveis das três regras    | relógio injetável, semente e identidade são texto, não regra verificável   | [`Q-0002-1`](../questions/Q-0002-1.md) | arquitetura mínima, posição 10 |
+| obrigação de reportar a chave          | um passo que não reporte a chave produz contagem errada sem falhar         | [`Q-0004-2`](../../../questions/Q-0004-2.md) | arquitetura mínima, posição 10 |
+| relógio do log                         | comparar janelas entre workers exige um instante ordenável entre eles      | [`Q-0004-3`](../../../questions/Q-0004-3.md) | log de observações             |
+| guardas executáveis das três regras    | relógio injetável, semente e identidade são texto, não regra verificável   | [`Q-0002-1`](../../../questions/Q-0002-1.md) | arquitetura mínima, posição 10 |
 
 ## Conceitos adiados pela regra pedagógica
 
@@ -596,8 +596,8 @@ que a fixa. Contra: o modelo fica com um buraco no lugar de onde tudo é declara
 
 **Recomendação.** Alternativa C, com a alternativa A registrada como candidata.
 
-**Se a escolha for outra.** Com a alternativa A, [`Q-0002-4`](../questions/Q-0002-4.md)
-e [`Q-0003-8`](../questions/Q-0003-8.md) passam a ser respondidas por um documento que
+**Se a escolha for outra.** Com a alternativa A, [`Q-0002-4`](../../../questions/Q-0002-4.md)
+e [`Q-0003-8`](../../../questions/Q-0003-8.md) passam a ser respondidas por um documento que
 não é ADR.
 
 ### D-DOM-10 — Se o log é membro de `Execução` ou agregado próprio
@@ -719,7 +719,7 @@ fica isolada e testável. Contra: acrescenta um contexto para uma regra de uma l
 **Recomendação.** Alternativa A.
 
 **Se a escolha for outra.** Qualquer das três continua sem responder
-[`Q-0002-4`](../questions/Q-0002-4.md): duas execuções da mesma semente colidem, e
+[`Q-0002-4`](../../../questions/Q-0002-4.md): duas execuções da mesma semente colidem, e
 quem limpa o banco entre elas não está decidido.
 
 ### D-DOM-15 — Quais fronteiras de contexto a stack materializa
@@ -801,7 +801,7 @@ exatamente o que ele é (`plano:344`).
 
 **P6 — A chave de contenção é um conceito do diagnóstico que só o domínio medido pode
 produzir.** Ela atravessa a fronteira entre os planos como fato bruto
-(`ADR-0004:192-198`), e [`Q-0004-2`](../questions/Q-0004-2.md) registra que nada obriga
+(`ADR-0004:192-198`), e [`Q-0004-2`](../../../questions/Q-0004-2.md) registra que nada obriga
 um passo a reportá-la. É a única dependência do diagnóstico sobre o system under test, e
 ela não tem guarda.
 
