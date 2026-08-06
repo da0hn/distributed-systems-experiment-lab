@@ -1021,9 +1021,8 @@ flowchart TD
 | 2. matriz dinâmica, tag por módulo | mais barato e mais honesto                       | transfere a complexidade inteira para `E-3`       |
 | 3. não fazer nada                  | zero mecanismo novo; a regra de tag fica intacta | um job redundante por módulo intocado, por commit |
 
-**A recomendação é a 3, e o motivo é que não há número.** Nenhuma execução do workflow
-existe no GitHub até hoje — a contagem de runs do repositório é zero, e os dois
-workflows foram registrados no push de 2026-08-06 sem que nenhum fosse disparado.
+**A recomendação é a 3, e o motivo é que não há número.** Nenhum job de imagem completou
+no GitHub até hoje, e o tempo de construção de uma imagem continua desconhecido.
 Escolher entre 1 e 2 antes da primeira medição é optar pela complexidade no escuro. E a
 alternativa 2 decide na prática a forma da tag, que é conteúdo de `E-3` — adiada por
 escolha explícita na mesma data.
@@ -1031,11 +1030,13 @@ escolha explícita na mesma data.
 **Gatilho que reabre esta linha:** a primeira execução real do workflow produzir um
 tempo de build, ou `E-3` fechar. O que vier primeiro.
 
-**Pergunta em aberto:** por que os dois workflows não foram executados no push que os
-criou. Actions está habilitado, o repositório é público, os dois estão `active` e
-nenhuma mensagem de commit contém marcador de `skip ci`. A causa não foi confirmada, e
-ela não é conteúdo desta linha — mas sem ela não há como medir, e sem medir esta linha
-não fecha.
+**Pergunta em aberto:** por que os jobs de imagem não obtêm runner. Em 2026-08-06 os
+dois workflows passaram a executar — o `docs` fechou verde em 7s, e no `build` o job
+`provas` obteve runner e `mvn verify` passou em 1m16s. Os quatro jobs `imagem`, que
+rodam em paralelo depois dele, ficaram quinze minutos na fila e terminaram com
+`The job was not acquired by Runner of type hosted even after multiple attempts`. A
+causa não foi confirmada, e ela não é conteúdo desta linha — mas enquanto nenhum job de
+imagem completar não há tempo a medir, e sem medir esta linha não fecha.
 
 ## O nível de isolamento não tem lugar nesta fila
 
