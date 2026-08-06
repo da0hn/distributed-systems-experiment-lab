@@ -1043,7 +1043,7 @@ acontecido.
 aproximar do limite.
 
 **Se a escolha for A:** o grupo B perde a execução de controle que o ADR-0004 usa para
-diagnosticar um resultado zero (`adr/README.md:388-392`).
+diagnosticar um resultado zero ([a anomalia por frequência](../adr/fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira)).
 
 ---
 

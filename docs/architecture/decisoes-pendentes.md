@@ -199,8 +199,8 @@ Descartadas, com o motivo técnico de cada uma:
 
 - **Detecção de exposição a posteriori.** O log medido seria varrido depois para achar
   pares `READ`/`WRITE` sobrepostos. Perde porque exige a métrica de exposição que
-  `../adr/README.md:445-451` declara não nomeada em documento nenhum — decidir aqui seria
-  decidir duas coisas num turno só.
+  [a anomalia por frequência](../adr/fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira)
+  declara não nomeada em documento nenhum — e decidir aqui seria decidir duas coisas.
 - **Emendar o plano e retirar o requisito.** Perde porque o cenário 25 é o único desenho
   que explica por que travar uma linha não ajuda no E5.
 
@@ -2555,3 +2555,25 @@ citação por linha vinda de ADR aceito. Os outros oito podem ser movidos sem da
 | `modelo-de-dados.md`            | 1, em `:154-158`                        |
 | `arquitetura-alvo.md`           | 1, em `:29-34`                          |
 | os outros oito                  | nenhuma                                 |
+
+### A lápide desta fila, em 2026-08-05
+
+**A fila viva é [`../adr/fila-de-decisoes.md`](../adr/fila-de-decisoes.md) .** É a
+execução da decisão `B-1`, e a lápide segue a forma que `C-2` fixou: ela nomeia o
+destino de cada parte, e não some.
+
+| O que estava aqui                                | Onde está agora                                                                                       |
+|--------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| os Blocos 0 a 6, com as 64 linhas `D-*`          | [as decisões da rodada de arquitetura](../adr/fila-de-decisoes.md#as-decisões-da-rodada-de-arquitetura-de-2026-08-03) |
+| o agrupamento por assunto                        | [o agrupamento por assunto](../adr/fila-de-decisoes.md#o-agrupamento-por-assunto)                        |
+| `D-ARQ-02` e `D-DOM-11`, que não tinham bloco    | [as duas linhas sem bloco](../adr/fila-de-decisoes.md#as-duas-linhas-sem-bloco-classificadas-em-2026-08-05) |
+| o ciclo de vida de uma linha da fila             | [o que esta fila enfileira](../adr/fila-de-decisoes.md#o-que-esta-fila-enfileira)                        |
+
+**O texto dos blocos continua acima, e isso não é duplicação por descuido.** Este
+arquivo é append-only até a linha 1879, pelo achado registrado logo acima: nove citações
+por número de linha vindas dos ADRs 0008 e 0009 apontam para cá, e o corpo de um ADR
+aceito NÃO PODE ser corrigido. Apagar os blocos deslocaria quatro delas sem conserto
+possível.
+
+**Qual das duas vale.** A de `docs/adr/`. O texto acima é registro histórico congelado
+da rodada de 2026-08-03, e uma decisão que mude de estado muda lá, nunca aqui.

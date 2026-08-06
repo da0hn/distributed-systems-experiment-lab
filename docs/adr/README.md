@@ -260,249 +260,48 @@ inteiramente perdido.
 
 ## Fila de decisões
 
-Ordem em que as decisões precisam ser tomadas, derivada de
-[`../plano-do-laboratorio.md`](../plano-do-laboratorio.md).
+**A fila vive em [`fila-de-decisoes.md`](fila-de-decisoes.md) desde 2026-08-05.** Esta
+seção é uma lápide, na forma que a decisão `C-2` fixou: ela nomeia o destino do que
+estava aqui, e não some.
 
-**Esta fila enfileira decisão, e não ADR.** Desde 2026-08-04, o artefato que uma linha
-gera é escolhido no momento em que a decisão é tomada, e não antes: ADR quando a escolha
-atender aos quatro critérios desta página, artefato de
-[`../features/`](../features/README.md) quando não atender. Uma linha PODE gerar os
-dois, e PODE não gerar ADR nenhum. As sete primeiras linhas geraram ADR; as quatro
-restantes ainda não têm artefato definido.
+**Por que ela saiu.** É a decisão `B-1`, registrada em
+[`../architecture/decisoes-pendentes.md`](../architecture/decisoes-pendentes.md).
+Existiam duas filas do mesmo tipo de coisa — esta e os blocos `D-*` daquele arquivo — e
+enquanto foram duas, uma decisão PODE ter sido tomada numa e reaberta na outra. Esta
+página já era índice, convenção, histórico e processo de debate; a fila era a quinta
+coisa, e a única que cresce sem parar.
 
-A fila desta página cobre as decisões derivadas do plano. As decisões que a rodada de
-arquitetura de 2026-08-03 produziu vivem em
-[`../architecture/decisoes-pendentes.md`](../architecture/decisoes-pendentes.md), e as
-duas ainda não foram fundidas.
+| O que estava nesta seção                      | Onde está agora                                                             |
+|-----------------------------------------------|-----------------------------------------------------------------------------|
+| as onze decisões derivadas do plano           | [as decisões derivadas do plano](fila-de-decisoes.md#as-decisões-derivadas-do-plano) |
+| citar pelo nome, e não pela posição           | [como citar uma linha](fila-de-decisoes.md#como-citar-uma-linha-desta-fila)  |
+| as três subseções de comentário               | os três títulos abaixo, preservados                                         |
 
-Os números **não** estão atribuídos. Um número é atribuído quando o ADR é escrito —
-atribuir antes cria buracos na sequência quando a ordem muda.
-
-A coluna `Ordem` é posição na fila, e a posição muda quando uma decisão entra no meio.
-**Cite uma decisão pelo nome, nunca pela posição.** Uma citação por posição continua
-válida depois da inserção, e passa a apontar para outra decisão.
-
-| Ordem | Decisão                                                                                                                          | Por que precisa vir aqui                                                                                                                                                                                                                                                                         |
-|-------|----------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | **O passo como unidade de execução, observação e injeção de falha** — ADR-0001, `Aceito`                                         | toda outra decisão herda a forma que esta escolheu (plano, seção 2)                                                                                                                                                                                                                              |
-| 2     | **O domínio mínimo: contador com oráculo exato mais predicado de capacidade** — ADR-0002, `Aceito`                               | define o que é medido; fechou [`Q-0001-3`](../questions/Q-0001-3.md) e encaminhou quatro questões novas                                                                                                                                                                                          |
-| 3     | **O estatuto da barreira e o diagnóstico da não ocorrência** — ADR-0004, `Aceito`                                                | rebaixou a barreira a controle positivo, fixou a taxa como veredito e encaminhou cinco questões                                                                                                                                                                                                  |
-| 4     | **A linguagem do agendamento: como uma barreira é declarada** — ADR-0003, `Aceito`                                               | o ADR-0001 fixa o endereço da fronteira e para aí; sem a linguagem, a execução de controle do ADR-0004 não é declarável; encaminhou quatro questões                                                                                                                                              |
-| 5     | **A forma do escalonador: estado, decisão e protocolo de desistência** — [ADR-0005](0005-a-forma-do-escalonador.md), `Aceito`    | consumiu o agendamento e executou a barreira; resolveu [`Q-0001-4`](../questions/Q-0001-4.md), [`Q-0002-2`](../questions/Q-0002-2.md), [`Q-0003-1`](../questions/Q-0003-1.md) e [`Q-0003-2`](../questions/Q-0003-2.md), e encaminhou [`Q-0005-1`](../questions/Q-0005-1.md)                      |
-| 6     | **Estratégias de concorrência como dado, não como branch** — [ADR-0006](0006-a-forma-da-estrategia-de-concorrencia.md), `Aceito` | sem isso o experimento de comparação não existe; [`Q-0001-2`](../questions/Q-0001-2.md) pede o controle positivo aqui; acrescenta a coluna `version` e nomeia a estratégia de calibração do ADR-0002                                                                                             |
-| 7     | **O log de observações: forma, ordem e onde vive** — [ADR-0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), `Aceito`  | é o substrato da timeline agora; fechou a metade de controle de [`Q-0003-3`](../questions/Q-0003-3.md) e reencaminhou a identidade de operação de [`Q-0001-1`](../questions/Q-0001-1.md) para Experiment                                                                                         |
-| 8     | **Experiment: definição, semente, hipótese e asserções**                                                                         | precisa resolver a tensão entre Designer na UI e definição versionada; [`Q-0002-4`](../questions/Q-0002-4.md) pede aqui o ciclo de vida de uma execução, [`Q-0003-8`](../questions/Q-0003-8.md) o que `N` conta, e [`Q-0001-1`](../questions/Q-0001-1.md) a identidade de versão de uma operação |
-| 9     | **Os dois formatos de veredito: booleano e curva**                                                                               | se ficar para depois, o grupo D não cabe na arquitetura; [`Q-0002-3`](../questions/Q-0002-3.md) acrescenta o eixo pontual contra contínuo no tempo, e [`Q-0003-3`](../questions/Q-0003-3.md) pede o que "mesma taxa" significa numa execução medida                                              |
-| 10    | **Arquitetura mínima, stack e guardas executáveis**                                                                              | **parcialmente consumida** pelo [ADR-0008](0008-os-dois-planos-em-processos-separados.md), que fixou dois processos separados e o pacote raiz; restam o build, o número de módulos e a guarda que [`Q-0002-1`](../questions/Q-0002-1.md) pede para as três regras                                |
-| 11    | **Entrega contínua no homelab desde o dia zero**                                                                                 | o serviço precisa nascer entregando; ratifica ou emenda a ADR 0017 lá                                                                                                                                                                                                                            |
-
-O passo e o domínio mínimo destravam o MVP inteiro. O agendamento e o escalonador
-destravam o E2 — o experimento que prova que a plataforma **constrói** a anomalia, e não
-apenas a detecta. As demais podem ser debatidas em paralelo ao avanço do MVP, **uma por
-vez**.
-
-O estatuto da barreira entrou na fila em 2026-07-31, à frente do agendamento, e foi
-aceito em 2026-08-01 como ADR-0004. O parágrafo acima vale com uma emenda: o agendamento
-e o escalonador destravam a **execução de controle**, e não o experimento reportado. O
-E2 deixou de ser experimento do MVP. Enunciado da proposta em
-[a anomalia por frequência](#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira).
-
-O agendamento e o escalonador entraram na fila em 2026-07-29. O ADR-0001 encaminhava as
-duas para "ADR próprio" sem que nenhuma delas estivesse aqui. Um encaminhamento sem
-destino é vazamento, não delegação. O agendamento foi aceito em 2026-08-01 como
-ADR-0003, e encaminhou [`Q-0003-1`](../questions/Q-0003-1.md),
-[`Q-0003-2`](../questions/Q-0003-2.md), [`Q-0003-3`](../questions/Q-0003-3.md) e
-[`Q-0003-8`](../questions/Q-0003-8.md). A forma do escalonador foi aceita no mesmo dia
-como ADR-0005: resolveu [`Q-0001-4`](../questions/Q-0001-4.md),
-[`Q-0002-2`](../questions/Q-0002-2.md), [`Q-0003-1`](../questions/Q-0003-1.md) e
-[`Q-0003-2`](../questions/Q-0003-2.md), e encaminhou
-[`Q-0005-1`](../questions/Q-0005-1.md).
-
-O log de observações foi aceito em 2026-08-04 como ADR-0007. Fechou a metade de
-[`Q-0003-3`](../questions/Q-0003-3.md) sobre execução de controle, através do campo
-`restrito` que distingue evento ordenado por barreira de evento livre. Reencaminhou a
-outra metade — o que "mesma taxa" significa numa execução medida — para **os dois
-formatos de veredito** (posição 9), por ser pergunta sobre o formato do ADR-0004, não
-sobre a forma do log. Reencaminhou também [`Q-0001-1`](../questions/Q-0001-1.md) para
-**Experiment** (posição 8): identidade de versão de operação descreve a definição da
-operação, não o registro de eventos de uma tentativa.
+**As linhas 1 a 260 desta página não se moveram**, e os três títulos abaixo continuam
+existindo. Não é zelo: sete citações por número de linha e uma por âncora, vindas de
+ADRs **aceitos**, apontam para esta página, e o corpo de um ADR aceito NÃO PODE ser
+corrigido.
+Apagar um título quebraria a citação sem conserto possível.
 
 ### A ordem da arquitetura mínima e da entrega contínua está sob tensão
 
-O laboratório é entregue no cluster do
-[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure), e a
-exigência é que um serviço **nasça já entregando** — pipeline e CI/CD no mesmo commit
-que cria o módulo, não retrofitados depois.
-
-Isso não move o passo: o formato dele não afeta o que o pipeline empacota. Mas move a
-arquitetura mínima e a entrega contínua para **junto do primeiro módulo compilável**, e
-as decisões entre o domínio mínimo e os vereditos deixam de ser pré-requisito de
-escrever código de esqueleto. O `Dockerfile` e o `deploy/kustomization.yaml` fixam o
-número de módulos e a forma do artefato — que é o conteúdo da arquitetura mínima.
-
-A entrega contínua tem uma particularidade que nenhuma outra tem: **parte dela já foi
-tomada fora deste repositório.** A ADR 0017 do homelab, aceita em 2026-07-26, escolheu
-Gradle, Toxiproxy e "microsserviços JVM" para este laboratório, dois dias antes do
-replanejamento que descartou a arquitetura de serviços. Ratificar ou emendar é decisão
-consciente e explícita. O inventário completo do que sobrevive e do que colide está em
-[`../plano-do-laboratorio.md`](../plano-do-laboratorio.md), seção 12.
+**Movida** para
+[`fila-de-decisoes.md`](fila-de-decisoes.md#a-ordem-da-arquitetura-mínima-e-da-entrega-contínua-está-sob-tensão).
 
 ### O nível de isolamento não tem lugar nesta fila
 
-O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
-`SERIALIZABLE`. Só o terceiro aborta uma das transações, com SQLSTATE `40001`. O plano
-registra a exigência na seção 6, e nomeia o nível de isolamento como parâmetro do
-experimento — escopo que os quatro experimentos anteriores não têm.
-
-**Nenhuma linha desta fila nomeia esse parâmetro.**
-
-A decisão de estratégias de concorrência é o destino aparente, e ela não serve sem
-argumento. Uma estratégia é código da aplicação: `NONE`, `ATOMIC_UPDATE`, `OPTIMISTIC` e
-`PESSIMISTIC` mudam o SQL que os passos emitem. Um nível de isolamento é propriedade da
-transação, e ele muda o que o banco faz com o mesmo SQL. O E5 é o experimento que separa
-os dois eixos: com `OPTIMISTIC` ativo sob `READ COMMITTED`, a invariante quebra sem
-exceção nenhuma, porque inserir uma alocação não incrementa a versão de linha alguma.
-Tratar o isolamento como mais um valor da mesma enumeração apagaria a distinção que o
-experimento existe para mostrar.
-
-Três destinos são possíveis, e a escolha não foi feita.
-
-- **Estratégias de concorrência**, com o isolamento declarado como eixo separado dentro
-  da mesma decisão. O custo é uma decisão que passa a carregar dois eixos.
-- **Experiment**, que define o que uma execução declara. O isolamento seria um campo da
-  definição, ao lado da semente. O custo é decidir a semântica do parâmetro num ADR cujo
-  assunto é o ciclo de vida da execução.
-- **Linha própria nesta fila**, se a escolha tiver alternativas e trade-off que nenhuma
-  das duas comporte.
-
-Uma pista contra o terceiro destino: o E5 não escolhe um nível, ele varre três. O que a
-plataforma precisa é do eixo de variação, e não de um valor decidido uma vez.
-
-Registrado em 2026-07-31, no levantamento do que falta para fechar o MVP.
+**Movida** para
+[`fila-de-decisoes.md`](fila-de-decisoes.md#o-nível-de-isolamento-não-tem-lugar-nesta-fila).
 
 ### A anomalia por frequência: uma proposta que muda o estatuto da barreira
 
-O laboratório foi planejado para **construir** a anomalia. O E2 declara a intercalação
-`W1.READ → W2.READ → W1.WRITE → W2.WRITE`, o escalonador a impõe, e a atualização
-perdida aparece em toda execução. A proposta inverte o mecanismo: a anomalia emerge da
-**frequência** de execuções concorrentes, e o trabalho da plataforma passa a ser
-**diagnosticar** se o erro esperado ocorreu.
+**Movida** para
+[`fila-de-decisoes.md`](fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira).
+Este título permanece porque o cabeçalho do
+[ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) o cita por
+âncora, e o cabeçalho de um ADR aceito só admite emenda, substituição, subsunção ou
+errata.
 
-A proposta não é uma preferência de implementação. Ela troca o que a plataforma promete:
-de "esta execução produz a anomalia" para "esta configuração produz a anomalia com esta
-taxa". As duas promessas exigem instrumentos diferentes.
-
-#### O que a proposta contradiz
-
-**A aresta `25 → 1` do plano**, seção 4. O texto lá diz: "o lost update precisa ser
-demonstrado, não sorteado. Sem barreiras, o experimento produz *às vezes perde* — que é
-a mesma frase que o engenheiro já dizia antes de abrir o laboratório." É o argumento
-mais forte contra a proposta, e ele já estava escrito antes dela.
-
-**O estatuto epistêmico do E2.** O plano separa E1 de E2 assim: "E1 prova que o
-laboratório *detecta*. E2 prova que o laboratório *constrói*. São capacidades
-diferentes, e a segunda é a que torna a primeira confiável." Sem barreira, a segunda
-capacidade some, e a confiança na primeira perde o apoio que o plano lhe deu.
-
-**A cláusula de honestidade do ADR-0001**, que está `Aceito`. Ela compara um braço com
-barreiras contra um braço sem elas. Com um braço só, a cláusula fica sem sujeito. A
-falha que ela existe para pegar — o runtime fabricando o fenômeno por agendamento —
-deixa de ser possível pelo mesmo motivo, mas a fabricação por estado compartilhado
-dentro do instrumento continua, e [`Q-0001-2`](../questions/Q-0001-2.md) registra que
-ela não tem guarda.
-
-**O ADR-0003 inteiro.** Ele define como uma barreira é declarada. A questão 4 daquele
-documento está `aberto (crítico)` por causa desta proposta, e ele NÃO DEVE ser aceito
-antes que este item seja decidido.
-
-#### O que a proposta não contradiz, e o que ela reforça
-
-**O oráculo do ADR-0002 já é uma contagem, e não um booleano.**
-`perdidas = commits − (value_final − value_inicial)` mede magnitude. Uma taxa é a mesma
-contagem dividida pelo número de tentativas, e nada no ADR-0002 precisa mudar para
-produzi-la. O domínio mínimo foi escolhido de um jeito que serve às duas promessas.
-
-**O E1 já é a proposta.** Cem incrementos, dez workers, nenhuma barreira, `value < 100`.
-A mudança não introduz um experimento novo no MVP: ela promove a forma do E1 a norma e
-rebaixa a do E2.
-
-**O grupo de controle deixa de ser disciplina e vira pré-requisito lógico.** A regra
-"se `NONE` não violar, a carga é insuficiente" já está no repositório. Sob a proposta,
-ela passa a ser a única coisa que faz um resultado negativo significar alguma coisa.
-
-**O passo sobrevive com duas das três motivações.** O ADR-0001 fixou o passo por três
-exigências: barreira determinística, injeção de falha em ponto nomeado e timeline. A
-proposta atinge a primeira e não toca nas outras duas. A etapa 6 continua precisando de
-`AFTER_COMMIT` exato, e a timeline continua sendo um registro por passo.
-
-#### O que a proposta cria, e ninguém decidiu ainda
-
-**Um resultado negativo passa a ter quatro causas, e a plataforma não distingue nenhuma
-delas hoje.** "Zero violações" PODE significar: a anomalia é impossível naquela
-configuração; a anomalia é possível e a janela nunca foi atingida; a anomalia ocorreu e
-o oráculo não a viu, porque ele lê o estado final quiescente ([`Q-0002-3`](../questions/Q-0002-3.md)); ou os workers nunca se sobrepuseram, porque o
-pool de conexões os serializou. A primeira é o resultado que o experimento busca. As
-outras três são defeitos do instrumento com a mesma aparência.
-
-**A plataforma mede a consequência, e passaria a precisar medir a exposição.** Uma
-atualização perdida exige que dois workers leiam o mesmo valor antes que qualquer um
-escreva. Esse evento é contável a partir do log de observações que o ADR-0001 já obriga
-o runtime a emitir. Contá-lo separa "a janela não abriu" de "a janela abriu e nada
-aconteceu" — que é a distinção que converte um zero em conhecimento. Nenhum documento do
-repositório nomeia essa métrica.
-
-**Um resultado negativo precisa de regra de parada e de declaração de confiança.** Com N
-tentativas e zero violações, o limite superior da taxa fica em torno de `3/N` com 95% de
-confiança. Sem uma regra escrita, cada execução escolhe o próprio N, e dois relatórios
-com o mesmo veredito afirmam coisas diferentes. Quem escolhe N, e o que o relatório
-afirma quando o zero aparece, é decisão nova.
-
-**O veredito ganha um terceiro formato.** A fila prevê booleano e curva. Taxa com
-intervalo não é nenhum dos dois: ela tem um número e uma incerteza, e a incerteza
-precisa aparecer no relatório. A decisão dos formatos de veredito muda de escopo por
-causa disso.
-
-**A falha intermitente entra no pipeline.** Um experimento probabilístico num workflow
-que precisa ficar verde é um teste instável por construção. A tensão 2 do plano chama a
-falha intermitente de "o pior resultado possível num instrumento de medida", e a
-exigência de nascer entregando põe esse custo no primeiro commit, não depois.
-
-#### Três desfechos, e nenhum é obviamente certo
-
-**Remoção da barreira.** O agendamento sai, o ADR-0003 é descontinuado ainda `Proposto`,
-e o E2 deixa de existir como experimento separado. Custo: a plataforma passa a afirmar
-apenas o que observou, e perde o poder de mostrar a intercalação que causa o fenômeno —
-que é a exigência pedagógica do cenário 25.
-
-**Rebaixamento a instrumento de diagnóstico.** A frequência produz o resultado; a
-barreira responde à pergunta que o resultado negativo deixa aberta. Se a execução por
-frequência não produzir violação, a mesma configuração roda com a intercalação forçada:
-violação ali significa carga insuficiente na primeira; ausência nas duas significa que a
-anomalia é impossível naquela configuração. A barreira vira o **controle positivo** do
-experimento, e o ADR-0003 continua válido com a seção `## Contexto` reescrita.
-
-**Eixo coigual.** Frequência e barreira convivem como duas resoluções do experimento, do
-mesmo jeito que o ADR-0001 fez com alta e baixa resolução da operação. Custo: todo
-experimento passa a ter dois braços obrigatórios, e o laboratório carrega as duas
-máquinas desde o MVP.
-
-Registrado em 2026-07-31, no turno em que a proposta foi apresentada, antes de qualquer
-resposta a ela.
-
-O segundo desfecho foi o escolhido, e o
-[ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) o fixou
-junto dos instrumentos de diagnóstico. Ele foi aceito em 2026-08-01.
-
-O [ADR-0003](0003-a-linguagem-do-agendamento.md) foi aceito no mesmo dia, com a seção
-`## Contexto` reescrita para justificá-lo pela execução de controle. O parágrafo acima
-que o proibia de ser aceito registra o bloqueio vigente em 2026-07-31, e deixou de valer
-quando o ADR-0004 escolheu o desfecho.
-
-O debate da aceitação mudou dois pontos do que está escrito acima. A exposição de
-referência é contada no **controle negativo**, e não na execução medida: uma estratégia
-que serializa fecha a janela, e ler esse zero como carga fraca condenaria a estratégia
-mais protetora. E o veredito `sem exposição`, previsto aqui, não existe — o controle
-negativo já detectava aquele caso, e o lugar foi ocupado por `janela mal declarada`.
 
 ## Questões encaminhadas
 

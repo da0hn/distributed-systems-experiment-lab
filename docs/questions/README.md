@@ -16,7 +16,7 @@ resposta pertence a outra decisão, ela recebe status `encaminhado` e, no ato da
 do ADR de origem, é transportada para um arquivo nesta pasta — **inteira, não
 resumida**.
 O ADR de destino precisa nascer com o problema que motivou a entrada dele na
-[fila de decisões](../adr/README.md#fila-de-decisões). Um resumo é a mesma perda, mais
+[fila de decisões](../adr/fila-de-decisoes.md). Um resumo é a mesma perda, mais
 devagar.
 
 ## Identificador

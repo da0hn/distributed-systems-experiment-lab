@@ -891,8 +891,8 @@ antecipa a 7 e a 8.
 Nada neste documento é decisão.
 
 A decisão de processo já foi tomada: a primeira série foi arquivada em
-[`adr/arquivo/`](adr/arquivo/README.md) e a numeração recomeçou. A fila de decisões está
-em [`adr/README.md`](adr/README.md).
+[`adr/arquivo/`](adr/arquivo/README.md) e a numeração recomeçou. A fila de decisões
+está em [`adr/fila-de-decisoes.md`](adr/fila-de-decisoes.md).
 
 O próximo passo é escrever o primeiro ADR da série corrente, e ele é o da seção 2 — **o
 passo como unidade de execução, observação e injeção de falha**. Ele vem primeiro porque

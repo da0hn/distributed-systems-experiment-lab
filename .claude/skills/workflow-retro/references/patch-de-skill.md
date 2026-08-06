@@ -60,4 +60,4 @@ mudança.
 
 **Patch em ADR aceito não existe.** Nenhum ADR aceito é editado. Quando o atrito
 apontar para uma decisão registrada em ADR, o destino é a fila de decisões de
-`docs/adr/README.md`, e o patch é rejeitado na origem.
+`docs/adr/fila-de-decisoes.md`, e o patch é rejeitado na origem.

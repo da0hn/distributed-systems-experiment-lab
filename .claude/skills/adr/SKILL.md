@@ -13,7 +13,8 @@ skill.
 
 ## Leia antes de escrever
 
-1. `docs/adr/README.md` — convenções de escrita, estados, numeração e a fila de decisões.
+1. `docs/adr/README.md` — convenções de escrita, estados e numeração.
+1. `docs/adr/fila-de-decisoes.md` — a fila única, e o que cada linha destrava.
 2. `references/adr.md` — o template obrigatório.
 3. `references/adr-lifecycle.md` — o que fazer antes de criar, enquanto proposto, ao
    aceitar e depois de aceito.

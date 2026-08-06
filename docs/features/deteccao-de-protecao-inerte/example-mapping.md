@@ -88,13 +88,13 @@ sequenceDiagram
 
 ## Perguntas em aberto
 
-| #   | Pergunta                                                                                                                                                                        | Origem                                    |
-|-----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
-| P1  | Onde o nível de isolamento é declarado? Nenhuma linha da fila de decisões o nomeia.                                                                                             | `adr/README.md`:240-269                   |
-| P2  | O retry exigido por `SERIALIZABLE` é da estratégia ou do runtime? A resposta muda quem conta as tentativas.                                                                     | nova, 2026-08-01                          |
-| P3  | `allocate` lê a soma e compara com `capacity`. Quando o predicado reprova, a operação reporta sucesso ou falha ao Lab Plane? A distinção afeta `commits − sucessos`.            | nova, 2026-08-01                          |
-| P4  | O oráculo avalia "para cada recurso". O E5 tem um recurso só — a contagem de coincidências qualificada por chave sugere experimentos com muitos. Quantos recursos o E5 declara? | nova, 2026-08-01                          |
-| P5  | Uma alocação nunca é removida no MVP. O oráculo do estado final quiescente serve por isso. Isso é premissa ou coincidência?                                                     | [`Q-0002-3`](../../questions/Q-0002-3.md) |
+| #  | Pergunta                                                                                                                                                                        | Origem                                                                               |
+|----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| P1 | Onde o nível de isolamento é declarado? Nenhuma linha da fila de decisões o nomeia.                                                                                             | [fila](../../adr/fila-de-decisoes.md#o-nível-de-isolamento-não-tem-lugar-nesta-fila) |
+| P2 | O retry exigido por `SERIALIZABLE` é da estratégia ou do runtime? A resposta muda quem conta as tentativas.                                                                     | nova, 2026-08-01                                                                     |
+| P3 | `allocate` lê a soma e compara com `capacity`. Quando o predicado reprova, a operação reporta sucesso ou falha ao Lab Plane? A distinção afeta `commits − sucessos`.            | nova, 2026-08-01                                                                     |
+| P4 | O oráculo avalia "para cada recurso". O E5 tem um recurso só — a contagem de coincidências qualificada por chave sugere experimentos com muitos. Quantos recursos o E5 declara? | nova, 2026-08-01                                                                     |
+| P5 | Uma alocação nunca é removida no MVP. O oráculo do estado final quiescente serve por isso. Isso é premissa ou coincidência?                                                     | [`Q-0002-3`](../../questions/Q-0002-3.md)                                            |
 
 ## Adiado de propósito
 
