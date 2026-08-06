@@ -1,10 +1,10 @@
 # Verificacao da documentacao. Decisao `C-5`, em
 # `docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md`.
 #
-# Este workflow NAO constroi, NAO empacota e NAO entrega nada: nao existe codigo
-# neste repositorio ainda. Ele verifica os documentos, e so isso. Build,
-# empacotamento e deploy chegam com o modulo, sob a ADR 0017 do
-# `homelab-infrastructure`, que exige GitHub Actions em runner hospedado.
+# Este workflow NAO constroi, NAO empacota e NAO entrega nada. Ele verifica os
+# documentos, e so isso. Desde 2026-08-06 o build e o empacotamento existem, e
+# vivem em `build.yml` — os dois sao separados de proposito: um defeito de
+# citacao nao deve impedir a publicacao da imagem, nem o contrario.
 name: docs
 
 on:

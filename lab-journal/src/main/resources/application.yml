@@ -1,0 +1,31 @@
+# O Lab Journal guarda o historico e o serve ao frontend. Desde a decisao
+# E-17 de 2026-08-06 ele e o unico guardiao desse historico: docs/experiments/
+# nao existe, e a durabilidade daqui deixou de ser conveniencia.
+spring:
+  application:
+    name: lab-journal
+  datasource:
+    url: ${LAB_JOURNAL_DB_URL:jdbc:postgresql://localhost:5432/lab}
+    username: ${LAB_JOURNAL_DB_USER:lab_journal}
+    password: ${LAB_JOURNAL_DB_PASSWORD:lab_journal}
+  flyway:
+    # O ADR-0007 ja fixou a forma e a ordem do log de observacoes, entao a
+    # primeira tabela daqui pode ser escrita sem esperar o grupo II. Ela nao
+    # entrou neste commit: a V1 cria so o schema.
+    schemas: lab_journal
+    default-schema: lab_journal
+    create-schemas: true
+
+server:
+  port: ${SERVER_PORT:8081}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always

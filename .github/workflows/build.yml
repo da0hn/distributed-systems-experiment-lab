@@ -1,0 +1,103 @@
+# Build, provas e imagem. Decisao `E-4`, em `docs/adr/fila-de-decisoes.md`.
+#
+# **Nenhum experimento roda aqui.** O E1 do MVP e obrigado a violar a
+# invariante — esse e o resultado que ele existe para produzir — e um
+# experimento cujo resultado esperado e a violacao inverteria o significado
+# de verde. O experimento e acionado pela pessoa, no frontend.
+#
+# O que falta, e por que: o bump da tag nos manifests de `deploy/` nao existe
+# porque `E-3` foi adiada por escolha explicita em 2026-08-06. Enquanto ela
+# nao fechar, este workflow publica a imagem e nada a consome — o
+# `ComparisonError` que o ArgoCD reporta continua.
+name: build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  JAVA_VERSION: '25'
+  NODE_VERSION: '24'
+
+jobs:
+
+  provas:
+    name: Build, testes e guardas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      # Os testes de contexto sobem um PostgreSQL real por Testcontainers. O
+      # runner hospedado ja traz Docker; sem ele, a prova de equivalencia de
+      # traco de SQL que o ADR-0001 exige nao teria onde rodar.
+      - name: Verificar o reactor Maven
+        run: mvn -B verify
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Verificar o frontend
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+  imagem:
+    name: Publicar no GHCR
+    needs: provas
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - modulo: lab-plane
+            contexto: .
+          - modulo: lab-journal
+            contexto: .
+          - modulo: system-under-test
+            contexto: .
+          - modulo: frontend
+            contexto: ./frontend
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: docker/setup-buildx-action@v3
+
+      # Credencial efemera do proprio job, por exigencia da ADR 0017 do
+      # `homelab-infrastructure`. Nenhum Secret de longa duracao vive aqui.
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # A tag e o SHA do commit, e nunca `latest`. Uma tag movel torna
+      # impossivel dizer qual imagem produziu um resultado de experimento —
+      # que e a propriedade que este repositorio existe para ter.
+      - name: Construir e publicar
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.contexto }}
+          build-args: |
+            MODULE=${{ matrix.modulo }}
+          push: true
+          tags: ghcr.io/${{ github.repository }}/${{ matrix.modulo }}:${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.modulo }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.modulo }}

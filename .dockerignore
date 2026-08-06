@@ -1,0 +1,15 @@
+# O contexto de build do Dockerfile da raiz é o repositório inteiro, porque
+# o reactor Maven precisa dos quatro `pom.xml`. Tudo que não entra na imagem
+# fica de fora do contexto: um contexto grande é upload em toda construção.
+.git
+.github
+.idea
+.claude
+docs
+scripts
+graphify-out
+local
+frontend
+**/target
+*.md
+compose.yaml

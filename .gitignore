@@ -1,6 +1,15 @@
 .idea
 *.iml
 
+# Build do reactor Maven
+target/
+
+# Build do frontend. O package-lock.json entra no Git de propósito: o
+# workflow usa `npm ci`, que o exige, e sem ele duas execuções do pipeline
+# instalariam árvores de dependência diferentes.
+frontend/node_modules/
+frontend/dist/
+
 # Configuração local de máquina (allowlist de permissões, output style).
 .claude/settings.local.json
 

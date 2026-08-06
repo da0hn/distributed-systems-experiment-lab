@@ -1,0 +1,102 @@
+# Desenvolvimento local. No homelab o PostgreSQL vem da Camada 6, por
+# decisao E-5 de 2026-08-06 — este contêiner existe para reproduzir aquele
+# banco na maquina de quem desenvolve, e nunca para ser entregue.
+#
+# O `wal_level=logical` nao e detalhe de configuracao: a decisao E-18 fez do
+# CDC sobre o WAL a fonte do veredito, entao sem ele o oraculo nao tem de
+# onde ler. Todas as execucoes pagam o mesmo custo de WAL, e continuam
+# comparaveis entre si.
+services:
+
+  postgres:
+    image: postgres:18-alpine
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - max_replication_slots=8
+      - -c
+      - max_wal_senders=8
+    environment:
+      POSTGRES_DB: lab
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      # A porta do host e parametrizavel porque uma maquina de trabalho
+      # costuma ja ter um PostgreSQL em 5432. Dentro da rede do compose os
+      # servicos falam com `postgres:5432`, e nada disso os alcanca.
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # A partir da imagem 18 o volume vai em `/var/lib/postgresql`, e nao em
+      # `/var/lib/postgresql/data`: os dados passaram a viver num subdiretorio
+      # por versao maior, para que `pg_upgrade --link` nao cruze fronteira de
+      # ponto de montagem. Montar o caminho antigo faz o contêiner recusar a
+      # subir.
+      - postgres-data:/var/lib/postgresql
+      - ./local/postgres-init.sql:/docker-entrypoint-initdb.d/10-roles.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d lab"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  lab-plane:
+    build:
+      context: .
+      args:
+        MODULE: lab-plane
+    environment:
+      LAB_PLANE_DB_URL: jdbc:postgresql://postgres:5432/lab
+      LAB_PLANE_DB_USER: lab_plane
+      LAB_PLANE_DB_PASSWORD: lab_plane
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  lab-journal:
+    build:
+      context: .
+      args:
+        MODULE: lab-journal
+    environment:
+      LAB_JOURNAL_DB_URL: jdbc:postgresql://postgres:5432/lab
+      LAB_JOURNAL_DB_USER: lab_journal
+      LAB_JOURNAL_DB_PASSWORD: lab_journal
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  system-under-test:
+    build:
+      context: .
+      args:
+        MODULE: system-under-test
+    environment:
+      SUT_DB_URL: jdbc:postgresql://postgres:5432/lab
+      SUT_DB_USER: sut
+      SUT_DB_PASSWORD: sut
+      SERVER_PORT: 8082
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - lab-plane
+      - lab-journal
+
+volumes:
+  postgres-data:

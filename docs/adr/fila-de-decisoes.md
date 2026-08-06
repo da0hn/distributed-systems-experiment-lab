@@ -892,6 +892,96 @@ de replicação deixam de ser da etapa 5 e entram no primeiro `compose.yaml` e n
 `deploy/`. `O17` já registrava que o Debezium entra na stack sem linha na matriz de
 integrações, e agora ele entra antes de qualquer experimento existir.
 
+### O esqueleto do grupo I, escrito em 2026-08-06
+
+O primeiro código do repositório entrou no mesmo dia em que o grupo I fechou. Ele
+compila, empacota, sobe contra PostgreSQL real e **não implementa nada**.
+
+| Decisão | Como ela virou arquivo                                           |
+|---------|------------------------------------------------------------------|
+| `E-1`   | `pom.xml` reactor, Java 25, Spring Boot 4.1.0                    |
+| `E-2`   | `shared`, `lab-plane`, `lab-journal`, `system-under-test`        |
+| `E-4`   | `.github/workflows/build.yml`: verify, depois imagem no GHCR     |
+| `E-5`   | `compose.yaml` e `local/postgres-init.sql`, um papel por serviço |
+| `E-6`   | `frontend/`, React 19 com `Dockerfile` e nginx próprios          |
+| `E-7`   | Flyway configurado nos três, com `create-schemas`                |
+| `E-18`  | `ALTER ROLE lab_plane REPLICATION`, e nenhum `GRANT` cruzado     |
+| `E-20`  | dois caminhos no `nginx.conf` e no proxy do Vite                 |
+
+#### Cinco coisas que escrever o código decidiu, e que ninguém tinha perguntado
+
+**A região `application` do ADR-0008 vira três folhas.** Aquele ADR nomeia
+`dev.da0hn.lab.application` como a região de composição e ponto de entrada. Com três
+executáveis, um pacote único ali ficaria dividido entre três artefatos — split package,
+que compila e envenena qualquer análise por pacote. Cada bootstrap ganhou folha própria:
+`application.labplane`, `application.journal` e `application.sut`, com
+`scanBasePackages` declarado. **A emenda ao ADR-0008 precisa cobrir isto**, junto da
+região `journal`, que também não existe lá.
+
+**A direção proibida do ADR-0008 deixou de precisar de guarda.** O `system-under-test`
+não declara dependência do `lab-plane`, então a chamada proibida é erro de compilação. O
+ArchUnit foi **retirado** dos `pom.xml` por isso: uma dependência declarada sem uso é
+exatamente o que a regra estrutural do repositório proíbe. Ele volta quando `D-ARQ-07`
+decidir o que cada classe de regra verifica.
+
+**O `public` foi revogado no banco local.** Um schema comum a todos os papéis é o
+caminho por onde `E-18` vazaria sem ninguém notar: bastaria uma tabela criada sem
+qualificar o schema. `REVOKE ALL ON SCHEMA public FROM PUBLIC` fecha isso.
+
+**O SSE exige três diretivas no nginx.** Sem `proxy_buffering off`, o servidor acumula a
+resposta e entrega o evento só quando o buffer enche — o que transforma "ao vivo" de
+`E-19` em "em lote", sem erro nenhum aparecer. É a classe de defeito que o repositório
+mais teme: o silencioso.
+
+**O `lab-journal` já pode ter migração, e os outros dois não.** O
+[ADR-0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md) já fixou a forma e a
+ordem do log de observações, então a primeira migração do histórico não depende do grupo
+II. As tabelas `resource` e `allocation` dependem, porque `E-8` a `E-13` continuam
+abertas. Nenhuma migração entrou neste commit.
+
+#### Cinco defeitos que o esqueleto teve, e o que cada um ensina
+
+Nenhum deles apareceu como erro. Os cinco produziram **verde**, que é a forma de falha
+que este repositório mais teme.
+
+**A auto-configuração do Flyway saiu de `spring-boot-autoconfigure` no Spring Boot 4.**
+Ela vive num módulo próprio, `spring-boot-flyway`. Sem ele, o `flyway-core` fica no
+classpath, o contexto sobe, o health check responde `UP`, e **nenhuma migração roda**.
+
+**O Flyway não cria schema quando não há migração a aplicar.** `create-schemas: true` é
+condição, e não ordem: ele cria o schema antes de aplicar a primeira migração, e sem
+nenhuma ele não faz nada. As três `V1` existem por isso, e criam apenas um
+`COMMENT ON SCHEMA`.
+
+**Os dois defeitos acima se somam num terceiro.** A fronteira de `E-18` ficava declarada
+em `application.yml` e ausente no banco: os três serviços conectavam ao mesmo
+`database`, nenhum schema existia, e nada os impedia de escrever no mesmo espaço de
+nomes. A regra estava escrita e não estava valendo.
+
+**O teste `contextLoads` não pega nada disso.** Ele prova que o Spring sobe, o que é
+verdade mesmo com o Flyway inerte. Os testes passaram a consultar `pg_namespace` e
+afirmar que o schema daquele processo existe — o que falha se qualquer um dos três
+defeitos voltar.
+
+**A tabela de controle do Flyway tem uma coluna `version`.** Uma guarda ingênua para a
+proibição do ADR-0006 acusaria defeito na primeira execução. A verificação exclui
+`flyway_schema_history`: a coluna pertence à ferramenta de migração, e não ao domínio
+medido.
+
+Um sexto, de ambiente e não de decisão: a imagem `postgres:18` mudou o ponto de
+montagem para `/var/lib/postgresql`, porque os dados passaram a viver num subdiretório
+por versão maior. Montar `/var/lib/postgresql/data` faz o contêiner recusar-se a subir —
+este falhou ruidosamente, e por isso não está na lista acima.
+
+#### O que o esqueleto prova, e o que ele não prova
+
+Prova: os quatro artefatos constroem, os três serviços Java sobem contra PostgreSQL 18
+real por Testcontainers, o Flyway cria o schema de cada um, e o `compose.yaml` levanta o
+conjunto com `wal_level=logical`.
+
+Não prova nada sobre consistência distribuída. Nenhum dos 42 fenômenos é reproduzível, o
+oráculo não existe, e o CDC está provisionado mas não consumido.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e

@@ -2,18 +2,62 @@
 
 Guia para agentes de código ao trabalhar neste repositório.
 
-## Não existe código neste repositório
+## O esqueleto existe desde 2026-08-06, e ele não implementa nada
 
-Não há `pom.xml`, nenhuma classe Java, nenhum `docker-compose.yml`. **Não há comando de
-build, de teste ou de execução.** Se você tentar `mvn test`, `docker compose up` ou
-qualquer coisa parecida, vai falhar — e o motivo não é configuração faltando.
+O grupo I do Lote E fechou, e o primeiro código do repositório entrou. **Ele compila,
+empacota e sobe — e não tem uma única regra de negócio dentro.** Nenhum dos 42 fenômenos
+é reproduzível hoje.
 
-A árvore versionada tem 28 arquivos, todos documentação ou configuração de editor. Isso
-é deliberado: a especificação vem antes do código.
+| Comando                           | O que ele faz                                    |
+|-----------------------------------|--------------------------------------------------|
+| `mvn verify`                      | compila e sobe cada serviço contra PostgreSQL 18 |
+| `docker compose up --build`       | os quatro serviços e o banco, localmente         |
+| `npm --prefix frontend run build` | constrói a interface                             |
 
-Quando o código existir, a stack é Java 25, Spring Boot 4.x, PostgreSQL, Docker. O
-RabbitMQ entra na etapa 5. O pacote raiz Java, o build e o número de módulos ainda **não
-foram escolhidos** — é a decisão de arquitetura mínima na fila de `docs/adr/README.md`.
+A stack é Java 25, Spring Boot 4.1, PostgreSQL 18, Maven e Docker. O RabbitMQ **não**
+entrou, e o gatilho dele continua na etapa 5.
+
+### Os quatro serviços, e a regra que os separa
+
+```mermaid
+flowchart TB
+    FE["frontend<br/>React, contêiner próprio"]
+    LP["lab-plane<br/>dev.da0hn.lab.labplane"]
+    LJ["lab-journal<br/>dev.da0hn.lab.journal"]
+    ST["system-under-test<br/>dev.da0hn.lab.sut"]
+    W[("WAL")]
+    FE -->|" comando "| LP
+    FE -->|" leitura e SSE "| LJ
+    LP -->|" chamada de passo "| ST
+    LP -->|" observações ao vivo "| LJ
+    ST --> W
+    W -->|" CDC: a fonte do veredito "| LP
+```
+
+**Um serviço jamais acessa o schema de outro.** É a decisão `E-18`, e ela é a razão de o
+oráculo ler o WAL por replicação lógica em vez de fazer `SELECT` nas tabelas do sistema
+medido. O `shared` é biblioteca e não vira imagem; a direção proibida do ADR-0008 é erro
+de compilação, porque o `system-under-test` não declara dependência do `lab-plane`.
+
+**A região `dev.da0hn.lab.application` tem uma folha por executável.** Um pacote único
+ali seria dividido entre três artefatos, então cada bootstrap vive em
+`application.labplane`, `application.journal` e `application.sut`, com
+`scanBasePackages` declarado.
+
+### O que ainda não existe, e por quê
+
+- **Nenhuma tabela.** As três migrações `V1` criam apenas o schema de cada serviço, e
+  existem porque sem nenhuma migração o Flyway não roda — e sem ele rodar, a fronteira
+  de `E-18` fica declarada em configuração e ausente do banco, com o health check verde.
+  As tabelas dependem do grupo II do Lote E (`E-8` a `E-13`).
+- **Nenhum consumidor de CDC.** O `compose.yaml` já sobe o PostgreSQL com
+  `wal_level=logical` e o papel do `lab-plane` já tem `REPLICATION`; o consumo entra com
+  o oráculo.
+- **Nenhum `deploy/`.** A linha `E-3` foi adiada por escolha explícita, e o
+  `ComparisonError` que o ArgoCD reporta continua. O workflow publica imagem no GHCR com
+  tag igual ao SHA, e nada a consome ainda.
+- **Nenhuma guarda executável.** As três regras estruturais abaixo continuam texto —
+  [`Q-0002-1`](docs/questions/Q-0002-1.md), e as decisões `D-ARQ-07` a `D-ARQ-09`.
 
 ## O que este projeto é
 
@@ -135,9 +179,13 @@ Vale para os 42 fenômenos, sem exceção. É por isso que `version` não está 
 - **Cada worker tem sua própria
   conexão.** Se o pool serializar dois workers, o experimento
   produz um falso negativo silencioso.
-- **`experiments/` guarda definições; `docs/experiments/` guarda resultados.** Os dois
-  entram no Git — juntos, o histórico vira um caderno de laboratório. (A fonte de verdade
-  entre arquivo versionado e Experiment Designer na UI é tensão aberta: plano, seção 11.)
+- **O caderno de laboratório não vive no
+  Git.** Desde as decisões `E-14` e `E-17`, de
+  2026-08-06, a definição de experimento e o resultado vivem no banco do `lab-journal`,
+  e a pessoa os declara pelo frontend. Nem `experiments/` nem `docs/experiments/` são
+  criados. A tensão entre arquivo versionado e Experiment Designer fechou pelo segundo,
+  e o custo está nomeado na fila: um resultado deixa de aparecer em diff, de ser revisado
+  em PR e de sobreviver a um banco recriado.
 
 As três primeiras são hoje **texto, não regra executável**.
 [`Q-0002-1`](docs/questions/Q-0002-1.md) registra isso, e a guarda pertence à decisão de
@@ -215,10 +263,15 @@ Dividir, subir o limite ou cortar prosa é decisão, e ela não foi tomada.
 
 ### Árvore
 
-A árvore só tem `docs/`. O esqueleto herdado das decisões arquivadas foi apagado nos
-commits `83fcfc9` e `e1c88ae` — inclusive o `deploy/`, para onde o ArgoCD do homelab
-aponta. O `Application` de lá está em `ComparisonError` hoje. O conserto acompanha as
-decisões de arquitetura mínima e de entrega contínua.
+A árvore tem `docs/`, os quatro módulos do reactor, `frontend/`, `local/` e os dois
+workflows. O esqueleto herdado das decisões arquivadas foi apagado nos commits `83fcfc9`
+e `e1c88ae`, e o que existe hoje **não** é aquele — ele nasceu do grupo I do Lote E, em
+2026-08-06.
+
+**O `deploy/` continua sem existir, e o `Application` do homelab continua em
+`ComparisonError`.** A linha `E-3`, que decide a forma dele, foi adiada por escolha
+explícita na mesma data. Enquanto ela não fechar, o workflow publica imagens que nada
+consome.
 
 ## Este repositório é entregue no homelab
 
