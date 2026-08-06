@@ -912,7 +912,7 @@ Nada aqui edita aquele arquivo. As linhas abaixo são propostas.
   documento são **removidos** do Markdown no mesmo commit em que o contrato nascer, para
   que não existam duas fontes para a mesma forma.
 
-## Adições propostas a `../../../architecture/integrations.md`
+## Adições propostas a `integrations.md`
 
 Nada aqui edita aquele arquivo. As linhas abaixo são propostas.
 

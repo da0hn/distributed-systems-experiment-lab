@@ -430,7 +430,7 @@ exige que a projeção esteja em outro processo, ou se a assincronia pelo broker
 pipeline, é a mesma pergunta que `Q-INT-3` faz por outro ângulo. Tratado em
 [`entrega-continua.md`](entrega-continua.md#d-arq-11--postgresql-dedicado-contra-compartilhado).
 
-## Adições propostas a `../../../architecture/integrations.md`
+## Adições propostas a `integrations.md`
 
 As linhas abaixo são propostas. **Nenhuma edição foi feita naquele arquivo.**
 

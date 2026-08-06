@@ -358,7 +358,7 @@ foi executado. Faltou: a primeira curva de saturação.
 decide o significado de `D-ARQ-14`: um experimento sob demanda precisa de um lugar para
 rodar.
 
-## Adições propostas a `../../../architecture/integrations.md`
+## Adições propostas a `integrations.md`
 
 As linhas abaixo são propostas. **Nenhuma edição foi feita naquele arquivo.**
 

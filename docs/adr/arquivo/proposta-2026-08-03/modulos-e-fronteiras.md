@@ -460,7 +460,7 @@ inferida.
 viram artefatos entregáveis separados, e o `deploy/` muda de forma. Faltou: o gatilho da
 etapa 4, que ainda não disparou.
 
-## Adições propostas a `../../../architecture/integrations.md`
+## Adições propostas a `integrations.md`
 
 As linhas abaixo são propostas. **Nenhuma edição foi feita naquele arquivo.**
 

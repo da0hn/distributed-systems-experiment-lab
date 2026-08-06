@@ -1088,7 +1088,7 @@ compartilhado leva a saturação para as outras cargas.
 
 ---
 
-## 13. Adições propostas a `../../../architecture/integrations.md`
+## 13. Adições propostas a `integrations.md`
 
 **Nenhuma linha daquele arquivo foi editada.** As linhas abaixo são propostas.
 

@@ -774,7 +774,7 @@ Nada aqui edita aquele arquivo. As linhas abaixo são propostas.
   |------------------------------------|------------------------------------|----------------------------------------------------|
   | telas e navegação da interface web | `../../../architecture/interface-web.md` | prosa, wireframes e Mermaid, em estado de proposta |
 
-## Adições propostas a `../../../architecture/integrations.md`
+## Adições propostas a `integrations.md`
 
 Nada aqui edita aquele arquivo. As linhas abaixo são propostas.
 
