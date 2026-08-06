@@ -231,17 +231,48 @@ docs/
 vive é uma tensão aberta — [`plano-do-laboratorio.md`](plano-do-laboratorio.md), seção 11,
 tensão 1.
 
+## Quem aprova o que, decidido em 2026-08-05
+
+**Aprova-se a regra, e não o card.** É a decisão `B-3`, registrada em
+[`architecture/decisoes-pendentes.md`](architecture/decisoes-pendentes.md). A tabela de
+regras de negócio de um Feature Card ganha uma coluna com quem aprovou cada regra, ao
+lado da coluna de evidência. O card em si **NÃO DEVE** ganhar estado nem ato de
+aprovação.
+
+O motivo é a assimetria entre os dois artefatos. Um ADR aceito é imutável, e a
+aprovação existe para congelar o que ele decidiu. Um card é editável, e muda a cada
+exemplo novo do Example Mapping — um estado `Aprovado` num artefato mutável obriga a
+reaprovar o todo a cada edição, e envelhece em silêncio quando ninguém reaprova. O que
+precisa de aprovação por pessoa é a **regra de negócio**; o card é o continente.
+
+Uma regra sem aprovação registrada é proposta, e **NÃO DEVE** virar cenário Gherkin.
+
+```mermaid
+flowchart LR
+  E["exemplo no<br/>Example Mapping"] --> R["regra na tabela<br/>do Feature Card"]
+  R --> A{"aprovada por<br/>pessoa?"}
+  A -->|" não "| P["proposta;<br/>não vira cenário"]
+  A -->|" sim "| G["pode virar<br/>cenário Gherkin"]
+```
+
+**Um card NÃO PODE contradizer um ADR aceito, e a contradição gera ADR.** É a decisão
+`B-4`, tomada contra a recomendação de tratar a contradição como defeito do card. Se um
+card contradiz um ADR aceito, então existe ali uma **decisão arquitetural nova**: ela
+atende, por construção, aos quatro critérios de
+[`adr/README.md`](adr/README.md#uma-decisão-merece-adr-quando) — existe alternativa que
+alguém defende com argumento, e a escolha restringe o que se pode construir depois.
+
+A contradição entra na [fila de decisões](adr/fila-de-decisoes.md) no mesmo turno em que
+é vista, pela regra de que nada que importa existe apenas na conversa. O ADR que sair
+dela emenda, substitui ou ratifica o antigo, e o card é alinhado ao que o ADR disser.
+
+**Pergunta em aberto.** O que acontece com o trecho contraditório do card enquanto o ADR
+não existe: se ele fica marcado, sai, ou permanece como está. A regra do registro no
+mesmo turno obriga a escrever a contradição; ela não diz isso.
+
 ## O que este processo não decide
 
-**O destino da fila de decisões de `adr/README.md`** foi decidido em 2026-08-04, e a
-seção "A decisão vem antes do artefato" o registra: a fila passa a enfileirar decisão, e
-cada linha nomeia o artefato que ela gera. Continua em aberto **quais** das linhas atuais
-são comportamento disfarçado de arquitetura. Podá-las é decisão consciente, e ela não foi
-tomada.
-
-**Se um Feature Card pode contradizer um ADR aceito.** Não aconteceu ainda. Quando
-acontecer, o caminho provável é um ADR novo que substitua o antigo — mas a regra não está
-escrita.
-
-**Quem aprova um card.** O processo de ADR exige aprovação explícita e nomeada. O
-equivalente para um card não foi definido.
+**Quais linhas da fila são comportamento disfarçado de arquitetura.** A pergunta foi
+fechada em 2026-08-05 pela decisão `B-2`, e não por resposta: podar hoje é escolher o
+artefato antes da decisão, que é o oposto do que a seção "A decisão vem antes do
+artefato" fixou. A poda acontece uma linha por vez, quando a pessoa escolhe.

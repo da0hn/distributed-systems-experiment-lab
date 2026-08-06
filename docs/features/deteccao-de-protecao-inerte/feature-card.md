@@ -36,15 +36,15 @@ tomada.
 
 ## Regras de negócio
 
-| # | Regra | Evidência |
-|---|---|---|
-| R1 | `Σ amount` das linhas de `Allocation` de um recurso é a **verdade derivada**. `capacity` é o limite dela. A verdade não é um contador na linha do recurso. | ADR-0002:97-99 |
-| R2 | `allocate(resourceId, amount)` lê a soma das alocações, compara com `capacity` e insere quando couber. | ADR-0002:119-120 |
-| R3 | O oráculo avalia `Σ amount ≤ capacity` para cada recurso, com um `SELECT sum` emitido pelo **Lab Plane** depois do fim da execução. | ADR-0002:186-188 |
-| R4 | O veredito é booleano, e a violação **DEVE** carregar os dois números: a soma obtida e a capacidade declarada. | ADR-0002:187-188 |
-| R5 | O oráculo consulta o PostgreSQL. Ele **NÃO DEVE** derivar o estado final do log de observações. | ADR-0002:214-217 |
-| R6 | O conjunto de entradas amostradas para `allocate` **DEVE** conter os três ramos do predicado: a alocação cabe, atinge a capacidade exata, e excede. | ADR-0002:263-266 |
-| R7 | O mesmo experimento **DEVE** ser comparado sob `READ COMMITTED`, `REPEATABLE READ` e `SERIALIZABLE`. Só o terceiro aborta uma das transações, com SQLSTATE `40001`. | plano:472-474 |
+| #  | Regra                                                                                                                                                               | Evidência        | Aprovada por |
+|----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|--------------|
+| R1 | `Σ amount` das linhas de `Allocation` de um recurso é a **verdade derivada**. `capacity` é o limite dela. A verdade não é um contador na linha do recurso.          | ADR-0002:97-99   | pendente     |
+| R2 | `allocate(resourceId, amount)` lê a soma das alocações, compara com `capacity` e insere quando couber.                                                              | ADR-0002:119-120 | pendente     |
+| R3 | O oráculo avalia `Σ amount ≤ capacity` para cada recurso, com um `SELECT sum` emitido pelo **Lab Plane** depois do fim da execução.                                 | ADR-0002:186-188 | pendente     |
+| R4 | O veredito é booleano, e a violação **DEVE** carregar os dois números: a soma obtida e a capacidade declarada.                                                      | ADR-0002:187-188 | pendente     |
+| R5 | O oráculo consulta o PostgreSQL. Ele **NÃO DEVE** derivar o estado final do log de observações.                                                                     | ADR-0002:214-217 | pendente     |
+| R6 | O conjunto de entradas amostradas para `allocate` **DEVE** conter os três ramos do predicado: a alocação cabe, atinge a capacidade exata, e excede.                 | ADR-0002:263-266 | pendente     |
+| R7 | O mesmo experimento **DEVE** ser comparado sob `READ COMMITTED`, `REPEATABLE READ` e `SERIALIZABLE`. Só o terceiro aborta uma das transações, com SQLSTATE `40001`. | plano:472-474    | pendente     |
 
 O diagrama que mostra por que travar a linha do recurso não ajudaria está no
 [Example Mapping](example-mapping.md).

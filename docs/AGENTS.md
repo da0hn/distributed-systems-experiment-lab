@@ -82,6 +82,19 @@ decisões pendentes; critérios de pronto; links.
 - **Um card por oráculo, não por experimento.** É o oráculo que define o comportamento
   observável. E1 e E3 partilham o oráculo exato e vivem num card só.
 - **Toda regra leva evidência** com arquivo e linha, numa coluna própria da tabela.
+- **Toda regra leva quem a aprovou**, numa segunda coluna própria, ao lado da evidência.
+  É a decisão `B-3`, de 2026-08-05: aprova-se a **regra**, e não o card. Uma regra nasce
+  `pendente` e só uma pessoa a tira desse estado. O card **NÃO DEVE** ganhar estado nem
+  ato de aprovação — ele é o continente, e muda a cada exemplo novo.
+- **Uma regra `pendente` NÃO DEVE virar cenário Gherkin.** Escrever Gherkin sobre regra
+  não aprovada congela a versão errada dela, pelo mesmo motivo que vale para regra em
+  debate.
+- **Um card NÃO PODE contradizer um ADR aceito.** Pela decisão `B-4`, de 2026-08-05, a
+  contradição **é** decisão arquitetural nova: ela entra na
+  [fila de decisões](adr/fila-de-decisoes.md) no mesmo turno em que é vista, e o ADR que
+  sair dela emenda, substitui ou ratifica o antigo. O card é alinhado ao que o ADR
+  disser. O processo está em
+  [`specification-process.md`](specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05).
 - Um diagrama que não couber no limite de palavras vai para o `example-mapping.md`, que
   não tem limite. O card faz link.
 - Ao criar um card, acrescente a linha correspondente em [`features/README.md`](features/README.md)

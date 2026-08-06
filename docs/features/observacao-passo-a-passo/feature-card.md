@@ -33,19 +33,19 @@ fila de decisões.
 
 ## Regras de negócio
 
-| #   | Regra                                                                                                                                                                                                     | Evidência        |
-|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
-| R1  | O runtime chama o passo. O passo **NÃO DEVE** chamar o runtime.                                                                                                                                           | ADR-0001:94      |
-| R2  | Cada passo carrega rótulo único na operação, tipo de conjunto fechado (`READ`, `COMPUTE`, `WRITE`) e corpo opaco. O runtime **NÃO DEVE** gerar, interpretar ou analisar o SQL.                            | ADR-0001:107-115 |
-| R3  | O endereço de uma fronteira é a tripla (rótulo, entrada\|saída, seletor de tentativa). O seletor **NÃO DEVE** ter valor padrão.                                                                           | ADR-0001:176-187 |
-| R4  | A plataforma **DEVE** recusar endereço que não resolva para passo nenhum, e **DEVE** recusar nome abreviado quando o tipo aparecer mais de uma vez.                                                       | ADR-0001:183-190 |
-| R5  | Em cada fronteira o runtime consulta o escalonador **e depois** o injetor de falha, nesta ordem.                                                                                                          | ADR-0001:195-198 |
-| R6  | Uma definição de operação **NÃO DEVE** guardar estado mutável. Um teste executável **DEVE** rejeitar campo não final, campo de tipo mutável e `static` mutável.                                           | ADR-0001:127-130 |
-| R7  | O escopo de execução carrega worker e tentativa. O runtime **DEVE** rejeitar acesso vindo de outro worker, nomeando o passo.                                                                              | ADR-0001:131-133 |
-| R8  | Toda observação **DEVE** carregar o número da tentativa.                                                                                                                                                  | ADR-0001:253     |
-| R9  | `COMMIT` é o retorno do callback do `TransactionTemplate`, não um passo. `AFTER_COMMIT` é a primeira fronteira depois do escopo.                                                                          | ADR-0001:255-263 |
-| R10 | Um teste executável **DEVE** provar que as duas resoluções emitem o mesmo traço de SQL numa execução sem concorrência. Sem esse teste, a cláusula de honestidade **NÃO DEVE** ser considerada satisfeita. | ADR-0001:296-299 |
-| R11 | Toda anomalia reproduzida com barreiras **DEVE** aparecer também sem barreiras, sob carga alta.                                                                                                           | ADR-0001:280-282 |
+| #   | Regra                                                                                                                                                                                                     | Evidência        | Aprovada por |
+|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|--------------|
+| R1  | O runtime chama o passo. O passo **NÃO DEVE** chamar o runtime.                                                                                                                                           | ADR-0001:94      | pendente     |
+| R2  | Cada passo carrega rótulo único na operação, tipo de conjunto fechado (`READ`, `COMPUTE`, `WRITE`) e corpo opaco. O runtime **NÃO DEVE** gerar, interpretar ou analisar o SQL.                            | ADR-0001:107-115 | pendente     |
+| R3  | O endereço de uma fronteira é a tripla (rótulo, entrada\|saída, seletor de tentativa). O seletor **NÃO DEVE** ter valor padrão.                                                                           | ADR-0001:176-187 | pendente     |
+| R4  | A plataforma **DEVE** recusar endereço que não resolva para passo nenhum, e **DEVE** recusar nome abreviado quando o tipo aparecer mais de uma vez.                                                       | ADR-0001:183-190 | pendente     |
+| R5  | Em cada fronteira o runtime consulta o escalonador **e depois** o injetor de falha, nesta ordem.                                                                                                          | ADR-0001:195-198 | pendente     |
+| R6  | Uma definição de operação **NÃO DEVE** guardar estado mutável. Um teste executável **DEVE** rejeitar campo não final, campo de tipo mutável e `static` mutável.                                           | ADR-0001:127-130 | pendente     |
+| R7  | O escopo de execução carrega worker e tentativa. O runtime **DEVE** rejeitar acesso vindo de outro worker, nomeando o passo.                                                                              | ADR-0001:131-133 | pendente     |
+| R8  | Toda observação **DEVE** carregar o número da tentativa.                                                                                                                                                  | ADR-0001:253     | pendente     |
+| R9  | `COMMIT` é o retorno do callback do `TransactionTemplate`, não um passo. `AFTER_COMMIT` é a primeira fronteira depois do escopo.                                                                          | ADR-0001:255-263 | pendente     |
+| R10 | Um teste executável **DEVE** provar que as duas resoluções emitem o mesmo traço de SQL numa execução sem concorrência. Sem esse teste, a cláusula de honestidade **NÃO DEVE** ser considerada satisfeita. | ADR-0001:296-299 | pendente     |
+| R11 | Toda anomalia reproduzida com barreiras **DEVE** aparecer também sem barreiras, sob carga alta.                                                                                                           | ADR-0001:280-282 | pendente     |
 
 O critério de igualdade entre dois traços foi fixado depois, pelo
 [`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md):242-266.

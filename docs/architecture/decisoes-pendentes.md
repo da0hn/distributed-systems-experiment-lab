@@ -2577,3 +2577,43 @@ possível.
 
 **Qual das duas vale.** A de `docs/adr/`. O texto acima é registro histórico congelado
 da rodada de 2026-08-03, e uma decisão que mude de estado muda lá, nunca aqui.
+
+### A execução de `B-3` e `B-4`, em 2026-08-05
+
+As duas viraram regra escrita no mesmo dia, em
+[`../specification-process.md`](../specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05)
+e em [`../AGENTS.md`](../AGENTS.md). A seção "O que este processo não decide" encolheu de
+três parágrafos para um.
+
+**A coluna `Aprovada por` entrou nos quatro cards, e as 48 regras nasceram `pendente`.**
+Nenhuma foi aprovada aqui: aprovação é ato de pessoa, e escrevê-la por conta própria
+seria exatamente o que a regra proíbe.
+
+| Capacidade                      | Regras | Aprovadas |
+|---------------------------------|--------|-----------|
+| detecção de atualização perdida | 16     | 0         |
+| execução de experimento         | 14     | 0         |
+| observação passo a passo        | 11     | 0         |
+| detecção de proteção inerte     | 7      | 0         |
+
+#### Pendência nova: um card viola o limite de 700 palavras
+
+**Medido em 2026-08-05, pelo comando que o próprio
+[`../AGENTS.md`](../AGENTS.md) prescreve.**
+O card de detecção de atualização perdida tinha **743 palavras** antes de `B-3`, e ficou
+com **761** depois da coluna. O limite é 700, e ele nunca havia sido medido — a mesma
+falha que `C-7` encontrou no limite de caracteres dos ADRs.
+
+| Capacidade                      | Palavras | Limite |
+|---------------------------------|----------|--------|
+| detecção de atualização perdida | 761      | 700    |
+| execução de experimento         | 655      | 700    |
+| detecção de proteção inerte     | 628      | 700    |
+| observação passo a passo        | 628      | 700    |
+
+**A decisão não foi tomada, e ela tem três saídas plausíveis.** Dividir o card, porque o
+limite existe justamente para forçar isso; subir o limite, como `C-7` fez para o ADR; ou
+tirar prosa, já que a regra manda cortar prosa e diagrama, nunca evidência. Note que o
+card cobre **dois** oráculos do ADR-0002 — o exato e o de dual write — o que torna a
+divisão a leitura mais provável, mas ela contraria a regra de um card por oráculo apenas
+se os dois forem considerados um só.

@@ -38,24 +38,24 @@ isolamento, classificação do veredito zero e formato curva estão em outros ca
 
 ## Regras de negócio
 
-| #   | Regra                                                                                                                                                                 | Evidência         |
-|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| R1  | O domínio tem duas entidades e nenhum nome de negócio: `Resource(id, value, capacity)` e `Allocation(id, resource_id, amount)`. Nenhuma outra coluna entra no MVP.    | ADR-0002:87-92    |
-| R2  | O esquema **NÃO DEVE** carregar uma coluna `version`.                                                                                                                 | ADR-0002:94-95    |
-| R3  | O identificador **DEVE** ser gerado pela aplicação a partir da semente. O esquema **NÃO DEVE** usar `SERIAL`, `IDENTITY`, `nextval` nem valor padrão do banco.        | ADR-0002:124-126  |
-| R4  | O identificador **DEVE** ser função da semente e **NÃO DEVE** ser função do instante da execução. Duas execuções da mesma semente produzem os mesmos identificadores. | ADR-0002:128-130  |
-| R5  | O oráculo produz uma contagem: `perdidas = commits − (value_final − value_inicial)`.                                                                                  | ADR-0002:135-139  |
-| R6  | `commits` é o número de passagens pela fronteira `AFTER_COMMIT`, contadas **por tentativa**.                                                                          | ADR-0002:141      |
-| R7  | O denominador **DEVE** ser `commits`. Ele **NÃO DEVE** ser o número de operações submetidas nem o de operações que reportaram sucesso.                                | ADR-0002:145-148  |
-| R8  | `sucessos` conta as execuções de operação que reportaram sucesso. A diferença `commits − sucessos` mede o dual write.                                                 | ADR-0002:171-173  |
-| R9  | Os dois oráculos consultam o PostgreSQL. Nenhum deles **DEVE** derivar o estado final do log de observações.                                                          | ADR-0002:214-217  |
-| R10 | O E1 **precisa falhar**. Se `value` final for igual a 100, a carga é insuficiente e nenhum resultado posterior significa alguma coisa.                                | plano:397-398     |
-| R11 | Cada worker tem sua própria conexão. O pool **DEVE** ser maior que o número de workers, e isso **DEVE** ser verificado, não presumido.                                | plano:579-582     |
-| R12 | O Lab Plane trata a estratégia como rótulo opaco. Nenhum componente **DEVE** inspecioná-lo ou ramificar por ele.                                                      | ADR-0006, Decisão |
-| R13 | Cada estratégia responde "há outra tentativa?" a partir da exceção recebida. Uma exceção não reconhecida **DEVE** receber resposta não.                               | ADR-0006, Decisão |
-| R14 | `PESSIMISTIC` é controle positivo: suas coincidências **DEVEM** ser zero em toda execução.                                                                            | ADR-0006, Decisão |
-| R15 | `ATOMIC_UPDATE` é a estratégia de calibração exigida pelo ADR-0002 R3.                                                                                                | ADR-0006, Decisão |
-| R16 | Uma estratégia **PODE** exigir coluna além das cinco do ADR-0002; a migração nasce no mesmo commit que a introduz no código.                                          | ADR-0006, Decisão |
+| #   | Regra                                                                                                                                                                 | Evidência         | Aprovada por |
+|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|--------------|
+| R1  | O domínio tem duas entidades e nenhum nome de negócio: `Resource(id, value, capacity)` e `Allocation(id, resource_id, amount)`. Nenhuma outra coluna entra no MVP.    | ADR-0002:87-92    | pendente     |
+| R2  | O esquema **NÃO DEVE** carregar uma coluna `version`.                                                                                                                 | ADR-0002:94-95    | pendente     |
+| R3  | O identificador **DEVE** ser gerado pela aplicação a partir da semente. O esquema **NÃO DEVE** usar `SERIAL`, `IDENTITY`, `nextval` nem valor padrão do banco.        | ADR-0002:124-126  | pendente     |
+| R4  | O identificador **DEVE** ser função da semente e **NÃO DEVE** ser função do instante da execução. Duas execuções da mesma semente produzem os mesmos identificadores. | ADR-0002:128-130  | pendente     |
+| R5  | O oráculo produz uma contagem: `perdidas = commits − (value_final − value_inicial)`.                                                                                  | ADR-0002:135-139  | pendente     |
+| R6  | `commits` é o número de passagens pela fronteira `AFTER_COMMIT`, contadas **por tentativa**.                                                                          | ADR-0002:141      | pendente     |
+| R7  | O denominador **DEVE** ser `commits`. Ele **NÃO DEVE** ser o número de operações submetidas nem o de operações que reportaram sucesso.                                | ADR-0002:145-148  | pendente     |
+| R8  | `sucessos` conta as execuções de operação que reportaram sucesso. A diferença `commits − sucessos` mede o dual write.                                                 | ADR-0002:171-173  | pendente     |
+| R9  | Os dois oráculos consultam o PostgreSQL. Nenhum deles **DEVE** derivar o estado final do log de observações.                                                          | ADR-0002:214-217  | pendente     |
+| R10 | O E1 **precisa falhar**. Se `value` final for igual a 100, a carga é insuficiente e nenhum resultado posterior significa alguma coisa.                                | plano:397-398     | pendente     |
+| R11 | Cada worker tem sua própria conexão. O pool **DEVE** ser maior que o número de workers, e isso **DEVE** ser verificado, não presumido.                                | plano:579-582     | pendente     |
+| R12 | O Lab Plane trata a estratégia como rótulo opaco. Nenhum componente **DEVE** inspecioná-lo ou ramificar por ele.                                                      | ADR-0006, Decisão | pendente     |
+| R13 | Cada estratégia responde "há outra tentativa?" a partir da exceção recebida. Uma exceção não reconhecida **DEVE** receber resposta não.                               | ADR-0006, Decisão | pendente     |
+| R14 | `PESSIMISTIC` é controle positivo: suas coincidências **DEVEM** ser zero em toda execução.                                                                            | ADR-0006, Decisão | pendente     |
+| R15 | `ATOMIC_UPDATE` é a estratégia de calibração exigida pelo ADR-0002 R3.                                                                                                | ADR-0006, Decisão | pendente     |
+| R16 | Uma estratégia **PODE** exigir coluna além das cinco do ADR-0002; a migração nasce no mesmo commit que a introduz no código.                                          | ADR-0006, Decisão | pendente     |
 
 O diagrama das duas contagens está no [Example Mapping](example-mapping.md).
 
