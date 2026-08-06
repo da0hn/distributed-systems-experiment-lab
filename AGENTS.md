@@ -189,16 +189,29 @@ As perguntas levantadas durante o Example Mapping vivem nos próprios `example-m
 
 ### Pendências de processo
 
-- **O papel da fila de decisões de `docs/adr/README.md` foi decidido em
-  2026-08-04:** ela
-  enfileira decisão, e cada linha nomeia o artefato que gera. Continua em aberto
-  **quais**
-  das onze linhas são comportamento enfileirado como arquitetura, e a poda exige decisão
-  explícita do usuário. Continua em aberto também se essa fila e a de
-  `docs/architecture/decisoes-pendentes.md` viram uma só.
-- **Não está escrito se um Feature Card pode contradizer um ADR
-  aceito**, nem quem aprova um
-  card. As duas lacunas estão registradas em `docs/specification-process.md`.
+**As cinco pendências de processo fecharam em 2026-08-05, no Lote B.**
+
+- **A fila é uma só, e vive em
+  [`docs/adr/fila-de-decisoes.md`](docs/adr/fila-de-decisoes.md).** As duas origens
+  viraram lápide. A de `docs/architecture/decisoes-pendentes.md` guarda o texto
+  congelado, porque aquele arquivo é append-only: nove citações por número de linha,
+  vindas dos ADRs 0008 e 0009, apontam para ele.
+- **A poda não acontece antes da decisão.** Podar hoje as linhas que são comportamento
+  disfarçado de arquitetura seria escolher o artefato antes da decisão, que é o oposto
+  da regra de 2026-08-04. A poda acontece uma linha por vez, quando a pessoa escolhe.
+- **Aprova-se a regra, e não o card.** A tabela de regras de um Feature Card carrega a
+  coluna `Aprovada por`, e uma regra `pendente` NÃO DEVE virar cenário Gherkin. As 48
+  regras das quatro capacidades estão `pendente` hoje.
+- **Um card NÃO PODE contradizer um ADR aceito.** A contradição é decisão arquitetural
+  nova: ela entra na fila no mesmo turno em que é vista, e gera ADR.
+- **`D-ARQ-02` e `D-DOM-11` foram classificadas**, e continuam abertas.
+
+O processo está em
+[`docs/specification-process.md`](docs/specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05).
+
+**Pendência nova, aberta ao aplicar a coluna de aprovação:** o card de detecção de
+atualização perdida tem 761 palavras contra o limite de 700, e já o violava antes.
+Dividir, subir o limite ou cortar prosa é decisão, e ela não foi tomada.
 
 ### Árvore
 
@@ -252,8 +265,13 @@ que valem sempre:
   No processo deste repositório, a primeira vale mais que a segunda.
 - **Não invente integração, contrato ou
   regra.** Toda afirmação relevante leva evidência com
-  caminho de arquivo e linha. O que não puder ser confirmado é `Pergunta em aberto`,
-  nunca fato.
+  caminho de arquivo e **âncora nomeada** — `<arquivo>.md#<slug-do-título>`, no slug do
+  GitHub Flavored Markdown. É a decisão `C-1`, de 2026-08-05: número de linha envelhece
+  em silêncio na primeira edição do alvo, e uma citação envelhecida aponta para outro
+  texto sem avisar ninguém. Cite por linha só quando o alvo não tiver título que a
+  alcance — dentro de um bloco Mermaid, por exemplo. O que não puder ser confirmado é
+  `Pergunta em aberto`, nunca fato. O verificador é `scripts/check_citations.py`, e ele
+  roda no workflow `docs`.
 - A LLM gera perguntas, contraexemplos e lacunas. **Regra de negócio e decisão são
   aprovadas
   por pessoa, explicitamente.**
