@@ -5,11 +5,11 @@
 - **Escopo:** o esquema das duas tabelas do system under test, onde o Lab Plane
   guarda o estado dele sem contaminar a medida, e as decisões de persistência que a
   primeira migração obriga a tomar.
-- **Depende de:** [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md),
-  [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md),
-  [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md),
-  [`ADR-0006`](../adr/0006-a-forma-da-estrategia-de-concorrencia.md),
-  [`ADR-0007`](../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md) — os cinco
+- **Depende de:** [`ADR-0001`](../../0001-o-passo-como-unidade-de-execucao.md),
+  [`ADR-0002`](../../0002-o-dominio-minimo-e-os-dois-oraculos.md),
+  [`ADR-0004`](../../0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md),
+  [`ADR-0006`](../../0006-a-forma-da-estrategia-de-concorrencia.md),
+  [`ADR-0007`](../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md) — os cinco
   `Aceito`.
 
 ## O que este documento é
@@ -20,8 +20,8 @@ vira linha da tabela `## Decisões que exigem aprovação humana`.
 
 O documento existe porque as colunas do laboratório hoje são prosa: `Q-INT-5` registra
 que não há DDL, migração nem esquema executável
-([`integrations.md`](integrations.md):104-108), e o contrato de esquema só nasce com "a
-primeira migração escrita" ([`../contracts/README.md`](../contracts/README.md):16).
+([`../../../architecture/integrations.md`](../../../architecture/integrations.md):104-108), e o contrato de esquema só nasce com "a
+primeira migração escrita" ([`../../../contracts/README.md`](../../../contracts/README.md):16).
 Nenhum arquivo `.sql` foi criado aqui — todo DDL abaixo vive em bloco cercado, porque
 escrever a migração é o gatilho do contrato, e o gatilho pertence a uma pessoa.
 
@@ -34,7 +34,7 @@ nenhuma decisão nova, e sabe exatamente quais restam.
 
 O ADR-0002 fixa duas entidades e cinco colunas: `Resource` carrega `id`, `value` e
 `capacity`; `Allocation` carrega `id`, `resource_id` e `amount`; "Nenhuma outra coluna
-entra no MVP" (`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md`:88-93).
+entra no MVP" (`../../0002-o-dominio-minimo-e-os-dois-oraculos.md`:88-93).
 
 ```mermaid
 erDiagram
@@ -114,8 +114,8 @@ proposta. Nenhuma delas é esquecimento.
 |----------------------------------------------------------|-----------------------------------------------------------------------------------|
 | coluna `version`                                         | `0002-...md`:95-96 — quem a acrescenta é o ADR de estratégias, ver seção 6        |
 | `SERIAL`, `IDENTITY`, `nextval`, `DEFAULT` de identidade | `0002-...md`:125-127                                                              |
-| `DEFAULT now()`, `created_at`, `updated_at`              | o tempo é injetável (`../../AGENTS.md`:108); um padrão do banco lê o relógio real |
-| `DEFAULT gen_random_uuid()`                              | aleatoriedade não semeada (`../../AGENTS.md`:105)                                 |
+| `DEFAULT now()`, `created_at`, `updated_at`              | o tempo é injetável (`../../../../AGENTS.md`:108); um padrão do banco lê o relógio real |
+| `DEFAULT gen_random_uuid()`                              | aleatoriedade não semeada (`../../../../AGENTS.md`:105)                                 |
 | estado, data de liberação ou baixa em `allocation`       | `0002-...md`:439-440 — a alocação nunca é liberada no MVP                         |
 | `CHECK` com subconsulta, constraint deferida, trigger    | Alternativa D do ADR-0002 (`0002-...md`:559-574)                                  |
 | `CHECK (amount > 0)` e afins                             | ver abaixo                                                                        |
@@ -194,7 +194,7 @@ flowchart TB
 
 A tabela de outbox é do **system under test**, não do Lab Plane: ela participa da
 transação da operação, e é a solução que a etapa 6 introduz **depois** de o experimento
-mostrar o problema, pela regra pedagógica (`../../AGENTS.md`:88-92). O desenho do
+mostrar o problema, pela regra pedagógica (`../../../../AGENTS.md`:88-92). O desenho do
 pipeline que a consome não é deste documento.
 
 ### A divergência sobre persistir o log no MVP
@@ -207,7 +207,7 @@ custo: "o log é perdível até a etapa 6" (`0007-...md`:152-153).
 Os dois textos não dizem a mesma coisa, e a diferença decide se o MVP escreve alguma
 coisa em disco. Como o ADR-0007 está `Aceito` e é posterior, a leitura proposta é: **o
 MVP não persiste o log; ele persiste o relatório.** O relatório é artefato do ADR-0004,
-não do log, e o caderno de laboratório de `docs/experiments/` (`../../AGENTS.md`:116)
+não do log, e o caderno de laboratório de `docs/experiments/` (`../../../../AGENTS.md`:116)
 continua existindo com ele. Esta leitura é proposta, não decisão — D-DAT-06.
 
 ---
@@ -215,7 +215,7 @@ continua existindo com ele. Esta leitura é proposta, não decisão — D-DAT-06
 ## 4. O esquema do Lab Plane, e a etapa de nascimento de cada tabela
 
 Nenhuma tabela do Lab Plane nasce no MVP. Nenhuma tem experimento que a exija hoje, e a
-regra é que "nenhuma tecnologia entra por estar disponível" (`../../AGENTS.md`:102-104)
+regra é que "nenhuma tecnologia entra por estar disponível" (`../../../../AGENTS.md`:102-104)
 — a regra vale para uma tabela igual.
 
 | Tabela proposta             | Nasce quando                                                               |
@@ -330,10 +330,10 @@ vale para as duas:
 - A derivação recebe a semente e o ordinal da entidade dentro do experimento, e nada
   mais. Um contador de processo, um `AtomicLong` ou o número de linhas já existentes na
   tabela reintroduzem dependência de execução anterior — e `AtomicInteger` está proibido
-  no sistema sob teste por outro motivo (`../../AGENTS.md`:111-113).
+  no sistema sob teste por outro motivo (`../../../../AGENTS.md`:111-113).
 - O identificador entra na comparação por valor do traço de SQL (`0002-...md`:259-261).
   Uma derivação que mude entre execuções reprova um par correto, e é exatamente o
-  acoplamento que [`Q-0002-4`](../questions/Q-0002-4.md) registra.
+  acoplamento que [`Q-0002-4`](../../../questions/Q-0002-4.md) registra.
 
 ---
 
@@ -395,7 +395,7 @@ pré-requisito de executar o ADR-0006, e não uma preferência de ferramenta.
 D-DAT-05. O que segue mantém o levantamento das quatro candidatas, porque ele é o que
 justifica a escolha; a decisão e o que ela deixa em aberto estão em D-DAT-05.
 
-A decisão **não fecha** [`Q-0002-4`](../questions/Q-0002-4.md) por si. O destino daquela
+A decisão **não fecha** [`Q-0002-4`](../../../questions/Q-0002-4.md) por si. O destino daquela
 questão na fila continua sendo o ADR de Experiment (fila, posição 8), e é lá que a
 escolha vira artefato — este documento não é o lugar onde a questão se encerra.
 
@@ -439,7 +439,7 @@ da execução**, de modo que log, oráculo e linhas do banco sejam rastreáveis 
 identificador. A propagação não é gratuita e abre três pontos que ninguém decidiu:
 
 - **Quem gera, e sob qual regra.** Um ULID é 48 bits de instante mais 80 bits de
-  aleatoriedade. As duas metades esbarram nas regras de `../../AGENTS.md`:124-128 — nada
+  aleatoriedade. As duas metades esbarram nas regras de `../../../../AGENTS.md`:124-128 — nada
   de aleatoriedade fora do componente semeado, nada de `Instant.now()` fora do adaptador
   de relógio. A saída plausível é que o identificador nasça **no Lab Plane**, que é o
   instrumento e não o sistema medido, mas as duas regras estão escritas sem qualificar
@@ -491,7 +491,7 @@ explicitamente fora do que decide (`0002-...md`:287-291).
 O card do E5 registra o risco de apagar a distinção: "uma estratégia é código da
 aplicação e muda o SQL emitido; um nível de isolamento é propriedade da transação e muda
 o que o banco faz com o **mesmo** SQL"
-(`../features/deteccao-de-protecao-inerte/feature-card.md`:66-69). A proposta trata os
+(`../../../features/deteccao-de-protecao-inerte/feature-card.md`:66-69). A proposta trata os
 dois como parâmetros distintos da execução, com donos distintos.
 
 Quatro formas de aplicar o parâmetro, e três estragam alguma coisa:
@@ -621,7 +621,7 @@ incremento — custo puro sobre o caminho medido, sem nenhuma consulta que o use
 (`plano-do-laboratorio.md`:339-352) e a de decisões adiadas
 (`plano-do-laboratorio.md`:605-618) não citam Debezium, e uma busca na árvore versionada
 não encontra a palavra fora deste arquivo. Pela regra de que nenhuma tecnologia entra
-por estar disponível (`../../AGENTS.md`:102-104), o CDC não entra. O que segue é o
+por estar disponível (`../../../../AGENTS.md`:102-104), o CDC não entra. O que segue é o
 custo, para quando alguém propuser o gatilho. O desenho do pipeline não é deste
 documento.
 
@@ -640,7 +640,7 @@ resultado medido sob `logical` não é comparável com um medido sob `replica`, 
 parado degrada a linha de base ao longo do tempo sem nenhum sintoma visível no
 relatório. Se o CDC entrar, ou ele vive numa instância separada da instância medida, ou
 todo relatório passa a registrar o `wal_level` vigente. É D-DAT-11, e ele encosta em
-`Q-INT-3` (`integrations.md`:93-97).
+`Q-INT-3` (`../../../architecture/integrations.md`:93-97).
 
 ---
 
@@ -669,7 +669,7 @@ isso é 10¹⁰ pares por força bruta, e nenhum documento declara como a contag
 
 1. O relatório — as três contagens e a classificação do zero — vai para
    `docs/experiments/`, no Git. É pequeno e é o caderno de laboratório
-   (`../../AGENTS.md`:116).
+   (`../../../../AGENTS.md`:116).
 2. A subsequência de eventos com `restrito = verdadeiro`, que é o que o critério de
    igualdade entre execuções de controle consome (`0007-...md`:92-95), acompanha o
    relatório. Numa execução medida ela é vazia, porque a execução medida roda sem
@@ -775,7 +775,7 @@ sem forma de ser executado e `version` entra por caminho que ninguém revisa.
 
 ### D-DAT-05 — reset entre execuções
 
-**Problema.** [`Q-0002-4`](../questions/Q-0002-4.md). O identificador vem da semente,
+**Problema.** [`Q-0002-4`](../../../questions/Q-0002-4.md). O identificador vem da semente,
 logo a segunda execução da mesma semente colide com as linhas da primeira.
 
 **Alternativas.** `TRUNCATE` é barato e recria o arquivo físico, dando à execução
@@ -828,7 +828,7 @@ tem tipo nativo de 16 bytes no PostgreSQL, e a forma canônica em Base32 do ULID
 projeção de apresentação, nunca o tipo da coluna.
 
 **O que a decisão deixa em aberto**, e não é fechado aqui: o nome concreto da coluna
-genérica; e a geração do UUIDv7 diante das regras de `../../AGENTS.md`:124-128, já que a
+genérica; e a geração do UUIDv7 diante das regras de `../../../../AGENTS.md`:124-128, já que a
 metade de instante e a metade aleatória do formato tocam as duas — a saída de gerá-lo no
 Lab Plane é plausível, e nenhuma das duas regras qualifica plano hoje. Ver `P-DAT-10`.
 
@@ -878,7 +878,7 @@ Lab Plane a nascer, e nasce antes da etapa 6 — o que antecipa D-DAT-06 junto.
 ### D-DAT-08 — como o nível de isolamento é aplicado
 
 **Problema.** O E5 varre três níveis e nenhuma linha da fila nomeia esse parâmetro
-(`../features/deteccao-de-protecao-inerte/feature-card.md`:62-64).
+(`../../../features/deteccao-de-protecao-inerte/feature-card.md`:62-64).
 
 **Alternativas.** O runtime configurando o `TransactionTemplate` reusa quem já abre o
 escopo (`0001-...md`:256-262) e deixa o SQL da operação intacto; contra, exige que o
@@ -916,7 +916,7 @@ verificação para presunção declarada.
 ### D-DAT-10 — o que do log entra no Git
 
 **Problema.** `docs/experiments/` guarda resultados e vai para o Git
-(`../../AGENTS.md`:116); um log completo do E4 tem ordem de grandeza de centenas de MB.
+(`../../../../AGENTS.md`:116); um log completo do E4 tem ordem de grandeza de centenas de MB.
 
 **Alternativas.** O log completo no Git torna o caderno de laboratório reexecutável em
 análise e infla o repositório sem limite. Só o relatório é pequeno e perde a evidência
@@ -932,7 +932,7 @@ expurgo, e o repositório passa a ter um custo de clone que cresce por execuçã
 ### D-DAT-11 — instância do PostgreSQL e `wal_level`
 
 **Problema.** `wal_level` é ajuste de cluster e alcança toda escrita medida; `Q-INT-3`
-registra que dedicado contra compartilhado não foi decidido (`integrations.md`:93-97).
+registra que dedicado contra compartilhado não foi decidido (`../../../architecture/integrations.md`:93-97).
 
 **Alternativas.** Instância dedicada ao laboratório protege a medida dos vizinhos e os
 vizinhos da saturação de propósito; contra, custa exatamente o que a Camada 6 do homelab
@@ -968,7 +968,7 @@ cinco colunas para o MVP (`0002-...md`:93); o ADR-0006 diz que `OPTIMISTIC` exig
 — "O E3 exige uma migração de esquema antes de rodar" (`0002-...md`:465-466) — de modo
 que a frase descreve o esquema **inicial**, não o esquema ao fim do MVP. O Feature Card
 repete a frase sem essa qualificação
-(`../features/deteccao-de-atualizacao-perdida/feature-card.md`:43).
+(`../../../features/deteccao-de-atualizacao-perdida/feature-card.md`:43).
 
 **P-DAT-4 — Ninguém declara quem semeia `value_inicial` e `capacity`.** O oráculo lê
 `value_inicial`, e não o cria (`0002-...md`:293-295). O E1 parte de `value = 0`
@@ -985,9 +985,9 @@ do runtime, e chega aqui porque decide quanto do log precisa ficar residente.
 **P-DAT-6 — As citações de linha do ADR-0002 espalhadas pelo repositório estão
 deslocadas.** O Feature Card cita `ADR-0002:87-92` para as duas entidades, `:94-95` para
 `version` e `:124-126` para a identidade
-(`../features/deteccao-de-atualizacao-perdida/feature-card.md`:43-45); no arquivo atual
+(`../../../features/deteccao-de-atualizacao-perdida/feature-card.md`:43-45); no arquivo atual
 os trechos estão em 88-93, 95-96 e 125-127. `contracts/README.md`:48 e
-`integrations.md`:29 carregam deslocamento parecido. Nenhuma afirmação muda de sentido,
+`../../../architecture/integrations.md`:29 carregam deslocamento parecido. Nenhuma afirmação muda de sentido,
 e o deslocamento corrói a verificabilidade que a regra de evidência existe para dar.
 
 **P-DAT-7 — Ninguém garante que o `TRUNCATE` do reset consiga tomar o lock.**
@@ -1014,7 +1014,7 @@ comando — e um `CASCADE` escrito por conveniência apaga tabelas que ninguém 
 
 **P-DAT-9 — `Q-0002-4` aplica o critério de igualdade de traço a um uso para o qual ele
 não foi decidido.** A questão afirma que um identificador variável entre execuções faz a
-comparação por valor reprovar o par (`../questions/Q-0002-4.md`:19-21), e é essa frase
+comparação por valor reprovar o par (`../../../questions/Q-0002-4.md`:19-21), e é essa frase
 que descarta uma candidata inteira de reset. Mas o critério do ADR-0002 nasceu fechando
 `Q-0001-3` e compara os dois braços da mesma operação sobre a mesma entrada amostrada
 (`0002-...md`:244-281) — uma comparação dentro de uma execução. A comparação entre
@@ -1026,12 +1026,12 @@ arquivo de questão e mantém o enunciado; a correção pertence a quem escrever
 Experiment.
 
 **P-DAT-10 — Quem gera o UUIDv7 do discriminador, e sob qual regra.** D-DAT-05 fixou o
-formato e que o Lab Plane gera, e não fechou a tensão com `../../AGENTS.md`:124-128. Um
+formato e que o Lab Plane gera, e não fechou a tensão com `../../../../AGENTS.md`:124-128. Um
 UUIDv7 é 48 bits de instante mais aleatoriedade, e as duas regras — nada de aleatório
 fora do componente semeado, nada de `Instant.now()` fora do adaptador de relógio — estão
 escritas sem qualificar plano. Ou elas passam a dizer que valem sobre o sistema medido e
 não sobre o instrumento, ou a geração do discriminador é exceção nomeada. Enquanto as
-regras forem texto e não guarda executável (`../questions/Q-0002-1.md`), a diferença não
+regras forem texto e não guarda executável (`../../../questions/Q-0002-1.md`), a diferença não
 é detectável em revisão de código. Fica também em aberto o nome concreto da coluna, de
 que depende qual das duas leituras — inquilino ou medição — o esquema afirma.
 
@@ -1073,7 +1073,7 @@ DDL virar contrato — a mudança pertence a quem escrever a primeira migração
 **Na tabela `## Estado: nenhum contrato existe`**, a linha do DDL de `resource` e
 `allocation` sai quando a migração for escrita, e o contrato passa a ser o arquivo de
 migração — não um documento Markdown que o repita, pela regra de que o que está
-formalizado num contrato não é repetido em prosa (`../AGENTS.md`:120).
+formalizado num contrato não é repetido em prosa (`../../../AGENTS.md`:120).
 
 **Duas linhas novas na mesma tabela**, com os gatilhos correspondentes:
 

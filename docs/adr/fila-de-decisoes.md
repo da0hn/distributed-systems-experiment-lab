@@ -107,7 +107,7 @@ posições 10 e 11, e a exigência de nascer entregando as torna as primeiras.
 | `D-ARQ-06` | pacote raiz e idioma dos identificadores | `dev.da0hn.lab`, região no primeiro segmento      | [`../architecture/modulos-e-fronteiras.md`](../architecture/modulos-e-fronteiras.md) |
 | `D-ARQ-15` | a forma do `deploy/` no primeiro commit  | `deploy/` mínimo agora, uma réplica               | [`arquivo/proposta-2026-08-03/entrega-continua.md`](arquivo/proposta-2026-08-03/entrega-continua.md)         |
 | `D-ARQ-14` | o que o pipeline executa                 | só guardas e provas; experimento sob demanda      | [`arquivo/proposta-2026-08-03/entrega-continua.md`](arquivo/proposta-2026-08-03/entrega-continua.md)         |
-| `D-DAT-04` | ferramenta de migração                   | Flyway com SQL versionado                         | [`../architecture/modelo-de-dados.md`](../architecture/modelo-de-dados.md)           |
+| `D-DAT-04` | ferramenta de migração                   | Flyway com SQL versionado                         | [`arquivo/proposta-2026-08-03/modelo-de-dados.md`](arquivo/proposta-2026-08-03/modelo-de-dados.md)           |
 
 **`D-ARQ-05` e `D-ARQ-06` estão fechadas** pelo
 [ADR-0008](0008-os-dois-planos-em-processos-separados.md), `Aceito` em
@@ -146,7 +146,7 @@ entre execuções não se sustenta sobre nenhum dos dois critérios de igualdade
 passa a incluir um discriminador UUIDv7, gerado pelo Lab Plane e propagado a tudo que o
 sistema medido publica, com o crescimento das tabelas aceito. A linha permanece aqui
 para que o histórico da recomendação não se perca; a decisão e o que ela deixa em aberto
-estão em [`../architecture/modelo-de-dados.md`](../architecture/modelo-de-dados.md), seção 7, `D-DAT-05`, `P-DAT-10` e
+estão em [`arquivo/proposta-2026-08-03/modelo-de-dados.md`](arquivo/proposta-2026-08-03/modelo-de-dados.md), seção 7, `D-DAT-05`, `P-DAT-10` e
 `P-DAT-11`.
 
 ### Bloco 2 — destravam o E1 e a etapa 1
