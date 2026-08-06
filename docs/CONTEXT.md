@@ -914,7 +914,7 @@ citação de um ADR aceito, do plano ou do briefing, e NÃO DEVE aparecer como t
 documento novo.
 
 **A consequência executada no mesmo turno.**
-[`architecture/mensageria.md`](architecture/mensageria.md) usava `barreira` como termo
+[`adr/arquivo/proposta-2026-08-03/mensageria.md`](adr/arquivo/proposta-2026-08-03/mensageria.md) usava `barreira` como termo
 vivo e normativo em oito pontos, inclusive no enunciado e nas três alternativas de
 `D-MSG-11`. A ressalva estava em
 [`architecture/contra-avaliacao.md`](architecture/contra-avaliacao.md), linhas 143 a

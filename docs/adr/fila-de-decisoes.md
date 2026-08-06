@@ -213,7 +213,7 @@ uma vivem em [`../CONTEXT.md`](../CONTEXT.md), seção "As seis decisões de voc
 | `D-DOM-04` | os dois sentidos de `estratégia`                    | `strategy` e `strategy label`                           | sim                    |
 
 `D-DOM-03` foi executada no mesmo turno: os oito pontos de
-[`../architecture/mensageria.md`](../architecture/mensageria.md) que usavam `barreira` como termo passaram a dizer
+[`arquivo/proposta-2026-08-03/mensageria.md`](arquivo/proposta-2026-08-03/mensageria.md) que usavam `barreira` como termo passaram a dizer
 `restrição de precedência` ou `espera`, e o mérito de `D-MSG-11` não mudou.
 
 `D-DOM-02` foi decidida contra a recomendação, e abriu duas perguntas que a alternativa
@@ -246,9 +246,9 @@ ADR aceito e foi retirado da linguagem por outro ADR". A recomendação virou te
 de virar escolha. Se a decisão for outra, aquela entrada muda junto, e o registro disso
 não pode depender da memória de quem editou.
 
-**Aprovar `D-DOM-03` obriga reescrever [`../architecture/mensageria.md`](../architecture/mensageria.md) no mesmo
+**Aprovar `D-DOM-03` obriga reescrever [`arquivo/proposta-2026-08-03/mensageria.md`](arquivo/proposta-2026-08-03/mensageria.md) no mesmo
 turno.** A palavra é termo vivo e normativo ali:
-`../architecture/mensageria.md:520`, `:539`, `:548-553`, `:805` e `:1034-1054`,
+`arquivo/proposta-2026-08-03/mensageria.md:520`, `:539`, `:548-553`, `:805` e `:1034-1054`,
 inclusive no enunciado e nas três alternativas de `D-MSG-11`. A ressalva está em [`../architecture/contra-avaliacao.md`](../architecture/contra-avaliacao.md), linhas 143
 a 145; o inventário de linhas é novo.
 
@@ -306,7 +306,7 @@ DLX e limite de entregas até a etapa 8, porque com eles ligados os cenários 18
 custo: o CDC **apaga os pontos `BEFORE_PUBLISH` e `AFTER_PUBLISH` do ADR-0001**,
 porque sem passo `PUBLISH` na operação a etapa 6 perde o gatilho que o plano lhe
 dá (`../plano-do-laboratorio.md:609`). Os dois gatilhos que criariam o CDC estão
-registrados em [`../architecture/mensageria.md`](../architecture/mensageria.md).
+registrados em [`arquivo/proposta-2026-08-03/mensageria.md`](arquivo/proposta-2026-08-03/mensageria.md).
 
 ### As duas linhas sem bloco, classificadas em 2026-08-05
 

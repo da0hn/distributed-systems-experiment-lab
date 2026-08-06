@@ -5,16 +5,16 @@
 - **Escopo:** o que a etapa 5 do roadmap constrói quando a operação vira uma mensagem, o
   que ela deixa de construir de propósito, e onde os pontos de injeção do ADR-0001 caem
   no caminho de uma mensagem.
-- **Depende de:** [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md) (passo,
+- **Depende de:** [`ADR-0001`](../../0001-o-passo-como-unidade-de-execucao.md) (passo,
   fronteira, tentativa, tipos `PUBLISH`/`CONSUME`/`ACK`),
-  [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md) (domínio, oráculo
+  [`ADR-0002`](../../0002-o-dominio-minimo-e-os-dois-oraculos.md) (domínio, oráculo
   exato, identidade pela semente),
-  [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)
-  (taxa, janela de exposição), [`ADR-0005`](../adr/0005-a-forma-do-escalonador.md)
+  [`ADR-0004`](../../0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)
+  (taxa, janela de exposição), [`ADR-0005`](../../0005-a-forma-do-escalonador.md)
   (término e desistência),
-  [`ADR-0006`](../adr/0006-a-forma-da-estrategia-de-concorrencia.md) (estratégia como
+  [`ADR-0006`](../../0006-a-forma-da-estrategia-de-concorrencia.md) (estratégia como
   rótulo opaco),
-  [`ADR-0007`](../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md) (forma do
+  [`ADR-0007`](../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md) (forma do
   evento de log).
 
 Este documento **não decide nada**. Ele levanta o que a etapa 5 exige, nomeia as
@@ -247,7 +247,7 @@ documento nunca foi aceito, e o argumento continua de pé.
 Uma execução cria e destrói a própria topologia, ou reusa uma declarada uma vez? A
 pergunta é a mesma que o ADR-0002 encaminhou sobre o banco — quem devolve o estado ao
 ponto de partida entre duas execuções (`0002-...md:293-296`,
-[`Q-0002-4`](../questions/Q-0002-4.md)) — e ninguém a fez para o broker. Ver `D-MSG-09`.
+[`Q-0002-4`](../../../questions/Q-0002-4.md)) — e ninguém a fez para o broker. Ver `D-MSG-09`.
 
 ---
 
@@ -542,7 +542,7 @@ o canal cai, a mensagem volta para a fila, e o relatório registra uma reentrega
 experimento não pediu. **O instrumento produziu o fenômeno que ele mede**, e nenhuma
 contagem do ADR-0004 distingue esse caso. Ver `D-MSG-11`.
 
-A palavra `barreira` foi aposentada da linguagem pela decisão `D-DOM-03`, em 2026-08-04 ([`../CONTEXT.md`](../CONTEXT.md), seção `D-DOM-03`). O que existe é a restrição de
+A palavra `barreira` foi aposentada da linguagem pela decisão `D-DOM-03`, em 2026-08-04 ([`../../../CONTEXT.md`](../../../CONTEXT.md), seção `D-DOM-03`). O que existe é a restrição de
 precedência; a parada é o efeito dela. As passagens desta seção e de `D-MSG-11` foram
 reescritas no mesmo turno, e **o mérito de nenhuma delas mudou**.
 
@@ -865,7 +865,7 @@ extensão, nunca o corpo.
 
 **Se a escolha for A:** uma regra executável precisa impedir o system under test de ler
 esses atributos de volta, e o repositório ainda não tem a guarda executável de que
-[`Q-0002-1`](../questions/Q-0002-1.md) trata.
+[`Q-0002-1`](../../../questions/Q-0002-1.md) trata.
 
 ### `D-MSG-04` — Modo do binding CloudEvents, e qual versão do AMQP
 
@@ -947,7 +947,7 @@ fila; ele só sabe o que recebeu. O número mede outra coisa.
 
 **Alternativa C — fonte apenas depois da quiescência.** A favor: alinha com o veredito
 de estado final do ADR-0002. Contra: a curva do grupo D é sobre o transiente, e depois
-da quiescência a fila está vazia. [`Q-0002-3`](../questions/Q-0002-3.md) já registra o
+da quiescência a fila está vazia. [`Q-0002-3`](../../../questions/Q-0002-3.md) já registra o
 eixo pontual contra contínuo no tempo.
 
 **Recomendação:** C para os grupos B e C, com a admissão explícita de que o grupo D
@@ -980,7 +980,7 @@ depender de um evento do broker.
 ### `D-MSG-09` — Quem cria e destrói a topologia entre duas execuções
 
 **Problema.** Uma fila com mensagens de uma execução anterior contamina a próxima. É a
-mesma pergunta que [`Q-0002-4`](../questions/Q-0002-4.md) faz sobre o banco, e ninguém a
+mesma pergunta que [`Q-0002-4`](../../../questions/Q-0002-4.md) faz sobre o banco, e ninguém a
 fez sobre o broker.
 
 **Alternativa A — topologia por execução, criada e destruída.** A favor: isolamento
@@ -1043,7 +1043,7 @@ acontecido.
 aproximar do limite.
 
 **Se a escolha for A:** o grupo B perde a execução de controle que o ADR-0004 usa para
-diagnosticar um resultado zero ([a anomalia por frequência](../adr/fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira)).
+diagnosticar um resultado zero ([a anomalia por frequência](../../fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira)).
 
 ---
 
@@ -1088,7 +1088,7 @@ compartilhado leva a saturação para as outras cargas.
 
 ---
 
-## 13. Adições propostas a `integrations.md`
+## 13. Adições propostas a `../../../architecture/integrations.md`
 
 **Nenhuma linha daquele arquivo foi editada.** As linhas abaixo são propostas.
 
@@ -1106,12 +1106,12 @@ Acrescentar às perguntas em aberto daquele arquivo:
 - **`Q-INT-9` — O broker é fonte legítima do oráculo?** O ADR-0002 fixou banco, e não
   broker (`0002-...md:216-236`). Ver `D-MSG-07` deste documento.
 - **`Q-INT-10` — Quem devolve o broker ao ponto de partida entre duas execuções?**
-  [`Q-0002-4`](../questions/Q-0002-4.md) faz a pergunta sobre o banco; ninguém a fez
+  [`Q-0002-4`](../../../questions/Q-0002-4.md) faz a pergunta sobre o banco; ninguém a fez
   sobre a fila. Ver `D-MSG-09`.
 - **`Q-INT-11` — O RabbitMQ é dedicado ou compartilhado com a Camada 6?** Mesmo
   argumento de `Q-INT-3`, aplicado ao broker.
 
-**Os três números são provisórios até a linha entrar em `integrations.md`.** O
+**Os três números são provisórios até a linha entrar em `../../../architecture/integrations.md`.** O
 identificador só é definitivo quando o índice daquele arquivo o registra, e ele vai até
 `Q-INT-5` hoje (`architecture/integrations.md:104`). Quem transportar estas linhas
 confere a numeração no momento do transporte, porque outros documentos desta rodada
