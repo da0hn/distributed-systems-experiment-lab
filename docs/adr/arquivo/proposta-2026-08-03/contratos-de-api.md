@@ -5,30 +5,30 @@
 - **Escopo:** o modelo de recursos HTTP entre a interface web e o Lab Plane, o formato
   do relatório, o mecanismo de streaming das observações, e a resposta proposta para
   `Q-INT-1` e `Q-INT-2`.
-- **Depende de:** [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md),
-  [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md),
-  [`ADR-0003`](../adr/0003-a-linguagem-do-agendamento.md),
-  [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md),
-  [`ADR-0005`](../adr/0005-a-forma-do-escalonador.md),
-  [`ADR-0006`](../adr/0006-a-forma-da-estrategia-de-concorrencia.md) e
-  [`ADR-0007`](../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), todos
+- **Depende de:** [`ADR-0001`](../../0001-o-passo-como-unidade-de-execucao.md),
+  [`ADR-0002`](../../0002-o-dominio-minimo-e-os-dois-oraculos.md),
+  [`ADR-0003`](../../0003-a-linguagem-do-agendamento.md),
+  [`ADR-0004`](../../0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md),
+  [`ADR-0005`](../../0005-a-forma-do-escalonador.md),
+  [`ADR-0006`](../../0006-a-forma-da-estrategia-de-concorrencia.md) e
+  [`ADR-0007`](../../0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md), todos
   `Aceito`.
 
 ## O que este documento é, e o que ele não cria
 
 **Nenhum contrato existe, e este documento não cria nenhum.** O gatilho do OpenAPI é a
 primeira rota HTTP escrita, e o do JSON Schema do relatório é o primeiro relatório
-emitido ([`../contracts/README.md`](../contracts/README.md):11-16). Nenhuma das duas
+emitido ([`../../../contracts/README.md`](../../../contracts/README.md):11-16). Nenhuma das duas
 coisas aconteceu.
 
 Os dois esboços abaixo vivem em blocos cercados dentro deste Markdown, e são **esboço**.
 `contracts/openapi/` continua não existindo: um diretório vazio afirma que existem APIs
 a documentar, e o repositório já pagou por esse erro uma vez
-([`../contracts/README.md`](../contracts/README.md):18-23).
+([`../../../contracts/README.md`](../../../contracts/README.md):18-23).
 
 Quando o contrato nascer, ele carrega operações, autenticação, payloads, respostas,
 erros, paginação, idempotência e política de compatibilidade, e **este Markdown deixa de
-repetir** o que estiver formalizado lá ([`../AGENTS.md`](../AGENTS.md):120).
+repetir** o que estiver formalizado lá ([`../../../AGENTS.md`](../../../AGENTS.md):120).
 
 O inventário de telas que consome estes recursos está em
 [`interface-web.md`](interface-web.md).
@@ -62,7 +62,7 @@ flowchart TB
 **`/experimentos/{id}/fronteiras` não é conveniência.** O ADR-0001 descartou ganchos
 inline no código do sistema sob teste porque "o Experiment Designer da UI não consegue
 oferecer os pontos de barreira" quando eles só existem em execução
-(`../adr/0001-o-passo-como-unidade-de-execucao.md:582-587`). Este recurso é a
+(`../../0001-o-passo-como-unidade-de-execucao.md:582-587`). Este recurso é a
 materialização daquela recusa: a lista de endereços endereçáveis, antes da primeira
 execução.
 
@@ -75,7 +75,7 @@ conceito, e a convenção do repositório é um conceito, um nome. A escolha est
 [D-UI-11](#d-ui-11--o-vocabulário-do-contrato).
 
 A palavra `tipo` aparece em três escopos já fixados: tipo de passo
-(`../adr/0001-...md:111-113`), tipo de evento do log (`../adr/0007-...md:60`) e, nesta
+(`../../0001-...md:111-113`), tipo de evento do log (`../../0007-...md:60`) e, nesta
 proposta, tipo de execução. Os três estão desambiguados pelo objeto que os carrega, e a
 alternativa seria cunhar um termo novo — o que exige aprovação.
 
@@ -111,16 +111,16 @@ proposta.
 
 **O fim da execução é declarado pelo escalonador**, quando o contador de workers ativos
 chega a zero; é esse sinal que o oráculo aguarda
-(`../adr/0005-a-forma-do-escalonador.md:79-82`).
+(`../../0005-a-forma-do-escalonador.md:79-82`).
 
 **O oráculo lê o PostgreSQL**, e não o log de observações
-(`../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:216-219`). O contrato não expõe
+(`../../0002-o-dominio-minimo-e-os-dois-oraculos.md:216-219`). O contrato não expõe
 rota alguma que produza veredito a partir do stream.
 
 **O relatório só existe depois da quiescência.** Uma requisição ao relatório antes disso
 responde `409`, e não um relatório parcial: um veredito calculado sobre estado
 intermediário reporta perda que ainda seria escrita
-(`../questions/Q-0002-2.md`).
+(`../../../questions/Q-0002-2.md`).
 
 ## Esboço de OpenAPI
 
@@ -394,12 +394,12 @@ Quatro esquemas são referenciados e não desenhados acima: `Experimento`, `Exec
 `Comparacao` e `Problema`. `Relatorio` está desenhado na seção seguinte. A omissão é
 deliberada: um esboço que preenchesse os quatro por analogia estaria inventando forma, e
 a regra do repositório é que um campo preenchido por analogia com outro projeto é
-invenção ([`../contracts/README.md`](../contracts/README.md):33-37).
+invenção ([`../../../contracts/README.md`](../../../contracts/README.md):33-37).
 
 ## Esboço do JSON Schema do relatório
 
 **Isto é um esboço.** Nenhum relatório foi emitido, e o gatilho do contrato é o primeiro
-([`../contracts/README.md`](../contracts/README.md):15).
+([`../../../contracts/README.md`](../../../contracts/README.md):15).
 
 O esquema abaixo torna estruturalmente impossível publicar um zero sem o veredito
 classificado e sem o limite superior — que é a exigência do ADR-0004 escrita como
@@ -618,9 +618,9 @@ ADR aceito já proíbe:
 
 O argumento decisivo contra o WebSocket não é custo: é que a bidirecionalidade não tem
 consumidor. O ADR-0003 exige que o agendamento seja inspecionável antes da primeira
-execução (`../adr/0003-a-linguagem-do-agendamento.md:75-79`) e descartou o script
+execução (`../../0003-a-linguagem-do-agendamento.md:75-79`) e descartou o script
 imperativo do escalonador justamente porque ele "só revela os pontos em que para quando
-executa" (`../adr/0003-...md:566-568`). A interface nunca libera um worker à mão. Se um
+executa" (`../../0003-...md:566-568`). A interface nunca libera um worker à mão. Se um
 fenômeno futuro exigir isso, o WebSocket volta à mesa.
 
 Recomendação: **SSE**, com a rota de página como modo de degradação, e não como etapa
@@ -629,8 +629,8 @@ anterior.
 ### O critério numérico proposto para "longa o suficiente"
 
 O gatilho registrado é "a primeira execução longa o suficiente para não caber num
-polling" (`../plano-do-laboratorio.md:611`), e `Q-INT-2` registra que o gatilho não
-define o critério ([`integrations.md`](integrations.md):88-91).
+polling" (`../../../plano-do-laboratorio.md:611`), e `Q-INT-2` registra que o gatilho não
+define o critério ([`../../../architecture/integrations.md`](../../../architecture/integrations.md):88-91).
 
 Proposta, com dois limiares; cruzar qualquer um exige o stream:
 
@@ -640,11 +640,11 @@ Proposta, com dois limiares; cruzar qualquer um exige o stream:
 | duração | duração **medida** acima de **2 segundos** | abaixo disso, uma única requisição depois do sinal `execução terminada` entrega tudo antes que a espera seja percebida; acima, a tela fica sem nada para mostrar enquanto a execução corre                                                                                                   |
 
 **O E1 do MVP já cruza o limiar de volume.** A operação `increment` tem três passos
-(`../adr/0001-...md:100-106`), portanto seis fronteiras em alta resolução. Por
+(`../../0001-...md:100-106`), portanto seis fronteiras em alta resolução. Por
 tentativa, o piso é 3 `RESULTADO_DE_PASSO` mais 6 `LIBERACAO`; o teto acrescenta 6
 `BLOQUEIO`, se eles também forem emitidos quando o worker não é retido — o ADR-0007 não
-diz (`../adr/0007-...md:63-66`). Com as 100 operações e os 10 workers que o plano
-declara (`../plano-do-laboratorio.md:391`), a execução emite entre 900 e 1 500
+diz (`../../0007-...md:63-66`). Com as 100 operações e os 10 workers que o plano
+declara (`../../../plano-do-laboratorio.md:391`), a execução emite entre 900 e 1 500
 observações.
 
 A conclusão é operacional: **o polling não é uma etapa do MVP.** Ele é o que a interface
@@ -655,7 +655,7 @@ execução for longa" para "desde a primeira execução", e a mudança precisa d
 
 A retomada por `Last-Event-ID` exige que cada observação tenha uma posição estável e
 monotônica dentro da execução. O ADR-0007 fixa uma "sequência apensável, em memória, uma
-por execução" (`../adr/0007-...md:85-88`), que tem posições por construção, mas **não
+por execução" (`../../0007-...md:85-88`), que tem posições por construção, mas **não
 nomeia um identificador de evento**. O esboço acima chama esse campo de `posicao` e o
 declara explicitamente como não sendo prova de precedência entre workers. É uma
 proposta, não um fato — registrada abaixo como pergunta em aberto.
@@ -680,18 +680,18 @@ culpado nomeável, e um ADR aceito exige que ele apareça.
 | `chave-de-idempotencia-reutilizada`   | mesma chave, corpo diferente                                                                                         | 409    | esta proposta            |
 
 `agendamento-invalido` carrega, em `detail`, a restrição culpada: o ADR-0003 exige que a
-recusa a nomeie (`../adr/0003-...md:293`). Um problema que diga apenas "agendamento
+recusa a nomeie (`../../0003-...md:293`). Um problema que diga apenas "agendamento
 inválido" descarta a informação que o ADR obriga a plataforma a produzir.
 
 `calibracao-reprovada` não é um erro de cliente no sentido usual — ele acusa o
 instrumento. Proposta: ele responde 422 na requisição do relatório da execução medida, e
-o corpo diz que nenhum resultado daquela execução vale (`../adr/0002-...md:183-185`).
+o corpo diz que nenhum resultado daquela execução vale (`../../0002-...md:183-185`).
 
 ## Idempotência de "iniciar execução"
 
 **Iniciar uma execução não é naturalmente idempotente.** O caderno de laboratório quer a
 mesma configuração rodada várias vezes: duas execuções de controle com a mesma semente
-são comparadas por um critério que o ADR-0007 define (`../adr/0007-...md:90-95`), e o
+são comparadas por um critério que o ADR-0007 define (`../../0007-...md:90-95`), e o
 critério pressupõe que as duas existam. Deduplicar por conteúdo apagaria essa
 capacidade.
 
@@ -718,19 +718,19 @@ opcional, valor novo em enumeração aberta, recurso novo. Remoção de campo, m
 tipo e estreitamento de enumeração exigem `v2`.
 
 **`veredito.valor` é uma enumeração aberta, e o cliente falha fechado.** O ADR-0004
-fixou cinco valores (`../adr/0004-...md:212-218`) e o ADR-0005 acrescentou o sexto,
-`agendamento não cumprido` (`../adr/0005-...md:98-104`). Um cliente que tratasse a
+fixou cinco valores (`../../0004-...md:212-218`) e o ADR-0005 acrescentou o sexto,
+`agendamento não cumprido` (`../../0005-...md:98-104`). Um cliente que tratasse a
 enumeração como fechada teria quebrado naquele commit. Proposta: um valor não
 reconhecido é exibido como não reconhecido e **nunca** como evidência de proteção — o
 mesmo princípio de falha fechada que o ADR-0006 aplicou ao retry
-(`../adr/0006-a-forma-da-estrategia-de-concorrencia.md:66-69`).
+(`../../0006-a-forma-da-estrategia-de-concorrencia.md:66-69`).
 
 **`fatos` é um objeto aberto por decisão, não por descuido.** O runtime registra os
-fatos sem interpretá-los (`../adr/0007-...md:60-61`), e um esquema que enumerasse suas
+fatos sem interpretá-los (`../../0007-...md:60-61`), e um esquema que enumerasse suas
 chaves obrigaria o Lab Plane a conhecer o que o passo reporta.
 
 **O tipo de evento do log é enumeração fechada.** O ADR-0007 fixou os quatro
-(`../adr/0007-...md:60`), e um quinto tipo muda a projeção da timeline — ele exige ADR,
+(`../../0007-...md:60`), e um quinto tipo muda a projeção da timeline — ele exige ADR,
 e não um campo novo.
 
 ## Decisões que exigem aprovação humana
@@ -747,9 +747,9 @@ e não um campo novo.
 ### D-UI-08 — o que o `POST` cria
 
 **Problema.** O ADR-0003 diz que um experimento tem quatro execuções
-(`../adr/0003-...md:155-157`), o ADR-0002 exige a calibração antes de toda execução
-medida (`../adr/0002-...md:179-181`), e o ADR-0004 condiciona o controle positivo ao
-resultado da medida (`../adr/0004-...md:250-253`). Nenhum ADR nomeia o conjunto.
+(`../../0003-...md:155-157`), o ADR-0002 exige a calibração antes de toda execução
+medida (`../../0002-...md:179-181`), e o ADR-0004 condiciona o controle positivo ao
+resultado da medida (`../../0004-...md:250-253`). Nenhum ADR nomeia o conjunto.
 
 **Alternativa A — uma execução por requisição.** A favor: o recurso é o que os ADRs
 nomeiam, e nenhum termo novo entra no glossário. Contra: a ordem entre as quatro passa a
@@ -772,7 +772,7 @@ requisições em ordem, e a regra do ADR-0002 passa a ser verificada no navegado
 
 **Problema.** `Q-INT-2` registra que SSE e WebSocket estão os dois na mesa, e que o
 critério de "longa o suficiente" não está escrito
-([`integrations.md`](integrations.md):88-91).
+([`../../../architecture/integrations.md`](../../../architecture/integrations.md):88-91).
 
 **Alternativas.** A tabela da seção
 [`### As três opções`](#as-três-opções) traz o argumento a favor e o custo de cada uma.
@@ -791,7 +791,7 @@ e a comparação do E3 ganha um braço que ninguém pediu.
 
 **Alternativa A — chave obrigatória gerada pelo cliente.** A favor: preserva a
 capacidade de repetir a mesma configuração de propósito, que o critério de equivalência
-do ADR-0007 pressupõe (`../adr/0007-...md:90-95`). Contra: o cliente passa a ter uma
+do ADR-0007 pressupõe (`../../0007-...md:90-95`). Contra: o cliente passa a ter uma
 obrigação, e um cliente que gere a mesma chave duas vezes por engano perde uma execução
 legítima.
 
@@ -851,7 +851,7 @@ obriga uma versão nova da API.
 
 **Problema.** A regra estrutural do repositório manda os resultados para
 `docs/experiments/`, versionados no Git, para que o histórico vire um caderno de
-laboratório ([`../../AGENTS.md`](../../AGENTS.md)). O relatório nasce na aplicação.
+laboratório ([`../../../../AGENTS.md`](../../../../AGENTS.md)). O relatório nasce na aplicação.
 
 **Alternativa A — download e commit por uma pessoa.** A favor: nenhuma credencial de
 escrita no repositório para a aplicação, e o commit tem autor. Contra: um relatório
@@ -873,11 +873,11 @@ matriz de integrações ganha uma fronteira entre a aplicação e a API do GitHu
 ## Perguntas em aberto
 
 **O ADR-0007 não nomeia um identificador de evento.** A sequência apensável tem posições
-por construção (`../adr/0007-...md:85-88`), e a retomada por `Last-Event-ID` depende de
+por construção (`../../0007-...md:85-88`), e a retomada por `Last-Event-ID` depende de
 uma posição estável entre reconexões. O campo `posicao` do esboço é proposta.
 
 **O relatório de uma execução terminada não tem lugar de leitura definido.** O log vive
-em memória (`../plano-do-laboratorio.md:589-592`), e nada diz onde o relatório é retido
+em memória (`../../../plano-do-laboratorio.md:589-592`), e nada diz onde o relatório é retido
 depois. A rota `/execucoes/{id}/relatorio` pressupõe uma resposta a essa pergunta.
 
 **O contrato não declara autenticação.** A proposta é declarar a ausência, e a decisão
@@ -886,12 +886,12 @@ Enquanto ela não for tomada, o esboço não declara `securitySchemes`, e a aus�
 deliberada.
 
 **Nenhum documento fixa quem cria o estado inicial do banco entre duas execuções.** É a
-[`Q-0002-4`](../questions/Q-0002-4.md), e ela recai sobre o `POST` que inicia a
+[`Q-0002-4`](../../../questions/Q-0002-4.md), e ela recai sobre o `POST` que inicia a
 sequência: se o estado inicial não for restabelecido, a segunda execução mede outra
 coisa.
 
 **O `409` da rota de relatório pressupõe que a interface saiba o que é quiescência.** O
-sinal existe (`../adr/0005-...md:79-82`), mas nada diz se ele é exposto como estado da
+sinal existe (`../../0005-...md:79-82`), mas nada diz se ele é exposto como estado da
 execução ou apenas como evento do stream. O esboço faz as duas coisas, o que é uma
 duplicação a decidir.
 
@@ -906,13 +906,13 @@ Nada aqui edita aquele arquivo. As linhas abaixo são propostas.
 
   | Fronteira                                | Onde está descrita                    | Forma                                                                 |
   |------------------------------------------|---------------------------------------|-----------------------------------------------------------------------|
-  | interface web para Lab Plane, HTTP e SSE | `../architecture/contratos-de-api.md` | esboço de OpenAPI e de JSON Schema em Markdown, em estado de proposta |
+  | interface web para Lab Plane, HTTP e SSE | `../../../architecture/contratos-de-api.md` | esboço de OpenAPI e de JSON Schema em Markdown, em estado de proposta |
 
 - Acrescentar, em `## Quando um contrato for criado`, a regra de que os esboços deste
   documento são **removidos** do Markdown no mesmo commit em que o contrato nascer, para
   que não existam duas fontes para a mesma forma.
 
-## Adições propostas a `integrations.md`
+## Adições propostas a `../../../architecture/integrations.md`
 
 Nada aqui edita aquele arquivo. As linhas abaixo são propostas.
 
@@ -925,7 +925,7 @@ Nada aqui edita aquele arquivo. As linhas abaixo são propostas.
   o E1 do MVP já cruza o primeiro limiar — o que muda o gatilho de "a primeira execução
   longa" para "desde a primeira execução".
 - Acrescentar duas perguntas em aberto. **Os números são provisórios até a linha entrar
-  em `integrations.md`**: o identificador só é definitivo quando o índice o registra, e
+  em `../../../architecture/integrations.md`**: o identificador só é definitivo quando o índice o registra, e
   a faixa 12 a 17 foi atribuída para evitar colisão com outras propostas em curso.
 
   **Q-INT-16 — O log de observações não tem identificador de evento.** A retomada de um
