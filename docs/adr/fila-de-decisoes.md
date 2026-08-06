@@ -1162,7 +1162,7 @@ Nenhum dos quatro é decisão. `E-22` é linha nova; os outros três levam `E-9`
 | `E-8`  | `bigint` derivado da semente                                | sim                    |
 | `E-9`  | sem chave estrangeira, com verificação de órfãs             | sim                    |
 | `E-10` | índice `(execution_id, resource_id)`, com o plano efetivo   | sim                    |
-| `E-22` | chave primária `(id, execution_id)`                         | **não**                |
+| `E-22` | chave primária `(execution_id, id)`, decidida duas vezes    | sim                    |
 
 **`E-8` — `bigint`.** O único argumento contra era a colisão entre duas execuções da
 mesma semente, e o discriminador de `D-DAT-05` o removeu. O custo já estava registrado
@@ -1244,39 +1244,54 @@ flowchart LR
 `E-22` decide desempenho e caminho de acesso dentro da janela medida, e **não** decide
 capacidade nenhuma do esquema.
 
-#### `E-22` fecha em `(id, execution_id)`, contra a recomendação
+#### `E-22` fecha em `(execution_id, id)`, e a linha foi decidida duas vezes
 
-**O argumento a favor não estava na rodada, e ele é legítimo.** Com o `id` à esquerda, a
-busca que fica barata é "a linha 42000 em **todas** as execuções" — e essa é uma
-operação central deste laboratório, não um caso marginal. Comparar o mesmo recurso sob
-`NONE`, `PESSIMISTIC` e `OPTIMISTIC` é comparar a mesma entidade lógica entre execuções,
-e a identidade derivada da semente existe justamente para que ela seja a mesma. A ordem
-escolhida põe essa comparação no prefixo do índice.
+A primeira escolha foi `(id, execution_id)`, e ela caiu no mesmo dia. O percurso fica
+registrado porque o que a inverteu foi uma correção de mérito, e não uma mudança de
+gosto.
 
-| Consulta                                | `(execution_id, id)` | `(id, execution_id)` |
-|-----------------------------------------|----------------------|----------------------|
-| a linha 42000 de uma execução           | usa o índice         | usa o índice         |
-| tudo de uma execução                    | usa o índice         | depende de `E-10`    |
-| a linha 42000 em todas as execuções     | não usa o índice     | usa o índice         |
+**O argumento que sustentava a primeira escolha estava inflado, e quem o inflou foi esta
+fila.** Ele dizia que buscar "a mesma linha em **todas** as execuções" é operação central
+do laboratório, porque comparar `NONE`, `PESSIMISTIC` e `OPTIMISTIC` é comparar a mesma
+entidade lógica entre execuções. **Não é uma consulta.** O oráculo do
+[ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md) calcula
+`perdidas = commits − (value_final − value_inicial)` **dentro** de cada execução, e a
+comparação entre estratégias acontece depois, sobre números já calculados, no relatório.
+Nenhum caminho quente junta execuções numa consulta só; isso é inspeção manual em `psql`,
+e ela pode pagar uma varredura.
 
-**Os dois custos passam a valer.** O primeiro é de escrita: o `id` repete os mesmos
-valores a cada execução, então as inserções caem espalhadas pela B-tree em vez de no
-fim, com divisão de página em pontos dispersos — e isso acontece **dentro da janela que
-o experimento cronometra**. Uma mitigação existe e não foi decidida: `fillfactor` no
-índice, que é vizinho de `P-DAT-2`, onde o mesmo repositório já registra que nenhuma
-política de página está declarada.
+| Consulta                            | Quem a faz                  | Frequência    |
+|-------------------------------------|-----------------------------|---------------|
+| tudo de uma execução                | consumidor de CDC, histórico| todo momento  |
+| a linha 42000 de uma execução       | operação medida             | todo momento  |
+| a linha 42000 em todas as execuções | pessoa depurando em `psql`  | raro          |
 
-O segundo é de leitura: `allocation` deixa de ter caminho de acesso por execução na
-chave primária, e ele passa a depender inteiramente do índice de `E-10` — que a mesma
-rodada decidiu criar. **`E-10` deixa de ser opcional**, e retirá-lo depois faria toda
-consulta por execução varrer o histórico acumulado.
+A ordem escolhida põe as duas primeiras no prefixo do índice, e deixa a terceira pagar
+varredura. A ordem descartada fazia o inverso — otimizava a rara e punha a frequente na
+dependência de um índice secundário, sobre um histórico que nunca é apagado.
 
-**Uma consequência de `D-DAT-05` fica revertida na letra.** Aquele texto diz que "todo
-índice passa a começar pelo discriminador", e o diagrama da mesma seção rotula a tabela
-como "PK começa pelo discriminador". Passa a valer para os índices secundários, e não
-para a chave primária. A frase que a escolha ratifica é a outra da mesma seção — "o
-discriminador é a segunda coluna da chave" —, e a contradição interna que `E-22` abriu
-fica resolvida por esta linha, sem editar o documento arquivado.
+**O ganho de escrita vem junto.** O `execution_id` é um UUIDv7, cujo prefixo de instante
+cresce, então toda inserção cai no fim da B-tree em vez de espalhada por ela. É a mesma
+propriedade pela qual `D-DAT-05` preferiu UUIDv7 a UUIDv4, agora valendo também para a
+chave primária. A pressão de `fillfactor` que a ordem descartada exigiria deixa de ser
+questão, e `P-DAT-2` continua tratando só do autovacuum.
+
+**O custo que passa a valer.** As linhas de uma mesma execução ficam fisicamente
+adjacentes no índice, e workers concorrentes inserem na mesma página de folha. É
+contenção de índice dentro da janela medida — ruído do instrumento, e não fenômeno
+estudado. Ele não tem mitigação decidida, e é vizinho de `P-DAT-2` pelo mesmo motivo:
+nenhuma política de página está declarada em documento nenhum.
+
+**`E-10` permanece, e volta a ser aditivo.** Com o discriminador já no prefixo da chave
+primária, o índice `(execution_id, resource_id)` deixa de ser o único caminho por
+execução e volta ao papel que `D-DAT-03` lhe deu: aproximar o predicate lock do
+`SERIALIZABLE` do conflito real. A obrigação de registrar o plano efetivo no relatório
+continua.
+
+**A contradição interna de `D-DAT-05` fica resolvida do outro lado.** A escolha ratifica
+o diagrama — "PK começa pelo discriminador" — e a consequência de que "todo índice passa
+a começar pelo discriminador". A frase vencida é "o discriminador é a segunda coluna da
+chave", e ela fica registrada como tal aqui, sem editar o documento arquivado.
 
 #### `E-12` ganhou uma terceira candidata, e ela não filtra nada
 
