@@ -2428,3 +2428,130 @@ duas. Contra: `D-ARQ-02` decide o `Dockerfile`, e o `Dockerfile` nasce no primei
 commit de código pela exigência de entrega do homelab.
 
 **Recomendação.** Alternativa 1.
+
+### As decisões do Lote B, em 2026-08-05
+
+Nenhuma foi tomada por agente. As cinco foram apresentadas com problema, alternativas e
+trade-offs, e decididas na mesma sessão em que foram enumeradas.
+
+| Item  | Escolha da pessoa                                         | Seguiu a recomendação? |
+|-------|-----------------------------------------------------------|------------------------|
+| `B-1` | fila única, extraída para `../adr/fila-de-decisoes.md`    | sim                    |
+| `B-2` | não podar; a linha fecha por subsunção                    | sim                    |
+| `B-3` | aprova-se cada regra, e não o card                        | sim                    |
+| `B-4` | a contradição **é** decisão arquitetural nova, e gera ADR | **não**                |
+| `B-5` | classificar as duas, sem decidi-las                       | sim                    |
+
+#### `B-1` — a fila única sai para `../adr/fila-de-decisoes.md`
+
+**Decidido.** As duas filas viram uma, num arquivo próprio dentro de `docs/adr/`. A
+pasta não é dissolvida pelo Lote D, então a fila sobrevive à pulverização sem precisar
+de destino novo, e deixa de ser seção de um arquivo que já faz outras quatro coisas.
+
+As duas seções de origem viram lápide, pela decisão `C-2`. A lápide não é um bilhete de
+mudança de endereço: ela nomeia o destino de cada parte do que estava ali.
+
+#### `B-2` — a poda não acontece, e a linha fecha por subsunção
+
+**Decidido, e a pendência estava contraditória com a regra que a sucedeu.** Podar hoje
+as linhas que são comportamento disfarçado de arquitetura é escolher o artefato antes da
+decisão, que é o oposto do que a decisão de 2026-08-04 fixou. A poda continua
+acontecendo — uma linha por vez, quando a pessoa escolhe, e com a informação que só
+existe naquele momento.
+
+**O custo aceito.** Até que cada linha feche, a fila continua misturando os dois tipos,
+e quem a lê não sabe quais nunca virarão ADR. A alternativa era um critério que
+separasse comportamento de arquitetura sem ver a decisão — e o teste que
+[`../AGENTS.md`](../AGENTS.md) já tem admite explicitamente linha que cai nas duas
+colunas.
+
+#### `B-3` — aprova-se a regra, e não o card
+
+**Decidido.** A tabela de regras de um Feature Card passa a registrar quem aprovou cada
+regra, ao lado da evidência. O card em si não ganha estado nem ato de aprovação: o que
+precisa ser aprovado por pessoa é a regra de negócio, e o card é o continente.
+
+**O custo aceito, e ele é trabalho.** As quatro capacidades já especificadas precisam
+ser revisitadas regra a regra. Nenhuma delas foi aprovada até hoje — não por descuido,
+mas porque o ato de aprovar não existia.
+
+#### `B-4` — a contradição é decisão arquitetural nova, e gera ADR
+
+**Decidido, e contra a recomendação.** A recomendação era que o card cedesse, tratando a
+contradição como defeito do card. A escolha foi outra: se um Feature Card contradiz um
+ADR aceito, então existe ali uma decisão arquitetural nova, e ela gera ADR.
+
+**Por que isso não colide com a regra de 2026-08-04.** Aquela regra diz que o artefato é
+escolhido no momento da decisão, e não antes. Aqui o artefato não está sendo escolhido
+de antemão por preferência: a contradição atende, por construção, aos quatro critérios
+de [`../adr/README.md`](../adr/README.md#uma-decisão-merece-adr-quando) — existe
+alternativa que alguém defende com argumento, e a escolha restringe o que se pode
+construir depois. O ADR decorre dos critérios, e não de uma escolha antecipada.
+
+```mermaid
+flowchart TD
+    C["card afirma X;<br/>ADR aceito afirma não-X"] --> D["decisão<br/>arquitetural nova"]
+    D --> Q["a linha entra na<br/>fila de decisões"]
+    Q --> P["a pessoa escolhe"]
+    P --> A["ADR novo, já Aceito"]
+    A --> E["emenda, substitui ou<br/>ratifica o ADR antigo"]
+    A --> F["o card é alinhado<br/>ao que o ADR diz"]
+```
+
+**Pergunta em aberto.** O que acontece com o card enquanto o ADR não existe. A regra do
+registro no mesmo turno, em [`../AGENTS.md`](../AGENTS.md), obriga a escrever a
+contradição; ela não diz se o trecho contraditório do card fica marcado, sai, ou
+permanece como está.
+
+#### `B-5` — as duas órfãs são classificadas, e não decididas
+
+**Decidido.** `D-ARQ-02` entra no assunto "Entrega contínua no homelab", porque ela fixa
+o `Dockerfile` e o número de imagens do dia zero. `D-DOM-11` entra no Bloco 4,
+vocabulário, porque [`../CONTEXT.md`](../CONTEXT.md) já carrega o termo `scheduling`
+como `proposto` por ela. Nenhuma das duas foi decidida: a classificação fecha a
+diferença entre 64 e 66, e nada mais.
+
+**A classificação não é escrita nas tabelas dos blocos.** O motivo está na subseção
+abaixo, e ele não estava previsto.
+
+#### O achado que a execução produziu: este arquivo é append-only
+
+**Nove citações por número de linha apontam para este arquivo, e duas origens são ADRs
+aceitos**, cujo corpo NÃO PODE ser editado.
+
+| Origem                                                                        | Citações | A maior linha citada    |
+|-------------------------------------------------------------------------------|----------|-------------------------|
+| [ADR-0008](../adr/0008-os-dois-planos-em-processos-separados.md)              | 1        | `:254-255`, já quebrada |
+| [ADR-0009](../adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md) | 8        | `:1865-1879`            |
+
+A maior linha citada é 1879. Qualquer edição que **desloque** uma linha até 1879 quebra
+pelo menos uma citação que ninguém pode corrigir — e isso vale para inserir, remover e
+reordenar, inclusive para uma correção óbvia de uma palavra.
+
+```mermaid
+flowchart LR
+    A["linhas 1 a 1879<br/>congeladas"] -->|" deslocar "| Q["citação de ADR<br/>aceito quebra"]
+    B["linhas 1880 em diante"] -->|" acrescentar aqui "| S["seguro"]
+    Q --> D["dano irreversível:<br/>o corpo do ADR é imutável"]
+```
+
+**É por isso que `B-5` não foi escrita nas tabelas dos Blocos 0 a 6.** Elas ocupam as
+linhas 1168 a 1379, e acrescentar duas linhas ali deslocaria quatro citações do
+ADR-0009. A Lacuna 1 previu o risco; esta é a primeira vez que ele bloqueia uma edição
+concreta.
+
+**A consequência real é mais dura do que ela parece.** Um arquivo que só pode crescer no
+fim não pode ser corrigido no meio, e uma fila que só cresce no fim deixa de ser
+legível. A decisão `B-1` resolve isso por acidente feliz: com a fila fora daqui, este
+arquivo deixa de precisar de edição no meio e passa a ser o que já é de fato — registro
+histórico congelado de duas rodadas de arquitetura.
+
+**O que isso diz ao Lote D.** Só três dos onze arquivos de `docs/architecture/` carregam
+citação por linha vinda de ADR aceito. Os outros oito podem ser movidos sem dano.
+
+| Arquivo de `docs/architecture/` | Citações por linha vindas de ADR aceito |
+|---------------------------------|-----------------------------------------|
+| `decisoes-pendentes.md`         | 9, a maior em `:1879`                   |
+| `modelo-de-dados.md`            | 1, em `:154-158`                        |
+| `arquitetura-alvo.md`           | 1, em `:29-34`                          |
+| os outros oito                  | nenhuma                                 |
