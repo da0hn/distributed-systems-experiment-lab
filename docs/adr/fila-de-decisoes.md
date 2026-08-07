@@ -1552,6 +1552,52 @@ LSN, replication slot, retenção de WAL, row filter na publication — e a esco
 elas não é escolha nenhuma sem esse vocabulário. **A linha continua aberta, com as três
 candidatas intactas.**
 
+#### `E-23` fecha em nomes assimétricos, um por lado da fronteira
+
+A coluna se chama `partition_id` nas tabelas do sistema medido e `execution_id` nas
+tabelas do Lab Plane. É a quarta candidata, e ela sai da pergunta de 2026-08-06. O
+`CREATE TABLE` das duas tabelas medidas deixa de estar bloqueado.
+
+`D-DAT-05` fica honrada na letra: o sistema medido não carrega a palavra "execução" em
+lugar nenhum, e para ele aquilo é o que o nome diz — uma partição. O instrumento escreve
+e lê `execution_id` nas suas próprias tabelas, sem salto mental.
+
+**O custo é uma ligação que o esquema não declara.** Um mesmo valor com dois nomes exige
+que alguém saiba que são o mesmo, e nenhuma constraint diz isso — não poderia dizer, já
+que `E-18` proíbe o cruzamento de schemas. A tradução vive num ponto só, no consumidor do
+stream de CDC, e é ali que ela precisa estar escrita e testada.
+
+#### `E-12` não tem candidata no broker, e a razão não é de implementação
+
+A pergunta de 2026-08-06 — se o filtro não caberia no RabbitMQ, já que o CDC publicaria
+para ele — expõe um pressuposto que esta fila carregava sem enunciar. **Ele não publica.**
+O consumidor do WAL é o próprio `lab-plane`, sem intermediário, e é isso que o diagrama
+do [`AGENTS.md`](../../AGENTS.md) da raiz mostra. Não há broker no caminho do veredito.
+
+```mermaid
+flowchart LR
+    W[("WAL")]
+    LP["lab-plane<br/>consumidor de CDC"]
+    V["o veredito"]
+    W -->|" replicação lógica "| LP
+    LP --> V
+    B["rabbitmq"]
+    B -.->|" objeto de estudo<br/>do grupo B, etapa 5 "| X["não é transporte<br/>do instrumento"]
+```
+
+**E ele não deve entrar nesse caminho.** O RabbitMQ é objeto de estudo do grupo B, e o
+que se estuda nele é justamente duplicata, perda e reordenação de entrega
+([`plano-do-laboratorio.md`](../plano-do-laboratorio.md), etapa 5). Um instrumento que
+transporta o veredito por broker passa a sofrer os fenômenos que ele mede: uma
+duplicata na entrega vira uma contagem inflada, e ninguém consegue dizer se o experimento
+achou uma perda ou se o instrumento inventou uma. É a confusão dos dois planos, num lugar
+onde ela é indetectável.
+
+**Sobram dois lugares, e não três.** Entre o WAL e o veredito existem o PostgreSQL e o
+código do `lab-plane`. As candidatas (b) e (c) agem no primeiro; a candidata (a) age no
+segundo, e ela **não é** guarda de banco — é código Java com teste, apesar de a linha
+inteira ter sido apresentada em vocabulário de replicação.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
