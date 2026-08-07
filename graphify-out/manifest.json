@@ -1,8 +1,8 @@
 {
   ".claude/skills/feature-planning/scripts/check_artifact_limits.py": {
-    "mtime": 1786072800.4018967,
-    "ast_hash": "5f010caa1448a2a9b6ca4683626b9761",
-    "semantic_hash": "5f010caa1448a2a9b6ca4683626b9761"
+    "mtime": 1786075109.258621,
+    "ast_hash": "bce837f2aa259611f5b8ae511e6aa4c3",
+    "semantic_hash": "bce837f2aa259611f5b8ae511e6aa4c3"
   },
   ".claude/skills/feature-planning/SKILL.md": {
     "mtime": 1785890843.886,
@@ -10,9 +10,9 @@
     "semantic_hash": "b73b875825936405e3d5c310455f9b7d"
   },
   "CLAUDE.md": {
-    "mtime": 1786049698.3177125,
-    "ast_hash": "6d744e9133eb474cb0d7ca031fa3874e",
-    "semantic_hash": "6d744e9133eb474cb0d7ca031fa3874e"
+    "mtime": 1786076776.9839482,
+    "ast_hash": "5c27369b226fcf2be8a6cfe52224e767",
+    "semantic_hash": "5c27369b226fcf2be8a6cfe52224e767"
   },
   "docs/adr/0001-o-passo-como-unidade-de-execucao.md": {
     "mtime": 1785803697.4102535,
@@ -110,9 +110,9 @@
     "semantic_hash": "aab86345a47eb54fa7de5905e9cc362b"
   },
   "docs/architecture/integrations.md": {
-    "mtime": 1786049678.719873,
-    "ast_hash": "923c6e01647eb7fdb26366bd24f3bca4",
-    "semantic_hash": "923c6e01647eb7fdb26366bd24f3bca4"
+    "mtime": 1786076243.7923038,
+    "ast_hash": "9444e3936cc7dc5a573d249389abd74a",
+    "semantic_hash": "9444e3936cc7dc5a573d249389abd74a"
   },
   "docs/contracts/README.md": {
     "mtime": 1785624519.065,
@@ -199,15 +199,10 @@
     "ast_hash": "c8ffc786b36766b9883645074ad0daf8",
     "semantic_hash": "c8ffc786b36766b9883645074ad0daf8"
   },
-  "README.md": {
-    "mtime": 1785898634.7436721,
-    "ast_hash": "1d2d779794fe2078ebfb9e3bef850c19",
-    "semantic_hash": "1d2d779794fe2078ebfb9e3bef850c19"
-  },
   "docs/CLAUDE.md": {
     "mtime": 1785890673.4134161,
     "ast_hash": "14ed1971410c000fc7b79d2741f891e0",
-    "semantic_hash": "14ed1971410c000fc7b79d2741f891e0"
+    "semantic_hash": ""
   },
   "docs/README.md": {
     "mtime": 1785890662.545221,
@@ -400,14 +395,14 @@
     "semantic_hash": "aa1c092bd8b3b4015c45dd79d5e45ce2"
   },
   "AGENTS.md": {
-    "mtime": 1786066409.7492957,
-    "ast_hash": "0ad6958fae327d4c574948d0231e843b",
-    "semantic_hash": "0ad6958fae327d4c574948d0231e843b"
+    "mtime": 1786075294.7704332,
+    "ast_hash": "00d6ae443a895b5946eb54ddfd768ffd",
+    "semantic_hash": "00d6ae443a895b5946eb54ddfd768ffd"
   },
   "docs/AGENTS.md": {
     "mtime": 1786072878.513515,
     "ast_hash": "29ebfce775d8d282d4e26eb652201c67",
-    "semantic_hash": "29ebfce775d8d282d4e26eb652201c67"
+    "semantic_hash": ""
   },
   "docs/CONTEXT.md": {
     "mtime": 1786049698.3187134,
@@ -420,9 +415,9 @@
     "semantic_hash": "0a402390f16fd65d91854153801f5ab7"
   },
   "docs/adr/0008-os-dois-planos-em-processos-separados.md": {
-    "mtime": 1786071833.371989,
-    "ast_hash": "b2a77009abd5a871056e3730b832d1a9",
-    "semantic_hash": "b2a77009abd5a871056e3730b832d1a9"
+    "mtime": 1786076184.023811,
+    "ast_hash": "f8d31e991601ea98ef10a0098b98d3d2",
+    "semantic_hash": "f8d31e991601ea98ef10a0098b98d3d2"
   },
   "frontend/package.json": {
     "mtime": 1786049700.5746534,
@@ -490,9 +485,9 @@
     "semantic_hash": "d7543714b94c17f7b2b011523357a389"
   },
   "local/postgres-init.sql": {
-    "mtime": 1786049700.606171,
-    "ast_hash": "8607d394fdc4eb89fc1cf8c6e2b46242",
-    "semantic_hash": "8607d394fdc4eb89fc1cf8c6e2b46242"
+    "mtime": 1786075224.8082156,
+    "ast_hash": "07cb9d2953af551f2a2b78554fe02411",
+    "semantic_hash": "07cb9d2953af551f2a2b78554fe02411"
   },
   "pom.xml": {
     "mtime": 1786049700.6071692,
@@ -560,14 +555,14 @@
     "semantic_hash": "195d5800c60968f28721a449bbd90a8f"
   },
   "docs/adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md": {
-    "mtime": 1786074851.9027796,
-    "ast_hash": "43f436532da0f4bfed5a70b56dcd8f8e",
-    "semantic_hash": "43f436532da0f4bfed5a70b56dcd8f8e"
+    "mtime": 1786076004.7427907,
+    "ast_hash": "125a6b1df90f22f6ea1b219fa4201f89",
+    "semantic_hash": "125a6b1df90f22f6ea1b219fa4201f89"
   },
   "docs/adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md": {
-    "mtime": 1786074161.9701738,
-    "ast_hash": "7486c5e91a9bd28ffa76b50b8aa4164c",
-    "semantic_hash": "7486c5e91a9bd28ffa76b50b8aa4164c"
+    "mtime": 1786075759.0121336,
+    "ast_hash": "2948289309bb9b7f647b1adf6be72024",
+    "semantic_hash": "2948289309bb9b7f647b1adf6be72024"
   },
   "docs/adr/arquivo/proposta-2026-08-03/contratos-de-api.md": {
     "mtime": 1786049696.9280827,
@@ -610,9 +605,9 @@
     "semantic_hash": "122924ebb617c4ece3a60befa27ce03e"
   },
   "docs/adr/fila-de-decisoes.md": {
-    "mtime": 1786074777.9809718,
-    "ast_hash": "22cf2ed50d6aaeb440f4c8ff695c41ff",
-    "semantic_hash": "22cf2ed50d6aaeb440f4c8ff695c41ff"
+    "mtime": 1786076290.1163461,
+    "ast_hash": "d21e85214b5d8dd5e70dd8ce9ab8e2f8",
+    "semantic_hash": "d21e85214b5d8dd5e70dd8ce9ab8e2f8"
   },
   "docs/adr/plano-de-escrita-do-lote-e.md": {
     "mtime": 1786072431.3602328,
@@ -693,5 +688,25 @@
     "mtime": 1786049700.6211715,
     "ast_hash": "71f4f8564e5fa0584a513115b089ed6b",
     "semantic_hash": "71f4f8564e5fa0584a513115b089ed6b"
+  },
+  "docs/adr/arquivo/proposta-2026-08-03/README.md": {
+    "mtime": 1786049698.3237112,
+    "ast_hash": "fdddb0a633b9ba9bb91ce9aef88d34e9",
+    "semantic_hash": "fdddb0a633b9ba9bb91ce9aef88d34e9"
+  },
+  "docs/adr/arquivo/proposta-2026-08-03/arquitetura-alvo.md": {
+    "mtime": 1786049696.927081,
+    "ast_hash": "14719720b3973212a04de9527e4c22a3",
+    "semantic_hash": "14719720b3973212a04de9527e4c22a3"
+  },
+  "docs/adr/arquivo/proposta-2026-08-03/contra-avaliacao.md": {
+    "mtime": 1786049698.3247125,
+    "ast_hash": "74838d12a2592098b333200590eb8afc",
+    "semantic_hash": "74838d12a2592098b333200590eb8afc"
+  },
+  "docs/audits/2026-08-06-coerencia-e-limites-documentais.md": {
+    "mtime": 1786076622.088645,
+    "ast_hash": "e705cd38113fb4e4b9b27bfb090458e9",
+    "semantic_hash": "e705cd38113fb4e4b9b27bfb090458e9"
   }
 }
