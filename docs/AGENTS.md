@@ -86,18 +86,26 @@ Seções obrigatórias, nesta ordem: problema e resultado esperado; atores e gat
 escopo; fora de escopo; regras de negócio; integrações e contratos afetados; riscos e
 decisões pendentes; critérios de pronto; links.
 
-- **Máximo 700 palavras.** Um card acima disso cobre mais de uma capacidade — divida. O
-  corte sai da prosa e dos diagramas, **nunca da
-  evidência**. Um diagrama grande vai para
-  o `example-mapping.md`, que não tem limite.
+- **Máximo 5.500 caracteres de prosa.** Um card acima disso cobre mais de uma capacidade
+  — divida. O corte sai da prosa, **nunca da evidência**.
 
-  `wc -w` sozinho **superestima**: ele conta os `|` das tabelas como palavras, e um card
-  com duas tabelas infla cerca de 10%. Meça assim:
+  **Diagrama, bloco de código e tabela não entram na contagem.** A regra vale para todo
+  artefato `.md` com limite, e entrou em 2026-08-06. Os três são densos em caracteres e
+  pobres em prosa: um `flowchart` de dez nós custa mais que a seção que ele ilustra.
+  Contá-los punia exatamente o que estas instruções exigem — todo fluxo vai **também**
+  como Mermaid, e toda regra vai em tabela com evidência e com quem a aprovou —, e o
+  corte acabava saindo do diagrama ou da citação.
+
+  **Quem conta é o script, e não um comando de shell montado à mão:**
 
   ```bash
-  sed -E 's/\|/ /g' feature-card.md | grep -vE '^[ -]+$' | tr -s ' ' '\n' \
-    | grep -vE '^-*$' | grep -c .
+  python .claude/skills/feature-planning/scripts/check_artifact_limits.py \
+    --root . --file docs/features/<slug>/feature-card.md
   ```
+
+  Ele imprime a contagem de prosa e, entre parênteses, o tamanho bruto. A medição
+  anterior era em palavras, com um `sed` que trocava `|` por espaço sem remover o
+  conteúdo da célula — ela descontava a moldura da tabela e cobrava o texto dentro dela.
 - **Um card cobre uma capacidade**, nunca um endpoint, uma classe ou uma tarefa técnica.
 - **Um card por oráculo, não por experimento.** É o oráculo que define o comportamento
   observável. E1 e E3 partilham o oráculo exato e vivem num card só.
@@ -115,14 +123,19 @@ decisões pendentes; critérios de pronto; links.
   sair dela emenda, substitui ou ratifica o antigo. O card é alinhado ao que o ADR
   disser. O processo está em
   [`specification-process.md`](specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05).
-- Um diagrama que não couber no limite de palavras vai para o `example-mapping.md`, que
-  não tem limite. O card faz link.
+- Um diagrama pesado demais para o card vai para o `example-mapping.md`, e o card faz
+  link. **O motivo mudou:** desde que diagrama não conta caracteres, mover um deixou de
+  liberar orçamento — o que se ganha é foco, porque o card carrega o que uma consulta
+  precisa, e o Example Mapping carrega o que uma discussão precisa.
 - Ao criar um card, acrescente a linha correspondente em [`features/README.md`](features/README.md)
   e em [`README.md`](README.md), seção `## Estado da especificação`.
 
 ## Example Mapping
 
-Caminho: `features/<slug>/example-mapping.md`.
+Caminho: `features/<slug>/example-mapping.md`. **Não tem limite de tamanho**, decidido em
+2026-08-06: ele cresce por exemplo acrescentado, e acrescentar exemplo é o trabalho dele
+— um teto transformaria "achei mais um contraexemplo" em "preciso apagar um dos antigos".
+É o único artefato de `features/` sem freio, e o custo está aceito.
 
 Quatro blocos obrigatórios — história, regras, exemplos concretos, perguntas em aberto —
 e um quinto para o que foi **adiado de propósito**, com o gatilho que o retoma.
@@ -217,7 +230,8 @@ Dois pontos que só aparecem nesta pasta:
 - Os links relativos resolvem. Um link entre níveis de diretório erra com facilidade —
   `docs/architecture/integrations.md` apontando para `../README.md` resolve para
   `docs/README.md`, e não para a raiz.
-- O card está dentro de 700 palavras.
+- `check_artifact_limits.py` passa nos artefatos alterados. Ele mede prosa: diagrama,
+  bloco de código e tabela não entram na contagem de nenhum `.md`.
 - A capacidade nova aparece nos dois índices: [`features/README.md`](features/README.md) e
   [`README.md`](README.md).
 - `git add` apenas dos arquivos relacionados, e um único commit em Conventional Commits (skill `commit`).

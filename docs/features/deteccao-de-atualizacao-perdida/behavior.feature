@@ -51,11 +51,13 @@ Funcionalidade: Detecção da atualização perdida
     E esse número não é reportado como incremento perdido
 
   @teste-ausente @oraculo @isolamento-de-planos
-  Cenário: o oráculo lê o banco e não o log de observações
+  Cenário: o oráculo lê o WAL do sistema medido e não o log de observações
     Dado uma execução terminada
     Quando o oráculo determina o valor final do recurso
-    Então o valor vem de uma consulta ao PostgreSQL
+    Então o valor vem do último valor de resource.value visto no stream de replicação
+    E o valor inicial vem do INSERT que criou o estado inicial no mesmo stream
     E nenhuma entrada do log de observações é usada para derivá-lo
+    E nenhum SELECT é emitido contra o schema do system under test
 
   @teste-ausente @grupo-de-controle
   Cenário: o grupo de controle precisa falhar

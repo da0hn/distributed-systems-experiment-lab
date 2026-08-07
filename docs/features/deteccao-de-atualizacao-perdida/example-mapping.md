@@ -32,8 +32,12 @@ da seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 - Com `sucessos` no denominador, uma perda real seria cancelada por falha injetada depois
   do commit (`commits = 100`, `sucessos = 94`: os 6 são dual write, não perda), e o
   relatório ficaria verde sobre um banco inconsistente (**contraexemplo**).
-- Derivar `value_final` do log, em vez do `SELECT` no banco, mediria o instrumento com o
-  instrumento (**contraexemplo**).
+- Derivar `value_final` do **log de observações** mediria o instrumento com o instrumento
+  (**contraexemplo**). O
+  [`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md)
+  retomou o mecanismo por outro caminho, e o contraexemplo continua de pé: o WAL é escrito
+  pelo **sistema medido**, e o log de observações pelo instrumento. O `SELECT` cruzado,
+  que era a alternativa aqui, deixou de existir.
 
 ### R10 e R11 — O grupo de controle, e uma conexão por worker
 
@@ -61,13 +65,15 @@ da seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 
 ## Perguntas em aberto
 
-| #   | Pergunta                                                          | Origem                                    |
-|-----|-------------------------------------------------------------------|-------------------------------------------|
-| P2  | Quem estabelece o estado inicial entre execuções?                 | [`Q-0002-4`](../../questions/Q-0002-4.md) |
-| P4  | O oráculo lê o estado quiescente. E violação transitória?         | [`Q-0002-3`](../../questions/Q-0002-3.md) |
-| P5  | R11 exige pool maior que workers — quem verifica, e quando?       | nova                                      |
-| P6  | `capacity` existe, `increment` não a lê — intencional?            | nova                                      |
-| P7  | Três estratégias podem empatar em taxa zero — o que isso conclui? | [`Q-0004-5`](../../questions/Q-0004-5.md) |
+| #  | Pergunta                                                          | Origem                                    |
+|----|-------------------------------------------------------------------|-------------------------------------------|
+| P2 | Quem estabelece o estado inicial entre execuções?                 | [`Q-0002-4`](../../questions/Q-0002-4.md) |
+| P4 | O oráculo lê o estado quiescente. E violação transitória?         | [`Q-0002-3`](../../questions/Q-0002-3.md) |
+| P5 | R11 exige pool maior que workers — quem verifica, e quando?       | nova                                      |
+| P6 | `capacity` existe, `increment` não a lê — intencional?            | nova                                      |
+| P7 | Três estratégias podem empatar em taxa zero — o que isso conclui? | [`Q-0004-5`](../../questions/Q-0004-5.md) |
+| P8 | A proibição de derivar de stream alcança `value_final`?           | nova, com o `ADR-0010`                    |
+| P9 | A emissão ao vivo entra na janela medida — usar buffer local?     | nova, com o `ADR-0010`                    |
 
 P1 e P3 foram respondidas por R14/R15 do ADR-0006, `Aceito`.
 

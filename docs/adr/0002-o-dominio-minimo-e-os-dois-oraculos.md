@@ -12,10 +12,18 @@
 - **Questões que este ADR encaminha:** [`Q-0002-1`](../questions/Q-0002-1.md) a
   [`Q-0002-4`](../questions/Q-0002-4.md), na mesma seção.
 
-- **Última atualização:** 2026-08-05
+- **Última atualização:** 2026-08-06
 - **Alterado por:** [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)
   — emenda; a classificação do dual write como "o fenômeno do grupo B que a etapa 6
   estuda" (seção "O oráculo exato", `:175`) passa a grupo C, escrita parcial.
+- **Alterado por:**
+  [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) — emenda; a
+  regra de que `value_inicial` e `value_final` são "lidos do banco" (seção "O oráculo
+  exato", `:156-157`) e o `SELECT` cruzado de schema, nas seções "O oráculo lê o banco,
+  e NÃO DEVE ler o log de observações" e "O oráculo do predicado", deixam de valer.
+  `value_inicial` passa a vir do `INSERT` do estado inicial, e `value_final` do último
+  evento de `resource.value` no WAL, por replicação lógica; a fonte do oráculo de
+  capacidade fica sem decisão, registrada como pergunta em aberto.
 
 ## Vocabulário
 

@@ -9,10 +9,22 @@
   [`decisoes-pendentes.md`](arquivo/proposta-2026-08-03/decisoes-pendentes.md), e
   `D-ARQ-01` por consequência.
 
-- **Última atualização:** 2026-08-05
+- **Última atualização:** 2026-08-06
 - **Alterado por:** [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)
   — emenda; a região de pacote `dev.da0hn.lab.controlplane` (seção "Decisão", tabela de
   pacotes, `:70`) passa a `dev.da0hn.lab.sut`.
+- **Alterado por:**
+  [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) — emenda; a
+  aresta `SELECT após a quiescência` do diagrama da
+  [seção "Decisão"](0008-os-dois-planos-em-processos-separados.md#decisão) deixa de
+  valer. A leitura do estado final passa a ser por replicação lógica do WAL, e não por
+  acesso direto ao schema do system under test.
+- **Alterado por:**
+  [ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md) —
+  emenda; a regra de que "o Lab Plane hospeda runtime, escalonador, injetor de falha,
+  log e oráculo" (seção "Decisão", `:55-56`) deixa de valer quanto ao log. O log de
+  observações passa ao `lab-journal`, um terceiro serviço com schema próprio; os outros
+  quatro continuam no `lab-plane`.
 
 ## Contexto
 

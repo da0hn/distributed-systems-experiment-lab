@@ -62,8 +62,10 @@ ali seria dividido entre três artefatos, então cada bootstrap vive em
   de `E-18` fica declarada em configuração e ausente do banco, com o health check verde.
   As tabelas dependem do grupo II do Lote E (`E-8` a `E-13`).
 - **Nenhum consumidor de CDC.** O `compose.yaml` já sobe o PostgreSQL com
-  `wal_level=logical` e o papel do `lab-plane` já tem `REPLICATION`; o consumo entra com
-  o oráculo.
+  `wal_level=logical`, e o `REPLICATION` pertence ao papel `cdc_connector` — **não ao
+  `lab-plane`**. Quem lê o WAL é o conector, num processo próprio; o `lab-plane` consome
+  do broker e não toca o log. Pôr essa credencial no processo que produz o veredito
+  seria a regra de fronteira quebrada um nível abaixo. O consumo entra com o oráculo.
 - **Nenhum `deploy/`.** A linha `E-3` foi adiada por escolha explícita, e o
   `ComparisonError` que o ArgoCD reporta continua. O workflow publica imagem no GHCR com
   tag igual ao SHA, e nada a consome ainda.

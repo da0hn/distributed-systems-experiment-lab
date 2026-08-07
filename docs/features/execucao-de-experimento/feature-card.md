@@ -14,8 +14,11 @@ como proteção o zero que não é proteção.
 
 ## Atores e gatilho
 
-Quem monta o experimento declara carga, `N`, janela e estratégia. O runtime conta
-commits, violações e coincidências. O oráculo lê o banco depois da quiescência.
+Quem monta o experimento declara carga, `N`, janela e estratégia. O runtime conta commits,
+violações e coincidências. O oráculo lê o WAL do sistema medido por replicação lógica e
+**NÃO DEVE** emitir `SELECT` no schema dele, desde o
+[`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md); a
+comparação só ocorre depois de o stream alcançar o LSN do commit final.
 
 ## Escopo
 
@@ -52,8 +55,12 @@ O ciclo em diagrama está no [Example Mapping](example-mapping.md).
 
 ## Integrações e contratos afetados
 
-O relatório atravessa para a interface web e para `docs/experiments/`. **Nenhum contrato
-o formaliza** — `Q-INT-1` em [`integrations.md`](../../architecture/integrations.md).
+O relatório atravessa para a interface web e é persistido no banco do `lab-journal`.
+**Ele não vai para o Git**: a definição de experimento e o resultado vivem no banco, e a
+pessoa os declara pelo frontend — nem `experiments/` nem `docs/experiments/` são criados.
+O custo disso está nomeado: um resultado deixa de aparecer em diff, de ser revisado em PR
+e de sobreviver a um banco recriado. **Nenhum contrato o formaliza** — `Q-INT-1` em
+[`integrations.md`](../../architecture/integrations.md).
 
 ## Riscos e decisões pendentes
 
@@ -64,6 +71,8 @@ o formaliza** — `Q-INT-1` em [`integrations.md`](../../architecture/integratio
 | [`Q-0004-5`](../../questions/Q-0004-5.md) | a taxa com incerteza é um terceiro formato de veredito                   |
 | [`Q-0002-2`](../../questions/Q-0002-2.md) | quem declara o fim da execução, e se o oráculo lê antes ou depois        |
 | [`Q-0004-2`](../../questions/Q-0004-2.md) | nada obriga o passo a reportar a chave de contenção que R10 consome      |
+| a espera pelo stream                      | o oráculo aguarda o LSN do commit final; o estouro é rótulo próprio      |
+| a segunda fonte acabou                    | com o stream como fonte única, não há leitura independente a comparar    |
 
 O [`ADR-0003`](../../adr/0003-a-linguagem-do-agendamento.md) foi aceito em 2026-08-01.
 Ele encaminhou [`Q-0003-1`](../../questions/Q-0003-1.md),

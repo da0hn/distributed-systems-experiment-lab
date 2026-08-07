@@ -22,7 +22,15 @@ transformá-la em documento sem alterar o que foi decidido.
 ## Regras que não admitem exceção
 
 - O ADR nasce com `Estado: Aceito`. NÃO escreva a seção `## Questões em aberto`.
-- Limite de 9.000 caracteres. Prosa quebrada em aproximadamente 88 colunas.
+- Limite de 12.000 caracteres **de prosa**. Diagrama, bloco de código e tabela **não
+  entram na contagem** — escreva o diagrama que o fluxo pede e a tabela que a evidência
+  pede, sem orçamento a defender. O número vem do `ADR_LIMIT` de
+  [`check_artifact_limits.py`](../skills/feature-planning/scripts/check_artifact_limits.py),
+  que já desconta os três. **Rode o script em vez de estimar**; ele imprime a contagem de
+  prosa e, entre parênteses, o tamanho bruto.
+- **O corte sai da prosa, nunca da evidência.** Se a única forma de caber é remover uma
+  citação, o ADR cobre mais de uma decisão, e o caminho é dividi-lo.
+- Prosa quebrada em aproximadamente 88 colunas.
 - RFC 2119 traduzida em caixa alta: DEVE, NÃO DEVE, DEVERIA, PODE.
 - Todo fluxo descrito em prosa vai **também** como diagrama Mermaid, junto do parágrafo
   que o descreve. `sequenceDiagram` para ordem no tempo, `flowchart` para topologia.

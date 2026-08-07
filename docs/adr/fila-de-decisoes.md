@@ -863,6 +863,15 @@ reporta mudanças, não estado. Enquanto o `SELECT` existia, essa lacuna tinha r
 óbvio. As duas saídas que `O20` nomeia continuam sem escolha — o CDC roda com snapshot
 inicial, ou o estado inicial vem de outro lugar.
 
+> **O parágrafo acima está errado, e fica registrado por ser o que se apurou naquela
+> rodada.** `O20` não é bloqueio: ela **fechou** em 2026-08-05, e escolheu a segunda
+> saída. O estado inicial é inserido antes de cada execução, e não pressuposto, de modo
+> que o `INSERT` que o cria entra no stream como qualquer outro evento — `value_inicial`
+> e `value_final` vêm da mesma fonte. O snapshot inicial do Debezium foi descartado por
+> nome na mesma decisão, porque ele lê a tabela inteira e devolveria ao instrumento o
+> acesso ao banco medido. A correção está em
+> [`E-36`](#e-36--a-emissão-ao-vivo-entra-na-janela-que-o-experimento-mede).
+
 **O oráculo de capacidade fica sem fonte declarada.** O ADR-0002 tem dois oráculos. O
 exato usa `value_final`, que é o último valor de `resource.value` no stream — leitura
 direta. O de capacidade calcula `Σ amount ≤ capacity`, e somar eventos de `INSERT` é
@@ -1051,12 +1060,12 @@ discriminador de execução na chave primária das duas tabelas, `E-5` pôs um s
 serviço, e `E-18` tirou o `SELECT` cruzado do oráculo e pôs o CDC no lugar. O que segue
 é o efeito disso, registrado antes da rodada e **sem decidir nada**.
 
-| Achado                                              | Linha atingida | Efeito                       |
-|-----------------------------------------------------|----------------|------------------------------|
-| a ordem das colunas da chave primária é ambígua     | linha nova     | `E-22`                       |
-| Row Level Security deixou de alcançar o veredito    | `E-12`         | uma das duas candidatas cai  |
-| a chave estrangeira teria de ser composta           | `E-9`          | o argumento contra cresce    |
-| o índice em debate não é sobre `(resource_id)`      | `E-10`         | enunciado corrigido, e barato|
+| Achado                                           | Linha atingida | Efeito                        |
+|--------------------------------------------------|----------------|-------------------------------|
+| a ordem das colunas da chave primária é ambígua  | linha nova     | `E-22`                        |
+| Row Level Security deixou de alcançar o veredito | `E-12`         | uma das duas candidatas cai   |
+| a chave estrangeira teria de ser composta        | `E-9`          | o argumento contra cresce     |
+| o índice em debate não é sobre `(resource_id)`   | `E-10`         | enunciado corrigido, e barato |
 
 #### `E-22` — a própria `D-DAT-05` diz duas coisas sobre a ordem da chave
 
@@ -1157,12 +1166,12 @@ Nenhum dos quatro é decisão. `E-22` é linha nova; os outros três levam `E-9`
 
 ### A primeira rodada do grupo II, em 2026-08-06
 
-| ID     | Escolha                                                     | Seguiu a recomendação? |
-|--------|-------------------------------------------------------------|------------------------|
-| `E-8`  | `bigint` derivado da semente                                | sim                    |
-| `E-9`  | sem chave estrangeira, com verificação de órfãs             | sim                    |
-| `E-10` | índice `(execution_id, resource_id)`, com o plano efetivo   | sim                    |
-| `E-22` | chave primária `(execution_id, id)`, decidida duas vezes    | sim                    |
+| ID     | Escolha                                                   | Seguiu a recomendação? |
+|--------|-----------------------------------------------------------|------------------------|
+| `E-8`  | `bigint` derivado da semente                              | sim                    |
+| `E-9`  | sem chave estrangeira, com verificação de órfãs           | sim                    |
+| `E-10` | índice `(execution_id, resource_id)`, com o plano efetivo | sim                    |
+| `E-22` | chave primária `(execution_id, id)`, decidida duas vezes  | sim                    |
 
 **`E-8` — `bigint`.** O único argumento contra era a colisão entre duas execuções da
 mesma semente, e o discriminador de `D-DAT-05` o removeu. O custo já estava registrado
@@ -1260,11 +1269,11 @@ comparação entre estratégias acontece depois, sobre números já calculados, 
 Nenhum caminho quente junta execuções numa consulta só; isso é inspeção manual em `psql`,
 e ela pode pagar uma varredura.
 
-| Consulta                            | Quem a faz                  | Frequência    |
-|-------------------------------------|-----------------------------|---------------|
-| tudo de uma execução                | consumidor de CDC, histórico| todo momento  |
-| a linha 42000 de uma execução       | operação medida             | todo momento  |
-| a linha 42000 em todas as execuções | pessoa depurando em `psql`  | raro          |
+| Consulta                            | Quem a faz                   | Frequência   |
+|-------------------------------------|------------------------------|--------------|
+| tudo de uma execução                | consumidor de CDC, histórico | todo momento |
+| a linha 42000 de uma execução       | operação medida              | todo momento |
+| a linha 42000 em todas as execuções | pessoa depurando em `psql`   | raro         |
 
 A ordem escolhida põe as duas primeiras no prefixo do índice, e deixa a terceira pagar
 varredura. A ordem descartada fazia o inverso — otimizava a rara e punha a frequente na
@@ -1686,12 +1695,12 @@ nome de clock skew. Nada nesta fila decide como elas se alinham.
 
 ### A terceira rodada do grupo II, em 2026-08-06
 
-| Linha  | Escolha                                          | Seguiu a recomendação? |
-|--------|--------------------------------------------------|------------------------|
-| `E-12` | o CDC publica num broker, e o Lab Plane consome  | não                    |
-| `E-24` | serviço próprio, atrás de chamada de rede        | não                    |
-| `E-25` | `created_at` e `updated_at` nas tabelas medidas  | não                    |
-| `E-26` | sim, com relógio pelo adaptador injetável        | sim                    |
+| Linha  | Escolha                                         | Seguiu a recomendação? |
+|--------|-------------------------------------------------|------------------------|
+| `E-12` | o CDC publica num broker, e o Lab Plane consome | não                    |
+| `E-24` | serviço próprio, atrás de chamada de rede       | não                    |
+| `E-25` | `created_at` e `updated_at` nas tabelas medidas | não                    |
+| `E-26` | sim, com relógio pelo adaptador injetável       | sim                    |
 
 Três das quatro contrariam a recomendação, e nenhuma delas foi tomada sem que a objeção
 fosse enunciada antes. **O que segue não repete as objeções: procura, para cada uma, o
@@ -1723,11 +1732,11 @@ e reordenação são invisíveis nela. **Um evento de CDC tem as duas, de graça
 único, monotônico, e atribuído pelo servidor antes de qualquer transporte existir. Isso
 dá ao consumidor três defesas que ele não teria com mensagem comum:
 
-| Fenômeno     | O que o LSN permite                                              |
-|--------------|------------------------------------------------------------------|
-| duplicata    | descartar o evento já visto, por LSN                             |
-| reordenação  | ordenar por LSN antes de calcular                                |
-| perda        | detectar o buraco na sequência e invalidar o veredito            |
+| Fenômeno    | O que o LSN permite                                   |
+|-------------|-------------------------------------------------------|
+| duplicata   | descartar o evento já visto, por LSN                  |
+| reordenação | ordenar por LSN antes de calcular                     |
+| perda       | detectar o buraco na sequência e invalidar o veredito |
 
 A terceira é a que mais importa: **ela converte uma falha silenciosa em ruidosa.** Sem o
 LSN, uma mensagem perdida vira uma perda contabilizada a mais e o experimento reporta um
@@ -1871,11 +1880,11 @@ não é estável entre versões.
 
 As três formas de conector, com o que cada uma custa:
 
-| Forma                | O que ela traz junto                                  |
-|----------------------|-------------------------------------------------------|
-| Debezium Server      | um processo a mais, com o formato de evento dele      |
-| Debezium Embedded    | uma biblioteca dentro de um serviço nosso             |
-| consumidor próprio   | decodificar `pgoutput` binário, mensagem por mensagem |
+| Forma              | O que ela traz junto                                  |
+|--------------------|-------------------------------------------------------|
+| Debezium Server    | um processo a mais, com o formato de evento dele      |
+| Debezium Embedded  | uma biblioteca dentro de um serviço nosso             |
+| consumidor próprio | decodificar `pgoutput` binário, mensagem por mensagem |
 
 **A pergunta que decide isso não é de conveniência, e sim de onde o LSN fica.** `E-12` se
 apoia inteiramente em o evento carregar o endereço que o servidor lhe deu. Um conector
@@ -1930,14 +1939,21 @@ o valor dele exige antes saber se o laboratório roda no PostgreSQL compartilhad
 ou em uma instância própria — que é a linha `E-5`, aberta. Fixar um valor agora seria impor
 um limite ao vizinho sem ter decidido que existe vizinho.
 
+> **A premissa deste adiamento não vale mais, e ninguém percebeu na hora.** `E-5` já
+> estava fechada quando este parágrafo foi escrito, no PostgreSQL **compartilhado** do
+> homelab. O argumento se inverte: sabe-se que o vizinho existe, e não fixar o limite é
+> que passa a impor risco a ele. `E-30` deixa de estar bloqueada e passa a estar
+> **aberta e decidível**. O que ela decide continua sendo parâmetro de cluster, e por
+> isso a decisão alcança o `homelab-infrastructure`, e não só este repositório.
+
 ### A quarta rodada do grupo II, em 2026-08-06
 
-| Linha              | Escolha                                 | Seguiu a recomendação? |
-|--------------------|-----------------------------------------|------------------------|
-| `E-27`             | aplicação, pelo adaptador de relógio    | sim                    |
-| `E-28`             | Debezium Server, processo separado      | não                    |
-| `E-29` (topologia) | a mesma instância, e o custo é aceito   | não                    |
-| `E-29` (filtro)    | filtro no consumidor, com contagem      | sim                    |
+| Linha              | Escolha                               | Seguiu a recomendação? |
+|--------------------|---------------------------------------|------------------------|
+| `E-27`             | aplicação, pelo adaptador de relógio  | sim                    |
+| `E-28`             | Debezium Server, processo separado    | não                    |
+| `E-29` (topologia) | a mesma instância, e o custo é aceito | não                    |
+| `E-29` (filtro)    | filtro no consumidor, com contagem    | sim                    |
 
 #### `E-27` fecha na aplicação, e o DDL das duas tabelas medidas deixa de ter lacuna
 
@@ -2256,6 +2272,228 @@ onde ela vem. Em memória, a resposta some num reinício e toda a execução seg
 descartar às cegas. Numa tabela do schema do `lab-plane`, ela sobrevive — e cria a primeira
 tabela daquele schema, hoje vazio. A linha decide qual das duas, e como uma execução
 abandonada deixa de ser ativa.
+
+### Duas linhas abertas pelo ADR-0010, ao reconciliar os cards
+
+O [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) nasceu `Aceito`
+em 2026-08-06 deixando lacunas marcadas como `Pergunta em aberto`. Duas delas precisam de
+linha aqui, porque **uma pergunta dentro de um ADR aceito não pode ser respondida editando
+o ADR**. Uma terceira, a fonte do `value_inicial`, foi apurada como aberta **por engano** —
+ela fechou em 2026-08-05, e o parágrafo de `E-36` registra onde.
+
+#### `E-36` — a emissão ao vivo entra na janela que o experimento mede
+
+`E-19` decidiu que as observações de passo atravessam para o `lab-journal` ao vivo, evento
+por evento. O ADR-0008 já registra que a latência de rede entra na medida de todo
+experimento, e o E1 emite entre 900 e 1500 observações por execução — a emissão evento a
+evento acrescenta cada uma dessas travessias **dentro** da janela medida. **A saída existe
+e nunca foi escolhida:** emissão não bloqueante, em que o passo enfileira num buffer local
+e um remetente próprio esvazia. O custo dela é perder o buffer quando o `lab-plane` cai —
+e a etapa 6 mata o processo de propósito. A linha decide qual das duas.
+
+**Não confundir com o `value_inicial`, que já tem fonte.** Esta linha nasceu de uma
+apuração que o tratava como aberto; ele não é. `O20` fechou em 2026-08-05 pelo estado
+inicial ser **inserido** antes de cada execução, e capturado como qualquer outro evento —
+o registro está em
+[`decisoes-pendentes.md`](arquivo/proposta-2026-08-03/decisoes-pendentes.md#o20-fecha-o-estado-inicial-é-criado-dentro-da-janela-de-captura),
+que também descarta o snapshot inicial do Debezium por nome, porque ele lê a tabela
+inteira e devolve ao instrumento o acesso ao banco medido.
+
+#### `E-37` — o que a proibição de derivar estado de stream alcança
+
+O ADR-0002 proíbe o oráculo derivar o estado final de um log. O oráculo do predicado
+precisa de `Σ amount`, e obtê-la do WAL é somar eventos de `INSERT` — reconstruir um total
+a partir de um stream, que é o que a proibição descreve. O oráculo exato lê o **último**
+evento, sem somar, e se a mesma proibição o alcança nunca foi decidido. A linha decide o
+alcance e, em consequência, **se o E5 tem oráculo**. As regras `R3` e `R5` do card de
+proteção inerte ficam sem mecanismo até ela fechar.
+
+### `E-38` — o limite do Feature Card contra o card como fonte de verdade
+
+Aberta em 2026-08-06, ao reconciliar os cards com o ADR-0010. **A decisão de que
+`docs/features/` é fonte de verdade e o limite de 5500 caracteres do Feature Card não
+convivem.** Um card que carrega tudo o que uma consulta precisa é maior que um card que
+resume e aponta.
+
+A medição depois da reconciliação, com o verificador de limites:
+
+| Card                            | Antes | Depois | Limite |
+|---------------------------------|-------|--------|--------|
+| detecção de atualização perdida | 7470  | 9576   | 5500   |
+| execução de experimento         | 7372  | 8278   | 5500   |
+| observação passo a passo        | 6641  | 8512   | 5500   |
+| detecção de proteção inerte     | 5312  | 7029   | 5500   |
+
+**Três dos quatro já excediam antes**, e o quarto passou a exceder. A pendência de que o
+card de atualização perdida violava o limite de palavras já estava registrada, e nunca foi
+decidida — o que mudou é que agora ela alcança todos os quatro, e por um motivo novo: não é
+prosa em excesso, é conteúdo que a decisão de fonte de verdade exige que esteja ali.
+
+Três saídas, nenhuma escolhida. Dividir cada card em dois artefatos, e decidir o que fica
+em qual. Subir o limite, e aceitar que um card longo deixa de ser lido de ponta a ponta.
+Ou manter o limite e aceitar que o card volte a apontar para o ADR — o que **desfaz** a
+decisão de 2026-08-06. **A terceira não é neutra**, e é por isso que a linha existe em vez
+de o limite ser ajustado em silêncio.
+
+#### `E-38` fecha por uma quarta saída, escolhida em 2026-08-06
+
+**Diagrama, bloco de código e tabela deixaram de entrar na contagem**, em todo artefato
+`.md` que tenha limite. A escolha é da pessoa, e resolve a linha sem tocar em nenhuma
+das três saídas acima: o limite continua 5500, os cards continuam carregando tudo o que
+uma consulta precisa, e nenhum volta a apontar para o ADR.
+
+O que a linha media não era o que ela queria medir. Um card cresce em caracteres por
+três motivos, e só um deles é prosa em excesso: uma regra nova acrescenta uma **linha de
+tabela** com evidência e aprovador, um fluxo novo acrescenta um **diagrama** — e as
+convenções deste repositório **exigem os dois**. O limite punia o cumprimento da regra.
+
+| Card                            | Bruto | Prosa | Limite |
+|---------------------------------|-------|-------|--------|
+| detecção de atualização perdida | 9245  | 3637  | 5500   |
+| detecção de proteção inerte     | 6721  | 4651  | 5500   |
+| execução de experimento         | 8011  | 2922  | 5500   |
+| observação passo a passo        | 8286  | 2604  | 5500   |
+
+O verificador é
+[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py),
+e a regra está em [`../AGENTS.md`](../AGENTS.md#feature-card) e em
+[`README.md`](README.md#convenções).
+
+**O `behavior.feature` fica de fora da regra, e não por esquecimento.** Em Gherkin a
+tabela `Exemplos:` **é** o cenário, e não ilustração dele; descontá-la esvaziaria o
+limite em vez de corrigi-lo.
+
+#### `E-39` — o Example Mapping tem limite, e as instruções dizem que não
+
+Aberta em 2026-08-06, pela mesma medição. Duas coisas se contradizem, e nenhuma é nova:
+[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py)
+impõe 4500 caracteres a `example-mapping.md`, enquanto o texto de `docs/AGENTS.md`
+dizia, até hoje, que o Example Mapping **não tem limite** — e mandava mover para lá o
+diagrama que não coubesse no card.
+
+Com a contagem por prosa, dois dos quatro continuam acima:
+
+| Example Mapping                 | Bruto | Prosa | Limite |
+|---------------------------------|-------|-------|--------|
+| execução de experimento         | 10452 | 6443  | 4500   |
+| observação passo a passo        | 8626  | 6260  | 4500   |
+| detecção de proteção inerte     | 7355  | 4293  | 4500   |
+| detecção de atualização perdida | 5486  | 3925  | 4500   |
+
+Aqui é prosa mesmo, e não moldura — a regra nova não os salva. As saídas eram: subir o
+limite dos dois, cortar prosa deles, ou aceitar que o Example Mapping é o artefato sem
+teto e remover a entrada do verificador.
+
+#### `E-39` fecha sem teto, no mesmo dia
+
+**O `example-mapping.md` não tem limite.** Escolhido pela pessoa em 2026-08-06, pela
+terceira saída. Um Example Mapping cresce por exemplo acrescentado, e acrescentar
+exemplo **é o trabalho dele** — um teto ali transforma "achei mais um contraexemplo" em
+"preciso apagar um dos antigos", que é o oposto do que o artefato existe para fazer.
+
+Quem estava fora de sincronia era o verificador: `docs/AGENTS.md` já dizia que ele não
+tem limite. O script ganhou uma isenção **por nome**, e não a simples remoção da entrada
+— sem ela o arquivo cairia no teto genérico de 4000 para `.md`, mais apertado que o que
+a decisão removeu.
+
+O custo está nomeado: o Example Mapping passa a ser o único artefato de
+[`../features/`](../features/README.md) sem freio nenhum.
+
+**Sobra uma pendência da mesma família, e ela é anterior a tudo isto.** O
+`behavior.feature` de detecção de atualização perdida tem 4295 caracteres contra um teto
+de 3500 — e já tinha 4223 antes das edições de hoje. Ele **não** recebe o desconto de
+tabela, por decisão: em Gherkin a tabela `Exemplos:` é o cenário, e não ilustração dele.
+Subir o teto, dividir o arquivo ou cortar cenário é escolha, e ela não foi feita.
+
+#### `E-40` — o componente de identidade contradiz um `DEVE` do ADR-0002
+
+Aberta em 2026-08-06, na segunda revisão do ADR-0011. **Não é decisão tomada.**
+
+O ADR-0002 diz, na seção `### A identidade das entidades é atribuída pela aplicação`,
+que está **dentro de `## Decisão`**:
+
+> O identificador de `Resource` e de `Allocation` DEVE ser gerado no código do sistema
+> sob teste, a partir da semente do experimento.
+
+A decisão de `E-11` e `E-24` põe essa derivação num **componente próprio**, fora do
+sistema medido, atrás de uma chamada de rede. Pela letra, contradiz.
+
+**Duas leituras, e as duas são defensáveis.**
+
+| Leitura                    | O que `sistema sob teste` opõe    | Consequência                                       |
+|----------------------------|-----------------------------------|----------------------------------------------------|
+| literal                    | sistema medido × qualquer externo | o componente próprio viola o `DEVE`                |
+| pelo contexto do parágrafo | aplicação × banco                 | o `DEVE` só proíbe `SERIAL`, `IDENTITY`, `nextval` |
+
+A segunda tem a seu favor o título da seção — "atribuída pela **aplicação**" — e as duas
+frases seguintes, que tratam exclusivamente de impedir o banco de gerar identidade. A
+primeira tem a seu favor que "no código do sistema sob teste" é redação explícita, e não
+inferência.
+
+**O que trava a saída fácil.** Se a leitura literal valer, o ADR-0011 emenda o
+ADR-0002 — e não pode: o critério de
+[`README.md`](README.md#a-emenda-terceira-forma-ao-lado-da-substituição-e-da-subsunção)
+diz que a regra emendada NÃO DEVE ser a que está em `## Decisão`, e esta está. Restaria
+**substituir** o ADR-0002, o que declara fora de vigor uma decisão que continua valendo
+em tudo o mais.
+
+#### `E-40` fecha na segunda leitura, e não há contradição
+
+Escolhido pela pessoa em 2026-08-06, no mesmo dia. **O `DEVE` do ADR-0002 opõe aplicação
+a banco**, e não sistema medido a serviço externo. O que ele proíbe é o banco atribuir
+identidade — é o que o título da seção diz, e é o assunto exclusivo das duas frases
+seguintes, que vedam `SERIAL`, `IDENTITY`, `nextval` e valor padrão do banco.
+
+Um componente de identidade fora do sistema medido continua sendo **aplicação derivando
+da semente**, e não o banco gerando um número. A propriedade que o ADR-0002 protege —
+duas execuções da mesma semente produzem os mesmos identificadores — permanece intacta.
+
+**O ADR-0002 não é emendado nem substituído**, e o cabeçalho dele não recebe `Alterado
+por` por causa disto. O ADR-0011 registra a leitura **e o motivo dela** em
+`## Justificativa`, de propósito: sem isso, alguém refaz a análise daqui a seis meses,
+lê a frase literal e conclui o contrário.
+
+#### `E-41` — o que a decisão do broker desfaz fora do ADR
+
+Aberta em 2026-08-06, na segunda revisão do ADR-0012. Duas consequências que não vivem
+dentro de nenhum ADR e que ficariam sem dono.
+
+**O `REPLICATION` do papel `lab_plane` perdeu o propósito.** `local/postgres-init.sql:18`
+faz `ALTER ROLE lab_plane REPLICATION;`, e o comentário acima dele diz que o `lab-plane`
+lê o WAL por replicação lógica. Com o conector em processo próprio, quem lê o WAL é o
+Debezium Server — o `lab-plane` consome do broker e **não precisa mais do atributo**.
+Mantê-lo deixa a credencial de leitura do WAL no mesmo processo que produz o veredito,
+que é a razão pela qual o conector foi separado.
+
+**Um papel novo, dedicado ao conector, recebe o `REPLICATION`.** Escolhido pela pessoa em
+2026-08-06. A alternativa era o papel do sistema medido, e ela perde por ampliar o que
+uma falha nele alcança: ler o próprio WAL não é necessário para o domínio, e o
+laboratório mata processos do sistema medido de propósito na etapa 6.
+
+Manter o `GRANT` no `lab_plane` **desfaria o motivo de o conector existir em processo
+próprio** — a credencial de leitura do WAL voltaria ao processo que produz o veredito, um
+nível abaixo da regra de fronteira. O `local/postgres-init.sql` muda no commit que traz o
+ADR-0012.
+
+**A matriz de integrações envelheceu no mesmo ato.**
+[`integrations.md`](../architecture/integrations.md#matriz) registra o RabbitMQ como
+**hipótese**, com a ressalva de que ele entra na etapa 5 e não antes. A decisão do broker
+o põe no dia zero. A regra de `docs/AGENTS.md` obriga a matriz a separar fato de hipótese
+e proíbe deixar uma linha envelhecer — a linha é reescrita no commit que traz o ADR.
+
+**Ao reescrevê-la, apareceu uma segunda linha morta que ninguém tinha registrado.** A
+matriz descrevia `Lab Plane (oráculo) → PostgreSQL`, por `SELECT` após a quiescência —
+exatamente a regra que o
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) revogou
+ao mandar o oráculo ler o WAL. Ela foi substituída pelas três linhas do caminho decidido:
+conector → PostgreSQL por replicação lógica, conector → RabbitMQ, RabbitMQ → `lab-plane`.
+A linha do RabbitMQ do domínio continua **hipótese**, porque o que a decisão do broker
+antecipou foi a existência do broker, e não o uso dele pelos grupos B e C.
+
+**O que isso revela é maior que as duas linhas.** A matriz não tem quem a reconcilie
+quando um ADR nasce; ela envelheceu porque a checagem não existe, e não porque alguém
+esqueceu. Se cada ADR passa a listar o que desfaz fora de si — e se a checagem disso é
+humana ou executável — **ninguém decidiu**: `Pergunta em aberto`.
 
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 

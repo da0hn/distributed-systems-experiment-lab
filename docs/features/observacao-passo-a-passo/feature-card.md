@@ -33,19 +33,20 @@ fila de decisões.
 
 ## Regras de negócio
 
-| #   | Regra                                                                                                                                                                                                     | Evidência        | Aprovada por |
-|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|--------------|
-| R1  | O runtime chama o passo. O passo **NÃO DEVE** chamar o runtime.                                                                                                                                           | ADR-0001:94      | pendente     |
-| R2  | Cada passo carrega rótulo único na operação, tipo de conjunto fechado (`READ`, `COMPUTE`, `WRITE`) e corpo opaco. O runtime **NÃO DEVE** gerar, interpretar ou analisar o SQL.                            | ADR-0001:107-115 | pendente     |
-| R3  | O endereço de uma fronteira é a tripla (rótulo, entrada\|saída, seletor de tentativa). O seletor **NÃO DEVE** ter valor padrão.                                                                           | ADR-0001:176-187 | pendente     |
-| R4  | A plataforma **DEVE** recusar endereço que não resolva para passo nenhum, e **DEVE** recusar nome abreviado quando o tipo aparecer mais de uma vez.                                                       | ADR-0001:183-190 | pendente     |
-| R5  | Em cada fronteira o runtime consulta o escalonador **e depois** o injetor de falha, nesta ordem.                                                                                                          | ADR-0001:195-198 | pendente     |
-| R6  | Uma definição de operação **NÃO DEVE** guardar estado mutável. Um teste executável **DEVE** rejeitar campo não final, campo de tipo mutável e `static` mutável.                                           | ADR-0001:127-130 | pendente     |
-| R7  | O escopo de execução carrega worker e tentativa. O runtime **DEVE** rejeitar acesso vindo de outro worker, nomeando o passo.                                                                              | ADR-0001:131-133 | pendente     |
-| R8  | Toda observação **DEVE** carregar o número da tentativa.                                                                                                                                                  | ADR-0001:253     | pendente     |
-| R9  | `COMMIT` é o retorno do callback do `TransactionTemplate`, não um passo. `AFTER_COMMIT` é a primeira fronteira depois do escopo.                                                                          | ADR-0001:255-263 | pendente     |
-| R10 | Um teste executável **DEVE** provar que as duas resoluções emitem o mesmo traço de SQL numa execução sem concorrência. Sem esse teste, a cláusula de honestidade **NÃO DEVE** ser considerada satisfeita. | ADR-0001:296-299 | pendente     |
-| R11 | Toda anomalia reproduzida com barreiras **DEVE** aparecer também sem barreiras, sob carga alta.                                                                                                           | ADR-0001:280-282 | pendente     |
+| #   | Regra                                                                                                                                                                                                     | Evidência                                                              | Aprovada por     |          |
+|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|------------------|----------|
+| R1  | O runtime chama o passo. O passo **NÃO DEVE** chamar o runtime.                                                                                                                                           | ADR-0001:94                                                            | pendente         |          |
+| R2  | Cada passo carrega rótulo único na operação, tipo de conjunto fechado (`READ`, `COMPUTE`, `WRITE`) e corpo opaco. O runtime **NÃO DEVE** gerar, interpretar ou analisar o SQL.                            | ADR-0001:107-115                                                       | pendente         |          |
+| R3  | O endereço de uma fronteira é a tripla (rótulo, entrada\                                                                                                                                                  | saída, seletor de tentativa). O seletor **NÃO DEVE** ter valor padrão. | ADR-0001:176-187 | pendente |
+| R4  | A plataforma **DEVE** recusar endereço que não resolva para passo nenhum, e **DEVE** recusar nome abreviado quando o tipo aparecer mais de uma vez.                                                       | ADR-0001:183-190                                                       | pendente         |          |
+| R5  | Em cada fronteira o runtime consulta o escalonador **e depois** o injetor de falha, nesta ordem.                                                                                                          | ADR-0001:195-198                                                       | pendente         |          |
+| R6  | Uma definição de operação **NÃO DEVE** guardar estado mutável. Um teste executável **DEVE** rejeitar campo não final, campo de tipo mutável e `static` mutável.                                           | ADR-0001:127-130                                                       | pendente         |          |
+| R7  | O escopo de execução carrega worker e tentativa. O runtime **DEVE** rejeitar acesso vindo de outro worker, nomeando o passo.                                                                              | ADR-0001:131-133                                                       | pendente         |          |
+| R8  | Toda observação **DEVE** carregar o número da tentativa.                                                                                                                                                  | ADR-0001:253                                                           | pendente         |          |
+| R9  | `COMMIT` é o retorno do callback do `TransactionTemplate`, não um passo. `AFTER_COMMIT` é a primeira fronteira depois do escopo.                                                                          | ADR-0001:255-263                                                       | pendente         |          |
+| R10 | Um teste executável **DEVE** provar que as duas resoluções emitem o mesmo traço de SQL numa execução sem concorrência. Sem esse teste, a cláusula de honestidade **NÃO DEVE** ser considerada satisfeita. | ADR-0001:296-299                                                       | pendente         |          |
+| R11 | Toda anomalia reproduzida com barreiras **DEVE** aparecer também sem barreiras, sob carga alta.                                                                                                           | ADR-0001:280-282                                                       | pendente         |          |
+| R12 | As observações **DEVEM** atravessar para o `lab-journal` ao vivo, evento por evento. O Lab Plane **NÃO DEVE** acumulá-las para enviar ao fim da execução.                                                 | ADR-0010, Decisão                                                      | pendente         |          |
 
 O critério de igualdade entre dois traços foi fixado depois, pelo
 [`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md):242-266.
@@ -56,6 +57,11 @@ Um passo emite SQL real contra o PostgreSQL, numa transação real. Não há con
 formalizado: o esquema existe apenas como prosa no ADR-0002 — ver `Q-INT-5` em
 [`integrations.md`](../../architecture/integrations.md).
 
+**Cada observação atravessa a rede até o `lab-journal` no instante em que nasce**, desde o
+[`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md). O
+`lab-journal` é serviço próprio, com schema próprio, e o Lab Plane não escreve no schema
+dele por acesso direto. **Nenhum contrato formaliza essa travessia.**
+
 ## Riscos e decisões pendentes
 
 | Questão                                   | O que está em jogo                                                                                                                                                  |
@@ -63,10 +69,11 @@ formalizado: o esquema existe apenas como prosa no ADR-0002 — ver `Q-INT-5` em
 | [`Q-0001-1`](../../questions/Q-0001-1.md) | o corpo de um passo muda com o rótulo intacto, e o replay mede outra operação em silêncio; quatro candidatas de mecanismo, nenhuma escolhida                        |
 | [`Q-0002-1`](../../questions/Q-0002-1.md) | "relógio injetável" e "aleatoriedade semeada" são texto, não regra executável; uma chamada a `Instant.now()` faz R10 reprovar um par correto, de forma intermitente |
 | [`Q-0004-2`](../../questions/Q-0004-2.md) | nada obriga um passo a reportar a chave de contenção                                                                                                                |
+| a emissão ao vivo entra na janela medida  | o E1 emite de 900 a 1500 observações por execução, e cada travessia é somada ao que se mede; o buffer local não bloqueante existe como saída e não foi escolhido    |
 
 ## Critérios de pronto
 
-R1 a R11 verificadas por teste. R4, R6 e R7 produzem recusa que nomeia o culpado — o
+R1 a R12 verificadas por teste. R4, R6 e R7 produzem recusa que nomeia o culpado — o
 endereço, o campo ou o passo. A prova de R10 existe para `increment` e para `allocate`.
 
 ## Links

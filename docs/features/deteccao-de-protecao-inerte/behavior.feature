@@ -44,10 +44,10 @@ Funcionalidade: Detecção de proteção presente e inerte
     E a violação informa a soma 12 e a capacidade 10
 
   @teste-ausente @oraculo @isolamento-de-planos
-  Cenário: o oráculo emite a consulta pelo Lab Plane depois do fim da execução
+  Cenário: o oráculo não alcança o schema do sistema medido
     Dado uma execução terminada
     Quando o oráculo determina a soma das alocações
-    Então a soma vem de uma consulta do Lab Plane ao PostgreSQL
+    Então nenhum SELECT é emitido contra o schema do system under test
     E nenhuma entrada do log de observações é usada para derivá-la
 
   @teste-ausente @protecao-inerte

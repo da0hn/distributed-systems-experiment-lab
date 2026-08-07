@@ -92,25 +92,34 @@ Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
 
 ## Perguntas em aberto
 
-| #   | Pergunta                                                                                                                                          | Origem                                    |
-|-----|---------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
-| P1  | Como o replay sabe que o **corpo** de um passo mudou, com o rótulo intacto?                                                                       | [`Q-0001-1`](../../questions/Q-0001-1.md) |
-| P2  | Um rótulo reciclado faz o endereço resolver para o passo errado, em silêncio. Quem impede?                                                        | [`Q-0001-1`](../../questions/Q-0001-1.md) |
-| P3  | O que impede um colaborador injetado de compartilhar estado entre workers?                                                                        | [`Q-0001-2`](../../questions/Q-0001-2.md) |
-| P4  | Como um worker que morreu notifica o escalonador?                                                                                                 | [`Q-0001-4`](../../questions/Q-0001-4.md) |
-| P5  | "Relógio injetável" e "aleatoriedade semeada" viram regra executável como?                                                                        | [`Q-0002-1`](../../questions/Q-0002-1.md) |
-| P6  | O que obriga um passo a reportar a chave de contenção?                                                                                            | [`Q-0004-2`](../../questions/Q-0004-2.md) |
-| P7  | O tipo de passo é conjunto fechado. Acrescentar `PUBLISH` na etapa 5 muda o quê?                                                                  | nova, 2026-08-01                          |
-| P8  | Qual é o comportamento quando dois passos declaram o mesmo rótulo? R2 exige unicidade e nenhum documento diz o que acontece quando ela é violada. | nova, 2026-08-01                          |
+| #  | Pergunta                                                                                                                                          | Origem                                    |
+|----|---------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
+| P1 | Como o replay sabe que o **corpo** de um passo mudou, com o rótulo intacto?                                                                       | [`Q-0001-1`](../../questions/Q-0001-1.md) |
+| P2 | Um rótulo reciclado faz o endereço resolver para o passo errado, em silêncio. Quem impede?                                                        | [`Q-0001-1`](../../questions/Q-0001-1.md) |
+| P3 | O que impede um colaborador injetado de compartilhar estado entre workers?                                                                        | [`Q-0001-2`](../../questions/Q-0001-2.md) |
+| P4 | Como um worker que morreu notifica o escalonador?                                                                                                 | [`Q-0001-4`](../../questions/Q-0001-4.md) |
+| P5 | "Relógio injetável" e "aleatoriedade semeada" viram regra executável como?                                                                        | [`Q-0002-1`](../../questions/Q-0002-1.md) |
+| P6 | O que obriga um passo a reportar a chave de contenção?                                                                                            | [`Q-0004-2`](../../questions/Q-0004-2.md) |
+| P7 | O tipo de passo é conjunto fechado. Acrescentar `PUBLISH` na etapa 5 muda o quê?                                                                  | nova, 2026-08-01                          |
+| P8 | Qual é o comportamento quando dois passos declaram o mesmo rótulo? R2 exige unicidade e nenhum documento diz o que acontece quando ela é violada. | nova, 2026-08-01                          |
 
 ## Adiado de propósito
 
-| Item | Gatilho que o retoma |
-|---|---|
+| Item                                | Gatilho que o retoma                                |
+|-------------------------------------|-----------------------------------------------------|
 | Formato interno da injeção de falha | a etapa 6, quando `BEFORE_PUBLISH` precisar existir |
-| Tipos `PUBLISH`, `CONSUME`, `ACK` | a etapa 5, quando a operação virar mensagem |
-| Onde o log de observações é persistido | um experimento que derrube o processo (etapa 6) |
-| Mecanismo de streaming para a UI | a primeira execução longa demais para polling |
+| Tipos `PUBLISH`, `CONSUME`, `ACK`   | a etapa 5, quando a operação virar mensagem         |
+
+**Dois itens saíram desta tabela em 2026-08-06, retomados antes do gatilho previsto.**
+
+*Onde o log de observações é persistido* aguardava um experimento que derrubasse o
+processo. Foi retomado antes por outro caminho: o `lab-journal` nasceu como serviço
+próprio, com schema próprio, e as observações atravessam para ele ao vivo — R12 do
+[Feature Card](feature-card.md).
+
+*Mecanismo de streaming para a UI* aguardava a primeira execução longa demais para
+polling. Foi retomado junto: o frontend lê histórico e streaming do `lab-journal`, e não
+do Lab Plane.
 
 ## O que não virou cenário, e por quê
 

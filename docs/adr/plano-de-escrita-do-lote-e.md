@@ -28,6 +28,22 @@ de seções anteriores (`#o-nível-de-isolamento`, `#a-anomalia-por-frequência`
 `#a-ordem-da-arquitetura-mínima-e-da-entrega-contínua-está-sob-tensão`). **Citações
 internas entre rodadas existem e precisam ser removidas junto.**
 
+**A premissa acima caiu em 2026-08-06, no mesmo dia, e a poda não acontece.** Os ADRs
+0010, 0011 e 0012 nasceram citando seções de rodada do Lote E — a verificação era
+verdadeira quando foi feita, e deixou de ser no ato de escrever os ADRs que a poda
+deveria seguir.
+
+A consequência é forçada, e não é escolha entre duas opções equivalentes. **Um ADR
+`Aceito` não pode ter o corpo editado**, então uma âncora removida deixa a citação
+quebrada **sem remédio possível** — nem o ADR pode ser corrigido, nem a seção pode
+voltar a existir com o mesmo conteúdo sem reescrever a fila. Manter a seção é
+reversível: podar depois continua possível, se alguém antes reformular as citações.
+Podar agora não é.
+
+**As seções de rodada do Lote E ficam onde estão.** A fila cresce, e isso é custo
+aceito: uma fila longa é incômoda, uma citação quebrada em documento imutável é dano.
+Uma linha `fechada` continua sinalizada como tal no texto da própria rodada.
+
 ```mermaid
 flowchart TD
     P["ler a seção deste plano"]
@@ -176,25 +192,59 @@ bloqueante, com buffer local e remetente próprio, ao custo de perder o buffer q
 
 ### Cards a reconciliar, no mesmo commit
 
-**Os três contradizem a decisão hoje.** Nenhum pode continuar afirmando `SELECT`.
+**A apuração de 2026-08-06 achou onze pontos, e não três.** A lista anterior tinha só os
+três `feature-card.md`; a varredura por `SELECT`, `quiescência`, `value_final`,
+`value_inicial`, `log de observações` e `docs/experiments` alcançou também os `.feature`,
+os Example Mapping e um diagrama Mermaid.
 
-- [`deteccao-de-atualizacao-perdida/feature-card.md`](../features/deteccao-de-atualizacao-perdida/feature-card.md)
-  — afirma que o oráculo emite um `SELECT` do Lab Plane depois da quiescência.
-- [`deteccao-de-protecao-inerte/feature-card.md`](../features/deteccao-de-protecao-inerte/feature-card.md)
-  — a regra `R3` afirma `SELECT sum` emitido pelo Lab Plane.
-- [`execucao-de-experimento/feature-card.md`](../features/execucao-de-experimento/feature-card.md)
-  — afirma que o oráculo lê o banco depois da quiescência.
+**Distinção que governa toda a reconciliação:** o `SELECT` que o **sistema medido** emite
+dentro de `increment` e de `allocate` é o domínio, e **não muda**. O que muda é o `SELECT`
+emitido pelo **oráculo**, no Lab Plane.
+
+Em `deteccao-de-atualizacao-perdida/`:
+
+- `feature-card.md`, `## Atores e gatilho` — "o oráculo lê o banco antes do primeiro
+  worker e depois do último".
+- `feature-card.md`, regra `R9` — "os dois oráculos consultam o PostgreSQL".
+- `feature-card.md`, `## Integrações e contratos afetados` — "o oráculo emite um `SELECT`
+  do Lab Plane depois da quiescência".
+- `feature-card.md`, `## Riscos e decisões pendentes` — não nomeia `value_inicial` sem
+  fonte, que passou a bloquear a fórmula inteira.
+- `behavior.feature`, cenário `o oráculo lê o banco e não o log de observações` — "o valor
+  vem de uma consulta ao PostgreSQL".
+- `example-mapping.md`, seção do que foi adiado de propósito — **o caso delicado, adiante**.
+
+Em `deteccao-de-protecao-inerte/`:
+
+- `feature-card.md`, `## Atores e gatilho` — "o oráculo do predicado (Lab Plane) avalia
+  `Σ amount ≤ capacity` depois do fim", sem mecanismo que sobreviva à decisão.
+- `feature-card.md`, regra `R3` — "`SELECT sum` emitido pelo **Lab Plane**".
+- `feature-card.md`, regra `R5` — "o oráculo consulta o PostgreSQL", que somada à
+  proibição de derivar de stream **não deixa mecanismo nenhum de pé**.
+- `feature-card.md`, `## Integrações e contratos afetados` — "o oráculo emite um
+  `SELECT sum` do Lab Plane".
+- `example-mapping.md`, no `sequenceDiagram` — a aresta `O ->> DB: SELECT sum(amount)`.
+- `behavior.feature` — "nenhuma entrada do log de observações é usada para derivá-la".
+
+Em `execucao-de-experimento/`:
+
+- `feature-card.md`, `## Atores e gatilho` — "o oráculo lê o banco depois da quiescência".
+- `feature-card.md`, `## Integrações e contratos afetados` — "o relatório atravessa para a
+  interface web e para `docs/experiments/`". **Isto não é do ADR-0010:** `E-14` e `E-17`
+  decidiram que aquela pasta não é criada, e o card ficou para trás. Corrigido junto.
 
 **Há um caso mais delicado no Example Mapping.** O
 `features/deteccao-de-atualizacao-perdida/example-mapping.md` registra, na seção do que
 foi adiado de propósito, que derivar `value_final` do log em vez do `SELECT` mediria o
 instrumento em vez do sistema medido. **Este ADR faz exatamente o que aquele parágrafo
-adiou.** O parágrafo não é apagado: ele recebe o gatilho que o retomou, porque a seção
-existe para registrar que a escolha foi consciente.
+adiou** — mas por um caminho que ele não previa: replicação lógica lê o WAL do **sistema
+medido**, e não o log de observações do instrumento. O parágrafo não é apagado: ele recebe
+o gatilho que o retomou, porque a seção existe para registrar que a escolha foi consciente.
 
-**O card de proteção inerte tem um problema sem solução neste ADR.** A regra R3 dele
-depende do oráculo de capacidade, que ficou sem fonte. A regra passa a `pendente` com a
-lacuna nomeada; ela **não** é reescrita para o CDC, porque ninguém decidiu que ela pode.
+**O card de proteção inerte tem um problema sem solução neste ADR.** As regras `R3` e `R5`
+dependem do oráculo de capacidade, que ficou sem fonte. Elas continuam `pendente` com a
+lacuna nomeada; **não** são reescritas para o CDC, porque ninguém decidiu que elas podem.
+A lacuna vira a linha `E-37` da fila.
 
 ---
 

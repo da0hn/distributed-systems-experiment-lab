@@ -48,10 +48,16 @@ sequenceDiagram
     W1 ->> DB: INSERT allocation amount = 6
     W2 ->> DB: INSERT allocation amount = 6
     Note over DB: nenhuma exceção, nenhuma sobrescrita
-    O ->> DB: SELECT sum(amount) WHERE resource_id = r
-    DB -->> O: 12
+    O ->> O: Σ amount = 12, sem tocar o schema do sistema medido
     Note over O: 12 maior que capacity 10 — invariante violada
 ```
+
+**A última aresta mudou de natureza, e o fenômeno não.** Até o
+[`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) o
+oráculo emitia `SELECT sum` contra o banco do sistema medido; a fronteira de schema
+proibiu isso. O que o diagrama mostra continua idêntico — as duas leituras enxergam zero,
+as duas inserções cabem, nenhuma exceção aparece. **Como o oráculo obtém aquele 12 não
+tem resposta hoje**, e é o que impede o E5 de rodar.
 
 ### A parte contraintuitiva — a proteção presente e inerte
 
@@ -98,10 +104,10 @@ sequenceDiagram
 
 ## Adiado de propósito
 
-| Item | Gatilho que o retoma |
-|---|---|
-| Onde o nível de isolamento é declarado | a decisão que a fila ainda não nomeou |
-| Remoção de alocação | nenhum experimento do MVP a exige |
+| Item                                           | Gatilho que o retoma                     |
+|------------------------------------------------|------------------------------------------|
+| Onde o nível de isolamento é declarado         | a decisão que a fila ainda não nomeou    |
+| Remoção de alocação                            | nenhum experimento do MVP a exige        |
 | A semântica de cada estratégia de concorrência | a decisão de estratégias de concorrência |
 
 ## O que não virou cenário, e por quê

@@ -58,6 +58,15 @@ biblioteca ou o formato de um log não atende a nenhum dos quatro critérios.
   ao desenho que o Mermaid não expressa; exporte para `.excalidraw.svg` ao lado do ADR,
   porque o SVG renderiza no GitHub e continua editável. Diagrama que não acrescenta nada
   à prosa fica de fora.
+- **Limite de 12.000 caracteres de prosa. Diagrama, bloco de código e tabela não entram
+  na contagem.** Os três são densos em caracteres e pobres em prosa: um `flowchart` de
+  dez nós custa mais que a seção que ele ilustra. Contá-los punia exatamente o que estas
+  convenções exigem — todo fluxo vai **também** como Mermaid, e toda afirmação leva
+  evidência —, e o corte acabava saindo do diagrama ou da citação. O limite mede prosa,
+  que é o único lugar onde encher linguiça é possível. Quem conta é
+  [`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py);
+  rode-o em vez de estimar. **O corte sai da prosa, nunca da evidência** — um ADR que só
+  cabe removendo citação cobre mais de uma decisão, e o caminho é dividi-lo.
 - `## Quando esta decisão deixa de valer` precisa de um sinal concreto e observável, não
   de uma intenção vaga.
 - Sem emojis. Sem linguagem de marketing. Nada de "a melhor solução", "a solução ideal"
@@ -97,17 +106,20 @@ O motivo do arquivamento e o que sobreviveu estão em
 
 ## Índice
 
-| ADR                                                                      | Título                                                                 | Estado   |
-|--------------------------------------------------------------------------|------------------------------------------------------------------------|----------|
-| [0001](0001-o-passo-como-unidade-de-execucao.md)                         | O passo como unidade de execução, observação e injeção de falha        | `Aceito` |
-| [0002](0002-o-dominio-minimo-e-os-dois-oraculos.md)                      | O domínio mínimo: contador com oráculo exato e predicado de capacidade | `Aceito` |
-| [0003](0003-a-linguagem-do-agendamento.md)                               | A linguagem do agendamento: como uma barreira é declarada              | `Aceito` |
-| [0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) | O estatuto da barreira e o diagnóstico da não ocorrência               | `Aceito` |
-| [0005](0005-a-forma-do-escalonador.md)                                   | A forma do escalonador: estado, decisão e protocolo de desistência     | `Aceito` |
-| [0006](0006-a-forma-da-estrategia-de-concorrencia.md)                    | A forma da estratégia de concorrência: contrato plugável e calibração  | `Aceito` |
-| [0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md)             | O log de observações: forma, ordem e onde vive                         | `Aceito` |
-| [0008](0008-os-dois-planos-em-processos-separados.md)                    | Os dois planos em processos separados, desde o dia zero                | `Aceito` |
-| [0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)       | A classificação do dual write e a região de pacote do sistema sob teste| `Aceito` |
+| ADR                                                                            | Título                                                                  | Estado   |
+|--------------------------------------------------------------------------------|-------------------------------------------------------------------------|----------|
+| [0001](0001-o-passo-como-unidade-de-execucao.md)                               | O passo como unidade de execução, observação e injeção de falha         | `Aceito` |
+| [0002](0002-o-dominio-minimo-e-os-dois-oraculos.md)                            | O domínio mínimo: contador com oráculo exato e predicado de capacidade  | `Aceito` |
+| [0003](0003-a-linguagem-do-agendamento.md)                                     | A linguagem do agendamento: como uma barreira é declarada               | `Aceito` |
+| [0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)       | O estatuto da barreira e o diagnóstico da não ocorrência                | `Aceito` |
+| [0005](0005-a-forma-do-escalonador.md)                                         | A forma do escalonador: estado, decisão e protocolo de desistência      | `Aceito` |
+| [0006](0006-a-forma-da-estrategia-de-concorrencia.md)                          | A forma da estratégia de concorrência: contrato plugável e calibração   | `Aceito` |
+| [0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md)                   | O log de observações: forma, ordem e onde vive                          | `Aceito` |
+| [0008](0008-os-dois-planos-em-processos-separados.md)                          | Os dois planos em processos separados, desde o dia zero                 | `Aceito` |
+| [0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)             | A classificação do dual write e a região de pacote do sistema sob teste | `Aceito` |
+| [0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md)           | A fronteira de schema e o CDC como fonte do veredito                    | `Aceito` |
+| [0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md) | A topologia de serviços e o caderno de laboratório fora do Git          | `Aceito` |
+| [0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md)    | O broker no caminho do veredito, e a dispensa que ele exigiu            | `Aceito` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele
 **não decide nada** — é a análise que define quais decisões precisam ser tomadas e em
@@ -234,12 +246,12 @@ de esperar.
 Quatro relações já têm evidência no repositório e são o ponto de partida da auditoria.
 A lista **não** é exaustiva: é o que se sabe hoje, e não o resultado da leitura.
 
-| ADR alterado | Alterado por | O que muda                                                    |
-|--------------|--------------|---------------------------------------------------------------|
-| ADR-0001     | ADR-0003     | `barreira` perde o estatuto de termo (`0001:36`, `0003:43-45`) |
-| ADR-0001     | ADR-0004     | a cláusula de honestidade é subsumida (`0001:280-286`, `0004:345-351`) |
+| ADR alterado | Alterado por | O que muda                                                              |
+|--------------|--------------|-------------------------------------------------------------------------|
+| ADR-0001     | ADR-0003     | `barreira` perde o estatuto de termo (`0001:36`, `0003:43-45`)          |
+| ADR-0001     | ADR-0004     | a cláusula de honestidade é subsumida (`0001:280-286`, `0004:345-351`)  |
 | ADR-0002     | ADR-0006     | a delegação da coluna `version` é cumprida (`0002:95-96`, `0006:56-58`) |
-| ADR-0004     | ADR-0005     | um sexto rótulo entra na classificação do zero (`0005:96-107`) |
+| ADR-0004     | ADR-0005     | um sexto rótulo entra na classificação do zero (`0005:96-107`)          |
 
 **Pergunta em aberto.** O ADR-0008 alterou algum ADR aceito? Ele contradiz a premissa
 "mesma JVM" que estava na posição 10 desta fila e no `AGENTS.md` da raiz — dois textos
@@ -271,11 +283,11 @@ enquanto foram duas, uma decisão PODE ter sido tomada numa e reaberta na outra.
 página já era índice, convenção, histórico e processo de debate; a fila era a quinta
 coisa, e a única que cresce sem parar.
 
-| O que estava nesta seção                      | Onde está agora                                                             |
-|-----------------------------------------------|-----------------------------------------------------------------------------|
-| as onze decisões derivadas do plano           | [as decisões derivadas do plano](fila-de-decisoes.md#as-decisões-derivadas-do-plano) |
-| citar pelo nome, e não pela posição           | [como citar uma linha](fila-de-decisoes.md#como-citar-uma-linha-desta-fila)  |
-| as três subseções de comentário               | os três títulos abaixo, preservados                                         |
+| O que estava nesta seção            | Onde está agora                                                                      |
+|-------------------------------------|--------------------------------------------------------------------------------------|
+| as onze decisões derivadas do plano | [as decisões derivadas do plano](fila-de-decisoes.md#as-decisões-derivadas-do-plano) |
+| citar pelo nome, e não pela posição | [como citar uma linha](fila-de-decisoes.md#como-citar-uma-linha-desta-fila)          |
+| as três subseções de comentário     | os três títulos abaixo, preservados                                                  |
 
 **As linhas 1 a 260 desta página não se moveram**, e os três títulos abaixo continuam
 existindo. Não é zelo: sete citações por número de linha e uma por âncora, vindas de
