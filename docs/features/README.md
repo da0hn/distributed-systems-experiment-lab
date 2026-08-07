@@ -13,9 +13,17 @@ O processo está em [`../specification-process.md`](../specification-process.md)
 | [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md) | quantos incrementos se perderam, e sob qual proteção — E1 e E3           | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                      | especificado, não implementado |
 | [deteccao-de-protecao-inerte](deteccao-de-protecao-inerte/feature-card.md)         | por que uma proteção pode estar presente e não proteger nada — E5        | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                      | especificado, não implementado |
 
-**Nenhuma capacidade está implementada.** O repositório não tem código: `git ls-files`
-retorna 28 arquivos, nenhum de linguagem, build ou IaC. Os `.feature` são especificação
-viva, e cada cenário está marcado com `@teste-ausente`.
+**Nenhuma capacidade está implementada, e desde 2026-08-06 isso deixou de significar que
+não há código.** O esqueleto existe: `git ls-files` retorna 158 arquivos, dos quais 27 são
+de linguagem, build ou configuração de infraestrutura. Ele compila, empacota e sobe contra
+PostgreSQL — e **não tem uma única regra de negócio dentro**. Nenhuma tabela existe: as
+três migrações `V1` criam apenas o schema de cada serviço. Os `.feature` continuam sendo
+especificação viva, e cada cenário está marcado com `@teste-ausente`.
+
+**As 48 regras das quatro capacidades estão `pendente`.** Nenhuma foi aprovada por pessoa.
+Pela decisão `B-3`, de 2026-08-05, aprova-se a **regra** e não o card — e uma regra
+`pendente` NÃO DEVE virar cenário Gherkin. O mesmo raciocínio alcança qualquer conversão
+automática do card para fora daqui.
 
 ## Por que quatro cards, e não cinco
 
