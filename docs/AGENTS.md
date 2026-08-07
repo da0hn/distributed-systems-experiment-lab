@@ -15,6 +15,17 @@ qualquer coisa. Uma objeção que fica só no chat desaparece no próximo compac
 O destino depende do artefato: `## Questões em aberto` do ADR, ou a seção de perguntas
 em aberto do `example-mapping.md`.
 
+## `features/` é fonte de verdade, junto dos ADRs
+
+Decidido em 2026-08-06. Um card não é resumo nem índice: **ele carrega tudo o que uma
+consulta precisa**, e quem o lê não deveria ter de abrir o ADR para saber o que o sistema
+faz. Por isso uma decisão arquitetural que mude comportamento entrega **ADR e card no
+mesmo commit** — um ADR que nasce sozinho deixa o repositório afirmando duas coisas
+contraditórias, e a regra `B-4` já proíbe card que contradiga ADR aceito.
+
+A divisão de trabalho não muda: o ADR diz **por que** e o card diz **o quê**. O que muda é
+que a segunda metade deixou de ser opcional.
+
 ## O que nunca é editado
 
 | Alvo                           | Por quê                                                                                |

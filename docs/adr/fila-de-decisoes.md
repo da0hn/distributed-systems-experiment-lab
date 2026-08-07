@@ -2315,11 +2315,23 @@ e o artefato dela é o próprio teste, não um documento.
 **O sétimo tema não está pronto.** A entrega tem `E-3` aberta, e agora `E-31` também. Um
 ADR de entrega escrito hoje registraria metade de uma decisão.
 
-### O que esta seção não decide
+### A saída, decidida em 2026-08-06
 
-Ela não decide **quando** os seis são escritos, nem em que ordem, nem se algum deles vira
-artefato de [`../features/`](../features/README.md) em vez de ADR. Ela existe para que a
-omissão pare de ser silenciosa.
+**Os seis são escritos em sequência, um por vez, com o contexto limpo entre eles.** O
+roteiro de cada sequência e o conteúdo que cada ADR precisa carregar estão em
+[`plano-de-escrita-do-lote-e.md`](plano-de-escrita-do-lote-e.md) — um documento com prazo
+de validade, apagado quando os seis existirem.
+
+**A linha da fila é removida quando o ADR nasce.** Decidido contra a recomendação de
+deixar lápide, e a verificação que sustentou a escolha desmontou a objeção: nenhuma
+citação externa aponta para as seções de rodada do Lote E. As âncoras citadas de fora
+desta fila são todas de seções anteriores a ele.
+
+**`docs/features/` é fonte de verdade, junto dos ADRs**, e por isso cada sequência entrega
+ADR e card no mesmo commit. A regra nasceu de um achado: **três cards contradizem `E-18`
+hoje**, cada um afirmando que o oráculo emite `SELECT` depois da quiescência. Enquanto
+`E-18` era linha de fila, isso era incoerência; quando ela virar ADR aceito, passa a ser
+violação da regra `B-4`.
 
 ## O nível de isolamento não tem lugar nesta fila
 
