@@ -21,6 +21,13 @@ de estudo — a regra de que uma tecnologia só entra quando um experimento não
 executado sem ela **não foi satisfeita nesse caso, e sim dispensada**. O registro está na
 linha `E-12` de [`docs/adr/fila-de-decisoes.md`](docs/adr/fila-de-decisoes.md).
 
+**O conector é o Debezium Server, num processo próprio, e ele não é dispensa nova da
+regra.** `E-12` já decidiu que existe um conector entre o WAL e o broker; qual conector é
+implementação daquela decisão. Ele fica separado porque embarcá-lo dentro do `lab-plane`
+poria a credencial de `REPLICATION` sobre o banco do sistema medido no mesmo processo que
+produz o veredito — a regra de `E-18`, um nível abaixo. Ele não é módulo do reactor, e
+onde a configuração dele vive é a linha `E-31`, aberta.
+
 ### Os quatro serviços, e a regra que os separa
 
 ```mermaid

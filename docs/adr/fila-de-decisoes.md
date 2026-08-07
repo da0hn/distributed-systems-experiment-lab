@@ -1835,6 +1835,216 @@ execução morta" e entra em "um slot que retém tudo se o conector ficar fora d
 banco compartilhado do homelab, com vizinhos. `max_slot_wal_keep_size` volta a ser a
 mitigação, e continua sendo parâmetro de cluster que afeta terceiros.
 
+### O que a quarta rodada apurou antes de perguntar, em 2026-08-06
+
+#### `E-27` ganhou uma quarta forma, e ela separa dois defeitos que estavam juntos
+
+As três formas registradas acima misturam dois defeitos distintos de `DEFAULT now()`: o
+relógio ser o do servidor, e o valor ser o instante de **início da transação**. A segunda
+metade tem saída própria — `clock_timestamp()` devolve o instante real da chamada, e duas
+linhas gravadas na mesma transação recebem valores diferentes. O relógio continua sendo o
+do servidor, e continua fora de qualquer adaptador.
+
+| Forma                       | Relógio      | Instante            |
+|-----------------------------|--------------|---------------------|
+| `DEFAULT now()`             | do servidor  | início da transação |
+| `DEFAULT clock_timestamp()` | do servidor  | da chamada          |
+| trigger `BEFORE UPDATE`     | do servidor  | da chamada          |
+| aplicação, pelo adaptador   | do adaptador | da chamada          |
+
+**A tensão que ninguém viu ao fechar `E-25`.** O grupo E estuda clock skew, e o insumo
+natural de um experimento assim é justamente uma coluna de tempo escrita pela aplicação,
+com relógio que o experimento pode deslocar. Se `updated_at` vier do adaptador, ela deixa
+de ser metadado inerte e vira matéria-prima possível — e a regra escrita em `E-25`, de que
+nenhuma estratégia a lê, passa a conviver com um experimento que a lê por outro motivo. A
+regra fala de estratégia de concorrência e não de oráculo, então não há contradição hoje.
+**Há pressão sobre uma regra recém-escrita, e ela precisa ficar visível.**
+
+#### `E-28` — três formas concretas, e o servidor compartilhado elimina uma família
+
+O plugin de decodificação lógica é escolha anterior ao conector, e ela restringe o resto.
+`pgoutput` é **built-in desde o PostgreSQL 10** e não pede nada do servidor. `wal2json`
+produz JSON legível e **é extensão**: instalá-la significa mexer no PostgreSQL
+compartilhado do homelab, que serve terceiros — o mesmo argumento que trava
+`max_slot_wal_keep_size` em `E-30`. `test_decoding` é o plugin de exemplo, e o formato dele
+não é estável entre versões.
+
+As três formas de conector, com o que cada uma custa:
+
+| Forma                | O que ela traz junto                                  |
+|----------------------|-------------------------------------------------------|
+| Debezium Server      | um processo a mais, com o formato de evento dele      |
+| Debezium Embedded    | uma biblioteca dentro de um serviço nosso             |
+| consumidor próprio   | decodificar `pgoutput` binário, mensagem por mensagem |
+
+**A pergunta que decide isso não é de conveniência, e sim de onde o LSN fica.** `E-12` se
+apoia inteiramente em o evento carregar o endereço que o servidor lhe deu. Um conector
+pronto preserva esse endereço no envelope dele — e o laboratório passa a depender de uma
+promessa de terceiro para o seu veredito. Um consumidor próprio põe o LSN sob controle
+explícito, ao custo de decodificar um protocolo binário que tem `Relation`, `Begin`,
+`Commit`, `Insert`, `Update` e `Delete` como mensagens obrigatórias.
+
+**Isto não é dispensa nova da regra de tecnologia.** `E-12` já decidiu que existe um
+conector entre o WAL e o broker; qual conector é implementação daquela decisão. A ressalva
+vale para o Debezium clássico sobre Kafka Connect — **esse** traria um sistema inteiro que
+ninguém decidiu, e seria dispensa nova. As duas formas listadas acima o evitam.
+
+#### `E-29` — o corte no broker e o descarte no consumidor não medem a mesma coisa
+
+A routing key com `partition_id` faz o broker **não entregar** o evento de outra execução.
+O filtro no consumidor recebe tudo e descarta. A diferença aparece no que sobra como
+evidência: o consumidor que descarta **pode contar o que descartou**, e essa contagem é
+prova de que o filtro agiu; o broker que não entrega não deixa rastro do lado de cá. Em um
+laboratório cujo produto é o veredito, o segundo apaga evidência para economizar rede.
+
+O custo do lado oposto: a routing key exige que o **conector** conheça o `partition_id`
+dentro do payload para rotear, o que o obriga a desserializar e a entender o esquema das
+tabelas medidas. O filtro no consumidor não pede nada do conector.
+
+**A topologia é pergunta separada, e a etapa 5 a torna obrigatória.** Ela injeta falhas no
+broker de propósito.
+
+```mermaid
+flowchart LR
+    subgraph I["instrumento"]
+        CN["conector CDC"] --> BA["broker do veredito"]
+        BA --> LP["lab-plane"]
+    end
+    subgraph O["objeto de estudo"]
+        SUT["system-under-test"] --> BO["broker do experimento"]
+        BO --> CS["consumidores do experimento"]
+    end
+    FA["etapa 5: falha injetada"] -.->|" derruba, particiona, duplica "| BO
+```
+
+Três formas, e elas não isolam a mesma coisa. **Duas instâncias** isolam falha de processo,
+que é exatamente o que a etapa 5 e a etapa 6 produzem. **Dois virtual hosts** isolam
+namespace e permissão, e não sobrevivem a matar o processo: um `docker kill` derruba os
+dois. **A mesma coisa** aceita que o instrumento caia junto com o objeto de estudo, e o
+LSN não a salva — ele torna a perda detectável, não impede que ela aconteça.
+
+#### `E-30` não entra nesta rodada, e a razão é que ela depende de `E-5`
+
+A mitigação de retenção é `max_slot_wal_keep_size`, que é **parâmetro de cluster**. Decidir
+o valor dele exige antes saber se o laboratório roda no PostgreSQL compartilhado do homelab
+ou em uma instância própria — que é a linha `E-5`, aberta. Fixar um valor agora seria impor
+um limite ao vizinho sem ter decidido que existe vizinho.
+
+### A quarta rodada do grupo II, em 2026-08-06
+
+| Linha              | Escolha                                 | Seguiu a recomendação? |
+|--------------------|-----------------------------------------|------------------------|
+| `E-27`             | aplicação, pelo adaptador de relógio    | sim                    |
+| `E-28`             | Debezium Server, processo separado      | não                    |
+| `E-29` (topologia) | a mesma instância, e o custo é aceito   | não                    |
+| `E-29` (filtro)    | filtro no consumidor, com contagem      | sim                    |
+
+#### `E-27` fecha na aplicação, e o DDL das duas tabelas medidas deixa de ter lacuna
+
+As colunas nascem `timestamptz NOT NULL`, sem `DEFAULT` e sem trigger, e o valor vem do
+adaptador de relógio no momento da escrita. Nada roda dentro da transação medida além do
+`INSERT` ou do `UPDATE` que já rodaria.
+
+**A ausência de `DEFAULT` é deliberada e tem custo.** Uma escrita que esqueça a coluna
+falha por `NOT NULL` em vez de gravar um valor plausível e errado. É a troca certa aqui:
+um erro barulhento na primeira execução vale mais que um instante silenciosamente vindo do
+relógio errado, meses depois, num experimento de clock skew.
+
+A tensão registrada acima permanece por escrito: se algum experimento do grupo E ler
+`updated_at` como insumo, a coluna deixa de ser metadado inerte, e a regra de `E-25` passa
+a conviver com essa leitura. A regra fala de estratégia de concorrência, e não de oráculo
+— **não há contradição hoje, e há pressão amanhã**.
+
+#### `E-28` fecha no Debezium Server, e a objeção inverte a favor da escolha
+
+A recomendação era o Debezium Embedded, e ela estava errada por um motivo que só aparece
+ao olhar o privilégio. **Embarcar o conector dentro do `lab-plane` põe a credencial de
+`REPLICATION` sobre o banco do sistema medido no mesmo processo que produz o veredito.**
+Com o Server separado, essa credencial vive num terceiro processo cuja única função é
+traduzir WAL em mensagem, e o `lab-plane` volta a ser só um consumidor de fila.
+
+```mermaid
+flowchart LR
+    W[("WAL do system-under-test")]
+    DS["Debezium Server<br/>processo próprio<br/>credencial REPLICATION"]
+    B["broker"]
+    LP["lab-plane<br/>sem acesso ao banco medido"]
+    W -->|" pgoutput "| DS
+    DS -->|" evento com source.lsn "| B
+    B --> LP
+```
+
+Isso é a mesma regra de `E-18` um nível abaixo: um serviço não alcança o banco de outro, e
+o Embedded teria aberto exatamente essa porta dentro do instrumento. A segunda objeção —
+mais um processo a entregar — é custo marginal num repositório que já entrega quatro por
+ArgoCD, e a configuração do Debezium Server é declarativa, que é a forma que sobrevive em
+`deploy/`.
+
+**O que não se dissolve, e vira linha própria: o LSN precisa sobreviver ao sink.** O
+envelope do Debezium para PostgreSQL carrega `source.lsn`, e a serialização escolhida para
+o RabbitMQ pode ou não levá-lo até o consumidor. Enquanto isso não for provado por teste,
+`E-12` está apoiada numa promessa, e não num fato.
+
+#### `E-29` fecha na instância única, e o LSN muda a natureza da falha
+
+A objeção era que o instrumento cai junto com o objeto de estudo. Ela se dissolve por
+duas vias, e uma terceira permanece.
+
+**A primeira é temporal.** A etapa 5 não existe, e nenhum dos quatro experimentos
+especificados hoje sabota broker. Uma segunda instância agora entraria por estar
+disponível, que é a regra que este repositório aplica a toda tecnologia.
+
+**A segunda é o LSN, de novo.** Um broker que cai leva a um buraco na sequência de
+endereços, e o consumidor declara a execução inválida. O instrumento não sobrevive — ele
+**sabe que morreu**, e isso é diferente de reportar um número errado com cara de certo.
+Para um laboratório, saber que o resultado não vale é um resultado.
+
+**A terceira permanece, e é um gatilho de reabertura escrito.** Um experimento da etapa 5
+que sabote o broker vai invalidar o próprio veredito **toda vez**, e não em alguns casos.
+Quando a etapa 5 chegar, esta linha reabre.
+
+**Uma cadeia causal nova nasce da instância única, e ela liga `E-29` a `E-30`.** O grupo B
+estuda fila cheia e consumidor lento. Se um experimento encher o broker, o Debezium Server
+para de publicar; se ele para, o replication slot para de avançar; se o slot não avança, o
+PostgreSQL retém WAL — no banco compartilhado do homelab.
+
+```mermaid
+flowchart TD
+    E["experimento do grupo B<br/>enche o broker"]
+    D["Debezium Server<br/>não consegue publicar"]
+    S["slot para de avançar"]
+    W["WAL retido, sem teto"]
+    V["disco do banco compartilhado"]
+    E --> D --> S --> W --> V
+```
+
+**Um experimento de fila cheia passa a ser capaz de encher o disco de um banco que serve
+terceiros.** Isso não existia enquanto o broker estava fora do caminho do veredito, e é
+material novo para `E-30` — que continua adiada, dependente de `E-5`.
+
+### Três linhas novas, abertas pela quarta rodada
+
+#### `E-31` — onde vive a configuração do Debezium Server
+
+Ele não é um módulo Maven, e não nasce do reactor. A configuração é declarativa e precisa
+ser versionada, entregue e bumpada como os outros quatro artefatos. **Isso reabre a
+pressão sobre `E-3`**, a forma do `deploy/`, que segue adiada.
+
+#### `E-32` — o teste que prova que o LSN chega ao consumidor
+
+`E-12` inteira se apoia em o evento carregar o endereço que o servidor lhe deu. Entre o
+WAL e o `lab-plane` há o Debezium Server e o sink do RabbitMQ, e nenhum dos dois foi
+verificado aqui. **Enquanto o teste não existir, o veredito repousa sobre uma promessa de
+terceiro.** O teste é de aceitação, não unitário: ele precisa ler do broker e comparar com
+o `pg_current_wal_lsn()` do momento da escrita.
+
+#### `E-33` — o que a contagem de descartados significa no relatório
+
+`E-29` decidiu que o consumidor conta o que descarta. **Não decidiu o que a contagem
+prova.** Um descarte é esperado quando existe execução anterior no mesmo banco; é sinal de
+defeito quando não existe nenhuma. A linha decide se um descarte inesperado invalida a
+execução, ou se apenas aparece no relatório.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
