@@ -2257,6 +2257,70 @@ descartar às cegas. Numa tabela do schema do `lab-plane`, ela sobrevive — e c
 tabela daquele schema, hoje vazio. A linha decide qual das duas, e como uma execução
 abandonada deixa de ser ativa.
 
+## A dívida de ADR do Lote E, levantada em 2026-08-06
+
+**Vinte e nove linhas fecharam desde 2026-08-06, e nenhum ADR nasceu.** O último é o
+[ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md), de 2026-08-05,
+vindo do Lote A. Todo o Lote E vive nesta fila, e em nenhum outro lugar.
+
+Isso **não** foi decidido. A regra de 2026-08-04 diz que a escolha do artefato acontece
+depois da decisão, e a escolha simplesmente não foi feita — nem a favor do ADR, nem a
+favor de `docs/features/`. A fila virou o depósito de tudo, por omissão.
+
+### Três defeitos que já são visíveis, e nenhum é hipótese
+
+**Uma linha desta fila foi decidida duas vezes.** `E-22` fechou, e reabriu, e fechou de
+novo — o registro está em
+[`E-22` fecha em `(execution_id, id)`](#e-22-fecha-em-execution_id-id-e-a-linha-foi-decidida-duas-vezes).
+Uma decisão que não é consultável como registro é uma decisão que se retoma sem perceber.
+
+**`E-18` é citada como regra estabelecida, e não tem estatuto de regra.** O
+[`AGENTS.md`](../../AGENTS.md) a invoca para explicar por que o oráculo lê o WAL; o
+[`compose.yaml`](../../compose.yaml) a invoca em comentário; três rodadas desta fila a
+usam como premissa. Ela vive numa linha de um arquivo de 2431 linhas, **sem estado, sem
+rastro de alteração e sem mecanismo de substituição** — que é exatamente o que
+[`README.md`](README.md#estados) dá a um ADR.
+
+**A fila não tem teto, e o índice de ADR tem.** Esta página passou de 2009 para 2431
+linhas em três rodadas de um único dia. O [`README.md`](README.md#esta-página-tem-um-teto-de-514-linhas-e-ele-não-é-escolha)
+carrega um teto de 514 linhas justamente porque um documento que só cresce deixa de ser
+lido. Nada equivalente protege esta fila.
+
+### A triagem contra os quatro critérios
+
+Aplicando [os quatro critérios](README.md#uma-decisão-merece-adr-quando) às vinte e nove
+linhas fechadas, elas se agrupam em **seis temas**, e não em vinte e nove artefatos. Duas
+linhas não atendem a critério nenhum, e três seguem abertas.
+
+| Tema candidato                                       | Linhas fechadas                                | Estado                         |
+|------------------------------------------------------|------------------------------------------------|--------------------------------|
+| a fronteira de schema e o CDC como fonte do veredito | `E-18`, `E-19`                                 | **contradiz o ADR-0002**       |
+| os quatro serviços e o caderno fora do Git           | `E-14` a `E-17`, `E-20`                        | **emenda o ADR-0008**          |
+| o transporte do veredito até o oráculo               | `E-12`, `E-28`, `E-29`, `E-33`                 | maduro                         |
+| o alcance das regras estruturais por papel do valor  | `E-13`                                         | maduro; já mudou o `AGENTS.md` |
+| a identidade derivada da semente                     | `E-8`, `E-11`, `E-24`                          | maduro                         |
+| a chave, o discriminador e as colunas de tempo       | `E-9`, `E-10`, `E-22`, `E-23`, `E-25` a `E-27` | maduro                         |
+| a entrega: build, imagem, banco e configuração       | `E-1` a `E-7`, `E-21`, `E-31`                  | **incompleto**: `E-3` aberta   |
+
+**Os dois primeiros não são opcionais.** A decisão `B-4`, de 2026-08-05, diz que
+contradição com ADR aceito **é** decisão arquitetural nova e gera ADR. `E-18` contradiz o
+oráculo do ADR-0002, que pressupunha ler o estado final do sistema medido; `E-14` a `E-17`
+emendam o ADR-0008, que fala em dois planos onde hoje existem quatro serviços. Os dois
+já estão registrados como pendência nesta fila, e nenhum foi escrito.
+
+**Duas linhas não viram ADR, e é o critério que diz isso.** `E-16` escolheu o nome
+`lab-journal` — nome não atende a nenhum dos quatro. `E-32` decidiu a forma de um teste,
+e o artefato dela é o próprio teste, não um documento.
+
+**O sétimo tema não está pronto.** A entrega tem `E-3` aberta, e agora `E-31` também. Um
+ADR de entrega escrito hoje registraria metade de uma decisão.
+
+### O que esta seção não decide
+
+Ela não decide **quando** os seis são escritos, nem em que ordem, nem se algum deles vira
+artefato de [`../features/`](../features/README.md) em vez de ADR. Ela existe para que a
+omissão pare de ser silenciosa.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
