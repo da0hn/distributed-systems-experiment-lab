@@ -2045,6 +2045,218 @@ prova.** Um descarte é esperado quando existe execução anterior no mesmo banc
 defeito quando não existe nenhuma. A linha decide se um descarte inesperado invalida a
 execução, ou se apenas aparece no relatório.
 
+### O que a quinta rodada apurou antes de perguntar, em 2026-08-06
+
+Quatro achados, três deles verificados na documentação do Debezium Server e um na própria
+árvore. O quarto abre uma linha que ninguém tinha visto.
+
+#### `E-31` — a variável de ambiente sobrepõe tudo, e isso dissolve a tensão do Secret
+
+O Debezium Server é uma aplicação Quarkus. A configuração vive em
+`config/application.properties`, com os prefixos `debezium.source.*` para o conector e
+`debezium.sink.*` para o destino — e **toda opção presente nesse arquivo pode ser
+acrescentada ou sobreposta por variável de
+ambiente**. A fonte é a
+[documentação de operação do Debezium Server](https://debezium.io/documentation/reference/stable/operations/debezium-server.html),
+conferida em 2026-08-06 — evidência externa, e não deste repositório.
+
+Isso importa porque a credencial de `REPLICATION` sobre o banco do sistema medido é um
+Secret, e o [`AGENTS.md`](../../AGENTS.md) proíbe Secret neste repositório. Sem o override
+por ambiente, um arquivo versionado obrigaria a interpolação como único recurso; com ele,
+a senha simplesmente nunca aparece em arquivo nenhum.
+
+**Há precedente na árvore, e ele aponta para o ambiente.** O [`compose.yaml`](../../compose.yaml)
+não monta arquivo de configuração para serviço nenhum: `LAB_PLANE_DB_URL`,
+`SUT_DB_PASSWORD` e as demais vão todas por ambiente. A única exceção é
+`local/postgres-init.sql`, que é script de inicialização do banco e não configuração de
+aplicação.
+
+| Forma                                 | Onde a senha vive | O que o `deploy/` carrega |
+|---------------------------------------|-------------------|---------------------------|
+| arquivo versionado, senha interpolada | ambiente          | ConfigMap com o arquivo   |
+| só variável de ambiente               | ambiente          | as variáveis do manifesto |
+| esperar `E-3`                         | —                 | nada, e o CDC não sobe    |
+
+A terceira não é neutra. Enquanto ela durar, o Debezium Server roda no `compose.yaml` de
+desenvolvimento e **não existe no homelab** — o que significa que o veredito não pode ser
+produzido lá.
+
+#### `E-32` — o LSN tem um jeito conhecido de sumir, e ele não é do broker
+
+A linha foi escrita supondo que o risco estava no sink. **A apuração encontrou um risco
+maior, e ele está antes do sink.** O envelope do Debezium carrega `source.lsn` dentro do
+bloco `source`; a transformação `ExtractNewRecordState` — o *unwrap*, aplicado com
+frequência para simplificar o payload — **descarta esse bloco inteiro**. Ela tem
+`add.fields` para reinserir campos escolhidos, e sem essa reinserção o LSN some antes de
+qualquer mensagem existir.
+
+```mermaid
+flowchart LR
+    W[("WAL")]
+    E["envelope Debezium<br/>source.lsn presente"]
+    U["ExtractNewRecordState<br/>descarta o bloco source"]
+    S["sink RabbitMQ"]
+    C["lab-plane"]
+    W --> E
+    E -->|" sem unwrap "| S
+    E -.->|" com unwrap, sem add.fields "| U
+    U -->|" LSN perdido aqui "| S
+    S --> C
+```
+
+**O teste de `E-32` precisa cobrir a configuração, e não só o transporte.** Um teste que
+apenas leia do broker e encontre o LSN prova que a configuração de hoje funciona; ele não
+impede que alguém ligue o unwrap amanhã. Os três testes que existem na árvore usam
+Testcontainers com `PostgreSQLContainer` — e **nenhum deles sobe o banco com
+`wal_level=logical`**, que é o padrão `replica` da imagem. O teste de `E-32` é o primeiro
+que precisa de comando explícito no contêiner, além de um contêiner de Debezium Server e um
+de RabbitMQ.
+
+#### `E-34`, aberta pela apuração: o sink tem duas formas, e elas não são intercambiáveis
+
+O Debezium Server oferece **dois** sinks de RabbitMQ: `rabbitmq`, sobre AMQP 0-9-1, com
+`exchange` e `routingKey`; e `rabbitmqstream`, sobre o protocolo de stream, com semântica
+de offset e retenção.
+
+**A escolha entre eles amarra o objeto de estudo do grupo B.** O grupo estuda fila cheia e
+consumidor lento — e uma *queue* AMQP que enche não é a mesma coisa que um *stream* com
+retenção configurada, onde o produtor não é bloqueado pelo consumidor lento da mesma forma.
+Escolher o sink pelo conforto do consumidor escolheria, sem dizer, qual fenômeno de
+saturação o laboratório consegue reproduzir.
+
+A linha não entra nesta rodada. Ela depende de o grupo B ter experimento especificado, e
+hoje ele não tem.
+
+#### `E-33` — o descarte tem duas causas, e só uma delas invalida
+
+A linha foi escrita supondo que o descarte vem de "execução anterior no mesmo banco". **A
+apuração corrige a premissa.** O consumidor não lê linhas de tabela; ele lê eventos do WAL.
+Uma execução anterior cujas linhas ainda estão na tabela não produz evento nenhum — só
+produz quem escreve agora, ou quem escreveu e ainda não foi consumido.
+
+Com o slot permanente que `E-30` deixou em aberto, o backlog de uma execução anterior
+sobrevive ao fim dela e é entregue durante a seguinte. São duas causas, com significados
+opostos:
+
+| Causa do descarte                | O que ela significa                     |
+|----------------------------------|-----------------------------------------|
+| backlog de execução já concluída | higiene, e a prova de que o filtro agiu |
+| evento de execução ainda ativa   | duas execuções disputam o mesmo banco   |
+
+**A segunda invalida por um motivo que nada tem a ver com o filtro.** Se outra execução
+escreve nas mesmas tabelas ao mesmo tempo, o escalonador determinístico não a controla, e a
+intercalação declarada deixa de ser a que aconteceu. O filtro protege a contagem; ele não
+protege a reprodutibilidade.
+
+**Distinguir as duas exige saber quais discriminadores estão ativos agora**, e isso não é
+de graça. O `lab-plane` conhece a execução que ele mesmo conduz; conhecer as outras depende
+de haver uma réplica só, que é a recomendação de `E-3` — adiada. Com duas réplicas, cada
+uma vê backlog da outra e nenhuma sabe distinguir.
+
+### A quinta rodada do grupo II, em 2026-08-06
+
+| Linha  | Escolha                                      | Seguiu a recomendação? |
+|--------|----------------------------------------------|------------------------|
+| `E-31` | não decidida; exigência nova registrada      | —                      |
+| `E-32` | aceitação com os três contêineres            | sim                    |
+| `E-33` | invalida só se o discriminador estiver ativo | sim                    |
+
+#### `E-31` não fecha, e o que a impede é uma exigência que a fila não enunciava
+
+Nenhuma das três formas foi escolhida, e a razão é ortogonal a todas elas: **rodar o
+Debezium Server no cluster exige mudar o repositório
+[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure)**, e essa
+exigência não estava escrita em lugar nenhum desta fila. Ela vale para qualquer das três
+formas, porque nenhuma delas é alcançada por um `deploy/` que este repositório sozinho
+produza.
+
+O que ela acrescenta, pelo que o [`AGENTS.md`](../../AGENTS.md) já registra do contrato da
+ADR 0017 daquele repositório:
+
+- **A credencial de `REPLICATION` é um Secret**, e Secret não entra aqui. Ela é cifrada
+  com SOPS/KSOPS no homelab e referenciada por nome — o que significa que a decisão de
+  `E-31` sobre onde a configuração vive **não** decide onde a senha vive; ela já está
+  decidida, e fora deste repositório.
+- **O `Application` do ArgoCD aponta para um `deploy/` que não existe.** Já é o
+  `ComparisonError` registrado em `E-3`. Um serviço a mais não o piora, mas também não
+  chega ao cluster antes de `E-3` fechar.
+
+**Pergunta em aberto: a ADR 0017 alcança uma imagem que este repositório não constrói?** O
+`AGENTS.md` registra que ela descreve o laboratório como "monorepo de microsserviços JVM",
+e o contrato dela fala em imagem publicada no GHCR com tag igual ao SHA do commit. O
+`debezium/server` é imagem de terceiro, com tag de versão do Debezium, e nenhum commit
+daqui a produz. Se isso é caso previsto ou lacuna, não foi conferido aqui.
+
+#### `E-32` fecha na cadeia inteira, e o teste ganha uma segunda asserção
+
+A alternativa barata provava metade da cadeia, e a metade que ela deixava de fora é a que
+`E-12` depende. O teste sobe os três contêineres e lê do broker.
+
+**A apuração acrescentou uma asserção que a linha não pedia.** Comparar o LSN lido com o
+`pg_current_wal_lsn()` do momento da escrita prova que a configuração de hoje funciona;
+não impede que alguém ligue o `ExtractNewRecordState` amanhã e o bloco `source` desapareça.
+O teste falha nos dois casos, e é isso que o torna guarda em vez de conferência.
+
+```mermaid
+flowchart LR
+    T["teste de aceitação"]
+    PG[("PostgreSQL<br/>wal_level=logical<br/>por comando explícito")]
+    DS["Debezium Server"]
+    RB["RabbitMQ"]
+    T -->|" escreve, e anota<br/>pg_current_wal_lsn() "| PG
+    PG --> DS
+    DS --> RB
+    RB -->|" lê o evento "| T
+    T -->|" compara os dois LSN "| T
+```
+
+**Ele é o primeiro teste da árvore que precisa de comando explícito no contêiner do
+banco.** Os três que existem hoje usam `PostgreSQLContainer` sem argumento, e a imagem
+sobe com o `wal_level=replica` padrão — no qual o slot lógico sequer pode ser criado.
+
+**E ele antecede o que testa.** RabbitMQ e Debezium Server entram na árvore como
+dependência de teste antes de existir uma linha de código que consuma CDC. Isso é
+deliberado: a decisão de `E-12` foi tomada, e o custo de descobrir que ela não se sustenta
+cresce a cada semana em que o teste não existir.
+
+#### `E-33` fecha na distinção, e ela transforma uma recomendação de `E-3` em requisito
+
+Backlog de execução já concluída é higiene e vai ao relatório. Evento de execução ainda
+ativa invalida — porque outra execução escrevendo nas mesmas tabelas está fora do alcance
+do escalonador determinístico, e a intercalação declarada deixa de ser a que aconteceu.
+
+**A consequência não é sobre o filtro; é sobre a topologia.** `E-3` recomendava uma réplica
+do `lab-plane`, como preferência. Com esta escolha, uma réplica passa a ser **condição para
+o veredito ser confiável**: com duas, cada uma vê backlog da outra, nenhuma distingue
+backlog de concorrência, e a regra recém-escrita não tem como ser aplicada.
+
+```mermaid
+flowchart TD
+    D["evento descartado pelo filtro"]
+    Q{"o discriminador dele<br/>pertence a execução ativa?"}
+    R["conta no relatório<br/>a execução vale"]
+    I["execução inválida<br/>duas escrevem no mesmo banco"]
+    D --> Q
+    Q -->|" não "| R
+    Q -->|" sim "| I
+```
+
+### Duas linhas novas, abertas pela quinta rodada
+
+#### `E-34` — qual dos dois sinks de RabbitMQ, e o que ele amarra
+
+Aberta na apuração acima. `rabbitmq` sobre AMQP 0-9-1 contra `rabbitmqstream` sobre o
+protocolo de stream. A escolha decide, sem dizer, qual fenômeno de saturação o grupo B
+consegue reproduzir. **Não entra até o grupo B ter experimento especificado.**
+
+#### `E-35` — onde o `lab-plane` guarda quais execuções estão ativas
+
+`E-33` exige a resposta a "este discriminador pertence a execução ativa?", e não disse de
+onde ela vem. Em memória, a resposta some num reinício e toda a execução seguinte passa a
+descartar às cegas. Numa tabela do schema do `lab-plane`, ela sobrevive — e cria a primeira
+tabela daquele schema, hoje vazio. A linha decide qual das duas, e como uma execução
+abandonada deixa de ser ativa.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e

@@ -323,6 +323,12 @@ que valem sempre:
   em silêncio: o inventário está em `docs/plano-do-laboratorio.md`, seção 12.
 - **Kubernetes é destino de entrega, não objeto de estudo.** Nenhum dos 42 fenômenos é
   reproduzido por um recurso do cluster.
+- **Rodar o laboratório no cluster exige mudar o `homelab-infrastructure`, e não só este
+  repositório.** Registrado em 2026-08-06. O Debezium Server precisa lá de um Secret
+  cifrado com a credencial de `REPLICATION` e de um `Application` que alcance o `deploy/`
+  daqui. Ele é **imagem de terceiro**, com tag de versão do Debezium, e nenhum commit
+  daqui a produz — se a ADR 0017 alcança uma imagem assim é `Pergunta em aberto`, na
+  linha `E-31` de [`docs/adr/fila-de-decisoes.md`](docs/adr/fila-de-decisoes.md).
 - **O orquestrador reage ao que o experimento
   faz.** Um experimento que mata o processo de
   propósito (etapa 6) roda sob um `Deployment` que o reinicia, com `selfHeal: true`. Isso é
