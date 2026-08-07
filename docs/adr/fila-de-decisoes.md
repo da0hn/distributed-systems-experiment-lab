@@ -1598,6 +1598,92 @@ código do `lab-plane`. As candidatas (b) e (c) agem no primeiro; a candidata (a
 segundo, e ela **não é** guarda de banco — é código Java com teste, apesar de a linha
 inteira ter sido apresentada em vocabulário de replicação.
 
+### Timestamps, propostos em 2026-08-06, e a fronteira os separa em duas linhas
+
+A proposta é `created_at` e `updated_at` nas duas tabelas medidas, e `executed_at`,
+`concluded_at`, `created_at` e `updated_at` do lado do Lab Plane. **Os dois lados têm
+argumentos disjuntos**, e por isso viram duas linhas. `E-25` volta a bloquear o
+`CREATE TABLE` que `E-23` acabara de desbloquear.
+
+#### `E-25` — timestamps nas tabelas medidas
+
+**A objeção mais forte não é técnica, é pedagógica.** `updated_at` é um token de versão
+clássico — `UPDATE resource SET value = ? WHERE id = ? AND updated_at = ?` é optimistic
+locking escrito sem a palavra. A regra do [`AGENTS.md`](../../AGENTS.md) manda introduzir
+o problema antes da solução, e é exatamente por isso que `version` não está no esquema. A
+coluna entrega de graça metade do que o E1 deve construir do zero.
+
+```mermaid
+flowchart LR
+    U["updated_at no esquema mínimo"]
+    V["version no esquema mínimo"]
+    O["optimistic locking<br/>disponível sem construir nada"]
+    U --> O
+    V --> O
+    V -.->|" recusado pelo ADR-0001 "| R["a regra pedagógica"]
+    U -.->|" a mesma recusa<br/>vale aqui? "| R
+```
+
+**A segunda objeção é sobre como o valor nasce.** As três formas custam:
+
+| Forma                     | O que custa                                  |
+|---------------------------|----------------------------------------------|
+| `DEFAULT now()`           | relógio do banco, fora de qualquer adaptador |
+| trigger `BEFORE UPDATE`   | código dentro da transação medida            |
+| preenchida pela aplicação | o medido passa a depender do adaptador       |
+
+O `DEFAULT now()` tem um defeito a mais, e ele é específico do PostgreSQL: `now()`
+retorna o instante de **início da transação**, e não o do statement — duas rows escritas
+na mesma transação recebem o mesmo valor, o que apaga justamente a ordem que a coluna
+deveria mostrar. O trigger é pior por outro motivo: ele acrescenta trabalho **dentro da
+janela exata** onde o lost update acontece, e o laboratório mede o que ocorre ali. A
+terceira respeita a regra do relógio, e cobra que o sistema medido dependa do adaptador
+por uma coluna que nenhum oráculo lê.
+
+**A regra do relógio injetável não as proíbe, e isso precisa ser dito.** Pelo alcance
+fixado em `E-13` nesta mesma data, as regras valem sobre valor que entra em veredito, em
+escalonamento ou em identidade derivada da semente. Um `created_at` de `resource` não
+entra em nenhum dos três. **A objeção vem da pedagogia e do custo na janela medida, não
+da regra** — e confundir as duas coisas seria usar a regra como argumento que ela não faz.
+
+**A favor:** com o discriminador preservando execuções antigas, uma pessoa que inspecione
+o banco depois quer ordená-las no tempo. **Contra isso:** a ordem já existe e é melhor —
+o CDC entrega em ordem de LSN, que é a ordem real de commit. Um timestamp de wall clock é
+pior que o LSN para ordenar, e é o LSN que o oráculo usa.
+
+#### `E-26` — timestamps nas tabelas do Lab Plane
+
+**Aqui não há objeção pedagógica.** O Lab Plane é o instrumento, e não o objeto de
+estudo; `executed_at` e `concluded_at` são propriedade da execução, e a timeline do
+[ADR-0001](0001-o-passo-como-unidade-de-execucao.md) e o relatório dependem de saber
+quando cada coisa aconteceu. `created_at` e `updated_at` da definição de experimento são
+metadados de CRUD, sem relação com medida.
+
+**Mas `E-13` acabou de decidir algo que alcança esta linha, e não é óbvio.** O veredito em
+formato **curva** do grupo D é uma fila crescendo ao longo do tempo. Se a curva for
+construída sobre `executed_at` e `concluded_at`, esses valores **entram no papel
+veredito** — e o relógio que os produz DEVE ser o adaptador injetável, nunca um
+`DEFAULT now()` do banco. É a primeira consequência concreta da formulação por papel.
+
+```mermaid
+flowchart TB
+    E["executed_at, concluded_at"]
+    Q{"a curva do grupo D<br/>é construída sobre eles?"}
+    S["entram no papel veredito<br/>relógio injetável obrigatório"]
+    N["metadado operacional<br/>a regra não os alcança"]
+    E --> Q
+    Q -->|" sim "| S
+    Q -->|" não "| N
+```
+
+**Uma segunda pergunta fica aberta, e ela é do laboratório, não do CRUD.** `executed_at` e
+`concluded_at` marcam a fronteira da janela medida pelo relógio do Lab Plane, enquanto o
+oráculo ordena eventos por LSN do WAL do sistema medido. **São duas fontes de tempo
+distintas**, e correlacionar as duas é exatamente o problema que o grupo E estuda sob o
+nome de clock skew. Nada nesta fila decide como elas se alinham.
+
+**Nenhuma das duas linhas foi decidida.**
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
