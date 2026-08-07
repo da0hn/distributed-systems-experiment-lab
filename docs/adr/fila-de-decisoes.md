@@ -1361,6 +1361,15 @@ propósito — segura o WAL até encher o disco do PostgreSQL, que em `E-5` é o
 compartilhado do homelab, com vizinhos. Some-se `max_replication_slots`, que é finito e
 de cluster. A candidata troca uma falha silenciosa por uma ruidosa que atinge terceiros.
 
+**Esse custo tem mitigação declarada, e ela não é gratuita.** O PostgreSQL aceita
+`max_slot_wal_keep_size` desde a versão 13: passado o limite, o servidor **invalida o
+slot** em vez de continuar retendo WAL. A falha deixa de ser "o disco do vizinho encheu"
+e passa a ser "esta execução perdeu o stream" — que é exatamente o formato de falha que
+o instrumento precisa ter. O preço é que o parâmetro é de cluster, e o cluster é
+compartilhado: fixá-lo muda o comportamento de todo consumidor lógico do banco do
+homelab, e não só o do laboratório. **Isso é decisão de infraestrutura do `E-5`, e não
+desta linha** — se a escolha aqui for o slot por execução, ela abre uma linha nova lá.
+
 **Ela também não resolve `O20`.** Um slot criado na abertura não vê o estado anterior a
 ele, e `value_inicial` continua sem fonte. Nenhuma das três candidatas o resolve.
 
@@ -1402,6 +1411,49 @@ O argumento contra a exceção nomeada é do próprio
 [ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md), que recusou excluir
 identificadores do critério de igualdade porque "uma exceção nomeada no critério é uma
 porta por onde outras entram". As três continuam abertas.
+
+#### `E-11` mudou de terreno: o instrumento já publica identidade no sistema medido
+
+`D-DOM-14` foi enunciada em 2026-08-03, antes de `D-DAT-05` existir. Os dois argumentos
+que sustentam a recomendação da proposta mudaram de peso desde então, e nenhum dos dois
+mudou por opinião.
+
+**A favor da Alternativa A, a proposta afirma que "o domínio medido continua sem citar
+nenhum contexto do Lab Plane por nome, e a semente entra como valor"**
+([`modelo-de-dominio.md`](arquivo/proposta-2026-08-03/modelo-de-dominio.md#d-dom-14--quem-é-dono-da-identidade-derivada-da-semente)).
+Com `E-22` fechada, o discriminador da execução é a **primeira coluna da chave primária**
+das duas tabelas medidas, e quem o produz é o Lab Plane. A fronteira que a Alternativa A
+protege já foi atravessada: a pergunta deixou de ser **se** o sistema medido recebe
+identidade do instrumento, e passou a ser **quantos valores** ele recebe.
+
+```mermaid
+flowchart LR
+    LP["lab-plane"]
+    D["o discriminador<br/>fechado por D-DAT-05"]
+    S["a semente<br/>em aberto em E-11"]
+    SUT["as duas tabelas medidas"]
+    LP --> D --> SUT
+    LP -.-> S -.-> SUT
+```
+
+**Contra a Alternativa A, a proposta afirma que "uma mudança nela altera identificadores
+de execuções antigas".** Essa objeção era hipotética enquanto o reset entre execuções
+fosse `TRUNCATE` — sem execução antiga no banco, não há identificador antigo a alterar.
+`D-DAT-05` escolheu o discriminador exatamente para preservá-las, e a objeção passou a
+descrever o estado real do banco, e não um cenário.
+
+**Um terceiro achado inverte o argumento de pureza.** A proposta recomenda A por
+preservar a ignorância do sistema medido, e a letra da alternativa faz o contrário: para
+derivar o identificador, o sistema medido precisa **receber a semente e hospedar a regra
+de derivação**. Ele passa a saber que existe uma semente, e uma semente só existe porque
+existe reprodutibilidade, que só importa porque existe experimento. Na Alternativa B ele
+recebe valores opacos — um UUID e um `bigint` — e não sabe de onde vieram nem que se
+repetem. **É B, e não A, que mantém o sistema medido ignorante do instrumento.**
+
+**Nenhum dos três achados escolhe entre as alternativas.** O primeiro enfraquece o
+argumento a favor de A, o segundo fortalece o argumento contra ela, e o terceiro mostra
+que o critério que a proposta usou para recomendá-la aponta para B. A escolha continua
+sendo da pessoa.
 
 ## O nível de isolamento não tem lugar nesta fila
 
