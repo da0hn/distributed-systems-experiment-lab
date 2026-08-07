@@ -1,8 +1,8 @@
 {
   ".claude/skills/feature-planning/scripts/check_artifact_limits.py": {
-    "mtime": 1785630854.0004344,
-    "ast_hash": "a1faad60f443fbd36ec0b672912fbc90",
-    "semantic_hash": "a1faad60f443fbd36ec0b672912fbc90"
+    "mtime": 1786072800.4018967,
+    "ast_hash": "5f010caa1448a2a9b6ca4683626b9761",
+    "semantic_hash": "5f010caa1448a2a9b6ca4683626b9761"
   },
   ".claude/skills/feature-planning/SKILL.md": {
     "mtime": 1785890843.886,
@@ -10,9 +10,9 @@
     "semantic_hash": "b73b875825936405e3d5c310455f9b7d"
   },
   "CLAUDE.md": {
-    "mtime": 1785898634.7426722,
-    "ast_hash": "6e2350c0104fb1a8dff3240686d43179",
-    "semantic_hash": "6e2350c0104fb1a8dff3240686d43179"
+    "mtime": 1786049698.3177125,
+    "ast_hash": "6d744e9133eb474cb0d7ca031fa3874e",
+    "semantic_hash": "6d744e9133eb474cb0d7ca031fa3874e"
   },
   "docs/adr/0001-o-passo-como-unidade-de-execucao.md": {
     "mtime": 1785803697.4102535,
@@ -20,9 +20,9 @@
     "semantic_hash": "2f116b4c33899b94a3f1844d91919a29"
   },
   "docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md": {
-    "mtime": 1785803697.421297,
-    "ast_hash": "0727e74ef8b42c91d8f4d9a9cbed0f87",
-    "semantic_hash": "0727e74ef8b42c91d8f4d9a9cbed0f87"
+    "mtime": 1786071864.568618,
+    "ast_hash": "45e698db1a107466c17ef4b021a2b5c2",
+    "semantic_hash": "45e698db1a107466c17ef4b021a2b5c2"
   },
   "docs/adr/0003-a-linguagem-do-agendamento.md": {
     "mtime": 1785803697.423318,
@@ -35,9 +35,9 @@
     "semantic_hash": "72b372d7241882926023e079c160004a"
   },
   "docs/adr/README.md": {
-    "mtime": 1785898634.74767,
-    "ast_hash": "f4bc23ccd2e8c5a44a6ec8649f3e89df",
-    "semantic_hash": "f4bc23ccd2e8c5a44a6ec8649f3e89df"
+    "mtime": 1786072738.3981187,
+    "ast_hash": "8779ce52cba22842fbdae4a1d3bc2e34",
+    "semantic_hash": "8779ce52cba22842fbdae4a1d3bc2e34"
   },
   "docs/adr/arquivo/0001-dominio-generico-com-invariante-unica.md": {
     "mtime": 1785290312.182554,
@@ -110,9 +110,9 @@
     "semantic_hash": "aab86345a47eb54fa7de5905e9cc362b"
   },
   "docs/architecture/integrations.md": {
-    "mtime": 1785898634.752183,
-    "ast_hash": "a175bfd603c50951479822e524d8f5ea",
-    "semantic_hash": "a175bfd603c50951479822e524d8f5ea"
+    "mtime": 1786049678.719873,
+    "ast_hash": "923c6e01647eb7fdb26366bd24f3bca4",
+    "semantic_hash": "923c6e01647eb7fdb26366bd24f3bca4"
   },
   "docs/contracts/README.md": {
     "mtime": 1785624519.065,
@@ -120,49 +120,49 @@
     "semantic_hash": "7731a1d76d7dbd7407a553b58ee9eb3d"
   },
   "docs/features/README.md": {
-    "mtime": 1785803697.4368615,
-    "ast_hash": "24b4bea1dfc8f75f87c9d8672284cbc9",
-    "semantic_hash": "24b4bea1dfc8f75f87c9d8672284cbc9"
+    "mtime": 1786067952.935999,
+    "ast_hash": "10f634b318a1e6be7983518b00b18d91",
+    "semantic_hash": "10f634b318a1e6be7983518b00b18d91"
   },
   "docs/features/deteccao-de-atualizacao-perdida/example-mapping.md": {
-    "mtime": 1785898634.7571836,
-    "ast_hash": "6f33b0e83a0aa8c9ddd9d231729d632a",
-    "semantic_hash": "6f33b0e83a0aa8c9ddd9d231729d632a"
+    "mtime": 1786070031.3623395,
+    "ast_hash": "1d57ab0fa385e8d524e2cf9828e76a3f",
+    "semantic_hash": "1d57ab0fa385e8d524e2cf9828e76a3f"
   },
   "docs/features/deteccao-de-atualizacao-perdida/feature-card.md": {
-    "mtime": 1785898634.7581842,
-    "ast_hash": "7271efc4448ee709d199cd877634f465",
-    "semantic_hash": "7271efc4448ee709d199cd877634f465"
+    "mtime": 1786070031.3618321,
+    "ast_hash": "d92795ee361d233b837a64b96959d2be",
+    "semantic_hash": "d92795ee361d233b837a64b96959d2be"
   },
   "docs/features/deteccao-de-protecao-inerte/example-mapping.md": {
-    "mtime": 1785898634.7591844,
-    "ast_hash": "fed8bacf2e16e6c9bb846243404cd0d0",
-    "semantic_hash": "fed8bacf2e16e6c9bb846243404cd0d0"
+    "mtime": 1786070031.364346,
+    "ast_hash": "1eb5b045041a6cd29b31e9c8991b8f0f",
+    "semantic_hash": "1eb5b045041a6cd29b31e9c8991b8f0f"
   },
   "docs/features/deteccao-de-protecao-inerte/feature-card.md": {
-    "mtime": 1785898634.7601843,
-    "ast_hash": "398c180381c40033ea0cc9ff425daaea",
-    "semantic_hash": "398c180381c40033ea0cc9ff425daaea"
+    "mtime": 1786070031.3633463,
+    "ast_hash": "da0faa50fb13a53f434c2bd024256d34",
+    "semantic_hash": "da0faa50fb13a53f434c2bd024256d34"
   },
   "docs/features/execucao-de-experimento/feature-card.md": {
-    "mtime": 1785898634.7611842,
-    "ast_hash": "25d888952cfc3b3aa9b522dad229b793",
-    "semantic_hash": "25d888952cfc3b3aa9b522dad229b793"
+    "mtime": 1786070031.3653457,
+    "ast_hash": "4b4b2d6e62df7c37f21c902f487eb62b",
+    "semantic_hash": "4b4b2d6e62df7c37f21c902f487eb62b"
   },
   "docs/features/observacao-passo-a-passo/feature-card.md": {
-    "mtime": 1785803640.5011828,
-    "ast_hash": "fa434bfdca303c2d44851a3c9c369ee6",
-    "semantic_hash": "fa434bfdca303c2d44851a3c9c369ee6"
+    "mtime": 1786070031.3663466,
+    "ast_hash": "c7111f607e9e3128252dba2e37953c76",
+    "semantic_hash": "c7111f607e9e3128252dba2e37953c76"
   },
   "docs/plano-do-laboratorio.md": {
-    "mtime": 1785898634.763695,
-    "ast_hash": "3821f9761c6af609c2397b02a3f7b0d7",
-    "semantic_hash": "3821f9761c6af609c2397b02a3f7b0d7"
+    "mtime": 1786049680.596016,
+    "ast_hash": "c4bbb5548b4dd5d4fc0b07e8de743875",
+    "semantic_hash": "c4bbb5548b4dd5d4fc0b07e8de743875"
   },
   "docs/specification-process.md": {
-    "mtime": 1785898634.764349,
-    "ast_hash": "640cfbca7bbd05a98cb6275a8db5b8ef",
-    "semantic_hash": "640cfbca7bbd05a98cb6275a8db5b8ef"
+    "mtime": 1786049698.32871,
+    "ast_hash": "69f4645f74bba80b617a2972c028145b",
+    "semantic_hash": "69f4645f74bba80b617a2972c028145b"
   },
   ".claude/skills/feature-planning/references/json-schema.json": {
     "mtime": 1785632391.948978,
@@ -220,14 +220,14 @@
     "semantic_hash": "e34b5cdaaaae94b71ddd56e990091a32"
   },
   "docs/features/observacao-passo-a-passo/example-mapping.md": {
-    "mtime": 1785898634.7611842,
-    "ast_hash": "a4e44bf9d992a3083bfc70dd3311cf28",
-    "semantic_hash": "a4e44bf9d992a3083bfc70dd3311cf28"
+    "mtime": 1786070031.3673465,
+    "ast_hash": "420ce9b341e69bcd29b7844a31c9b72d",
+    "semantic_hash": "420ce9b341e69bcd29b7844a31c9b72d"
   },
   ".claude/skills/adr/SKILL.md": {
     "mtime": 1785894671.675484,
     "ast_hash": "31fedc7b66976c1fe1a6e3f68d06defa",
-    "semantic_hash": "31fedc7b66976c1fe1a6e3f68d06defa"
+    "semantic_hash": ""
   },
   ".claude/skills/adr/references/adr-lifecycle.md": {
     "mtime": 1785896642.4979215,
@@ -265,14 +265,14 @@
     "semantic_hash": "2a7a40db0096f5c5d31a8e074050f48b"
   },
   "docs/adr/0005-a-forma-do-escalonador.md": {
-    "mtime": 1785803697.4313395,
-    "ast_hash": "63a3f81bc3a78f46b1809ab6e659ec54",
-    "semantic_hash": "63a3f81bc3a78f46b1809ab6e659ec54"
+    "mtime": 1786049698.319712,
+    "ast_hash": "66fb18fd54c7c7c8217f399f84c20756",
+    "semantic_hash": "66fb18fd54c7c7c8217f399f84c20756"
   },
   "docs/adr/0006-a-forma-da-estrategia-de-concorrencia.md": {
-    "mtime": 1785803697.4348621,
-    "ast_hash": "11574952cacc72197dddcb984c87f0be",
-    "semantic_hash": "11574952cacc72197dddcb984c87f0be"
+    "mtime": 1786049698.3207119,
+    "ast_hash": "7edad9d008cb63312cd2917095dbc918",
+    "semantic_hash": "7edad9d008cb63312cd2917095dbc918"
   },
   "docs/questions/Q-0001-1.md": {
     "mtime": 1785811032.9884427,
@@ -365,9 +365,9 @@
     "semantic_hash": "16f6fe53692fd70c60a64abcccf90d6a"
   },
   "docs/questions/README.md": {
-    "mtime": 1785811187.694,
-    "ast_hash": "f80db1e5f6e22e5d4fb174e9858f9c6a",
-    "semantic_hash": "f80db1e5f6e22e5d4fb174e9858f9c6a"
+    "mtime": 1786049697.6156065,
+    "ast_hash": "268c1e7f9c76a3c2e28a425d4fd23135",
+    "semantic_hash": "268c1e7f9c76a3c2e28a425d4fd23135"
   },
   ".claude/skills/workflow-retro/scripts/scan_transcripts.py": {
     "mtime": 1785898800.6640015,
@@ -375,14 +375,14 @@
     "semantic_hash": "67ac4efa3fa895db042770e479f6f472"
   },
   ".claude/agents/adr-reviewer.md": {
-    "mtime": 1785894581.079742,
-    "ast_hash": "d0c0089be1de4baf2b63f06ed3086731",
-    "semantic_hash": "d0c0089be1de4baf2b63f06ed3086731"
+    "mtime": 1786049698.3117132,
+    "ast_hash": "a87876f6d25e5715da2b357e634c2dec",
+    "semantic_hash": "a87876f6d25e5715da2b357e634c2dec"
   },
   ".claude/agents/adr-writer.md": {
-    "mtime": 1785894947.334,
-    "ast_hash": "aca5fae48c1a9c919f3312cb1b12dfa5",
-    "semantic_hash": "aca5fae48c1a9c919f3312cb1b12dfa5"
+    "mtime": 1786072714.0599442,
+    "ast_hash": "8ed4c304702f44df0de796e4858751df",
+    "semantic_hash": "8ed4c304702f44df0de796e4858751df"
   },
   ".claude/skills/workflow-retro/SKILL.md": {
     "mtime": 1785898800.6610024,
@@ -392,7 +392,7 @@
   ".claude/skills/workflow-retro/references/patch-de-skill.md": {
     "mtime": 1785898800.6630025,
     "ast_hash": "f67d2f6ab9973bee66f5a86fa9ccf46c",
-    "semantic_hash": "f67d2f6ab9973bee66f5a86fa9ccf46c"
+    "semantic_hash": ""
   },
   ".claude/skills/workflow-retro/references/taxonomia-de-atrito.md": {
     "mtime": 1785898800.6640015,
@@ -400,19 +400,19 @@
     "semantic_hash": "aa1c092bd8b3b4015c45dd79d5e45ce2"
   },
   "AGENTS.md": {
-    "mtime": 1785898634.7406707,
-    "ast_hash": "d44dc691b302a2a30af50d9358226136",
-    "semantic_hash": "d44dc691b302a2a30af50d9358226136"
+    "mtime": 1786066409.7492957,
+    "ast_hash": "0ad6958fae327d4c574948d0231e843b",
+    "semantic_hash": "0ad6958fae327d4c574948d0231e843b"
   },
   "docs/AGENTS.md": {
-    "mtime": 1785898634.7446725,
-    "ast_hash": "dde58d39bbc063fb39ccde21b1a346ab",
-    "semantic_hash": "dde58d39bbc063fb39ccde21b1a346ab"
+    "mtime": 1786072878.513515,
+    "ast_hash": "29ebfce775d8d282d4e26eb652201c67",
+    "semantic_hash": "29ebfce775d8d282d4e26eb652201c67"
   },
   "docs/CONTEXT.md": {
-    "mtime": 1785898634.7456727,
-    "ast_hash": "e6169ea8cc024200ee0c2f7dbd4e2ba7",
-    "semantic_hash": "e6169ea8cc024200ee0c2f7dbd4e2ba7"
+    "mtime": 1786049698.3187134,
+    "ast_hash": "54b48bb3e57ea7c188d80427822b5654",
+    "semantic_hash": "54b48bb3e57ea7c188d80427822b5654"
   },
   "docs/adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md": {
     "mtime": 1785811240.3531182,
@@ -420,58 +420,278 @@
     "semantic_hash": "0a402390f16fd65d91854153801f5ab7"
   },
   "docs/adr/0008-os-dois-planos-em-processos-separados.md": {
-    "mtime": 1785898634.74667,
-    "ast_hash": "cfb312ff0f501b3a36bcf6b38666f1d3",
-    "semantic_hash": "cfb312ff0f501b3a36bcf6b38666f1d3"
+    "mtime": 1786071833.371989,
+    "ast_hash": "b2a77009abd5a871056e3730b832d1a9",
+    "semantic_hash": "b2a77009abd5a871056e3730b832d1a9"
   },
-  "docs/architecture/arquitetura-alvo.md": {
-    "mtime": 1785898634.7486713,
-    "ast_hash": "4820aee053d7eda766e6cb73c3ef98a6",
-    "semantic_hash": "4820aee053d7eda766e6cb73c3ef98a6"
+  "frontend/package.json": {
+    "mtime": 1786049700.5746534,
+    "ast_hash": "5d92aadff7e3ee37baf10c23723a91a2",
+    "semantic_hash": "5d92aadff7e3ee37baf10c23723a91a2"
   },
-  "docs/architecture/contra-avaliacao.md": {
-    "mtime": 1785898634.7496703,
-    "ast_hash": "e2049d9ccdb1d2caa3ee35c19c2a778d",
-    "semantic_hash": "e2049d9ccdb1d2caa3ee35c19c2a778d"
+  "frontend/src/App.tsx": {
+    "mtime": 1786049700.5756526,
+    "ast_hash": "efa3c98bc1dc9a82e781c671062646c2",
+    "semantic_hash": "efa3c98bc1dc9a82e781c671062646c2"
   },
-  "docs/architecture/contratos-de-api.md": {
-    "mtime": 1785898634.7506711,
-    "ast_hash": "8497321716b48e95f0d3df39b3cf5abb",
-    "semantic_hash": "8497321716b48e95f0d3df39b3cf5abb"
+  "frontend/src/main.tsx": {
+    "mtime": 1786049700.5766551,
+    "ast_hash": "15d595a95c932afe5b48dce18b9ad4c6",
+    "semantic_hash": "15d595a95c932afe5b48dce18b9ad4c6"
   },
-  "docs/architecture/decisoes-pendentes.md": {
-    "mtime": 1785901576.584,
-    "ast_hash": "baa54a6d15e73a619fce31f86e808478",
-    "semantic_hash": "baa54a6d15e73a619fce31f86e808478"
+  "frontend/tsconfig.json": {
+    "mtime": 1786049700.5776544,
+    "ast_hash": "c428bd0c56f8fd4e52f929ee966b1691",
+    "semantic_hash": "c428bd0c56f8fd4e52f929ee966b1691"
   },
-  "docs/architecture/entrega-continua.md": {
-    "mtime": 1785898634.752183,
-    "ast_hash": "8e7c54508b21b827fccd6fc5e54463fc",
-    "semantic_hash": "8e7c54508b21b827fccd6fc5e54463fc"
+  "frontend/vite.config.ts": {
+    "mtime": 1786049700.5786529,
+    "ast_hash": "36010ff3602123bce7a6beb5175479dd",
+    "semantic_hash": "36010ff3602123bce7a6beb5175479dd"
   },
-  "docs/architecture/interface-web.md": {
-    "mtime": 1785898634.753184,
-    "ast_hash": "2da9925e9d453286c625a10fd39e277b",
-    "semantic_hash": "2da9925e9d453286c625a10fd39e277b"
+  "lab-journal/pom.xml": {
+    "mtime": 1786049700.5796533,
+    "ast_hash": "917f4388f1bc24d266c74b011b8e6634",
+    "semantic_hash": "917f4388f1bc24d266c74b011b8e6634"
   },
-  "docs/architecture/mensageria.md": {
-    "mtime": 1785898634.754184,
-    "ast_hash": "efcfbcd061851b5f2b0820e8e8c3987a",
-    "semantic_hash": "efcfbcd061851b5f2b0820e8e8c3987a"
+  "lab-journal/src/main/java/dev/da0hn/lab/application/journal/LabJournalApplication.java": {
+    "mtime": 1786049700.5831687,
+    "ast_hash": "ac082170330ca3a5d2a547f62a9fe1b1",
+    "semantic_hash": "ac082170330ca3a5d2a547f62a9fe1b1"
   },
-  "docs/architecture/modelo-de-dados.md": {
-    "mtime": 1785898634.755184,
-    "ast_hash": "5cbc26738b57bc9f71b89ed7c85174dd",
-    "semantic_hash": "5cbc26738b57bc9f71b89ed7c85174dd"
+  "lab-journal/src/main/resources/db/migration/V1__criar_schema_do_lab_journal.sql": {
+    "mtime": 1786049700.585169,
+    "ast_hash": "2e5824ce9d043dade629bdf52ff77bad",
+    "semantic_hash": "2e5824ce9d043dade629bdf52ff77bad"
   },
-  "docs/architecture/modelo-de-dominio.md": {
-    "mtime": 1785898634.7561834,
-    "ast_hash": "91e4ee7e49faf316100b9437bc2ecea3",
-    "semantic_hash": "91e4ee7e49faf316100b9437bc2ecea3"
+  "lab-journal/src/test/java/dev/da0hn/lab/application/journal/LabJournalApplicationTests.java": {
+    "mtime": 1786049700.5891695,
+    "ast_hash": "4175ac98bb5213c06009a9ee5c5838e9",
+    "semantic_hash": "4175ac98bb5213c06009a9ee5c5838e9"
   },
-  "docs/architecture/modulos-e-fronteiras.md": {
-    "mtime": 1785898634.7561834,
-    "ast_hash": "b7870754dc6401869a2c087361b0bbe3",
-    "semantic_hash": "b7870754dc6401869a2c087361b0bbe3"
+  "lab-plane/pom.xml": {
+    "mtime": 1786049700.59017,
+    "ast_hash": "71cd3f8d9ad5b04123c9f21f774f4373",
+    "semantic_hash": "71cd3f8d9ad5b04123c9f21f774f4373"
+  },
+  "lab-plane/src/main/java/dev/da0hn/lab/application/labplane/LabPlaneApplication.java": {
+    "mtime": 1786052650.2940412,
+    "ast_hash": "4f66a8ccc169393a479ecc11ac963b07",
+    "semantic_hash": "4f66a8ccc169393a479ecc11ac963b07"
+  },
+  "lab-plane/src/main/resources/db/migration/V1__criar_schema_do_lab_plane.sql": {
+    "mtime": 1786049700.599171,
+    "ast_hash": "8167c13115e1bf85663a04dab2f740e9",
+    "semantic_hash": "8167c13115e1bf85663a04dab2f740e9"
+  },
+  "lab-plane/src/test/java/dev/da0hn/lab/application/labplane/LabPlaneApplicationTests.java": {
+    "mtime": 1786049700.605171,
+    "ast_hash": "d7543714b94c17f7b2b011523357a389",
+    "semantic_hash": "d7543714b94c17f7b2b011523357a389"
+  },
+  "local/postgres-init.sql": {
+    "mtime": 1786049700.606171,
+    "ast_hash": "8607d394fdc4eb89fc1cf8c6e2b46242",
+    "semantic_hash": "8607d394fdc4eb89fc1cf8c6e2b46242"
+  },
+  "pom.xml": {
+    "mtime": 1786049700.6071692,
+    "ast_hash": "43b64a3fea08dc3d5ca5bc36f9f3a584",
+    "semantic_hash": "43b64a3fea08dc3d5ca5bc36f9f3a584"
+  },
+  "scripts/check_citations.py": {
+    "mtime": 1786049698.3297102,
+    "ast_hash": "3079d2f3151892a188180ac369bc7f80",
+    "semantic_hash": "3079d2f3151892a188180ac369bc7f80"
+  },
+  "shared/pom.xml": {
+    "mtime": 1786049700.60917,
+    "ast_hash": "9fa8dff3f6aa4982f27e233f5dcc18b1",
+    "semantic_hash": "9fa8dff3f6aa4982f27e233f5dcc18b1"
+  },
+  "shared/src/main/java/dev/da0hn/lab/shared/package-info.java": {
+    "mtime": 1786049700.61417,
+    "ast_hash": "43db10b3c5b2c54b01be5128854a0188",
+    "semantic_hash": "43db10b3c5b2c54b01be5128854a0188"
+  },
+  "system-under-test/pom.xml": {
+    "mtime": 1786049700.6151702,
+    "ast_hash": "3a0b23383678093b09402558353dd819",
+    "semantic_hash": "3a0b23383678093b09402558353dd819"
+  },
+  "system-under-test/src/main/java/dev/da0hn/lab/application/sut/SystemUnderTestApplication.java": {
+    "mtime": 1786049700.6201699,
+    "ast_hash": "8834eb145387c7eb00917db403502877",
+    "semantic_hash": "8834eb145387c7eb00917db403502877"
+  },
+  "system-under-test/src/main/resources/db/migration/V1__criar_schema_do_sut.sql": {
+    "mtime": 1786049700.6231709,
+    "ast_hash": "467b5fa9bfe2c0e3506cb5d142332ed8",
+    "semantic_hash": "467b5fa9bfe2c0e3506cb5d142332ed8"
+  },
+  "system-under-test/src/test/java/dev/da0hn/lab/application/sut/SystemUnderTestApplicationTests.java": {
+    "mtime": 1786049700.6291716,
+    "ast_hash": "7190b0d67c6ccf760da8f1b2642d4961",
+    "semantic_hash": "7190b0d67c6ccf760da8f1b2642d4961"
+  },
+  ".github/workflows/build.yml": {
+    "mtime": 1786049700.5626478,
+    "ast_hash": "6fc8b00989a36a5703d5d8c9fd0d9d15",
+    "semantic_hash": "6fc8b00989a36a5703d5d8c9fd0d9d15"
+  },
+  ".github/workflows/docs.yml": {
+    "mtime": 1786049700.5636463,
+    "ast_hash": "4441e90c37a7272c5c6550d8a10a6459",
+    "semantic_hash": "4441e90c37a7272c5c6550d8a10a6459"
+  },
+  "compose.yaml": {
+    "mtime": 1786049700.568655,
+    "ast_hash": "fb35e0bf4c8091487dfef1a8f4aada22",
+    "semantic_hash": "fb35e0bf4c8091487dfef1a8f4aada22"
+  },
+  "docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md": {
+    "mtime": 1786049698.3217113,
+    "ast_hash": "cc89b04aa2a09283da413af9832d43bf",
+    "semantic_hash": "cc89b04aa2a09283da413af9832d43bf"
+  },
+  "docs/adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md": {
+    "mtime": 1786072413.5947485,
+    "ast_hash": "195d5800c60968f28721a449bbd90a8f",
+    "semantic_hash": "195d5800c60968f28721a449bbd90a8f"
+  },
+  "docs/adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md": {
+    "mtime": 1786074851.9027796,
+    "ast_hash": "43f436532da0f4bfed5a70b56dcd8f8e",
+    "semantic_hash": "43f436532da0f4bfed5a70b56dcd8f8e"
+  },
+  "docs/adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md": {
+    "mtime": 1786074161.9701738,
+    "ast_hash": "7486c5e91a9bd28ffa76b50b8aa4164c",
+    "semantic_hash": "7486c5e91a9bd28ffa76b50b8aa4164c"
+  },
+  "docs/adr/arquivo/proposta-2026-08-03/contratos-de-api.md": {
+    "mtime": 1786049696.9280827,
+    "ast_hash": "76f38c0b20ec0337fa9cec00606932a2",
+    "semantic_hash": "76f38c0b20ec0337fa9cec00606932a2"
+  },
+  "docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md": {
+    "mtime": 1786049698.3267117,
+    "ast_hash": "5e6dd3623debcaada54e996494949996",
+    "semantic_hash": "5e6dd3623debcaada54e996494949996"
+  },
+  "docs/adr/arquivo/proposta-2026-08-03/entrega-continua.md": {
+    "mtime": 1786049696.9300845,
+    "ast_hash": "32470c0d33375da05774abf012f32b80",
+    "semantic_hash": "32470c0d33375da05774abf012f32b80"
+  },
+  "docs/adr/arquivo/proposta-2026-08-03/interface-web.md": {
+    "mtime": 1786049696.9310818,
+    "ast_hash": "f8b953ef50e34e112287e0415fa5d817",
+    "semantic_hash": "f8b953ef50e34e112287e0415fa5d817"
+  },
+  "docs/adr/arquivo/proposta-2026-08-03/mensageria.md": {
+    "mtime": 1786049696.9320817,
+    "ast_hash": "1c71cd7c462fbe3e607f3a97c9c529f9",
+    "semantic_hash": "1c71cd7c462fbe3e607f3a97c9c529f9"
+  },
+  "docs/adr/arquivo/proposta-2026-08-03/modelo-de-dados.md": {
+    "mtime": 1786049694.9205434,
+    "ast_hash": "b70f568f5c00063fe61516e7541c2181",
+    "semantic_hash": "b70f568f5c00063fe61516e7541c2181"
+  },
+  "docs/adr/arquivo/proposta-2026-08-03/modelo-de-dominio.md": {
+    "mtime": 1786049695.6072369,
+    "ast_hash": "dc5039fc7fd72eaa24f0fa09cf7d08ee",
+    "semantic_hash": "dc5039fc7fd72eaa24f0fa09cf7d08ee"
+  },
+  "docs/adr/arquivo/proposta-2026-08-03/modulos-e-fronteiras.md": {
+    "mtime": 1786049696.9330828,
+    "ast_hash": "122924ebb617c4ece3a60befa27ce03e",
+    "semantic_hash": "122924ebb617c4ece3a60befa27ce03e"
+  },
+  "docs/adr/fila-de-decisoes.md": {
+    "mtime": 1786074777.9809718,
+    "ast_hash": "22cf2ed50d6aaeb440f4c8ff695c41ff",
+    "semantic_hash": "22cf2ed50d6aaeb440f4c8ff695c41ff"
+  },
+  "docs/adr/plano-de-escrita-do-lote-e.md": {
+    "mtime": 1786072431.3602328,
+    "ast_hash": "1febaa6100fa2f7ff0cc2430ecdaacb3",
+    "semantic_hash": "1febaa6100fa2f7ff0cc2430ecdaacb3"
+  },
+  "docs/questions/Q-0019.md": {
+    "mtime": 1786049697.6096056,
+    "ast_hash": "b863cc0a4e703ea3c65c11d937f914bf",
+    "semantic_hash": "b863cc0a4e703ea3c65c11d937f914bf"
+  },
+  "docs/questions/Q-0020.md": {
+    "mtime": 1786049697.6096056,
+    "ast_hash": "a56e2a71cab65dc40c918b2773876dab",
+    "semantic_hash": "a56e2a71cab65dc40c918b2773876dab"
+  },
+  "docs/questions/Q-0021.md": {
+    "mtime": 1786049697.6106067,
+    "ast_hash": "eceb2bfc5bbe329e2a514c8ebd8663ea",
+    "semantic_hash": "eceb2bfc5bbe329e2a514c8ebd8663ea"
+  },
+  "docs/questions/Q-0022.md": {
+    "mtime": 1786049697.6106067,
+    "ast_hash": "de1b7ce9eed3276bcd17fba09f553b87",
+    "semantic_hash": "de1b7ce9eed3276bcd17fba09f553b87"
+  },
+  "docs/questions/Q-0023.md": {
+    "mtime": 1786049697.6116066,
+    "ast_hash": "639c0791e91d792c33aaf0a1bbc7d543",
+    "semantic_hash": "639c0791e91d792c33aaf0a1bbc7d543"
+  },
+  "docs/questions/Q-0024.md": {
+    "mtime": 1786049697.612606,
+    "ast_hash": "0ac211081429ad8ce94712d1ba498243",
+    "semantic_hash": "0ac211081429ad8ce94712d1ba498243"
+  },
+  "docs/questions/Q-0025.md": {
+    "mtime": 1786049697.612606,
+    "ast_hash": "064b2fd7e50f0c9e5b4e81ba78d37caf",
+    "semantic_hash": "064b2fd7e50f0c9e5b4e81ba78d37caf"
+  },
+  "docs/questions/Q-0026.md": {
+    "mtime": 1786049697.6136062,
+    "ast_hash": "a8c989a6ce10558a328108632e51d0e0",
+    "semantic_hash": "a8c989a6ce10558a328108632e51d0e0"
+  },
+  "docs/questions/Q-0027.md": {
+    "mtime": 1786049697.6146066,
+    "ast_hash": "8f4ff7652f5a07e5b1039e0c670d3705",
+    "semantic_hash": "8f4ff7652f5a07e5b1039e0c670d3705"
+  },
+  "docs/questions/Q-0028.md": {
+    "mtime": 1786049697.6146066,
+    "ast_hash": "eb4313c1270738a8adf92ca1fbe83d96",
+    "semantic_hash": "eb4313c1270738a8adf92ca1fbe83d96"
+  },
+  "frontend/index.html": {
+    "mtime": 1786049700.5726528,
+    "ast_hash": "fdd53a1b03604162cc72994907367123",
+    "semantic_hash": "fdd53a1b03604162cc72994907367123"
+  },
+  "lab-journal/src/main/resources/application.yml": {
+    "mtime": 1786049700.584169,
+    "ast_hash": "f1ef1eac0a8c3c31b416648d7b6fb262",
+    "semantic_hash": "f1ef1eac0a8c3c31b416648d7b6fb262"
+  },
+  "lab-plane/src/main/resources/application.yml": {
+    "mtime": 1786049700.5971694,
+    "ast_hash": "8e3bf4bd3efdc2ce83dabf6463baa2e4",
+    "semantic_hash": "8e3bf4bd3efdc2ce83dabf6463baa2e4"
+  },
+  "scripts/citations-baseline.txt": {
+    "mtime": 1786049698.330711,
+    "ast_hash": "f2b8e92f494008f379d87636cd6c8062",
+    "semantic_hash": "f2b8e92f494008f379d87636cd6c8062"
+  },
+  "system-under-test/src/main/resources/application.yml": {
+    "mtime": 1786049700.6211715,
+    "ast_hash": "71f4f8564e5fa0584a513115b089ed6b",
+    "semantic_hash": "71f4f8564e5fa0584a513115b089ed6b"
   }
 }
