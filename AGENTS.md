@@ -187,6 +187,15 @@ Vale para os 42 fenômenos, sem exceção. É por isso que `version` não está 
   e o custo está nomeado na fila: um resultado deixa de aparecer em diff, de ser revisado
   em PR e de sobreviver a um banco recriado.
 
+**As regras de aleatoriedade e de relógio alcançam pelo papel do valor, e não pelo plano
+que o produz.** Decidido em 2026-08-06. Elas valem sobre todo valor que entra em veredito,
+em escalonamento ou em identidade derivada da semente — no sistema medido ou no Lab Plane,
+indiferentemente. Um `Math.random()` no escalonador quebra a reprodutibilidade tão
+completamente quanto um no domínio, e uma regra qualificada por plano deixaria de alcançá-lo.
+O discriminador de execução não entra em nenhum dos três papéis: ele é rótulo de partição,
+e duas execuções idênticas com discriminadores diferentes produzem o mesmo veredito e a
+mesma intercalação.
+
 As três primeiras são hoje **texto, não regra executável**.
 [`Q-0002-1`](docs/questions/Q-0002-1.md) registra isso, e a guarda pertence à decisão de
 arquitetura mínima.

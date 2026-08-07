@@ -1455,6 +1455,103 @@ argumento a favor de A, o segundo fortalece o argumento contra ela, e o terceiro
 que o critério que a proposta usou para recomendá-la aponta para B. A escolha continua
 sendo da pessoa.
 
+### A segunda rodada do grupo II, em 2026-08-06
+
+| Linha  | Escolha                                           | Seguiu a recomendação? |
+|--------|---------------------------------------------------|------------------------|
+| `E-11` | um componente de identidade próprio, com contrato | não                    |
+| `E-13` | as regras alcançam pelo papel do valor            | sim                    |
+
+`E-23` e `E-12` continuam abertas. A primeira ganhou uma candidata que nenhuma das três
+anteriores cobria; a segunda não foi decidida nesta rodada, e o motivo está no fim desta
+seção.
+
+#### `E-11` fecha no componente próprio, e abre `E-24` no mesmo ato
+
+A escolha é a Alternativa C de
+[`D-DOM-14`](arquivo/proposta-2026-08-03/modelo-de-dominio.md#d-dom-14--quem-é-dono-da-identidade-derivada-da-semente),
+contra a recomendação da proposta e contra os três achados desta fila, que apontavam para
+B. **O que C compra é o que a proposta já dizia: a regra fica isolada e testável.** O que
+ela custa também já estava dito — um contexto inteiro para uma regra de uma linha — e a
+pessoa o aceitou de olhos abertos.
+
+**Os três achados desta fila não foram derrotados; eles ficaram sem alvo.** Eles pesavam
+A contra B, e a escolha não é nenhuma das duas. O que eles descrevem — a semente
+atravessando a fronteira, ou o instrumento publicando identidade pronta — reaparece
+inteiro na linha que C não fecha.
+
+#### `E-24` — a alternativa C isola a regra, e não decide quem a invoca
+
+`E-11` responde **onde a regra de derivação vive**. Ela não responde **quem a chama**, e
+o [ADR-0008](0008-os-dois-planos-em-processos-separados.md) torna a diferença observável:
+os dois planos estão em processos separados, e a fronteira entre eles é a rede.
+
+```mermaid
+flowchart TB
+    C["o componente de identidade<br/>fechado por E-11"]
+    S["biblioteca em shared,<br/>chamada pelo sistema medido"]
+    L["biblioteca em shared,<br/>chamada pelo lab-plane"]
+    R["serviço próprio,<br/>atrás de chamada de rede"]
+    C --> S
+    C --> L
+    C --> R
+    S -.-> OA["a semente atravessa<br/>a fronteira: objeção de A"]
+    L -.-> OB["o instrumento publica<br/>identidade pronta: objeção de B"]
+    R -.-> OC["latência de rede dentro<br/>da janela medida: custo novo"]
+```
+
+A terceira forma é a única que dispensa escolher entre os dois planos, e é a única que
+põe uma chamada de rede **dentro da janela medida** — num laboratório cujo objeto de
+estudo é justamente o que acontece entre dois passos, isso não é detalhe de desempenho.
+**Nenhuma foi escolhida.**
+
+#### `E-13` fecha por papel do valor, e o `AGENTS.md` muda no mesmo commit
+
+As regras de aleatoriedade e de relógio passam a alcançar todo valor que entra em
+veredito, em escalonamento ou em identidade derivada da semente — indiferentemente do
+plano que o produz. O escalonador do Lab Plane continua coberto, que era o defeito da
+formulação por plano; e não há exceção nomeada, que era o custo apontado pelo
+[ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md).
+
+**O discriminador da execução não entra em nenhum dos três papéis.** Ele é rótulo de
+partição: duas execuções idênticas com discriminadores diferentes produzem o mesmo
+veredito e a mesma intercalação. É por isso que o UUIDv7 não viola as regras — não porque
+foi dispensado delas, mas porque nunca esteve no alcance delas.
+
+**A escolha não fecha [`Q-0002-1`](../questions/Q-0002-1.md).** As regras continuam texto
+e não guarda executável; o que mudou foi o que elas alcançam, e não o que as verifica.
+
+#### `E-23` ganhou uma quarta candidata: nome diferente de cada lado
+
+A pergunta é de 2026-08-06, e ela desfaz um pressuposto que as três candidatas anteriores
+carregavam sem enunciar — o de que a coluna precisa ter **um** nome. Ela não precisa.
+Pela decisão `E-18` cada serviço tem seu próprio schema e nenhum lê o do outro, então
+nada obriga que a coluna do sistema medido e a das tabelas do Lab Plane se chamem igual.
+
+```mermaid
+flowchart LR
+    LPT["tabelas do lab-plane<br/>execution_id"]
+    SUT["tabelas medidas<br/>nome genérico"]
+    CDC["o stream de CDC<br/>traz o nome do medido"]
+    LPT -->|" abre a execução "| SUT
+    SUT --> CDC
+    CDC -->|" o consumidor traduz "| LPT
+```
+
+**O salto mental não desaparece; ele muda de lugar.** Nas suas próprias tabelas o Lab
+Plane escreve `execution_id` e lê `execution_id`. Mas o oráculo lê o sistema medido por
+CDC, e o stream carrega o nome que a coluna tem **lá** — a tradução passa a viver no
+consumidor, num ponto só e nomeado, em vez de espalhada por toda consulta. Contra: um
+mesmo valor com dois nomes exige que alguém saiba que são o mesmo, e essa ligação deixa
+de ser visível no esquema.
+
+#### `E-12` não foi decidida nesta rodada
+
+As três candidatas se distinguem por vocabulário de replicação lógica do PostgreSQL —
+LSN, replication slot, retenção de WAL, row filter na publication — e a escolha entre
+elas não é escolha nenhuma sem esse vocabulário. **A linha continua aberta, com as três
+candidatas intactas.**
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
