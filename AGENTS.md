@@ -14,8 +14,12 @@ empacota e sobe — e não tem uma única regra de negócio dentro.** Nenhum dos
 | `docker compose up --build`       | os quatro serviços e o banco, localmente         |
 | `npm --prefix frontend run build` | constrói a interface                             |
 
-A stack é Java 25, Spring Boot 4.1, PostgreSQL 18, Maven e Docker. O RabbitMQ **não**
-entrou, e o gatilho dele continua na etapa 5.
+A stack é Java 25, Spring Boot 4.1, PostgreSQL 18, Maven e Docker. **O broker foi
+antecipado em 2026-08-06, e ainda não existe na árvore.** Ele deixou de esperar a etapa 5
+e passou a ser o transporte entre o conector de CDC e o Lab Plane, por decisão explícita
+de estudo — a regra de que uma tecnologia só entra quando um experimento não puder ser
+executado sem ela **não foi satisfeita nesse caso, e sim dispensada**. O registro está na
+linha `E-12` de [`docs/adr/fila-de-decisoes.md`](docs/adr/fila-de-decisoes.md).
 
 ### Os quatro serviços, e a regra que os separa
 
@@ -163,8 +167,10 @@ Vale para os 42 fenômenos, sem exceção. É por isso que `version` não está 
 
 - **Nenhuma tecnologia entra por estar
   disponível.** Cada uma entra quando um experimento
-  não puder ser executado sem ela. Antes de propor Valkey, RabbitMQ ou OpenTelemetry,
-  diga qual limitação concreta da stack atual ela resolve.
+  não puder ser executado sem ela. Antes de propor Valkey ou OpenTelemetry, diga qual
+  limitação concreta da stack atual ela resolve. **A regra foi dispensada uma vez**, para
+  o broker, em 2026-08-06 — uma dispensa registrada não é precedente: a próxima também
+  precisa ser explícita.
 - **Nenhuma aleatoriedade não semeada.** `Math.random()`, `java.util.Random` e
   `ThreadLocalRandom` são proibidos fora do componente de aleatoriedade semeada. Uma
   chamada esquecida quebra a reprodutibilidade em silêncio, meses depois.

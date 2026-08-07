@@ -1684,6 +1684,157 @@ nome de clock skew. Nada nesta fila decide como elas se alinham.
 
 **Nenhuma das duas linhas foi decidida.**
 
+### A terceira rodada do grupo II, em 2026-08-06
+
+| Linha  | Escolha                                          | Seguiu a recomendação? |
+|--------|--------------------------------------------------|------------------------|
+| `E-12` | o CDC publica num broker, e o Lab Plane consome  | não                    |
+| `E-24` | serviço próprio, atrás de chamada de rede        | não                    |
+| `E-25` | `created_at` e `updated_at` nas tabelas medidas  | não                    |
+| `E-26` | sim, com relógio pelo adaptador injetável        | sim                    |
+
+Três das quatro contrariam a recomendação, e nenhuma delas foi tomada sem que a objeção
+fosse enunciada antes. **O que segue não repete as objeções: procura, para cada uma, o
+desenho em que ela deixa de existir.** Onde esse desenho não foi encontrado, a objeção
+fica escrita como custo aceito, e não como argumento vencido.
+
+#### `E-12` fecha no broker, e o LSN é o que torna a escolha defensável
+
+A objeção registrada acima era que um instrumento transportando o veredito por broker
+sofre os fenômenos que mede — duplicata, perda e reordenação viram contagem errada, e
+ninguém distingue o achado do artefato. **Ela não vale para um evento de CDC, e a razão é
+o LSN.**
+
+```mermaid
+flowchart LR
+    W[("WAL")]
+    C["conector de CDC"]
+    B["broker"]
+    LP["lab-plane"]
+    V["veredito"]
+    W -->|" cada evento carrega<br/>o seu LSN "| C
+    C --> B
+    B -->|" pode duplicar,<br/>reordenar, perder "| LP
+    LP --> V
+```
+
+Uma mensagem de negócio não tem identidade natural nem ordem total, e por isso duplicata
+e reordenação são invisíveis nela. **Um evento de CDC tem as duas, de graça**: o LSN é
+único, monotônico, e atribuído pelo servidor antes de qualquer transporte existir. Isso
+dá ao consumidor três defesas que ele não teria com mensagem comum:
+
+| Fenômeno     | O que o LSN permite                                              |
+|--------------|------------------------------------------------------------------|
+| duplicata    | descartar o evento já visto, por LSN                             |
+| reordenação  | ordenar por LSN antes de calcular                                |
+| perda        | detectar o buraco na sequência e invalidar o veredito            |
+
+A terceira é a que mais importa: **ela converte uma falha silenciosa em ruidosa.** Sem o
+LSN, uma mensagem perdida vira uma perda contabilizada a mais e o experimento reporta um
+número errado com cara de certo. Com ele, o instrumento sabe que não sabe.
+
+**Dois custos continuam, e nenhum é resolvido pelo LSN.** O broker precisa estar de pé
+para que exista veredito, o que acrescenta um modo de falha ao instrumento. E a regra do
+[`AGENTS.md`](../../AGENTS.md) diz que uma tecnologia entra quando um experimento não
+puder ser executado sem ela — aqui ela entra por decisão explícita de estudo, antecipando
+a etapa 5. **A regra não foi satisfeita; ela foi dispensada de olhos abertos, e esta
+linha é o registro disso.**
+
+#### `E-24` fecha no serviço próprio, e a latência sai da janela se a derivação for antes
+
+A objeção era a chamada de rede dentro da janela medida, num laboratório cujo objeto de
+estudo é o que acontece entre dois passos. **O desenho que a remove é temporal, e não
+estrutural.**
+
+```mermaid
+sequenceDiagram
+    participant LP as lab-plane
+    participant ID as serviço de identidade
+    participant SUT as sistema medido
+    LP->>ID: deriva os ids desta execução
+    ID-->>LP: os ids
+    LP->>SUT: seeding: as linhas iniciais
+    Note over LP,SUT: a janela medida começa aqui
+    LP->>SUT: passo 1
+    LP->>SUT: passo 2
+```
+
+Se a derivação acontece na **fase de seeding**, antes de a janela medida abrir, a latência
+de rede não está no caminho que se mede. A objeção deixa de existir — mas ela volta
+inteira se algum experimento precisar de identidade **durante** os passos. **Isso não foi
+decidido, e nenhum dos quatro experimentos especificados hoje exige identidade nova em
+tempo de execução.** Se um exigir, esta linha reabre.
+
+#### `E-25` fecha nas duas colunas, e a objeção pedagógica vira regra
+
+`created_at` e `updated_at` entram em `resource` e `allocation`. A objeção registrada era
+que `updated_at` é um token de versão escrito sem a palavra, e que o E1 encontraria pronta
+metade da solução que deve construir. **Não há desenho que faça a coluna deixar de servir
+de token** — a coluna existe, e um `UPDATE ... WHERE updated_at = ?` funciona.
+
+O que sobra é regra, e ela precisa ficar escrita porque não é executável:
+
+> **Nenhuma estratégia de concorrência lê `updated_at`.** A coluna é metadado de
+> auditoria. A estratégia `OPTIMISTIC` introduz a sua própria coluna de versão, no ADR
+> que a definir, e o faz depois de o experimento ter mostrado o problema.
+
+Ela é da mesma natureza das três regras que [`Q-0002-1`](../questions/Q-0002-1.md) já
+registra como texto sem guarda, e herda o mesmo risco: uma violação passa em silêncio.
+**A diferença é que esta é mais fácil de violar sem perceber**, porque a coluna estará
+lá, preenchida, e o código que a lê parecerá inocente.
+
+#### `E-26` fecha com o adaptador, e é a primeira aplicação de `E-13`
+
+`executed_at`, `concluded_at`, `created_at` e `updated_at` entram nas tabelas do Lab
+Plane, e **o relógio vem do adaptador injetável, nunca de `DEFAULT now()`**. A razão é a
+formulação por papel fixada em `E-13` no mesmo dia: se a curva do grupo D for construída
+sobre `executed_at` e `concluded_at`, esses valores entram no papel veredito, e a regra
+os alcança.
+
+**A pergunta das duas fontes de tempo continua aberta.** O instrumento marca a janela
+pelo seu relógio; o oráculo ordena eventos por LSN do sistema medido. Alinhar as duas é o
+problema que o grupo E estuda sob o nome de clock skew, e nada aqui o decide.
+
+### Quatro linhas novas, abertas pelas escolhas da terceira rodada
+
+#### `E-27` — como o valor de `created_at` e `updated_at` nasce
+
+`E-25` decidiu que as colunas existem. **Não decidiu quem as preenche**, e as três formas
+já estão medidas acima: `DEFAULT now()` colapsa rows da mesma transação num só instante;
+trigger `BEFORE UPDATE` acrescenta trabalho **dentro** da janela medida; e o preenchimento
+pela aplicação faz o sistema medido depender do adaptador de relógio por uma coluna que
+nenhum oráculo lê. A segunda é a única que altera o que se está medindo.
+
+#### `E-28` — qual conector lê o WAL e publica no broker
+
+`E-12` põe um conector entre o WAL e o broker, e ele não existia antes. As candidatas
+visíveis são um conector pronto e um consumidor escrito aqui, sobre o protocolo de
+replicação do próprio driver. **A escolha carrega mais do que conveniência**: um conector
+pronto traz o seu formato de evento, o seu slot e o seu modo de falha, e o laboratório
+passa a depender de que ele preserve o LSN no envelope — que é a peça de que `E-12`
+depende inteiramente.
+
+#### `E-29` — o filtro por execução, agora que existe um broker
+
+As três candidatas de `E-12` foram enunciadas sem broker no caminho, e uma quarta aparece
+com ele: **routing key contendo o `partition_id`**, com binding por execução. Ela é o
+análogo do slot por execução, sem a retenção de WAL — o corte passa a ser do broker, e
+não do PostgreSQL.
+
+**Uma pergunta de topologia vem junto, e ela não é opcional.** A etapa 5 injeta falhas no
+broker de propósito. Se a instância que transporta o veredito for a mesma que o
+experimento sabota, o instrumento cai junto com o objeto de estudo — e a etapa 6, que
+mata processos, agrava isso. **Nada decide hoje se são duas instâncias, dois virtual hosts
+ou a mesma coisa.**
+
+#### `E-30` — o slot do conector deixou de ser por execução, e vira permanente
+
+Com o conector publicando continuamente, o replication slot dele é **um só e de vida
+longa**, e não um por execução. A retenção de WAL sai do cenário "um slot órfão por
+execução morta" e entra em "um slot que retém tudo se o conector ficar fora do ar" — no
+banco compartilhado do homelab, com vizinhos. `max_slot_wal_keep_size` volta a ser a
+mitigação, e continua sendo parâmetro de cluster que afeta terceiros.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
