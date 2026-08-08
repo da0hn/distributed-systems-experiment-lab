@@ -14,9 +14,9 @@ skill.
 ## Leia antes de escrever
 
 1. `docs/adr/README.md` — convenções de escrita, estados e numeração.
-1. `docs/adr/fila-de-decisoes.md` — a fila única, e o que cada linha destrava.
-2. `references/adr.md` — o template obrigatório.
-3. `references/adr-lifecycle.md` — o que fazer antes de criar, enquanto proposto, ao
+2. `docs/adr/fila-de-decisoes.md` — a fila única, e o que cada linha destrava.
+3. `references/adr.md` — o template obrigatório.
+4. `references/adr-lifecycle.md` — o que fazer antes de criar, enquanto proposto, ao
    aceitar e depois de aceito.
 
 ## Quando uma decisão merece ADR
@@ -65,19 +65,31 @@ encontrada durante a redação vira linha em
 ## Use o template obrigatório
 
 Leia `references/adr.md` antes de criar ou atualizar um ADR. Mantenha todas as seções
-obrigatórias. Escreva "Não se aplica — <motivo>" quando uma seção não se aplicar. Limite:
-9.000 caracteres por ADR novo.
+obrigatórias. Escreva "Não se aplica — <motivo>" quando uma seção não se aplicar.
+
+**Esta skill não declara o tamanho de um ADR.** Quem declara é
+[`check_artifact_limits.py`](../feature-planning/scripts/check_artifact_limits.py),
+que mede prosa e desconta diagrama, bloco de código e tabela. Rode-o em vez de
+estimar; ele recusa esta skill se um número reaparecer aqui.
 
 ## Siga o ciclo de vida
 
-Leia `references/adr-lifecycle.md` antes de criar, aceitar, substituir ou subsumir uma
-decisão.
+Leia `references/adr-lifecycle.md` antes de criar, aceitar, substituir, subsumir ou
+patchar uma decisão.
 
 - Um ADR por vez. Nunca crie rascunhos antecipados ou em lote.
 - Registre toda objeção, alternativa descartada ou pendência em "## Questões em aberto" no
   mesmo turno em que surgir.
 - Nenhum ADR é aceito por omissão. Exija aprovação explícita da pessoa responsável.
-- Nunca edite ou apague um ADR aceito. Para mudar a decisão, crie um ADR novo.
+- **A imutabilidade do corpo de um ADR aceito foi revogada em 2026-08-07.** Cinco formas
+  o alteram — substituição, subsunção, emenda, adendo e **patch** —, cada uma com gatilho
+  e limite próprios, e nenhuma outra é permitida. As quatro primeiras exigem um ADR novo;
+  o patch não, mas ele NÃO DEVE alterar a decisão nem o argumento que a sustentava, e
+  NÃO DEVE existir sem a linha dele em `## Patches aplicados`, no mesmo commit. A regra
+  completa está em `docs/adr/README.md`, seção "A revogação da imutabilidade, decidida em
+  2026-08-07". Aplique-a a partir de lá.
+- Um ADR aceito continua não sendo **apagado**, e continua não mudando de decisão sem
+  ADR novo.
 
 ## Convenções de escrita
 

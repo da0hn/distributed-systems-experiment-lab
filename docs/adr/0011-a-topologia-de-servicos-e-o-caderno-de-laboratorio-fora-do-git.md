@@ -274,3 +274,11 @@ medido, papel isolado num componente próprio.
 
 Revise a posição do componente de identidade se algum experimento futuro exigir
 identificador novo durante os passos — a latência de rede volta a entrar na medida.
+
+## Patches aplicados
+
+Nenhum patch aplicado.
+
+O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
+argumento que a sustentava.

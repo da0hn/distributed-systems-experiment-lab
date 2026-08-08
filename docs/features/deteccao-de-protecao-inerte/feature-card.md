@@ -43,15 +43,15 @@ tomada.
 
 ## Regras de negócio
 
-| #  | Regra                                                                                                                                                                                     | Evidência         | Aprovada por |
-|----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|--------------|
-| R1 | `Σ amount` das linhas de `Allocation` de um recurso é a **verdade derivada**. `capacity` é o limite dela. A verdade não é um contador na linha do recurso.                                | ADR-0002:97-99    | pendente     |
-| R2 | `allocate(resourceId, amount)` lê a soma das alocações, compara com `capacity` e insere quando couber.                                                                                    | ADR-0002:119-120  | pendente     |
-| R3 | O oráculo avalia `Σ amount ≤ capacity` para cada recurso depois do fim da execução, e **NÃO DEVE** emitir `SELECT` no schema do sistema medido. De onde vem `Σ amount` segue sem decisão. | ADR-0010, Decisão | pendente     |
-| R4 | O veredito é booleano, e a violação **DEVE** carregar os dois números: a soma obtida e a capacidade declarada.                                                                            | ADR-0002:187-188  | pendente     |
-| R5 | O oráculo **NÃO DEVE** derivar o estado final do log de observações do Lab Plane. Se a proibição alcança somar eventos de `INSERT` vindos do WAL não foi decidido.                        | ADR-0002:214-217  | pendente     |
-| R6 | O conjunto de entradas amostradas para `allocate` **DEVE** conter os três ramos do predicado: a alocação cabe, atinge a capacidade exata, e excede.                                       | ADR-0002:263-266  | pendente     |
-| R7 | O mesmo experimento **DEVE** ser comparado sob `READ COMMITTED`, `REPEATABLE READ` e `SERIALIZABLE`. Só o terceiro aborta uma das transações, com SQLSTATE `40001`.                       | plano:472-474     | pendente     |
+| #   | Regra                                                                                                                                                                                     | Evidência                                                                                                                                                | Aprovada por |
+|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| R1  | `Σ amount` das linhas de `Allocation` de um recurso é a **verdade derivada**. `capacity` é o limite dela. A verdade não é um contador na linha do recurso.                                | [ADR-0002, Decisão](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão)                                                                       | pendente     |
+| R2  | `allocate(resourceId, amount)` lê a soma das alocações, compara com `capacity` e insere quando couber.                                                                                    | [ADR-0002, Decisão](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão)                                                                       | pendente     |
+| R3  | O oráculo avalia `Σ amount ≤ capacity` para cada recurso depois do fim da execução, e **NÃO DEVE** emitir `SELECT` no schema do sistema medido. De onde vem `Σ amount` segue sem decisão. | [ADR-0010, Decisão](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)                                                      | pendente     |
+| R4  | O veredito é booleano, e a violação **DEVE** carregar os dois números: a soma obtida e a capacidade declarada.                                                                            | [ADR-0002, O oráculo do predicado](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-do-predicado)                                         | pendente     |
+| R5  | O oráculo **NÃO DEVE** derivar o estado final do log de observações do Lab Plane. Se a proibição alcança somar eventos de `INSERT` vindos do WAL não foi decidido.                        | [ADR-0002, O oráculo lê o banco](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações)         | pendente     |
+| R6  | O conjunto de entradas amostradas para `allocate` **DEVE** conter os três ramos do predicado: a alocação cabe, atinge a capacidade exata, e excede.                                       | [ADR-0002, O critério de igualdade entre traços](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-critério-de-igualdade-entre-dois-traços-de-sql) | pendente     |
+| R7  | O mesmo experimento **DEVE** ser comparado sob `READ COMMITTED`, `REPEATABLE READ` e `SERIALIZABLE`. Só o terceiro aborta uma das transações, com SQLSTATE `40001`.                       | [plano, E5](../../plano-do-laboratorio.md#e5--write-skew-inert-protection)                                                                               | pendente     |
 
 O diagrama que mostra por que travar a linha do recurso não ajudaria está no
 [Example Mapping](example-mapping.md).
@@ -62,15 +62,18 @@ O diagrama que mostra por que travar a linha do recurso não ajudaria está no
 sistema medido, e não mudou. **O oráculo não emite `SELECT`**: o schema do
 `system-under-test` é inacessível ao Lab Plane, sem `GRANT` cruzado. **A fonte que
 substitui aquele `SELECT sum` não existe ainda.** **Não existe DDL nem contrato de
-esquema** — ver `Q-INT-5` em [`integrations.md`](../../architecture/integrations.md).
+esquema** — ver `Q-INT-5` em
+[`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto).
 
 O nível de isolamento é parâmetro da execução, e nada hoje o declara.
 
 ## Riscos e decisões pendentes
 
-**O nível de isolamento não tem lugar na fila de decisões.** O E5 varre três níveis, e
-nenhuma linha da fila nomeia esse parâmetro. Três destinos são possíveis, e a escolha
-não foi feita — [`../../adr/README.md`](../../adr/README.md):240-269.
+**O nível de isolamento não tem decisão registrada.** O E5 varre `READ COMMITTED`,
+`REPEATABLE READ` e `SERIALIZABLE`, e o
+[`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-que-este-adr-não-decide)
+declara que não decide esse parâmetro. Nenhum ADR aceito o decidiu depois, e este card
+não o decide.
 
 **A distinção que o E5 existe para mostrar corre risco de ser apagada.** Uma estratégia é
 código da aplicação e muda o SQL emitido. Um nível de isolamento é propriedade da
@@ -97,6 +100,7 @@ cruzado **falha** por permissão.
 ## Links
 
 - [Example Mapping](example-mapping.md) · [Cenários BDD](behavior.feature)
-- [`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md) · [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md), seção 6, E5
+- [`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md) ·
+  [`plano-do-laboratorio.md`, seção 6, E5](../../plano-do-laboratorio.md#e5--write-skew-inert-protection)
 - [`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md), `Aceito` — retirou o `SELECT sum` deste oráculo
 - [`execucao-de-experimento`](../execucao-de-experimento/feature-card.md) — o ciclo que consome este oráculo

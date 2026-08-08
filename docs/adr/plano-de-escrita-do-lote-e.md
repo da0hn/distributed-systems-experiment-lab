@@ -44,6 +44,16 @@ Podar agora não é.
 aceito: uma fila longa é incômoda, uma citação quebrada em documento imutável é dano.
 Uma linha `fechada` continua sinalizada como tal no texto da própria rodada.
 
+> **Superado em 2026-08-07.** O parágrafo acima registra o que se decidiu em 2026-08-06,
+> e ele deixou de valer. A decisão que o superou está em
+> [`fila-de-decisoes.md`](fila-de-decisoes.md#a-saída-decidida-em-2026-08-06), no
+> parágrafo que começa por "A premissa acima caiu, e a lápide passou a ser obrigatória":
+> a poda acontece, e ela distingue dois casos. **Onde um documento imutável cita o
+> heading, o heading permanece byte a byte**, com o estado `fechada`, o ADR que a absorveu
+> e o link — é a lápide. Onde ninguém cita, a narrativa é apagada. A poda de 2026-08-07
+> aplicou as duas regras, e o custo que o parágrafo acima temia — a citação quebrada em
+> documento imutável — é exatamente o que a lápide impede.
+
 ```mermaid
 flowchart TD
     P["ler a seção deste plano"]

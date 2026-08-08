@@ -36,31 +36,69 @@ Use-o somente quando a pessoa pedir um ADR em debate, e não um registro de esco
 
 - Nunca aceite por omissão. Exija aprovação explícita da pessoa responsável.
 - Aceite somente sem questões `aberto` ou `aberto (crítico)`.
-- Antes de remover `## Questões em aberto`, transporte cada questão `encaminhado`, inteira,
-  para um arquivo próprio `Q-NNNN-K.md` em `docs/questions/`, e acrescente a linha dela ao
-  índice de `docs/questions/README.md`, no mesmo commit.
+- Antes de remover `## Questões em aberto`, transporte cada questão `encaminhado`,
+  inteira, para um arquivo próprio em `docs/questions/`, e acrescente a linha dela ao
+  índice de `docs/questions/README.md`, no mesmo commit. **NÃO DEVE inventar a
+  gramática do identificador nem copiá-la para cá:** o dono dela é
+  `docs/questions/README.md`, seção "Identificador", e ele também é quem atribui o
+  próximo número.
 - Mova a decisão fechada para `## Decisão` ou `## Consequências` e então remova a seção de
   questões em aberto.
 
 ## Depois de aceito
 
-- Nunca edite nem apague o **corpo** de um ADR aceito. Corpo é tudo a partir da primeira
-  seção `##`.
-- Se uma decisão nova contradisser a antiga, crie ADR novo e marque a antiga como
-  `Substituído por ADR-NNNN`.
-- Se a regra antiga continuar correta no caso original, use subsunção. O novo ADR DEVE
-  citar a regra e seção originais, declarar o caso que permanece válido e não contradizê-la.
-- O ADR subsumido permanece `Aceito`, e o corpo dele permanece intocado.
+**A imutabilidade do corpo foi revogada em 2026-08-07.** Um ADR aceito PODE receber
+**patch** — a quinta forma. Corpo continua sendo tudo a partir da primeira seção `##`, e
+um ADR aceito continua não sendo **apagado**.
+
+| Forma        | Quando ela se aplica                                                          |
+|--------------|-------------------------------------------------------------------------------|
+| substituição | uma decisão nova contradiz a antiga; a antiga vira `Substituído por ADR-NNNN` |
+| subsunção    | a regra antiga continua correta no caso original, e o novo a generaliza       |
+| emenda       | uma regra do ADR aceito muda sem que a decisão inteira caia                   |
+| adendo       | o ADR cita um documento que vai deixar de existir; a seção nova entra no fim  |
+| patch        | o corpo tem citação quebrada, caminho errado ou erro material a consertar     |
+
+- As quatro primeiras exigem um **ADR novo** que as carregue. O patch não: ele é
+  manutenção do próprio arquivo, e não decisão nova.
+- **Patch NÃO DEVE alterar a decisão nem o argumento que a sustentava.** Se o texto novo
+  muda o que foi decidido, não é patch — é emenda ou substituição, e exige ADR novo.
+- **Nenhum patch sem a linha dele** em `## Patches aplicados`, no mesmo commit. Um corpo
+  editado sem registro é exatamente o que a imutabilidade existia para impedir.
+- Uma citação por número de linha para documento editável é **defeito a patchar**, e não
+  motivo para congelar o alvo. Converta-a em âncora GFM e registre o patch.
+- A regra completa de cada uma está em `docs/adr/README.md`, seções "A emenda e o adendo,
+  decididos em 2026-08-05" e "A revogação da imutabilidade, decidida em 2026-08-07".
+  Aplique-a a partir de lá; esta tabela é roteador, e não a norma.
+- O ADR substituído ou subsumido permanece com o corpo intocado pelo ADR que o alterou.
+
+### A seção `## Patches aplicados`, obrigatória desde 2026-08-07
+
+Todo ADR a carrega, e ela é sempre a **última** seção do arquivo — depois até de um
+`## Adendo`. Um ADR sem patch nenhum a carrega com "Nenhum patch aplicado.", para que a
+ausência de patch seja afirmada, e não inferida do silêncio.
+
+- Cada patch é uma linha com **data**, **seção do corpo**, **o que mudou** e **por quê**.
+- Uma linha registrada NÃO DEVE ser removida, nem quando um patch posterior mexer no
+  mesmo trecho.
+- Um patch move `Última atualização` no cabeçalho, e **não** move `Alterado por`: aquele
+  campo nomeia o ADR que alterou este, e patch não é ADR.
+- Uma **errata** de cabeçalho que descrevia o defeito permanece onde está, como registro
+  do período em que ele não tinha conserto. O patch conserta o corpo; ele não apaga a
+  história de o defeito ter existido.
+
+O formato está em `references/adr.md`, no fim do template.
 
 ### O rastro de alterações, obrigatório desde 2026-08-04
 
-Todo ADR alterado — por substituição ou por subsunção — recebe dois campos no
-**cabeçalho**, logo depois de `Aceito em:`:
+Todo ADR alterado por outro ADR — substituição, subsunção, emenda ou adendo — recebe
+dois campos no **cabeçalho**, logo depois de `Aceito em:`. **Patch não entra aqui:** ele
+move só `Última atualização`, e se registra em `## Patches aplicados`.
 
 ```markdown
 - **Última atualização:** AAAA-MM-DD
-- **Alterado por:** [ADR-NNNN](NNNN-titulo.md) — substituição | subsunção; qual regra,
-  com a seção de origem.
+- **Alterado por:** [ADR-NNNN](NNNN-titulo.md) — substituição | subsunção | emenda |
+  adendo; qual regra, com a seção de origem.
 ```
 
 - Escreva os dois campos **no mesmo commit** em que o ADR novo nasce.

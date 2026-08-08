@@ -94,19 +94,19 @@ tem resposta hoje**, e é o que impede o E5 de rodar.
 
 ## Perguntas em aberto
 
-| #  | Pergunta                                                                                                                                                                        | Origem                                                                               |
-|----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| P1 | Onde o nível de isolamento é declarado? Nenhuma linha da fila de decisões o nomeia.                                                                                             | [fila](../../adr/fila-de-decisoes.md#o-nível-de-isolamento-não-tem-lugar-nesta-fila) |
-| P2 | O retry exigido por `SERIALIZABLE` é da estratégia ou do runtime? A resposta muda quem conta as tentativas.                                                                     | nova, 2026-08-01                                                                     |
-| P3 | `allocate` lê a soma e compara com `capacity`. Quando o predicado reprova, a operação reporta sucesso ou falha ao Lab Plane? A distinção afeta `commits − sucessos`.            | nova, 2026-08-01                                                                     |
-| P4 | O oráculo avalia "para cada recurso". O E5 tem um recurso só — a contagem de coincidências qualificada por chave sugere experimentos com muitos. Quantos recursos o E5 declara? | nova, 2026-08-01                                                                     |
-| P5 | Uma alocação nunca é removida no MVP. O oráculo do estado final quiescente serve por isso. Isso é premissa ou coincidência?                                                     | [`Q-0002-3`](../../questions/Q-0002-3.md)                                            |
+| #  | Pergunta                                                                                                                                                                        | Origem                                                                                        |
+|----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| P1 | Onde o nível de isolamento é declarado? O `ADR-0002` o deixou fora de escopo, e nenhum ADR posterior o fixou.                                                                   | [`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-que-este-adr-não-decide) |
+| P2 | O retry exigido por `SERIALIZABLE` é da estratégia ou do runtime? A resposta muda quem conta as tentativas.                                                                     | nova, 2026-08-01                                                                              |
+| P3 | `allocate` lê a soma e compara com `capacity`. Quando o predicado reprova, a operação reporta sucesso ou falha ao Lab Plane? A distinção afeta `commits − sucessos`.            | nova, 2026-08-01                                                                              |
+| P4 | O oráculo avalia "para cada recurso". O E5 tem um recurso só — a contagem de coincidências qualificada por chave sugere experimentos com muitos. Quantos recursos o E5 declara? | nova, 2026-08-01                                                                              |
+| P5 | Uma alocação nunca é removida no MVP. O oráculo do estado final quiescente serve por isso. Isso é premissa ou coincidência?                                                     | [`Q-0002-3`](../../questions/Q-0002-3.md)                                                     |
 
 ## Adiado de propósito
 
 | Item                                           | Gatilho que o retoma                     |
 |------------------------------------------------|------------------------------------------|
-| Onde o nível de isolamento é declarado         | a decisão que a fila ainda não nomeou    |
+| Onde o nível de isolamento é declarado         | a decisão que fixar esse parâmetro       |
 | Remoção de alocação                            | nenhum experimento do MVP a exige        |
 | A semântica de cada estratégia de concorrência | a decisão de estratégias de concorrência |
 

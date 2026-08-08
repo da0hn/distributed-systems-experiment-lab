@@ -690,3 +690,11 @@ do instrumento — um `UPDATE` que o PostgreSQL descarte depois de o commit reto
 exemplo. A calibração estaria acusando o instrumento por um comportamento do sistema sob
 teste.
 
+
+## Patches aplicados
+
+Nenhum patch aplicado.
+
+O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
+argumento que a sustentava.

@@ -2,109 +2,296 @@
 
 Tudo que atravessa uma fronteira de processo, e o estado de cada travessia.
 
-Levantado em 2026-08-01, a partir da árvore versionada e da documentação. **Nenhuma
-linha desta página foi derivada de código**, porque não existe código: `git ls-files`
-retorna 28 arquivos, nenhum com extensão de linguagem, build ou IaC.
+**Esta página é a fonte de verdade única do estado e da topologia das fronteiras.** O
+`README.md`, o `AGENTS.md`, os Feature Cards e
+[`contracts/README.md`](../contracts/README.md#estado-nenhum-contrato-existe) resumem e
+apontam para cá; nenhum deles declara estado de fronteira por conta própria. Estado
+copiado envelhece em silêncio, e foi isso que aconteceu com a versão anterior desta
+matriz: ela descrevia um repositório sem código, meses depois de o esqueleto existir.
+
+Regenerada em 2026-08-07 contra a árvore versionada e os ADRs aceitos. Nenhuma linha foi
+herdada sem reconferência no arquivo que a sustenta.
 
 ## Como ler esta página
 
-A matriz separa duas coisas que costumam ser confundidas:
+### Os quatro estados
 
-| Marca    | Significado                                                               |
-|----------|---------------------------------------------------------------------------|
-| **fato** | verificável hoje, na árvore versionada ou num repositório externo nomeado |
-| hipótese | descrito em documento de planejamento; nada existe que o implemente       |
+| Estado                      | Significado                                                      | Como se verifica                                    |
+|-----------------------------|------------------------------------------------------------------|-----------------------------------------------------|
+| `implementado`              | existe e funciona na árvore versionada agora                     | abrindo o arquivo citado                            |
+| `decidido/não implementado` | fixado por ADR aceito, ou por decisão tomada sem ADR; sem código | a decisão está no ADR; a ausência, na árvore        |
+| `hipótese`                  | descrito em documento de planejamento; ninguém decidiu           | nenhuma decisão o sustenta                          |
+| `bloqueado`                 | existe e **não** funciona, com a causa nomeada                   | o sintoma é observável, e a causa tem identificador |
 
-Uma hipótese não é uma promessa fraca. Ela é uma afirmação sobre o futuro que **ainda não
-tem evidência**, e tratá-la como fato é o erro que esta separação existe para impedir.
+A divisão anterior era binária — fato contra hipótese — e não tinha onde pôr a categoria
+mais numerosa deste repositório: a decisão tomada, com ADR aceito, para a qual não existe
+uma linha de código. Chamá-la de hipótese convida a redecidir o que já foi decidido;
+chamá-la de fato faz um agente presumir que há código a reusar. As duas leituras já
+aconteceram aqui.
+
+### As três classes de elemento
+
+**"Serviço" passou a significar módulo Maven, executável, contêiner e processo de
+infraestrutura ao mesmo tempo**, e é por isso que a documentação chegou a sustentar
+quatro, cinco e sete processos simultaneamente, todos aparentemente corretos. Cada
+elemento desta página pertence a uma classe só.
+
+| Classe               | O que é                                                        | Vira imagem?                                         |
+|----------------------|----------------------------------------------------------------|------------------------------------------------------|
+| biblioteca           | módulo Maven sem ponto de entrada, compilado dentro dos outros | **não**                                              |
+| serviço da aplicação | executável cujo código nasce neste repositório                 | sim, construída aqui                                 |
+| infraestrutura       | processo de terceiro, configurado e não escrito aqui           | imagem de terceiro; **nenhum commit daqui a produz** |
+
+## O inventário dos elementos
+
+| Elemento              | Classe               | Estado                      | Evidência                                                                                                                                                                                 |
+|-----------------------|----------------------|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `shared`              | biblioteca           | `implementado`              | `shared/pom.xml`; não tem `spring-boot-maven-plugin` e não aparece na matriz de imagens de `.github/workflows/build.yml`                                                                  |
+| `lab-plane`           | serviço da aplicação | `implementado` — esqueleto  | `lab-plane/pom.xml`; `compose.yaml`; região `dev.da0hn.lab.labplane`                                                                                                                      |
+| `lab-journal`         | serviço da aplicação | `implementado` — esqueleto  | `lab-journal/pom.xml`; região `dev.da0hn.lab.journal`                                                                                                                                     |
+| `system-under-test`   | serviço da aplicação | `implementado` — esqueleto  | `system-under-test/pom.xml`; região `dev.da0hn.lab.sut`                                                                                                                                   |
+| `frontend`            | serviço da aplicação | `implementado` — esqueleto  | `frontend/Dockerfile`, `frontend/nginx.conf`; `frontend/src/App.tsx` não tem tela                                                                                                         |
+| PostgreSQL 18         | infraestrutura       | `implementado`              | `compose.yaml`; no homelab vem da Camada 6, compartilhada com outras cargas — [ADR-0012, negativas](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas) |
+| serviço de identidade | serviço da aplicação | `decidido/não implementado` | [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade); não há módulo nem imagem                                            |
+| Debezium Server       | infraestrutura       | `decidido/não implementado` | [ADR-0012](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão); imagem de terceiro, ausente de `compose.yaml`                                             |
+| RabbitMQ              | infraestrutura       | `decidido/não implementado` | [ADR-0012](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão); ausente de `compose.yaml`                                                                 |
+| ArgoCD                | infraestrutura       | `bloqueado`                 | vive no `homelab-infrastructure`; aponta para um `deploy/` que não existe aqui                                                                                                            |
+
+**Cinco elementos são serviço da aplicação, e apenas quatro têm imagem hoje.** O quinto é
+o serviço de identidade, decidido pelo ADR-0011. O `shared` não é o quinto: ele é
+biblioteca, e a contagem "quatro serviços" do `AGENTS.md` deixou de valer pela
+[decisão do ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#cinco-serviços-e-o-quatro-do-agentsmd-deixa-de-valer).
+
+## A topologia implementada hoje
+
+Os quatro contêineres da aplicação sobem, três deles conectam ao PostgreSQL e cada um
+cria e possui o próprio schema pelo Flyway. O `frontend` já roteia dois prefixos de
+caminho — `/api/runs` para o `lab-plane` e `/api/journal` para o `lab-journal` —, e do
+outro lado de cada rota **não existe endpoint nenhum**. Nenhuma chamada entre serviços da
+aplicação existe: o `lab-plane` não chama o `system-under-test`, e não emite observação
+para o `lab-journal`.
+
+```mermaid
+flowchart TB
+    FE["frontend<br/>nginx, imagem própria"]
+    LP["lab-plane"]
+    LJ["lab-journal"]
+    ST["system-under-test"]
+    PG[("PostgreSQL 18<br/>wal_level=logical")]
+    FE -.->|" /api/runs — rota configurada,<br/>endpoint ausente "| LP
+    FE -.->|" /api/journal — rota configurada,<br/>endpoint ausente "| LJ
+    LP -->|" JDBC, schema lab_plane "| PG
+    LJ -->|" JDBC, schema lab_journal "| PG
+    ST -->|" JDBC, schema sut "| PG
+```
+
+**O `wal_level=logical` já está ligado e ninguém lê o WAL.** O `compose.yaml` sobe o
+banco com replicação lógica habilitada porque o oráculo decidido depende dela; o processo
+que a consumiria não existe. É provisionamento sem consumo, e está assim de propósito.
+
+## A topologia decidida, e o que falta dela
+
+O diagrama abaixo mostra **apenas o que falta**: os elementos e as travessias que os ADRs
+0010, 0011 e 0012 fixaram e que nenhum arquivo da árvore implementa. Ele não repete
+nenhuma aresta do diagrama anterior.
+
+```mermaid
+flowchart TB
+    FE["frontend"]
+    LP["lab-plane"]
+    LJ["lab-journal"]
+    ST["system-under-test"]
+    ID["serviço de identidade<br/>sem schema"]
+    W[("WAL do sut")]
+    DS["Debezium Server<br/>pgoutput, processo próprio"]
+    RB["RabbitMQ<br/>instância única"]
+    LP -->|" deriva ids na fase de seeding "| ID
+    LP -->|" chamada de passo, por rede "| ST
+    LP -->|" observação, evento por evento "| LJ
+    LJ -->|" SSE da timeline "| FE
+    W --> DS
+    DS -->|" o evento carrega o LSN "| RB
+    RB -->|" consumo, filtro no consumidor "| LP
+```
+
+**A ordem entre as duas topologias importa.** A implementada não é um subconjunto
+inocente da decidida: ela contém a fronteira de schema, que é a regra mais cara de
+reverter, e não contém nenhum caminho de veredito. Um agente que confunda as duas
+constrói o oráculo com `SELECT` cruzado, que os ADRs 0010 e 0012 proíbem.
 
 ## Matriz
 
-| Origem                            | Destino                                       | Tipo                     | Operação/tópico                                       | Finalidade                                                      | Contrato                   | Autenticação                                     | Confiabilidade                                                                            | Evidência                                                                                                                                                                                                                    |
-|-----------------------------------|-----------------------------------------------|--------------------------|-------------------------------------------------------|-----------------------------------------------------------------|----------------------------|--------------------------------------------------|-------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ArgoCD (`homelab-infrastructure`) | este repositório, `deploy/`                   | GitOps, pull por polling | `git fetch` em `master`, `path: deploy`               | reconciliar os workloads do laboratório no cluster              | Kustomize                  | leitura de repositório público                   | polling ~3 min, `prune: true`, `selfHeal: true`                                           | **fato**, e **quebrado** — `plano-do-laboratorio.md:764-771`; `deploy/` apagado no commit `e1c88ae`                                                                                                                          |
-| GitHub Actions (runner hospedado) | GHCR                                          | push de imagem OCI       | `docker push`, tag = SHA do commit                    | publicar o artefato executável                                  | —                          | `GITHUB_TOKEN` efêmero                           | tag imutável, nunca `latest`                                                              | hipótese — [ADR 0017 do homelab](https://github.com/da0hn/homelab-infrastructure/blob/12a2b6ad397156decce32d87ccfa994d0fc95446/docs/adr/0017-cicd-das-aplicacoes-no-github-actions.md). Não existe `.github/workflows/` aqui |
-| GitHub Actions (`master`)         | este repositório, `deploy/kustomization.yaml` | commit de bump           | `kustomize edit set image`                            | apontar o manifest para a imagem nova                           | Kustomize                  | `GITHUB_TOKEN`                                   | push com esse token não dispara workflows, o que evita recursão de build                  | hipótese — `plano-do-laboratorio.md:795`                                                                                                                                                                                     |
-| aplicação do laboratório          | PostgreSQL                                    | JDBC                     | SQL sobre `resource` e `allocation`                   | executar as operações do sistema sob teste e ler o estado final | esquema de duas tabelas    | não decidido                                     | **uma conexão por worker**, obrigatório                                                   | hipótese — `adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:87-99`; `plano-do-laboratorio.md:579-582`                                                                                                                        |
-| conector de CDC (Debezium Server) | PostgreSQL, WAL do `system-under-test`        | replicação lógica        | `pgoutput`, slot próprio                              | traduzir o WAL em evento que carrega o LSN                      | —                          | papel `cdc_connector`, o único com `REPLICATION` | processo próprio, para manter a credencial de WAL fora do processo que produz o veredito  | **fato** — `adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão`; `local/postgres-init.sql:20-24`                                                                                                |
-| conector de CDC (Debezium Server) | RabbitMQ                                      | AMQP                     | exchange, fila e roteamento não decididos             | levar o evento do WAL até o oráculo                             | **nenhum contrato existe** | não decidido                                     | o LSN atribuído pelo servidor DEVE sobreviver ao transporte                               | **fato** — `adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão`                                                                                                                                 |
-| RabbitMQ                          | Lab Plane (oráculo)                           | AMQP                     | consumo; o filtro por execução acontece no consumidor | contar `commits` e ler `value_final` para o veredito            | **nenhum contrato existe** | não decidido                                     | pode duplicar, reordenar e perder; o `lab-plane` roda em réplica única                    | **fato** — `adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão`                                                                                                                                 |
-| Lab Plane (log de observações)    | interface web                                 | stream                   | não decidido: SSE ou WebSocket                        | alimentar a timeline em tempo real                              | nenhum                     | não decidido                                     | gatilho da decisão: a primeira execução longa demais para polling                         | hipótese — `plano-do-laboratorio.md:565`, `611`                                                                                                                                                                              |
-| interface web                     | Lab Plane                                     | HTTP                     | não decidido                                          | iniciar uma execução, ler o relatório                           | **nenhum contrato existe** | não decidido                                     | —                                                                                         | hipótese — `plano-do-laboratorio.md:557`                                                                                                                                                                                     |
-| aplicação do laboratório          | RabbitMQ                                      | AMQP                     | exchanges, filas e roteamento não decididos           | mensageria dos grupos B e C                                     | nenhum                     | não decidido                                     | o broker existe desde o dia zero pelo ADR-0012; o uso pelo domínio é que entra na etapa 5 | hipótese — [ADR 0011 do homelab](https://github.com/da0hn/homelab-infrastructure/blob/12a2b6ad397156decce32d87ccfa994d0fc95446/docs/adr/0011-dados-com-estado-postgres-valkey-rabbitmq.md); `plano-do-laboratorio.md:608`    |
-| aplicação do laboratório          | Valkey                                        | não decidido             | —                                                     | lock distribuído                                                | nenhum                     | não decidido                                     | entra na etapa 11 **se** um experimento provar que advisory lock do PostgreSQL não basta  | hipótese — [ADR 0011 do homelab](https://github.com/da0hn/homelab-infrastructure/blob/12a2b6ad397156decce32d87ccfa994d0fc95446/docs/adr/0011-dados-com-estado-postgres-valkey-rabbitmq.md); `plano-do-laboratorio.md:613`    |
+| Origem              | Destino                          | Mecanismo                                            | Finalidade                                            | Estado                                                                                                               | Contrato                          | Evidência                                                                                                                                                                                                                                                           |
+|---------------------|----------------------------------|------------------------------------------------------|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `frontend`          | `lab-plane`                      | HTTP, prefixo `/api/runs`                            | comandar uma execução de experimento                  | `decidido/não implementado` — a rota existe em dois roteadores, o endpoint não                                       | nenhum; `Q-INT-1`                 | [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff); `frontend/nginx.conf:13`; `frontend/vite.config.ts:16`                                                               |
+| `frontend`          | `lab-journal`                    | HTTP, prefixo `/api/journal`                         | ler o caderno e o histórico de execuções              | `decidido/não implementado` — a rota existe em dois roteadores, o endpoint não                                       | nenhum; `Q-INT-1`                 | [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff); `frontend/nginx.conf:18`; `frontend/vite.config.ts:17`                                                               |
+| `frontend`          | `lab-journal`                    | SSE, sobre o mesmo prefixo                           | alimentar a timeline ao vivo                          | `decidido/não implementado` — o nginx já desliga buffer e cache; nada emite evento                                   | nenhum; `Q-INT-2`                 | `frontend/nginx.conf:22-27`; [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff)                                                                                          |
+| `lab-plane`         | serviço de identidade            | chamada de rede, na fase de seeding                  | derivar identificadores a partir da semente           | `decidido/não implementado` — não há módulo, imagem nem papel no banco                                               | nenhum                            | [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade)                                                                                                                                                |
+| `lab-plane`         | `system-under-test`              | chamada de passo, por rede; sentido inverso proibido | executar cada passo da operação medida                | `decidido/não implementado` — os dois processos sobem; nenhuma chamada existe                                        | nenhum                            | [ADR-0008](../adr/0008-os-dois-planos-em-processos-separados.md#decisão); `system-under-test/pom.xml` não declara dependência do `lab-plane`                                                                                                                        |
+| `lab-plane`         | `lab-journal`                    | observação, evento por evento, ao vivo               | alimentar o caderno durante a execução                | `decidido/não implementado`                                                                                          | nenhum                            | [ADR-0010](../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão); a tensão com a janela medida está nas [negativas](../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#negativas)                                           |
+| `system-under-test` | PostgreSQL, schema `sut`         | JDBC, uma conexão por worker                         | executar as operações do sistema medido               | `implementado` — conexão e schema existem; `resource` e `allocation` não                                             | esquema ainda em prosa; `Q-INT-5` | `system-under-test/src/main/resources/application.yml:12-23`; `system-under-test/src/main/resources/db/migration/V1__criar_schema_do_sut.sql`                                                                                                                       |
+| `lab-plane`         | PostgreSQL, schema `lab_plane`   | JDBC                                                 | schema próprio do instrumento, hoje sem tabela        | `implementado` — schema vazio; a primeira tabela depende de decisão em aberto                                        | —                                 | `lab-plane/src/main/resources/application.yml:12-18`; `lab-plane/src/test/java/dev/da0hn/lab/application/labplane/LabPlaneApplicationTests.java:36-43`; [ADR-0012, negativas](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas) |
+| `lab-journal`       | PostgreSQL, schema `lab_journal` | JDBC                                                 | guardar a definição e o resultado de cada experimento | `implementado` — schema vazio                                                                                        | —                                 | `lab-journal/src/main/resources/application.yml:11-17`; [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)                                                                               |
+| Debezium Server     | PostgreSQL, WAL do `sut`         | replicação lógica, plugin `pgoutput`, slot próprio   | traduzir o WAL em evento que carrega o LSN            | `decidido/não implementado` — o papel e o `wal_level` existem; o conector não                                        | —                                 | [ADR-0012](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão); `local/postgres-init.sql:12-24`; `compose.yaml:13-20`                                                                                                               |
+| Debezium Server     | RabbitMQ                         | AMQP; o sink ainda não foi escolhido                 | levar o evento do WAL até o oráculo                   | `decidido/não implementado`                                                                                          | nenhum                            | [ADR-0012](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão), e o sink em aberto nas [neutras](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#neutras)                                                |
+| RabbitMQ            | `lab-plane`                      | AMQP; o filtro por execução acontece no consumidor   | contar `commits` e ler `value_final` para o veredito  | `decidido/não implementado` — exige `lab-plane` em réplica única                                                     | nenhum                            | [ADR-0012](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão), que exige a réplica única no mesmo parágrafo do filtro                                                                                                              |
+| GitHub Actions      | GHCR                             | push de imagem OCI, tag = SHA do commit              | publicar os quatro artefatos executáveis              | `implementado`                                                                                                       | —                                 | `.github/workflows/build.yml:59-103`                                                                                                                                                                                                                                |
+| GitHub Actions      | este repositório, `deploy/`      | commit de bump da tag, por Kustomize                 | apontar o manifest para a imagem recém-publicada      | `decidido/não implementado` — o bump é exigido pela ADR 0017 do homelab, e a forma do `deploy/` continua sem decisão | Kustomize                         | `.github/workflows/build.yml:8-11`; [plano, seção 12](../plano-do-laboratorio.md#12-o-acoplamento-com-o-homelab-infrastructure)                                                                                                                                     |
+| ArgoCD              | este repositório, `deploy/`      | GitOps, polling ~3 min, `prune` e `selfHeal`         | reconciliar os workloads do laboratório no cluster    | `bloqueado` — `ComparisonError`: o `deploy/` não existe                                                              | Kustomize                         | [plano, seção 12](../plano-do-laboratorio.md#12-o-acoplamento-com-o-homelab-infrastructure)                                                                                                                                                                         |
+| domínio medido      | RabbitMQ                         | AMQP; exchanges, queues e roteamento não decididos   | mensageria dos grupos B e C                           | `hipótese` — o broker existe por decisão; o uso pelo domínio não                                                     | nenhum                            | [roadmap incremental](../plano-do-laboratorio.md#5-roadmap-incremental)                                                                                                                                                                                             |
+| domínio medido      | Valkey                           | não decidido                                         | lock distribuído                                      | `hipótese` — entra **se** um experimento provar que advisory lock não basta                                          | nenhum                            | [roadmap incremental](../plano-do-laboratorio.md#5-roadmap-incremental)                                                                                                                                                                                             |
 
 Não há integração com serviço externo de terceiro, webhook, job agendado ou banco
-compartilhado com outro sistema. O `Application` do ArgoCD é a única fronteira de
-processo com existência verificável hoje.
+compartilhado com outro sistema além do PostgreSQL da Camada 6 do homelab.
 
-## A única integração real está quebrada
+### O CDC, o broker e a fonte do oráculo são três coisas separadas
+
+Tratá-las como uma só produz a conclusão errada em qualquer das direções. A matriz as
+declara assim, e nada aqui deve ser lido como "o CDC resolve todo oráculo":
+
+1. **O contador do oráculo exato está decidido, e não implementado.** `commits`,
+   `value_inicial` e `value_final` vêm do WAL por replicação lógica, e nunca de um
+   `SELECT` no schema do sistema medido —
+   [ADR-0010](../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
+   Nenhum consumidor existe.
+2. **A fonte da soma do predicado da proteção inerte continua aberta.** O oráculo do E5
+   precisa de `Σ amount ≤ capacity`, e somar eventos de `INSERT` vindos do WAL é
+   reconstruir um total a partir de um stream — o que a regra `R5` daquele card proíbe. O
+   experimento não roda até que isso seja decidido:
+   [card da proteção inerte](../features/deteccao-de-protecao-inerte/feature-card.md#atores-e-gatilho).
+3. **A configuração do Debezium Server e o papel de replicação continuam pendentes.** Onde
+   a configuração vive **não foi decidido**, e o próprio ADR-0012 registra isso como
+   `Pergunta em aberto` nas
+   [consequências negativas](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas):
+   rodá-lo no cluster exige mudar o `homelab-infrastructure`, e se a ADR 0017 daquele
+   repositório alcança uma imagem de terceiro também é `Pergunta em aberto`.
+
+### Os papéis do PostgreSQL, e quem tem `REPLICATION`
+
+O privilégio de ler o WAL **não** pertence ao processo que produz o veredito. Separar o
+conector existe para isso, e devolver o atributo ao `lab_plane` desfaria o motivo da
+separação um nível abaixo da regra de fronteira. O estado abaixo é o do arquivo, e não
+uma proposta.
+
+| Papel           | Atributos                          | Quem o usa            | Estado                                                            |
+|-----------------|------------------------------------|-----------------------|-------------------------------------------------------------------|
+| `lab_plane`     | `LOGIN`, `CREATE` no banco         | o `lab-plane`         | `implementado` — **sem** `REPLICATION`                            |
+| `lab_journal`   | `LOGIN`, `CREATE` no banco         | o `lab-journal`       | `implementado`                                                    |
+| `sut`           | `LOGIN`, `CREATE` no banco         | o `system-under-test` | `implementado`                                                    |
+| `cdc_connector` | `LOGIN`, `REPLICATION`, sem schema | o Debezium Server     | `implementado` — o papel existe, o processo não                   |
+| `PUBLIC`        | `REVOKE ALL ON SCHEMA public`      | ninguém               | `implementado` — fecha a rota de vazamento da fronteira de schema |
+
+Evidência: `local/postgres-init.sql:8-28`; a fronteira de schema é a decisão do
+[ADR-0010](../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão), e
+a atribuição do `REPLICATION` ao `cdc_connector` está nas
+[consequências negativas do ADR-0012](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas).
+
+## A entrega: implementada até o GHCR, e parada ali
+
+Um `push` na `master` dispara dois workflows independentes. O `build.yml` roda o reactor
+Maven, constrói o frontend e, **só depois de as provas passarem**, publica quatro imagens
+no GHCR com tag igual ao SHA do commit. O `docs.yml` verifica citações e limites de
+caracteres dos documentos, e **não é dependência do job de imagem**: o job `imagem`
+declara `needs: provas`, e `provas` está no mesmo arquivo que ele. Um defeito de citação
+não impede a publicação da imagem, nem o contrário — os dois workflows são separados de
+propósito.
 
 ```mermaid
 flowchart LR
-    ARGO["ArgoCD<br/>homelab-infrastructure"] -->|" polling ~3 min<br/>path: deploy "| REPO["distributed-consistency-lab<br/>master"]
-    REPO -.->|" o diretório não existe<br/>apagado em e1c88ae "| X["ComparisonError"]
-    ARGO --> X
-    style X fill: #4a1d1d, stroke: #f87171, color: #e5e7eb
+    P["push na master"]
+    PR["provas<br/>mvn verify + build do frontend"]
+    IM["imagem<br/>4 tags = SHA no GHCR"]
+    DP["deploy/<br/>bump por Kustomize"]
+    AR["ArgoCD<br/>polling ~3 min"]
+    DC["docs<br/>citações e limites"]
+    P --> PR --> IM
+    P --> DC
+    IM -.->|" o passo não existe "| DP
+    DP -.->|" o diretório não existe "| AR
+    style DP fill: #4a1d1d, stroke: #f87171, color: #e5e7eb
 ```
 
-O `Application` está commitado em
-`kubernetes/applications/apps/distributed-consistency-lab.yaml` no repositório
-[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure), apontando
-para `path: deploy` com `prune: true` e `selfHeal: true`. Esse diretório foi apagado
-daqui nos commits `83fcfc9` e `e1c88ae`, antes de a arquitetura nova ser decidida.
+**Há uma lacuna, e ela é uma só: o pipeline está parcialmente implementado, bloqueado
+pela decisão sobre a forma do `deploy/`, que ninguém tomou.** Enquanto ela não fechar, o
+workflow publica imagens que nada consome, e o `Application` do ArgoCD continua em
+`ComparisonError`. Não chame este pipeline de completo: build, provas e publicação
+existem; bump e reconciliação, não.
 
-O cluster reporta erro para este app agora. O sintoma é ruidoso e isolado do resto da
-árvore, e o conserto está enfileirado junto da decisão de arquitetura mínima e entrega
-contínua — [`../adr/README.md`](../adr/README.md), fila, linha 11.
+Dois efeitos que a matriz não mostra e que mudam o custo de mexer aqui. **O `prune: true`
+faz uma limpeza de árvore neste repositório ter efeito no cluster** — foi assim que o
+`deploy/` sumiu e o app quebrou. E **um experimento destrutivo roda sob um orquestrador
+que o desfaz**: a etapa 6 mata o processo de propósito, o `Deployment` o reinicia e o
+ArgoCD reconcilia, de modo que o experimento passa a medir o orquestrador junto com o
+fenômeno. Nenhuma solução foi decidida. Evidência para os dois:
+[plano, seção 12](../plano-do-laboratorio.md#12-o-acoplamento-com-o-homelab-infrastructure).
 
-Evidência: [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md):757-771 e
-[`README.md`](../../README.md):235-240.
-
-## Três consequências que a matriz não mostra
-
-**`prune: true` faz uma limpeza de árvore aqui ter efeito em produção.** Apagar o
-`deploy/` deste repositório remove workloads do cluster no próximo sync. É o
-comportamento desejado, e ele significa que arrumar diretórios aqui deixou de ser
-barato. Evidência: `plano-do-laboratorio.md:855-858`.
-
-**A fronteira do "nada existe no servidor que não esteja no Git" atravessa dois
-repositórios.** O `.github/workflows/` e o `deploy/` **deste** repositório passaram a
-ser infraestrutura, e reconstruir o ambiente passa a exigir dois `git clone`. Evidência:
-`plano-do-laboratorio.md:773-777`.
-
-**Um experimento destrutivo roda sob um orquestrador que o desfaz.** A etapa 6 mata o
-processo de propósito; o `Deployment` o reinicia e o ArgoCD reconcilia. O experimento
-passa a medir o orquestrador junto com o fenômeno. Nenhuma solução foi decidida, e as
-três candidatas visíveis têm custos diferentes. Evidência:
-`plano-do-laboratorio.md:837-845`.
+**As provas já dependem de contêiner, e vão depender de mais.** Os testes de contexto
+sobem um PostgreSQL 18 real por Testcontainers no runner hospedado. O teste de aceitação
+que prova que o LSN sobrevive ao transporte, descrito nas
+[consequências negativas do ADR-0012](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas),
+acrescenta RabbitMQ e Debezium Server como dependência de teste **antes** de
+existir código que consuma CDC, e é o primeiro que precisa de comando explícito no
+contêiner do banco, porque a imagem sobe com `wal_level=replica`.
 
 ## Perguntas em aberto
 
-**Q-INT-1 — O contrato entre a interface web e o Lab Plane não tem forma.** O plano
-descreve uma UI que inicia execução, recebe stream e exibe relatório
-(`plano-do-laboratorio.md:540`, `557`, `568`). Nada diz se a fronteira é HTTP, quais
-recursos existem, nem qual o formato do relatório. Enquanto isso não for decidido,
-`contracts/openapi/` fica vazio.
+**Esta página é a dona do espaço de nomes `Q-INT-N`.** Ele é local daqui, e uma questão
+de integração **NÃO DEVE** entrar no índice de
+[`questions/`](../questions/README.md#de-onde-uma-questão-vem), que registra a separação e
+declara não ser dono deste formato. O número não é reciclado: uma questão resolvida mantém
+o enunciado e ganha a resolução. Uma decisão de integração ainda **aberta** não vive aqui:
+a seção seguinte a nomeia e diz onde ela está registrada.
 
-**Q-INT-2 — O mecanismo de streaming não foi escolhido.** SSE e WebSocket estão os dois
-na mesa, e o gatilho da escolha é "a primeira execução longa o suficiente para não caber
-num polling" (`plano-do-laboratorio.md:611`). O gatilho não define o critério: quanto é
-"longa o suficiente" não está escrito.
+**`Q-INT-1` — o contrato entre o frontend e os dois serviços não tem forma.** O ADR-0011
+decidiu **quem** fala com quem — comando no `lab-plane`, leitura e streaming no
+`lab-journal`, sem BFF — e o mapa de prefixos já está implementado no `nginx.conf` e no
+proxy do Vite. O que continua sem decisão é o resto: quais recursos existem, qual o
+formato do relatório e qual o corpo de cada requisição. Enquanto isso, `contracts/openapi/`
+não é criado.
 
-**Q-INT-3 — O PostgreSQL é dedicado ou compartilhado com a Camada 6 do homelab.** O plano
-recomenda dedicado, porque saturação e deadlock de propósito degradam as outras cargas,
-e as outras cargas viram ruído dentro da medida. A recomendação custa exatamente o que a
-Camada 6 economizaria, e a decisão não foi tomada. Evidência:
-`plano-do-laboratorio.md:847-853`.
+**`Q-INT-2` — o mecanismo de streaming não foi escolhido por ADR.** O `nginx.conf` já
+pressupõe SSE e desliga buffer e cache por causa dele, e a rodada de arquitetura propôs
+SSE com dois limiares numéricos — que ninguém mediu, como registra
+[`Q-0022`](../questions/Q-0022.md). Configuração implementada não é decisão tomada: a
+escolha entre SSE e WebSocket, e o critério que a dispara, continuam sem ADR.
 
-**Q-INT-4 — O build deste repositório foi escolhido em outro repositório.** A ADR 0017 do
-homelab, `Aceita` em 2026-07-26, nomeia Gradle e Toxiproxy para este laboratório.
-Nenhuma das duas passou pelo debate daqui, e o plano presume reactor Maven. Ratificar ou
-emendar é decisão consciente. Evidência: `plano-do-laboratorio.md:806-820`.
+**`Q-INT-3` — resolvida.** O PostgreSQL é o **compartilhado da Camada 6 do homelab**, com
+schema por aplicação — decidido em 2026-08-06, contra a recomendação, e registrado nas
+[consequências negativas do ADR-0012](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas),
+que descrevem o banco com vizinhos. A obrigação que veio junto continua valendo e não foi
+implementada: o relatório de toda execução **DEVE** registrar que a medida foi feita num
+banco com vizinhos, sem o que dois relatórios com o mesmo veredito afirmam coisas
+diferentes.
 
-**Q-INT-5 — Não há contrato de esquema para `resource` e `allocation`.** O ADR-0002 fixa
-as colunas em prosa (`adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:87-99`). Não
-existe DDL, migração nem JSON Schema. Se o esquema é um contrato entre o system under
-test e o oráculo — e ele é, porque os dois leem as mesmas tabelas — ele precisa de forma
-verificável.
+**`Q-INT-4` — resolvida.** O build é **Maven**, decidido em 2026-08-06, emendando a ADR
+0017 do `homelab-infrastructure`, que escolhera Gradle sem passar pelo debate daqui
+([plano, seção 12](../plano-do-laboratorio.md#a-adr-0017-descreve-a-arquitetura-arquivada)).
+É a única decisão daquele dia com efeito fora deste repositório, e a árvore concorda:
+`pom.xml` na raiz e `mvn -B verify` no workflow. **O
+Toxiproxy, nomeado pela mesma ADR 0017, continua sem debate e sem uso aqui.**
+
+**`Q-INT-5` — permanece aberta, com a premissa trocada.** As três migrações `V1` existem e
+criam **apenas o schema** de cada serviço; `resource` e `allocation` continuam prosa no
+ADR-0002, e as decisões de modelo de dados que criariam as duas tabelas não fecharam. O
+que mudou é o motivo de o esquema ser um contrato: ele deixou de ser "duas partes leem as
+mesmas tabelas" — o ADR-0010 proibiu o `SELECT` cruzado — e passou a ser a forma que o
+evento de CDC carrega até o oráculo. A concessão de `USAGE` e `SELECT` ao papel
+`lab_plane`, cogitada antes como saída, **não** é mais a resposta: o ADR-0010 a
+[descartou por escrito](../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#grant-de-leitura-ao-lab_plane).
+
+## Decisões de fronteira ainda abertas, e onde elas vivem
+
+Esta página registra estado, e não decide nada. As cinco decisões abaixo mudam a topologia
+desta matriz quando fecharem.
+
+| O que decide                                             | Onde está registrada                                                                                        | Efeito aqui                                              |
+|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| a forma do `deploy/`                                     | [plano, seção 12](../plano-do-laboratorio.md#12-o-acoplamento-com-o-homelab-infrastructure)                 | desbloqueia o bump e o ArgoCD                            |
+| o slot de replicação permanente do conector              | nenhum ADR aceito a alcança                                                                                 | fixa o que Debezium Server → WAL cria no banco           |
+| onde vive a configuração do Debezium Server              | [ADR-0012, negativas](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas) | decide se o conector chega ao cluster, e como            |
+| qual sink de RabbitMQ, AMQP 0-9-1 ou protocolo de stream | [ADR-0012, neutras](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#neutras)     | decide qual fenômeno de saturação o grupo B reproduz     |
+| onde o `lab-plane` guarda quais execuções estão ativas   | [ADR-0012, negativas](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas) | cria a primeira tabela do schema `lab_plane`, hoje vazio |
+
+**Uma delas não tem registro que esta página possa citar.** O slot permanente do conector
+não aparece em ADR aceito nenhum, e por isso a linha declara a ausência em vez de apontar
+para um documento: ela é `Pergunta em aberto`, e não fato apurado.

@@ -179,3 +179,11 @@ saída restante for reabrir a leitura direta do schema.
 Reveja também se a falha injetada de propósito no `lab-plane` produzir estouro do limite
 de espera do CDC na maioria das execuções: aguardar o LSN não sobreviveria à própria
 falha que o laboratório estuda.
+
+## Patches aplicados
+
+Nenhum patch aplicado.
+
+O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
+argumento que a sustentava.

@@ -13,7 +13,11 @@ lá**, para que os dois lugares não possam divergir.
 Os rótulos de estado — `estabelecido`, `proposto`, `aposentado` — continuam em
 português. Eles descrevem o processo do repositório e nunca viram identificador.
 
-## Estrutura
+## Uma entrada tem quatro partes, e só quatro
+
+Termo, definição breve, status ou sinônimos recusados, e link de origem. O link aponta
+para onde o termo foi decidido — o ADR, a linha da fila ou o Feature Card —, e é ele que
+mantém o glossário fora do negócio de guardar argumento.
 
 ```md
 # {Nome do contexto}
@@ -32,15 +36,28 @@ português. Eles descrevem o processo do repositório e nunca viram identificado
 **step** — `estabelecido`
 {Uma ou duas frases descrevendo o termo}
 _Evite_: stage, phase, action
+_Origem_: [ADR-0001](adr/0001-o-passo-como-unidade-de-execucao.md#decisão)
 
 **attempt** — `estabelecido`
 Uma passagem completa pela sequência de passos de uma operação.
 _Evite_: round, iteration, retry
-
-**operation** — `estabelecido`
-A definição versionada de uma sequência de passos, distinta de cada execução dela.
-_Evite_: flow, workflow
+_Origem_: [ADR-0001](adr/0001-o-passo-como-unidade-de-execucao.md#decisão)
 ```
+
+## O que NÃO DEVE entrar
+
+Cada um destes já tem dono, e escrevê-lo aqui cria um segundo repositório de decisões:
+
+| O que aparece na conversa                        | Onde ele vive                                   |
+|--------------------------------------------------|-------------------------------------------------|
+| alternativa de nome, com o argumento de cada uma | linha da `docs/adr/fila-de-decisoes.md`         |
+| decisão de vocabulário, proposta ou tomada       | a mesma linha da fila; ADR quando ela o merecer |
+| ata de como o termo foi debatido                 | a linha da fila, e nunca o glossário            |
+| pergunta em aberto e backlog de termos           | `docs/questions/`, ou o `example-mapping.md`    |
+
+Um termo em disputa **não ganha entrada**. Ele ganha linha na fila, e entra aqui quando
+a pessoa escolher. Uma entrada com `proposto` no status descreve um termo que já foi
+escrito no corpus e ainda não foi ratificado — ela não é o lugar de propor um nome novo.
 
 ## Regras
 
@@ -82,8 +99,7 @@ A skill infere qual estrutura se aplica:
 
 - Se `docs/CONTEXT-MAP.md` existir, leia-o para encontrar os contextos.
 - Se só existir `docs/CONTEXT.md` na raiz, é contexto único.
-- Se nenhum dos dois existir, crie `docs/CONTEXT.md` de forma preguiçosa quando o
-  primeiro termo for resolvido.
 
-Este repositório está, hoje, no terceiro caso: nem `docs/CONTEXT.md` nem
-`docs/CONTEXT-MAP.md` existem ainda. O primeiro termo resolvido cria o arquivo.
+**Este repositório está no segundo caso.** `docs/CONTEXT.md` existe e
+`docs/CONTEXT-MAP.md` não. Nenhum dos dois é criado por esta skill: o glossário já está
+lá, e o mapa só nasce quando houver um segundo contexto para mapear.

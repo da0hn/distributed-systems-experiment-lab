@@ -12,6 +12,22 @@ roadmap incremental, escolher um MVP e desenhar a menor arquitetura que o susten
 Ele **não** decide nada. Cada seção marcada com `→ ADR` precisa de um ADR próprio,
 debatido um a um, antes de virar código.
 
+**Do que este documento é dono.** Da taxonomia, do catálogo dos itens do briefing, da
+pedagogia e do roadmap. Ele **não** é dono da arquitetura vigente, do estado da árvore
+nem do contrato de entrega. A decisão arquitetural vigente está no
+[índice de ADRs](adr/README.md#índice); a decisão ainda aberta está na
+[fila](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira). Onde uma seção daqui divergir
+de um ADR aceito, **o ADR vale** — o que está escrito aqui é a análise da data em que
+foi escrita, e as seções superadas trazem a nota que aponta para quem as superou.
+
+**Existe código desde 2026-08-06, e nenhuma capacidade está implementada.** As duas
+frases convivem: um esqueleto executável compila, empacota e sobe contra PostgreSQL
+(`pom.xml`, `compose.yaml`), e não carrega regra de negócio nenhuma. Este documento não
+inventaria a árvore nem conta ADRs, questões ou regras — os donos dessas quantidades são
+o [índice de ADRs](adr/README.md#índice), o
+[índice de questões](questions/README.md#índice) e o
+[índice de capacidades](features/README.md#índice).
+
 ---
 
 ## 1. O que mudou, e por que o planejamento anterior não serve como está
@@ -174,6 +190,11 @@ fenômeno — que é a pergunta de arquitetura, não a de catálogo.
 | **D — Saturação**       | nada está incorreto; o sistema não dá conta                        | taxa de produção, latência artificial, profundidade de fila | **curva, não booleano** |
 | **E — Posse no tempo**  | quem tem o direito de escrever, e até quando                       | relógio injetável; mais de um processo                      | safety, booleano        |
 
+A coluna `Veredito` registra a proposta de 2026-07-28. O que os ADRs aceitos fixaram
+depois, e o que continua aberto, está em
+[os formatos de veredito](#os-formatos-de-veredito-e-o-que-cada-adr-fixou), ao fim desta
+seção.
+
 #### Grupo A — Intercalação
 
 Cenários 25, 1, 2, 3, 4, 5, 6, 7.
@@ -249,6 +270,122 @@ Cenários 37, 41, 42, mais a interface, as métricas, a correlação e a compara
 Não são níveis. São capacidades da plataforma, construídas junto com os grupos que as
 exigem. O cenário 37 é um botão; o 41 é a consequência natural do log de observações; o
 42 é a soma de 41 com semente e barreiras.
+
+### Os formatos de veredito, e o que cada ADR fixou
+
+A tabela dos cinco grupos previa dois formatos: booleano para A, B, C e E, curva para o
+D. Dois ADRs aceitos mexeram nisso, e **nenhum dos dois decidiu como os formatos
+convivem**.
+
+| Formato                      | Estado hoje                                                       | Quem o fixou                                                                                                                  |
+|------------------------------|-------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| booleano                     | proposta desta seção; nenhum ADR o fixou como formato de veredito | esta seção, em 2026-07-28                                                                                                     |
+| taxa com limite de confiança | decidido, para a execução medida                                  | [ADR-0004](adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-veredito-de-uma-execução-medida-é-uma-taxa) |
+| curva                        | sem forma decidida                                                | ninguém; o [ADR-0002](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-que-este-adr-não-decide) declara que não a decide     |
+
+**O ADR-0002 fixou dois oráculos, e não dois formatos.** A contagem exata sobre o
+contador e o predicado sobre o conjunto de alocações produzem contagem e booleano sobre
+um estado final; a curva do grupo D ele deixa explicitamente de fora.
+
+**O ADR-0004 fixou o veredito da execução medida como uma taxa.** É `violações /
+commits`, exibida ao lado das três contagens e da taxa de aborto. Quando
+`violações = 0`, o relatório declara o limite superior a 95% de confiança e classifica o
+zero em `inválido`, `janela mal declarada`, `exposição insuficiente` ou `protegido`. O
+próprio ADR registra que o veredito "ganha um terceiro formato", ao lado do booleano e
+da curva.
+
+**O que continua aberto é a composição.** Nenhuma decisão diz como um relatório único e
+uma comparação entre execuções acomodam os três ao mesmo tempo. É por isso que o E4 — o
+único experimento do MVP cujo resultado é uma curva — **não tem Feature Card**, e o
+motivo está no
+[índice de capacidades](features/README.md#capacidade-conhecida-e-não-especificada). A
+tabela acima lista formatos decididos localmente; ela **não** é a composição, e nada
+aqui decide qual formato prevalece quando dois se aplicam.
+
+### O catálogo canônico dos 42 itens do briefing
+
+**Esta tabela é a referência canônica.** Os demais documentos DEVEM escrever "itens do
+briefing" e apontar para cá, em vez de repetir "42 fenômenos" — a expressão trata como
+fenômeno o que a coluna `tipo` mostra ser capacidade do instrumento, explicação de outro
+item, ou item que ninguém classificou ainda.
+
+A regra de derivação é dura, e ela vale mais que a completude: **cada linha sai
+exclusivamente do que está escrito neste plano ou num ADR aceito.** `fenômeno` é o item
+que o plano descreve como anomalia; `capacidade` é o que ele descreve como recurso do
+instrumento; `explicação` é o que ele diz explicar outro item; `a classificar` é o item
+cujo nome, no texto que existe, não sustenta nenhum dos três. A coluna `experimento
+próprio` vale `sim, sem exceção declarada` onde o plano nada diz — o plano só argumenta
+contra experimento próprio em dois itens, e esse valor registra a ausência de exceção, e
+não uma decisão.
+
+| id | nome                             | tipo          | grupo       | experimento próprio                       |
+|----|----------------------------------|---------------|-------------|-------------------------------------------|
+| 1  | lost update                      | fenômeno      | A           | sim — E1 e E3, etapas 1 e 2               |
+| 2  | conflito otimista                | fenômeno      | A           | sim — E4, etapa 2                         |
+| 3  | contenção pessimista             | fenômeno      | A           | sim, sem exceção declarada                |
+| 4  | deadlock                         | fenômeno      | A           | sim, sem exceção declarada                |
+| 5  | write skew                       | fenômeno      | A           | sim — E5, etapa 3                         |
+| 6  | non-repeatable read              | fenômeno      | A           | sim, sem exceção declarada                |
+| 7  | phantom read                     | fenômeno      | A           | sim, sem exceção declarada                |
+| 8  | duplicata de mensagem            | fenômeno      | B           | sim — etapa 5; cobre também o 15          |
+| 9  | duplicata de comando             | fenômeno      | B           | sim, sem exceção declarada                |
+| 10 | reordenação                      | fenômeno      | B           | sim, sem exceção declarada                |
+| 11 | atraso                           | fenômeno      | B           | sim, sem exceção declarada                |
+| 12 | perda; reconciliação no grupo C  | fenômeno      | B e C       | sim, sem exceção declarada                |
+| 13 | producer failure e dual write    | fenômeno      | C           | sim — etapa 6                             |
+| 14 | consumer failure                 | fenômeno      | C           | sim, sem exceção declarada                |
+| 15 | at-least-once implica duplicação | explicação    | B           | **não** — é a explicação do 8             |
+| 16 | retry                            | a classificar | D           | sim — etapa 8                             |
+| 17 | retry storm                      | fenômeno      | D           | sim, sem exceção declarada                |
+| 18 | poison message                   | fenômeno      | B           | sim — etapa 8                             |
+| 19 | DLQ                              | a classificar | B           | sim — etapa 8                             |
+| 20 | backpressure                     | fenômeno      | D           | sim — etapa 10                            |
+| 21 | slow consumer                    | fenômeno      | D           | sim, sem exceção declarada                |
+| 22 | crash de consumidor              | fenômeno      | B           | sim, sem exceção declarada                |
+| 23 | thundering herd                  | fenômeno      | D           | sim, sem exceção declarada                |
+| 24 | hot resource                     | fenômeno      | D           | sim, sem exceção declarada                |
+| 25 | barreiras determinísticas        | capacidade    | A           | **não** — pré-requisito; entra na etapa 1 |
+| 26 | consistência eventual            | a classificar | C           | sim — etapa 9                             |
+| 27 | stale read                       | fenômeno      | C           | sim — etapa 9                             |
+| 28 | falha de projeção                | fenômeno      | C           | sim — etapa 9                             |
+| 29 | Outbox                           | a classificar | C           | sim — etapa 6                             |
+| 30 | Inbox                            | a classificar | C           | sim — etapa 7                             |
+| 31 | idempotência                     | a classificar | C           | sim — etapa 7                             |
+| 32 | competing consumers              | a classificar | B           | sim — etapa 5                             |
+| 33 | ordering vs throughput           | a classificar | D           | sim, sem exceção declarada                |
+| 34 | single writer                    | a classificar | E           | sim, sem exceção declarada                |
+| 35 | lock distribuído                 | a classificar | E           | sim — etapa 11                            |
+| 36 | expiração de lease               | fenômeno      | E           | sim — etapa 11                            |
+| 37 | network-like delay               | capacidade    | transversal | **não** — botão dos grupos B e D          |
+| 38 | partial failure                  | fenômeno      | D           | sim, sem exceção declarada                |
+| 39 | cascading failure                | fenômeno      | D           | sim, sem exceção declarada                |
+| 40 | timeout                          | fenômeno      | D           | sim, sem exceção declarada                |
+| 41 | event replay                     | capacidade    | transversal | sim, sem exceção declarada                |
+| 42 | replay determinístico            | capacidade    | transversal | sim — etapa 12                            |
+| —  | fencing tokens                   | a classificar | E           | sim — etapa 11                            |
+
+**Cinco pendências que esta tabela abre, e nenhuma delas é decidida aqui.**
+
+1. **Onze itens ficaram `a classificar` pelo mesmo motivo: o vocabulário de três tipos
+   não tem valor para solução, padrão ou regime.** Retry, DLQ, Outbox, Inbox,
+   idempotência, competing consumers, single writer, lock distribuído e fencing tokens
+   nomeiam uma **solução**; consistência eventual nomeia um **regime**; e ordering vs
+   throughput nomeia um **trade-off**. Nenhum dos três é anomalia, capacidade do
+   instrumento ou explicação de outro item. Se o catálogo ganha um quarto tipo, ou se
+   esses itens são reclassificados, é decisão que ninguém tomou.
+2. **`fencing tokens` não tem número.** Esta seção lista "Cenários 34, 35, 36, e
+   fencing", com quatro nomes para três números. Se ele é faceta do 36 ou item próprio
+   não está escrito, e por isso a tabela tem 43 linhas para 42 itens.
+3. **O item 25 tem dois nomes no próprio plano.** A lista desta seção o chama de "race
+   condition"; a seção 2 e o grafo da seção 4 o chamam de "barreiras determinísticas" e
+   o descrevem como exigência sobre a plataforma. Ele entrou como `capacidade` porque
+   duas das três ocorrências dizem isso; se o briefing o nomeia como fenômeno, a linha
+   muda.
+4. **O item 12 vive em dois grupos.** Ele é "perda" no grupo B e "reconciliação" no
+   grupo C. É o único item nessa situação, e nada diz se são dois experimentos ou um.
+5. **A coluna `experimento próprio` não é um plano de execução.** Ela registra o que o
+   texto diz. Onde ela traz uma etapa, é porque o roadmap nomeia aquele item; onde traz
+   `sem exceção declarada`, ninguém decidiu nada sobre ele.
 
 ---
 
@@ -367,12 +504,21 @@ informação, não atraso.
 e ele é pré-requisito de tudo que envolve convergência. Adiá-lo mais faz o laboratório
 concluir "nenhuma violação" em cenários onde o usuário viu dado errado o tempo todo.
 
+**O broker entrou antes da etapa 5, e só do lado do instrumento.** O
+[ADR-0012](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
+pôs Debezium Server e RabbitMQ no caminho do veredito desde o dia zero, e a regra de que
+nenhuma tecnologia entra por estar disponível foi **dispensada**, não satisfeita — uma
+dispensa registrada, que o próprio ADR declara não ser precedente. A linha 5 da tabela
+continua íntegra: o que ela agenda é o broker **no domínio medido**, quando a operação
+vira mensagem e aparecem competing consumers e duplicata. Transporte do veredito e
+substrato do experimento são coisas diferentes, e só o primeiro foi antecipado.
+
 ---
 
 ## 6. MVP — quatro experimentos
 
-Todos no grupo A. Nenhum exige broker, segundo processo, ou qualquer serviço além do
-primeiro.
+Todos no grupo A. Nenhuma **operação medida** exige broker ou segundo processo; o
+instrumento que a mede, esse, já roda distribuído — ver a nota da seção 8.
 
 Os três primeiros compartilham o mesmo oráculo exato sobre um contador. O quarto troca
 o oráculo por um predicado sobre um conjunto — é o que produz a segunda família de
@@ -383,6 +529,16 @@ O MVP tinha cinco experimentos até 2026-08-01. O
 rebaixou o E2 a **execução de controle positivo** do E1 e do E3, e uma execução de
 controle não é reportada como resultado. A numeração dos demais não mudou, para que as
 citações existentes continuem resolvendo.
+
+**Dois pontos do que se lê abaixo foram emendados por ADR aceito, e o ADR vale.** O
+oráculo exato não é `100 − value`: o
+[ADR-0002](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato) fixou
+`perdidas = commits − (value_final − value_inicial)`, onde `commits` conta passagens
+pela fronteira `AFTER_COMMIT` — contar retorno de operação cancelaria perda real contra
+falha injetada depois do commit. E os dois valores não vêm mais de um `SELECT`: desde o
+[ADR-0010](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) o
+oráculo lê o WAL por replicação lógica, e o `SELECT` no schema do sistema medido está
+proibido sem exceção.
 
 ### E1 — `lost-update-none` (grupo de controle)
 
@@ -464,8 +620,14 @@ O `arquivo/0001` chama este de resultado mais valioso que o laboratório pode pr
   uma alocação não incrementa a `version` do recurso — não existe linha compartilhada
   para versionar. A anotação está lá, o engenheiro acredita estar protegido, e a
   invariante quebra em silêncio. Chamamos isso de **proteção presente e inerte**.
-- **Detecção:** o oráculo aqui é um predicado sobre um conjunto, não uma contagem.
-  `SELECT sum(amount) ... > capacity`.
+- **Detecção:** o oráculo aqui é um predicado sobre um conjunto, não uma contagem:
+  `Σ amount > capacity`. **De onde sai essa soma não está decidido, e o E5 não roda até
+  que esteja.** O
+  [ADR-0010](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)
+  proibiu o `SELECT` no schema medido e não deu fonte a este oráculo; somar eventos de
+  `INSERT` vindos do WAL é reconstruir um total a partir de um stream, que é o que o
+  [card](features/deteccao-de-protecao-inerte/feature-card.md#atores-e-gatilho) registra
+  como lacuna. O CDC foi decidido para o **contador**, e não para este predicado.
 - **Interface:** a timeline precisa mostrar os dois `SELECT sum` retornando o mesmo
   valor **antes** de qualquer `INSERT`. É o único desenho que explica por que travar uma
   linha não ajudaria: a linha que quebra a invariante ainda não existe.
@@ -483,9 +645,11 @@ estratégia de concorrência" e "estar protegido" são coisas diferentes.
 
 ## 7. Por que esses quatro formam uma boa fundação
 
-**Custam a menor arquitetura possível.** Um processo, um banco, um navegador. Nenhum
-broker, nenhum segundo serviço, nenhum container além do PostgreSQL. Qualquer coisa que
-falhe aqui é do laboratório, não da infraestrutura.
+**Custam a menor arquitetura possível do lado medido.** Uma operação, um banco, um
+navegador: nenhum broker e nenhum segundo serviço entram no **domínio** para que estes
+quatro experimentos rodem. A frase valia também para o instrumento em 2026-07-28, e
+deixou de valer — a seção 8 registra o que a substituiu. Qualquer coisa que falhe aqui é
+do laboratório, não da infraestrutura.
 
 **Exercitam as cinco capacidades das quais todo o resto depende.** Uma operação
 decomposta em passos observáveis. Controle determinístico da intercalação, hoje na
@@ -527,6 +691,23 @@ coincidências existir.
 ---
 
 ## 8. Arquitetura mínima do MVP
+
+**Esta seção descreve a arquitetura proposta em 2026-07-28, e três ADRs aceitos a
+superaram. Ela não descreve a arquitetura vigente; a arquitetura vigente é a dos ADRs, e
+o dono dela é o [índice](adr/README.md#índice).** O que sobrevive inteiro é a análise: a
+separação entre instrumento e sistema medido, as quatro restrições adiante, e a seta que
+não existe.
+
+| O que esta seção propõe                      | O que o ADR aceito fixou                                                                                                                       |
+|----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| os dois planos na mesma JVM, num processo só | [ADR-0008](adr/0008-os-dois-planos-em-processos-separados.md#decisão): processos separados desde o dia zero                                    |
+| o oráculo lê o estado final do PostgreSQL    | [ADR-0010](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão): nenhum `SELECT` no schema alheio; o oráculo lê o WAL     |
+| nenhum broker                                | [ADR-0012](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão): Debezium Server e RabbitMQ no caminho do veredito |
+
+O diagrama e o texto abaixo ficam como estão, porque o argumento que eles carregam
+continua valendo — inclusive a aresta `PostgreSQL -.-> Veredito`, que o ADR-0010
+substituiu pela leitura do WAL sem mudar o que ela existia para dizer: o veredito não
+sai do log de observações do runtime.
 
 **Uma aplicação Spring Boot. Um PostgreSQL. Uma interface web servida pela própria
 aplicação.** Nenhum broker. Nenhum Valkey. Nenhum segundo processo.
@@ -605,7 +786,7 @@ a decisão obrigatória.
 | Decisão adiada                                                    | Gatilho que a torna obrigatória                                                |
 |-------------------------------------------------------------------|--------------------------------------------------------------------------------|
 | Quantos processos, e quais                                        | o experimento `JVM_LOCK` ficar vermelho com duas instâncias (etapa 4)          |
-| Broker: exchanges, filas, roteamento                              | o primeiro experimento assíncrono (etapa 5)                                    |
+| Broker no domínio: exchanges, filas, roteamento                   | **transporte do veredito: gatilho disparado** — ADR-0012; domínio na etapa 5   |
 | Formato interno da injeção de falha                               | a etapa 6, quando o ponto `BEFORE_PUBLISH` precisar existir de verdade         |
 | Onde o log de observações é persistido                            | um experimento que derrube o processo (etapa 6)                                |
 | Mecanismo de streaming para a UI (SSE ou WebSocket)               | a primeira execução longa o suficiente para não caber num polling              |
@@ -619,6 +800,12 @@ a decisão obrigatória.
 
 O padrão comum: nenhuma tecnologia entra por estar disponível. Cada uma entra quando um
 experimento não puder ser executado sem ela.
+
+**A regra foi dispensada uma vez**, em 2026-08-06, pelo
+[ADR-0012](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão):
+o broker entrou por decisão explícita de estudo, e a linha da tabela registra isso. Uma
+dispensa registrada **não é precedente** — a próxima tecnologia proposta precisa da
+mesma justificativa explícita, e o gatilho do domínio continua na etapa 5.
 
 As duas últimas linhas alteradas merecem nota. O Kubernetes entrou, mas **como destino
 de entrega, não como objeto de estudo** — nenhum experimento o usa, e a distinção é o
@@ -642,7 +829,7 @@ escopo novo.
 |-------------------------------------------------------|----------------------------------------|----------------------------------------------------------|
 | Veredito em dois eixos: safety e liveness             | `arquivo/0002`                         | generaliza para os grupos A–C (booleano) e D (curva)     |
 | Grupo de controle obrigatório — `NONE` precisa falhar | `arquivo/0003`                         | é a regra que separa laboratório de demonstração         |
-| Separação system under test / Lab Plane                   | `arquivo/0006` regra 6                 | mais crítica agora, porque os dois dividem a mesma JVM   |
+| Separação system under test / Lab Plane               | `arquivo/0006` regra 6                 | mais crítica agora, porque os dois dividem a mesma JVM   |
 | Relógio injetável                                     | `arquivo/0006` regra 8                 | pré-requisito das etapas 9 e 11                          |
 | Nenhuma aleatoriedade não semeada                     | `arquivo/0004`, `arquivo/0006` regra 7 | pré-requisito do replay determinístico                   |
 | Domínio em Java puro, testável com `new` e `assert`   | `arquivo/0006`                         | mantém a troca de estratégia por configuração            |
@@ -744,6 +931,21 @@ dois repositórios registrava isso. Não há solução proposta — as candidata
 desligar `selfHeal` durante a execução) têm custos diferentes e nenhuma é obviamente
 certa. Detalhe na seção 12.
 
+**Quatro destas oito fecharam, e o enunciado fica de propósito.** Uma tensão apagada
+some do texto e some da memória de quem a herdou; o que ela ganha é a linha que diz quem
+a fechou.
+
+| Tensão                                             | O que a fechou                                                                                                                                                                             |
+|----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1. Experiment Designer contra definição versionada | [ADR-0011](adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git): o caderno sai do Git, e a pessoa declara os dois pelo frontend |
+| 4. a fidelidade do runtime de passos               | [ADR-0004](adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#a-barreira-é-o-controle-positivo): a execução medida roda sem agendamento, e a barreira virou controle     |
+| 5. Java 25 e Spring Boot 4.x sem validação         | a checagem virou execução: o esqueleto compila, empacota e sobe (`pom.xml`, `compose.yaml`)                                                                                                |
+| 6. o esqueleto apagado antes do ADR                | a árvore de hoje nasceu depois; o `deploy/` continua ausente, e a [fila](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira) é quem o define                                                |
+
+As outras quatro — o oráculo do grupo D, a amostragem no tempo, a decisão tomada em
+outro repositório e o experimento destrutivo sob um orquestrador que ressuscita —
+continuam abertas, e nenhuma delas fecha dentro deste documento.
+
 ---
 
 ## 12. O acoplamento com o `homelab-infrastructure`
@@ -783,19 +985,13 @@ Ela precede o replanejamento em dois dias, e a premissa que ela usa é a do
 quantos serviços existem —, mas separa o que pode ser absorvido do que precisa de
 reconciliação.
 
-**Sobrevive sem alteração**, porque o motivo é independente da contagem de serviços:
-
-| Decisão da ADR 0017                                        | Por que continua valendo com um módulo                                                         |
-|------------------------------------------------------------|------------------------------------------------------------------------------------------------|
-| CI/CD exclusivamente no GitHub Actions                     | Testcontainers exige daemon Docker; o backend Kubernetes do Woodpecker não expõe nenhum        |
-| Runner hospedado, fora do perímetro do homelab             | repo público + `docker.sock` no nó equivale a root no servidor para qualquer autor de PR       |
-| Imagens no GHCR com `GITHUB_TOKEN` efêmero                 | evita credencial de longa duração como secret em repositório aberto                            |
-| Tag da imagem = SHA do commit, nunca `latest`              | tag mutável faria o ArgoCD reportar `Synced` com outro binário rodando                         |
-| `deploy/` neste repositório, renderizado por Kustomize     | escrever no homelab exigiria deploy key read-write da infra inteira num repo público           |
-| Bump de imagem commitado pelo `GITHUB_TOKEN`               | push com esse token não dispara workflows — é a proteção nativa contra recursão de build       |
-| ArgoCD por polling (~3 min), sem webhook                   | o Cloudflare Access na frente do ArgoCD bloquearia o POST não-interativo do GitHub             |
-| Secrets ficam no homelab, referenciados por nome           | nenhum Secret vai para o repositório público                                                   |
-| Job agregador como único check obrigatório                 | um check filtrado por `paths:` nunca reporta status e trava o PR para sempre                   |
+**A maior parte dela sobrevive sem alteração**, porque o motivo de cada escolha é
+independente da contagem de serviços. **O mecanismo não é mais enumerado aqui.** A visão
+factual completa — o que existe, o que foi decidido e o que continua aberto — é a
+[matriz de integrações](architecture/integrations.md#matriz), e repetir o pipeline em
+quatro documentos foi o que produziu quatro versões dele, nenhuma conferindo com as
+outras. O que fica nesta seção é a análise que só ela faz: por que o acoplamento existe,
+o que ele custa, e onde a ADR 0017 colide com o replanejamento.
 
 **Colide, e precisa de decisão aqui:**
 
@@ -888,16 +1084,21 @@ antecipa a 7 e a 8.
 
 ## 13. Próximo passo
 
-Nada neste documento é decisão.
+Nada neste documento é decisão, e o passo que esta seção anunciava já foi dado.
 
 A decisão de processo já foi tomada: a primeira série foi arquivada em
-[`adr/arquivo/`](adr/arquivo/README.md) e a numeração recomeçou. A fila de decisões
-está em [`adr/fila-de-decisoes.md`](adr/fila-de-decisoes.md).
+[`adr/arquivo/`](adr/arquivo/README.md) e a numeração recomeçou. A fila de decisões está
+em [`adr/fila-de-decisoes.md`](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira).
 
-O próximo passo é escrever o primeiro ADR da série corrente, e ele é o da seção 2 — **o
-passo como unidade de execução, observação e injeção de falha**. Ele vem primeiro porque
-toda outra decisão herda a forma que ele escolher: o formato da timeline, os pontos de
-fault injection, o mecanismo de barreira e a viabilidade do replay determinístico saem
-todos dele.
+O ADR da seção 2 — **o passo como unidade de execução, observação e injeção de falha** —
+foi escrito e aceito, e outros o seguiram. Quem quiser saber o que já está decidido lê o
+[índice de ADRs](adr/README.md#índice), e não este documento: ele continua sendo a análise
+que originou as decisões, e a análise não envelhece bem como se fosse a decisão.
 
-Enquanto ele não existir, **nenhuma linha de código é escrita**.
+A regra "enquanto ele não existir, nenhuma linha de código é escrita" cumpriu o que
+prometia, e saiu daqui. Existe um esqueleto executável (`pom.xml`, `compose.yaml`) e
+**nenhuma capacidade implementada** — o
+[índice de capacidades](features/README.md#índice) é o dono desse estado, e este
+documento não o duplica.
+
+O próximo passo passou a ser uma linha da fila, e não uma seção deste plano.

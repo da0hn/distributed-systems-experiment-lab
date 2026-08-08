@@ -32,9 +32,9 @@ estratégias sobre a mesma carga.
 
 ## Fora de escopo
 
-**A coluna `version` não existe no esquema hoje.** O [`ADR-0006`](../../adr/0006-a-forma-da-estrategia-de-concorrencia.md),
+**A coluna `version` não existe no esquema hoje.** O [`ADR-0006`](../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão),
 `Aceito`, decide que `OPTIMISTIC` a exige, mas a migração real nasce só quando a
-arquitetura mínima existir (fila, posição 10) — ver R15. O esboço do ADR-0001 lê a
+arquitetura mínima existir — ver R15. O esboço do ADR-0001 lê a
 coluna antes disso, e não é normativo.
 
 O SQL exato de cada uma das quatro estratégias e o mapa completo de exceção → retry
@@ -43,26 +43,26 @@ isolamento, classificação do veredito zero e formato curva estão em outros ca
 
 ## Regras de negócio
 
-| #   | Regra                                                                                                                                                                             | Evidência         | Aprovada por |
-|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|--------------|
-| R1  | O domínio tem duas entidades e nenhum nome de negócio: `Resource(id, value, capacity)` e `Allocation(id, resource_id, amount)`. Nenhuma outra coluna entra no MVP.                | ADR-0002:87-92    | pendente     |
-| R2  | O esquema **NÃO DEVE** carregar uma coluna `version`.                                                                                                                             | ADR-0002:94-95    | pendente     |
-| R3  | O identificador **DEVE** ser gerado pela aplicação a partir da semente. O esquema **NÃO DEVE** usar `SERIAL`, `IDENTITY`, `nextval` nem valor padrão do banco.                    | ADR-0002:124-126  | pendente     |
-| R4  | O identificador **DEVE** ser função da semente e **NÃO DEVE** ser função do instante da execução. Duas execuções da mesma semente produzem os mesmos identificadores.             | ADR-0002:128-130  | pendente     |
-| R5  | O oráculo produz uma contagem: `perdidas = commits − (value_final − value_inicial)`.                                                                                              | ADR-0002:135-139  | pendente     |
-| R6  | `commits` é o número de passagens pela fronteira `AFTER_COMMIT`, contadas **por tentativa**.                                                                                      | ADR-0002:141      | pendente     |
-| R7  | O denominador **DEVE** ser `commits`. Ele **NÃO DEVE** ser o número de operações submetidas nem o de operações que reportaram sucesso.                                            | ADR-0002:145-148  | pendente     |
-| R8  | `sucessos` conta as execuções de operação que reportaram sucesso. A diferença `commits − sucessos` mede o dual write.                                                             | ADR-0002:171-173  | pendente     |
-| R9  | O oráculo **DEVE** obter `value_final` do WAL do sistema medido, por replicação lógica. Ele **NÃO DEVE** emitir `SELECT` no schema dele nem derivar estado do log de observações. | ADR-0010, Decisão | pendente     |
-| R17 | `value_final` é o último valor de `resource.value` visto no stream, e a comparação só ocorre depois de o stream alcançar o LSN do commit final.                                   | ADR-0010, Decisão | pendente     |
-| R18 | O estado inicial **DEVE** ser inserido antes de cada execução, e não pressuposto, para que `value_inicial` venha do mesmo stream que `value_final`.                               | `O20`, 2026-08-05 | pendente     |
-| R10 | O E1 **precisa falhar**. Se `value` final for igual a 100, a carga é insuficiente e nenhum resultado posterior significa alguma coisa.                                            | plano:397-398     | pendente     |
-| R11 | Cada worker tem sua própria conexão. O pool **DEVE** ser maior que o número de workers, e isso **DEVE** ser verificado, não presumido.                                            | plano:579-582     | pendente     |
-| R12 | O Lab Plane trata a estratégia como rótulo opaco. Nenhum componente **DEVE** inspecioná-lo ou ramificar por ele.                                                                  | ADR-0006, Decisão | pendente     |
-| R13 | Cada estratégia responde "há outra tentativa?" a partir da exceção recebida. Uma exceção não reconhecida **DEVE** receber resposta não.                                           | ADR-0006, Decisão | pendente     |
-| R14 | `PESSIMISTIC` é controle positivo: suas coincidências **DEVEM** ser zero em toda execução.                                                                                        | ADR-0006, Decisão | pendente     |
-| R15 | `ATOMIC_UPDATE` é a estratégia de calibração exigida pelo ADR-0002 R3.                                                                                                            | ADR-0006, Decisão | pendente     |
-| R16 | Uma estratégia **PODE** exigir coluna além das cinco do ADR-0002; a migração nasce no mesmo commit que a introduz no código.                                                      | ADR-0006, Decisão | pendente     |
+| #   | Regra                                                                                                                                                                             | Evidência                                                                                                                                                           | Aprovada por |
+|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| R1  | O domínio tem duas entidades e nenhum nome de negócio: `Resource(id, value, capacity)` e `Allocation(id, resource_id, amount)`. Nenhuma outra coluna entra no MVP.                | [ADR-0002, Decisão](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão)                                                                                  | pendente     |
+| R2  | O esquema **NÃO DEVE** carregar uma coluna `version`.                                                                                                                             | [ADR-0002, Decisão](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão)                                                                                  | pendente     |
+| R3  | O identificador **DEVE** ser gerado pela aplicação a partir da semente. O esquema **NÃO DEVE** usar `SERIAL`, `IDENTITY`, `nextval` nem valor padrão do banco.                    | [ADR-0002, A identidade das entidades](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-identidade-das-entidades-é-atribuída-pela-aplicação)                 | pendente     |
+| R4  | O identificador **DEVE** ser função da semente e **NÃO DEVE** ser função do instante da execução. Duas execuções da mesma semente produzem os mesmos identificadores.             | [ADR-0002, A identidade das entidades](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-identidade-das-entidades-é-atribuída-pela-aplicação)                 | pendente     |
+| R5  | O oráculo produz uma contagem: `perdidas = commits − (value_final − value_inicial)`.                                                                                              | [ADR-0002, O oráculo exato](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)                                                                  | pendente     |
+| R6  | `commits` é o número de passagens pela fronteira `AFTER_COMMIT`, contadas **por tentativa**.                                                                                      | [ADR-0002, O oráculo exato](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)                                                                  | pendente     |
+| R7  | O denominador **DEVE** ser `commits`. Ele **NÃO DEVE** ser o número de operações submetidas nem o de operações que reportaram sucesso.                                            | [ADR-0002, O oráculo exato](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)                                                                  | pendente     |
+| R8  | `sucessos` conta as execuções de operação que reportaram sucesso. A diferença `commits − sucessos` mede o dual write.                                                             | [ADR-0002, O oráculo exato](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)                                                                  | pendente     |
+| R9  | O oráculo **DEVE** obter `value_final` do WAL do sistema medido, por replicação lógica. Ele **NÃO DEVE** emitir `SELECT` no schema dele nem derivar estado do log de observações. | [ADR-0010, Decisão](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)                                                                 | pendente     |
+| R17 | `value_final` é o último valor de `resource.value` visto no stream, e a comparação só ocorre depois de o stream alcançar o LSN do commit final.                                   | [ADR-0010, Decisão](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)                                                                 | pendente     |
+| R18 | O estado inicial **DEVE** ser inserido antes de cada execução, e não pressuposto, para que `value_inicial` venha do mesmo stream que `value_final`.                               | [`O20`, decisões pendentes arquivadas](../../adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md#o20-fecha-o-estado-inicial-é-criado-dentro-da-janela-de-captura) | pendente     |
+| R10 | O E1 **precisa falhar**. Se `value` final for igual a 100, a carga é insuficiente e nenhum resultado posterior significa alguma coisa.                                            | [plano, E1](../../plano-do-laboratorio.md#e1--lost-update-none-grupo-de-controle)                                                                                   | pendente     |
+| R11 | Cada worker tem sua própria conexão. O pool **DEVE** ser maior que o número de workers, e isso **DEVE** ser verificado, não presumido.                                            | [plano, Quatro restrições do MVP](../../plano-do-laboratorio.md#quatro-restrições-que-o-mvp-precisa-impor-desde-o-início)                                           | pendente     |
+| R12 | O Lab Plane trata a estratégia como rótulo opaco. Nenhum componente **DEVE** inspecioná-lo ou ramificar por ele.                                                                  | [ADR-0006, Decisão](../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão)                                                                                | pendente     |
+| R13 | Cada estratégia responde "há outra tentativa?" a partir da exceção recebida. Uma exceção não reconhecida **DEVE** receber resposta não.                                           | [ADR-0006, Decisão](../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão)                                                                                | pendente     |
+| R14 | `PESSIMISTIC` é controle positivo: suas coincidências **DEVEM** ser zero em toda execução.                                                                                        | [ADR-0006, `PESSIMISTIC` é o controle positivo](../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#pessimistic-é-a-estratégia-de-controle-positivo)            | pendente     |
+| R15 | `ATOMIC_UPDATE` é a estratégia de calibração exigida pelo ADR-0002 R3.                                                                                                            | [ADR-0006, `ATOMIC_UPDATE` é a calibração](../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#atomic_update-é-a-estratégia-de-calibração)                      | pendente     |
+| R16 | Uma estratégia **PODE** exigir coluna além das cinco do ADR-0002; a migração nasce no mesmo commit que a introduz no código.                                                      | [ADR-0006, Decisão](../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão)                                                                                | pendente     |
 
 O diagrama das duas contagens está no [Example Mapping](example-mapping.md).
 
@@ -73,7 +73,8 @@ medido, e não mudou. **O oráculo não emite `SELECT` nenhum.** Ele consome uma
 replicação lógica sobre o WAL, e o schema do `system-under-test` permanece inacessível a
 ele: não há `GRANT` cruzado. O transporte entre o WAL e o oráculo — conector, broker,
 filtro por execução — é decisão própria, que depende desta. **Não existe DDL nem contrato
-de esquema** — ver `Q-INT-5` em [`integrations.md`](../../architecture/integrations.md).
+de esquema** — ver `Q-INT-5` em
+[`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto).
 
 ## Riscos e decisões pendentes
 

@@ -4,83 +4,93 @@ Guia para agentes de código ao trabalhar neste repositório.
 
 ## O esqueleto existe desde 2026-08-06, e ele não implementa nada
 
-O grupo I do Lote E fechou, e o primeiro código do repositório entrou. **Ele compila,
-empacota e sobe — e não tem uma única regra de negócio dentro.** Nenhum dos 42 fenômenos
-é reproduzível hoje.
+**Há um esqueleto executável, e nenhum fenômeno ou capacidade está implementado.** Essa
+frase é o estado, e ela não é atualizada por commit: a árvore prova o que existe, e os
+índices são donos das quantidades. Não escreva aqui inventário de módulo, contagem de
+ADR, de questão ou de regra, nem lista do que falta.
 
-| Comando                           | O que ele faz                                    |
-|-----------------------------------|--------------------------------------------------|
-| `mvn verify`                      | compila e sobe cada serviço contra PostgreSQL 18 |
-| `docker compose up --build`       | os quatro serviços e o banco, localmente         |
-| `npm --prefix frontend run build` | constrói a interface                             |
+| Comando                           | O que ele faz                                          |
+|-----------------------------------|--------------------------------------------------------|
+| `mvn verify`                      | compila e sobe cada serviço contra PostgreSQL efêmero  |
+| `docker compose up --build`       | sobe o banco e os serviços do `compose.yaml`           |
+| `npm --prefix frontend run build` | constrói a interface                                   |
 
-A stack é Java 25, Spring Boot 4.1, PostgreSQL 18, Maven e Docker. **O broker foi
-antecipado em 2026-08-06, e ainda não existe na árvore.** Ele deixou de esperar a etapa 5
-e passou a ser o transporte entre o conector de CDC e o Lab Plane, por decisão explícita
-de estudo — a regra de que uma tecnologia só entra quando um experimento não puder ser
-executado sem ela **não foi satisfeita nesse caso, e sim dispensada**. O registro está na
-linha `E-12` de [`docs/adr/fila-de-decisoes.md`](docs/adr/fila-de-decisoes.md).
+A stack, as versões e os serviços que sobem estão declarados em `pom.xml`,
+`compose.yaml` e `frontend/package.json`. Leia-os de lá — um número copiado para cá
+envelhece sem avisar ninguém.
 
-**O conector é o Debezium Server, num processo próprio, e ele não é dispensa nova da
-regra.** `E-12` já decidiu que existe um conector entre o WAL e o broker; qual conector é
-implementação daquela decisão. Ele fica separado porque embarcá-lo dentro do `lab-plane`
-poria a credencial de `REPLICATION` sobre o banco do sistema medido no mesmo processo que
-produz o veredito — a regra de `E-18`, um nível abaixo. Ele não é módulo do reactor, e
-onde a configuração dele vive é a linha `E-31`, aberta.
+O que existe, o que foi decidido e ainda não foi construído, e o que continua aberto
+vive na [matriz de integrações](docs/architecture/integrations.md#matriz) e na
+[fila de decisões](docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira).
 
 ### Os quatro serviços, e a regra que os separa
 
-```mermaid
-flowchart TB
-    FE["frontend<br/>React, contêiner próprio"]
-    LP["lab-plane<br/>dev.da0hn.lab.labplane"]
-    LJ["lab-journal<br/>dev.da0hn.lab.journal"]
-    ST["system-under-test<br/>dev.da0hn.lab.sut"]
-    W[("WAL")]
-    FE -->|" comando "| LP
-    FE -->|" leitura e SSE "| LJ
-    LP -->|" chamada de passo "| ST
-    LP -->|" observações ao vivo "| LJ
-    ST --> W
-    W -->|" CDC: a fonte do veredito "| LP
-```
+**A contagem no título deste heading não vale mais**, e o próprio ADR que a revogou está
+em
+[ADR-0011](docs/adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#cinco-serviços-e-o-quatro-do-agentsmd-deixa-de-valer).
+O título permanece porque aquele ADR é aceito e cita esta âncora.
+A topologia vigente é da [matriz](docs/architecture/integrations.md#matriz), que separa
+o implementado do decidido e ainda ausente.
 
-**Um serviço jamais acessa o schema de outro.** É a decisão `E-18`, e ela é a razão de o
-oráculo ler o WAL por replicação lógica em vez de fazer `SELECT` nas tabelas do sistema
-medido. O `shared` é biblioteca e não vira imagem; a direção proibida do ADR-0008 é erro
-de compilação, porque o `system-under-test` não declara dependência do `lab-plane`.
+O que fica aqui é a regra, e não o desenho.
 
-**A região `dev.da0hn.lab.application` tem uma folha por executável.** Um pacote único
-ali seria dividido entre três artefatos, então cada bootstrap vive em
-`application.labplane`, `application.journal` e `application.sut`, com
-`scanBasePackages` declarado.
+**Um serviço jamais acessa o schema de outro, sem exceção.** É o
+[ADR-0010](docs/adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
+Dele decorre que o oráculo NÃO DEVE fazer `SELECT` no schema do sistema medido: ele lê o
+WAL por replicação lógica, e o transporte entre o WAL e o oráculo é o do
+[ADR-0012](docs/adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão).
+Nenhum `SELECT` cruzado é solução atual, em documento nenhum deste repositório.
+
+**A decisão de CDC alcança o contador, e não todo oráculo.** De onde o oráculo do
+predicado obtém `Σ amount` continua **aberto**, e o E5 não roda até que esteja decidido
+— [feature card de proteção
+inerte](docs/features/deteccao-de-protecao-inerte/feature-card.md#atores-e-gatilho). Não
+generalize "CDC resolve todo oráculo".
+
+**Cada executável tem a sua própria folha de bootstrap em `dev.da0hn.lab.application`.**
+Um pacote único ali seria dividido entre artefatos distintos. A região de pacote do
+sistema medido é decisão do
+[ADR-0009](docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md#decisão).
 
 ### O que ainda não existe, e por quê
 
-- **Nenhuma tabela.** As três migrações `V1` criam apenas o schema de cada serviço, e
-  existem porque sem nenhuma migração o Flyway não roda — e sem ele rodar, a fronteira
-  de `E-18` fica declarada em configuração e ausente do banco, com o health check verde.
-  As tabelas dependem do grupo II do Lote E (`E-8` a `E-13`).
-- **Nenhum consumidor de CDC.** O `compose.yaml` já sobe o PostgreSQL com
-  `wal_level=logical`, e o `REPLICATION` pertence ao papel `cdc_connector` — **não ao
-  `lab-plane`**. Quem lê o WAL é o conector, num processo próprio; o `lab-plane` consome
-  do broker e não toca o log. Pôr essa credencial no processo que produz o veredito
-  seria a regra de fronteira quebrada um nível abaixo. O consumo entra com o oráculo.
-- **Nenhum `deploy/`.** A linha `E-3` foi adiada por escolha explícita, e o
-  `ComparisonError` que o ArgoCD reporta continua. O workflow publica imagem no GHCR com
-  tag igual ao SHA, e nada a consome ainda.
-- **Nenhuma guarda executável.** As três regras estruturais abaixo continuam texto —
-  [`Q-0002-1`](docs/questions/Q-0002-1.md), e as decisões `D-ARQ-07` a `D-ARQ-09`.
+O inventário do que falta não vive aqui; ele é da
+[matriz](docs/architecture/integrations.md#matriz) e da
+[fila](docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira). Duas ausências, porém,
+são guardrail e não snapshot:
+
+- **O `REPLICATION` pertence ao papel do conector de CDC, nunca ao `lab-plane`.** Pôr a
+  credencial de WAL no processo que produz o veredito quebra a fronteira do ADR-0010 um
+  nível abaixo, e é exatamente por isso que o conector roda em processo próprio, pelo
+  [ADR-0012](docs/adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão).
+- **As regras estruturais de aleatoriedade, de relógio e de sincronização são texto, e
+  não guarda executável.** [`Q-0002-1`](docs/questions/Q-0002-1.md) registra a lacuna, e
+  a guarda pertence à decisão de arquitetura mínima.
 
 ## O que este projeto é
 
 Uma plataforma experimental para reproduzir, observar e comparar problemas conhecidos de
 sistemas distribuídos. Não é uma aplicação de negócio: não existe pedido, pagamento,
-cliente ou estoque. O escopo cobre 42 fenômenos, de lost update a cascading failure.
+cliente ou estoque. O escopo cobre os **itens do briefing** — chame-os assim, e não
+"fenômenos", porque o próprio plano reconhece duplicata e capacidade do instrumento
+entre eles, em
+[taxonomia refinada](docs/plano-do-laboratorio.md#3-taxonomia-refinada).
 
-O documento que define tudo é
-[`docs/plano-do-laboratorio.md`](docs/plano-do-laboratorio.md). Leia-o antes de propor
-qualquer coisa.
+**O plano não decide nada.** Ele é a análise que define quais decisões precisam ser
+tomadas e em que ordem, como diz o
+[índice de ADRs](docs/adr/README.md#índice). Tratá-lo como arquitetura vigente faz
+hipótese antiga prevalecer sobre ADR aceito. Use este roteador:
+
+| Procurando por                    | Documento dono                                                             |
+|-----------------------------------|----------------------------------------------------------------------------|
+| taxonomia, pedagogia e roadmap    | [plano do laboratório](docs/plano-do-laboratorio.md)                       |
+| decisão arquitetural durável      | ADR aceito, pelo [índice](docs/adr/README.md#índice)                       |
+| decisão ainda aberta              | [fila de decisões](docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira) |
+| comportamento de uma capacidade   | Feature Card, pelo [índice](docs/features/README.md#índice)                |
+| estado e topologia das fronteiras | [matriz de integrações](docs/architecture/integrations.md#matriz)          |
+| processo, lifecycle e aprovação   | [processo](docs/specification-process.md#a-decisão-vem-antes-do-artefato)  |
+| vocabulário vigente               | [glossário de domínio](docs/CONTEXT.md#linguagem)                          |
+| questão encaminhada               | [índice de questões](docs/questions/README.md#índice)                      |
 
 ## Como o planejamento funciona aqui
 
@@ -95,9 +105,11 @@ Card e Example Mapping para comportamento. Use ADR para decisão arquitetural du
 nasce `Aceito`.** O que se enfileira
 é decisão, e não ADR. Uma decisão entra na fila com o problema, as alternativas e as
 objeções; sai quando a pessoa escolhe; e só então o artefato é escolhido — ADR quando a
-escolha atender aos quatro critérios de `docs/adr/README.md`, artefato de
-`docs/features/` quando não atender. O debate acontece na linha da fila, antes de
-existir documento, porque um ADR que nasce `Aceito` não pode mais ser editado.
+escolha atender aos [critérios do
+índice](docs/adr/README.md#uma-decisão-merece-adr-quando), artefato de `docs/features/`
+quando não atender. O debate acontece na linha da fila, antes de existir documento,
+porque um ADR nasce `Aceito` e a partir daí só muda pelas formas que o
+[lifecycle](docs/adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05) permite.
 
 A skill é a fonte operacional para classificação, templates, limites, contratos,
 validações e ciclo de vida dos ADRs. O processo e a justificativa da mudança ficam em
@@ -105,6 +117,38 @@ validações e ciclo de vida dos ADRs. O processo e a justificativa da mudança 
 
 O índice das capacidades está em [`docs/features/README.md`](docs/features/README.md).
 O registro histórico dos ADRs fica em [`docs/adr/README.md`](docs/adr/README.md).
+
+### Redação e revisão independente de ADR
+
+Depois que a pessoa decidir uma questão que merece ADR, a sessão principal continua dona
+da decisão e delega a redação a um agente escritor. Um agente revisor independente confere
+o texto antes de ele voltar para a pessoa. A regra é agnóstica de ferramenta, modelo e
+provedor.
+
+O escritor recebe a decisão tomada, alternativas descartadas e seus motivos, evidências
+com caminho e âncora GFM, e o estado inicial exigido pelo processo. Ele NÃO DEVE escolher
+alternativa, inventar evidência ou fechar lacuna. O revisor NÃO DEVE editar o ADR: ele
+devolve uma lista numerada de defeitos para o escritor corrigir.
+
+```mermaid
+sequenceDiagram
+    participant P as Pessoa
+    participant S as Sessão principal
+    participant W as Escritor independente
+    participant R as Revisor independente
+    P->>S: decisão explícita
+    S->>W: decisão, alternativas e evidências
+    W->>R: rascunho
+    R-->>W: defeitos ou aprovação
+    W-->>S: texto revisado
+    S-->>P: ADR para revisão
+```
+
+Uma discordância ou defeito volta ao mesmo escritor, com a lista do revisor preservada.
+O ciclo tem no máximo três rodadas. Se não convergir, a sessão devolve à pessoa os pontos
+em aberto; ela decide, e não o escritor ou o revisor. O ciclo de vida de ADR aceito,
+incluindo emenda, subsunção e adendo, continua no
+[`docs/adr/README.md`](docs/adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05).
 
 ## Convenções gerais de escrita
 
@@ -117,7 +161,7 @@ O registro histórico dos ADRs fica em [`docs/adr/README.md`](docs/adr/README.md
 
 ## Arquitetura conceitual
 
-Ler só um documento não basta; estas cinco ideias atravessam todo o projeto.
+Ler só um documento não basta; estas ideias atravessam todo o projeto.
 
 **Uma operação é uma sequência de
 passos.** Barreiras determinísticas, fault injection em
@@ -139,24 +183,31 @@ rede. Isso não dispensa a separação por teste executável: a fronteira de pro
 a chamada, e não o acoplamento de desenho. O runtime chama a operação; a operação nunca
 chama o runtime.
 
-**Cinco grupos, classificados pela causa.** Intercalação, Entrega, Escrita parcial,
-Saturação, Posse no tempo. A classificação é pela fonte de não determinismo, não pela
-tecnologia, porque é a causa que determina o que a plataforma precisa saber controlar.
+**Os grupos são classificados pela causa**, e não pela tecnologia: é a fonte de não
+determinismo que determina o que a plataforma precisa saber controlar. A lista dos
+grupos é do plano, em
+[taxonomia refinada](docs/plano-do-laboratorio.md#3-taxonomia-refinada).
 
-**O veredito tem três
-formatos.** Booleano (a invariante foi violada?) para os grupos A, B,
-C e E.
-**Curva** para o grupo D — backpressure não tem estado errado, tem uma fila crescendo
-e um limiar que alguém precisa declarar. E **taxa com limite de
-confiança**, acrescentada
-pelo ADR-0004: um número mais uma incerteza, que não é caso particular de nenhum dos
-outros dois. Como os três convivem é decisão em aberto na fila.
+**O formato do veredito é decidido por oráculo, e a composição global não foi
+decidida.** O oráculo exato do contador produz um número de operações perdidas
+([ADR-0002](docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)) e o
+oráculo do predicado produz um booleano
+([ADR-0002](docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-do-predicado)).
+O
+[ADR-0004](docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-veredito-de-uma-execução-medida-é-uma-taxa)
+acrescentou a taxa com limite de confiança, que não é caso particular de nenhum dos
+dois. Como esses formatos convivem num relatório único continua **decisão aberta**, e o
+E4 não tem card exatamente por isso, em
+[capacidade conhecida e não
+especificada](docs/features/README.md#capacidade-conhecida-e-não-especificada). Não
+conte formatos e não trate a lista como fechada.
 
 **O grupo de controle é
 obrigatório.** A estratégia `NONE` não é um estado provisório: se
 `NONE` não violar a invariante, o experimento não tem carga suficiente e o resultado das
-outras estratégias não significa nada. O ADR-0004 tornou isso a primeira linha da
-classificação do veredito zero.
+outras estratégias não significa nada. O
+[ADR-0004](docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-zero-é-classificado-e-a-classificação-tem-quatro-valores)
+tornou isso a primeira linha da classificação do veredito zero.
 
 ## Regra pedagógica
 
@@ -170,7 +221,8 @@ a inconsistência — e só então introduza o Outbox e rode o mesmo experimento
 PROBLEMA → CAUSA → SOLUÇÃO → TRADE-OFF
 ```
 
-Vale para os 42 fenômenos, sem exceção. É por isso que `version` não está no esquema.
+Vale para todo item do briefing, sem exceção. É por isso que `version` não está no
+esquema.
 
 ## Regras estruturais que valem sempre
 
@@ -178,8 +230,9 @@ Vale para os 42 fenômenos, sem exceção. É por isso que `version` não está 
   disponível.** Cada uma entra quando um experimento
   não puder ser executado sem ela. Antes de propor Valkey ou OpenTelemetry, diga qual
   limitação concreta da stack atual ela resolve. **A regra foi dispensada uma vez**, para
-  o broker, em 2026-08-06 — uma dispensa registrada não é precedente: a próxima também
-  precisa ser explícita.
+  o broker, pelo
+  [ADR-0012](docs/adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
+  — uma dispensa registrada não é precedente: a próxima também precisa ser explícita.
 - **Nenhuma aleatoriedade não semeada.** `Math.random()`, `java.util.Random` e
   `ThreadLocalRandom` são proibidos fora do componente de aleatoriedade semeada. Uma
   chamada esquecida quebra a reprodutibilidade em silêncio, meses depois.
@@ -195,11 +248,11 @@ Vale para os 42 fenômenos, sem exceção. É por isso que `version` não está 
   conexão.** Se o pool serializar dois workers, o experimento
   produz um falso negativo silencioso.
 - **O caderno de laboratório não vive no
-  Git.** Desde as decisões `E-14` e `E-17`, de
-  2026-08-06, a definição de experimento e o resultado vivem no banco do `lab-journal`,
-  e a pessoa os declara pelo frontend. Nem `experiments/` nem `docs/experiments/` são
-  criados. A tensão entre arquivo versionado e Experiment Designer fechou pelo segundo,
-  e o custo está nomeado na fila: um resultado deixa de aparecer em diff, de ser revisado
+  Git.** A definição de experimento e o resultado
+  vivem no banco do `lab-journal`, e a pessoa os declara pelo frontend. Nem
+  `experiments/` nem `docs/experiments/` são criados. É o
+  [ADR-0011](docs/adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git),
+  e o custo está nomeado nele: um resultado deixa de aparecer em diff, de ser revisado
   em PR e de sobreviver a um banco recriado.
 
 **As regras de aleatoriedade e de relógio alcançam pelo papel do valor, e não pelo plano
@@ -219,23 +272,25 @@ arquitetura mínima.
 
 ### Especificação
 
-Quatro capacidades estão especificadas e **nenhuma implementada**. O índice completo,
-com o que cada uma cobre, está em [`docs/features/README.md`](docs/features/README.md).
+**Nenhuma capacidade especificada está implementada.** Quais existem, o que cada uma
+cobre e o que ainda não tem card estão em
+[`docs/features/README.md`](docs/features/README.md#índice) — ele é o dono da lista, e
+esta seção não a repete.
 
-**O E4 não tem card, de
-propósito.** O veredito em formato curva não tem forma decidida, e
-um card agora seria majoritariamente pergunta em aberto. O motivo está registrado no índice.
-
-**Nenhum contrato
-existe.** Nenhuma interface existe para contratar — `docs/contracts/README.md`
-lista os quatro gatilhos que criam cada um.
+Nenhuma interface existe para contratar, e por isso nenhum contrato formal existe. Os
+gatilhos que criam cada um estão em
+[`docs/contracts/README.md`](docs/contracts/README.md).
 
 ### Decisões
 
-**Os ADRs da série corrente aceitos até agora, e o que cada um fixou, estão no índice
-de**
-[`docs/adr/README.md`](docs/adr/README.md). Nenhum ADR aceito pode ser editado; para
-mudar uma decisão, um ADR novo o substitui. Nenhum ADR está `Proposto` hoje.
+**Os ADRs aceitos e o que cada um fixou estão no índice de**
+[`docs/adr/README.md`](docs/adr/README.md#índice). Ele é o dono do inventário e do
+estado de cada um. O corpo de um ADR aceito não é editado livremente. Quais alterações
+são permitidas — e nenhuma fora delas é — está no
+[lifecycle](docs/adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05) e na
+[revogação da imutabilidade](docs/adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Não enumere as formas aqui: o índice é o dono da lista, e uma segunda cópia dela já
+divergiu uma vez.
 
 Três consequências, fixadas pelos ADRs 0001 e 0002, mudam o que se pode propor daqui em
 diante:
@@ -244,97 +299,93 @@ diante:
   é `perdidas = commits − (value_final − value_inicial)`**, onde `commits`
   conta passagens pela fronteira `AFTER_COMMIT`, por tentativa. Não é `sucessos` —
   contar retornos de operação cancela perda real contra falha injetada depois do commit.
+  Está em
+  [ADR-0002](docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato).
 - **Toda execução medida exige calibração antes**, com uma estratégia sem perda, em que
-  `commits` DEVE igualar `value_final − value_inicial`. Qual é essa estratégia ainda não
-  foi decidido.
+  `commits` DEVE igualar `value_final − value_inicial` — em
+  [ADR-0002](docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador).
+  Qual é essa estratégia ainda não foi decidido.
 - **`version` não existe no esquema.** Quem a acrescenta é o ADR de estratégias de
   concorrência, junto da política que a lê. O esboço ilustrativo do ADR-0001 lê uma
   coluna que o esquema não tem — o esboço não é normativo.
 
 As questões encaminhadas vivem em [`docs/questions/`](docs/questions/README.md), um
-arquivo por questão, com identificador `Q-NNNN-K`. **Cite-as por esse identificador**,
-nunca por "a questão K do ADR-NNNN". Cada uma tem destino nomeado na fila; uma resolvida
-mantém o enunciado e ganha `resolvida por ADR-NNNN`, de propósito.
+arquivo por questão. **Use e cite o identificador definido no
+[índice de questões](docs/questions/README.md#índice)**, cuja gramática é do
+[próprio índice](docs/questions/README.md#identificador) — não a redeclare aqui, e nunca
+cite por "a questão K do ADR-NNNN". Uma questão resolvida mantém o enunciado e ganha a
+referência do ADR que a resolveu, de propósito.
 
 As perguntas levantadas durante o Example Mapping vivem nos próprios `example-mapping.md`, e
 **não** foram transportadas para a fila de ADRs.
 
 ### Pendências de processo
 
-**As cinco pendências de processo fecharam em 2026-08-05, no Lote B.**
+O processo é dono do seu próprio estado, em
+[`docs/specification-process.md`](docs/specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05).
+Quatro regras dele valem em toda edição, e por isso ficam aqui:
 
 - **A fila é uma só, e vive em
-  [`docs/adr/fila-de-decisoes.md`](docs/adr/fila-de-decisoes.md).** As duas origens
-  viraram lápide. A de `docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md` guarda o texto
-  congelado, porque aquele arquivo é append-only: nove citações por número de linha,
-  vindas dos ADRs 0008 e 0009, apontam para ele.
+  [`docs/adr/fila-de-decisoes.md`](docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira).**
+  As origens anteriores viraram lápide, e a de
+  `docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md` guarda o texto congelado
+  porque ADRs aceitos citam aquele arquivo por número de linha.
 - **A poda não acontece antes da decisão.** Podar hoje as linhas que são comportamento
   disfarçado de arquitetura seria escolher o artefato antes da decisão, que é o oposto
   da regra de 2026-08-04. A poda acontece uma linha por vez, quando a pessoa escolhe.
 - **Aprova-se a regra, e não o card.** A tabela de regras de um Feature Card carrega a
-  coluna `Aprovada por`, e uma regra `pendente` NÃO DEVE virar cenário Gherkin. As 48
-  regras das quatro capacidades estão `pendente` hoje.
+  coluna `Aprovada por`, e uma regra `pendente` NÃO DEVE virar cenário Gherkin.
 - **Um card NÃO PODE contradizer um ADR aceito.** A contradição é decisão arquitetural
   nova: ela entra na fila no mesmo turno em que é vista, e gera ADR.
-- **`D-ARQ-02` e `D-DOM-11` foram classificadas**, e continuam abertas.
 
-O processo está em
-[`docs/specification-process.md`](docs/specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05).
-
-**Pendência nova, aberta ao aplicar a coluna de aprovação:** o card de detecção de
-atualização perdida tem 761 palavras contra o limite de 700, e já o violava antes.
-Dividir, subir o limite ou cortar prosa é decisão, e ela não foi tomada.
+Os limites de tamanho de artefato não são declarados aqui. O número vive no processo, e
+quem o aplica é `.claude/skills/feature-planning/scripts/check_artifact_limits.py` —
+rode o script em vez de citar um valor de memória.
 
 ### Árvore
 
-A árvore tem `docs/`, os quatro módulos do reactor, `frontend/`, `local/` e os dois
-workflows. O esqueleto herdado das decisões arquivadas foi apagado nos commits `83fcfc9`
-e `e1c88ae`, e o que existe hoje **não** é aquele — ele nasceu do grupo I do Lote E, em
-2026-08-06.
-
-**O `deploy/` continua sem existir, e o `Application` do homelab continua em
-`ComparisonError`.** A linha `E-3`, que decide a forma dele, foi adiada por escolha
-explícita na mesma data. Enquanto ela não fechar, o workflow publica imagens que nada
-consome.
+A árvore é a prova do que existe; não há snapshot dela neste arquivo, de propósito. Rode
+`git ls-files` para o que está versionado, e leia a
+[matriz](docs/architecture/integrations.md#matriz) para o estado de cada fronteira. O
+esqueleto herdado das decisões arquivadas foi apagado nos commits `83fcfc9` e `e1c88ae`,
+e o que existe hoje **não** é aquele.
 
 ## Este repositório é entregue no homelab
 
-O laboratório é a primeira carga de trabalho da Camada 8 do repositório
+O laboratório é entregue como carga de trabalho do repositório
 [`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure), e a
-exigência é que um serviço **nasça já
-entregando**: pipeline e CI/CD no mesmo commit que cria o módulo,
-nunca retrofitados. O contrato está na **ADR 0017 daquele repositório**, que está
-**Aceita** — leia-a antes de propor qualquer coisa sobre build, empacotamento ou deploy.
+exigência é que um serviço **nasça já entregando**. **O contrato de entrega vive lá**,
+na ADR 0017 daquele repositório — leia-a antes de propor qualquer coisa sobre build,
+empacotamento ou deploy. Não o resuma aqui.
 
-O essencial dela: GitHub Actions exclusivamente, em runner hospedado; imagem no GHCR com
-`GITHUB_TOKEN` efêmero e tag = SHA do commit, nunca `latest`; manifests Kustomize em
-`deploy/`
-**deste** repositório, bumpados pelo workflow da `master`; ArgoCD por polling (~3 min); nenhum Secret aqui — eles ficam cifrados com SOPS/KSOPS no homelab e são
-referenciados por nome.
+Três guardrails operacionais, e nada além deles:
 
-A matriz completa de integrações, separando fato de hipótese, está em
-[`docs/architecture/integrations.md`](docs/architecture/integrations.md). Três cuidados
-que valem sempre:
+- **A tag da imagem é o SHA do commit, nunca `latest`.**
+- **Nenhum Secret vive neste repositório.** Eles ficam cifrados no homelab e são
+  referenciados por nome.
+- **`deploy/` não existe hoje**, e a decisão sobre a forma dele está aberta na
+  [fila de decisões](docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira).
 
-- **A ADR 0017 é de 2026-07-26 e o replanejamento daqui é de
-  2026-07-28.** Ela descreve o
-  laboratório como "monorepo de microsserviços JVM" — a arquitetura
-  **arquivada**. Ela também
-  escolhe **Gradle** e
-  **Toxiproxy**, que nunca foram debatidos aqui. Não absorva nada disso
-  em silêncio: o inventário está em `docs/plano-do-laboratorio.md`, seção 12.
-- **Kubernetes é destino de entrega, não objeto de estudo.** Nenhum dos 42 fenômenos é
+**Uma lacuna, e ela é uma só: o pipeline está parcialmente implementado, bloqueado pela
+decisão de `deploy/`.** Ele publica imagem e não faz o bump de um `deploy/` que não
+existe, e o `Application` do ArgoCD segue em `ComparisonError`. **Não o chame de
+completo.**
+
+O estado de cada fronteira de entrega é da
+[matriz de integrações](docs/architecture/integrations.md#matriz). Três cuidados que não
+são estado, e por isso ficam:
+
+- **Kubernetes é destino de entrega, não objeto de estudo.** Nenhum item do briefing é
   reproduzido por um recurso do cluster.
-- **Rodar o laboratório no cluster exige mudar o `homelab-infrastructure`, e não só este
-  repositório.** Registrado em 2026-08-06. O Debezium Server precisa lá de um Secret
-  cifrado com a credencial de `REPLICATION` e de um `Application` que alcance o `deploy/`
-  daqui. Ele é **imagem de terceiro**, com tag de versão do Debezium, e nenhum commit
-  daqui a produz — se a ADR 0017 alcança uma imagem assim é `Pergunta em aberto`, na
-  linha `E-31` de [`docs/adr/fila-de-decisoes.md`](docs/adr/fila-de-decisoes.md).
+- **A ADR 0017 daquele repositório é anterior ao replanejamento daqui**, descreve a
+  arquitetura **arquivada** e escolhe ferramentas que nunca foram debatidas neste
+  repositório. Não absorva nada dela em silêncio; o inventário está em
+  [plano, seção 12](docs/plano-do-laboratorio.md#12-o-acoplamento-com-o-homelab-infrastructure).
 - **O orquestrador reage ao que o experimento
   faz.** Um experimento que mata o processo de
-  propósito (etapa 6) roda sob um `Deployment` que o reinicia, com `selfHeal: true`. Isso é
-  a confusão system under test / Lab Plane um nível abaixo, e não tem solução decidida.
+  propósito roda sob um `Deployment` que o reinicia, com `selfHeal: true`. Isso é a
+  confusão system under test / Lab Plane um nível abaixo, e **não tem solução
+  decidida**.
 
 ## Ao trabalhar aqui
 
@@ -355,6 +406,13 @@ que valem sempre:
   alcance — dentro de um bloco Mermaid, por exemplo. O que não puder ser confirmado é
   `Pergunta em aberto`, nunca fato. O verificador é `scripts/check_citations.py`, e ele
   roda no workflow `docs`.
+- **Um ADR aceito não é imutável por decreto, e também não é editável à vontade.** As
+  alterações permitidas são as do
+  [lifecycle](docs/adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05) e as da
+  [revogação da imutabilidade](docs/adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+  Fora delas, o corpo permanece byte a byte.
+- **Não repita aqui estado que outro documento é dono de manter.** Contagem, inventário
+  e topologia envelhecem em silêncio; escreva o guardrail e o link.
 - A LLM gera perguntas, contraexemplos e lacunas. **Regra de negócio e decisão são
   aprovadas
   por pessoa, explicitamente.**

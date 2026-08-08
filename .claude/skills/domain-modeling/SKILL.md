@@ -32,8 +32,28 @@ mapa aponta para onde cada um vive — veja o formato em
 [references/context-format.md](references/context-format.md). Nada neste repositório
 justifica isso hoje: um único laboratório, um único glossário.
 
-Crie `docs/CONTEXT.md` de forma preguiçosa — só quando houver o primeiro termo resolvido
-para escrever.
+**`docs/CONTEXT.md` já existe.** Não o crie, não o recrie e não trate a ausência dele
+como estado possível. O trabalho é acrescentar e afiar entrada, nunca inaugurar o
+arquivo.
+
+## O que entra no glossário, e o que não entra
+
+Uma entrada tem quatro partes, e só essas quatro: **termo**, **definição breve**,
+**status ou sinônimos recusados**, e **link de origem**. O formato exato está em
+[references/context-format.md](references/context-format.md).
+
+**Quatro coisas NÃO DEVEM entrar**, porque cada uma já tem dono:
+
+| O que aparece na conversa                        | Onde ele vive                                   |
+|--------------------------------------------------|-------------------------------------------------|
+| alternativa de nome, com o argumento de cada uma | linha da `docs/adr/fila-de-decisoes.md`         |
+| decisão de vocabulário, proposta ou tomada       | a mesma linha da fila; ADR quando ela o merecer |
+| ata de como o termo foi debatido                 | a linha da fila, e nunca o glossário            |
+| pergunta em aberto e backlog de termos           | `docs/questions/`, ou o `example-mapping.md`    |
+
+O glossário registra o vocabulário **vigente**. Um termo em disputa não ganha entrada:
+ele ganha linha na fila, e entra aqui quando a pessoa escolher. Escrever a disputa aqui
+cria um segundo repositório de decisões, e os dois divergem no primeiro turno.
 
 ## Durante a sessão
 
@@ -67,9 +87,9 @@ Quando um termo for resolvido, atualize `docs/CONTEXT.md` ali mesmo. Não acumul
 depois — capture no instante em que acontece. Use o formato em
 [references/context-format.md](references/context-format.md).
 
-`docs/CONTEXT.md` fica totalmente livre de detalhe de implementação. Não trate
-`docs/CONTEXT.md` como especificação, rascunho ou repositório de decisão de
-implementação. É um glossário, e nada mais.
+`docs/CONTEXT.md` fica totalmente livre de detalhe de implementação. Não o trate como
+especificação, rascunho, ata ou repositório de decisão. É um glossário, e nada mais —
+a tabela de "O que entra no glossário" diz para onde vai o resto.
 
 ### Ofereça ADR com parcimônia
 

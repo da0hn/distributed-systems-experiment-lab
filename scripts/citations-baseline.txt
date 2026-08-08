@@ -8,17 +8,18 @@
 # nomeia a decisao que a autorizou.
 
 # ----------------------------------------------------------------------------
-# `C-6` — duas citacoes mortas dentro de ADRs aceitos, em `docs/adr/`.
+# `C-6` — RESOLVIDO em 2026-08-07. As duas entradas sairam daqui.
 #
 # As duas apontavam para secoes do indice `docs/adr/README.md` que foram
 # extraidas para `docs/questions/` em 2026-08-03, quando o arquivo encolheu de
-# 908 para 517 linhas. O corpo de um ADR aceito NAO DEVE ser editado, entao elas
-# nao podem ser convertidas para ancora nem corrigidas para outra linha.
+# 908 para 517 linhas. Enquanto o corpo de um ADR aceito NAO PODIA ser editado,
+# elas nao tinham conserto: nem ancora, nem outra linha.
 #
-# O cabecalho de cada um dos dois recebeu uma errata que nomeia a secao
-# pretendida e o arquivo para onde ela foi. O corpo continua como estava.
-docs/adr/0005-a-forma-do-escalonador.md:README.md:598-609
-docs/adr/0006-a-forma-da-estrategia-de-concorrencia.md:README.md:515-539
+# A imutabilidade foi revogada em 2026-08-07. As duas citacoes foram consertadas
+# por patch, e apontam agora para `docs/questions/Q-0002-2.md` e
+# `docs/questions/Q-0001-2.md`. Cada ADR registra o patch na secao
+# `## Patches aplicados`. A errata do cabecalho permanece como registro do
+# periodo em que o defeito nao tinha conserto.
 
 # ----------------------------------------------------------------------------
 # Meta-citacao — as cinco entradas de `decisoes-pendentes.md` sairam daqui.

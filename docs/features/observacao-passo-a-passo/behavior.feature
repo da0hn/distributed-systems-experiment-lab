@@ -1,8 +1,12 @@
 # language: pt
 #
-# Especificação viva. Nenhum destes cenários tem teste — não existe código no
-# repositório. A tag @teste-ausente marca o cenário cujo teste precisa ser escrito;
-# quando ele existir, a tag é trocada pelo identificador do teste.
+# ARQUIVO INATIVO — este arquivo NÃO é especificação viva.
+#
+# Nenhuma regra que estes cenários cobrem tem `Aprovada por` preenchido, e uma regra
+# pendente não sustenta Gherkin. Enquanto isso valer, nada aqui DEVE virar teste ou
+# código. Os cenários ficam na árvore, e voltam ao conjunto ativo regra a regra,
+# quando uma pessoa aprovar a regra que cada um sustenta.
+# O estado das regras é do índice de capacidades: docs/features/README.md#índice.
 #
 # Fonte das regras: docs/adr/0001-o-passo-como-unidade-de-execucao.md, Aceito.
 # Regras em debate não aparecem aqui — elas vivem em example-mapping.md.

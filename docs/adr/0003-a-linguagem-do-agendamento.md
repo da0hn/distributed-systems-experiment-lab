@@ -650,3 +650,11 @@ Reveja a carga própria do controle positivo quando um veredito `protegido` for 
 por uma execução medida da mesma estratégia com mais workers. Esse sinal significa que a
 prova de possibilidade com carga menor respondeu por uma configuração que ela não
 alcançava, e a herança da carga volta à mesa.
+
+## Patches aplicados
+
+Nenhum patch aplicado.
+
+O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
+argumento que a sustentava.

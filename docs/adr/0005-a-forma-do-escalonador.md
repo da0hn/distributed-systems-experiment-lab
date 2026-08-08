@@ -11,12 +11,14 @@
   [`Q-0002-2`](../questions/Q-0002-2.md), [`Q-0003-1`](../questions/Q-0003-1.md),
   [`Q-0003-2`](../questions/Q-0003-2.md).
 
-- **Última atualização:** 2026-08-05
-- **Errata:** a citação `README.md:598-609`, na seção `## Contexto`, quebrou em
+- **Última atualização:** 2026-08-07
+- **Errata:** a citação `README.md`, linhas 598-609, na seção `## Contexto`, quebrou em
   2026-08-03, quando o índice encolheu de 908 para 517 linhas. A seção citada era
   `### Q-0002-2`, extraída para
-  [`../questions/Q-0002-2.md`](../questions/Q-0002-2.md). O corpo não foi editado.
-  Decisão `C-6`, em `arquivo/proposta-2026-08-03/decisoes-pendentes.md`.
+  [`../questions/Q-0002-2.md`](../questions/Q-0002-2.md). Decisão `C-6`, em
+  `arquivo/proposta-2026-08-03/decisoes-pendentes.md`. **A citação foi consertada em
+  2026-08-07**, pelo patch registrado no fim deste arquivo; esta errata permanece como
+  registro do período em que o defeito não tinha conserto.
 
 ## Vocabulário
 
@@ -38,7 +40,7 @@ ausência: "a decisão não fixa como o escalonador decide, que estado ele guard
 um worker que morreu o notifica" (`0001-o-passo-como-unidade-de-execucao.md:327-330`). O
 ADR-0003 definiu a linguagem do agendamento sem definir quem a executa. O ADR-0004
 definiu que o oráculo lê o banco depois do último término, sem dizer quem observa esse
-instante (`README.md:598-609`).
+instante ([`Q-0002-2`](../questions/Q-0002-2.md), extraída do índice em 2026-08-03).
 
 Duas responsabilidades caem no mesmo componente. Toda execução precisa de um sinal de
 "todos os workers terminaram" antes que o oráculo leia. Só a execução de controle
@@ -234,3 +236,16 @@ Alternativa C já perdeu para: complexidade que o problema não pede.
 Reveja esta decisão quando um controle precisar de várias restrições pendentes ao mesmo
 tempo, em escala que o mapa simples não navegue sem uma FSM — o E5 com mais de dois
 papéis, por exemplo.
+
+## Patches aplicados
+
+O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
+argumento que a sustentava.
+
+| Data       | Seção do corpo | O que mudou                                                                             | Por quê                                                                                                                                                        |
+|------------|----------------|-----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-07 | `## Contexto`  | a citação `README.md`, linhas 598-609, passou a apontar para `../questions/Q-0002-2.md` | a seção `### Q-0002-2` foi extraída do índice em 2026-08-03 e a citação apontava além do fim do arquivo; a errata do cabeçalho a nomeava sem poder consertá-la |
+
+A entrada correspondente saiu de
+[`citations-baseline.txt`](../../scripts/citations-baseline.txt) no mesmo commit.

@@ -128,12 +128,32 @@ um defeito que torna a de baixo ilegível.
 | P9  | Um experimento cujo veredito **não** pode ser zero está dispensado de declarar janela. Qual experimento é esse, e quem decide?                                         | nova, 2026-08-01                          |
 | P10 | R11 exige mesma carga para comparar. "Mesma carga" é mesmo `N`, mesmos workers e mesma operação — a estratégia difere por construção. A semente entra nessa igualdade? | nova, 2026-08-01                          |
 | P11 | O `ADR-0003` foi aceito e nenhum cenário cobre o agendamento. Quais das sete recusas viram cenário, e este card é o dono delas ou a capacidade pede card próprio?      | nova, 2026-08-01                          |
+| P12 | A janela é marcada pelo relógio do Lab Plane e os eventos são ordenados por LSN do sistema medido. Como as duas fontes de tempo se alinham num relatório só?           | nova, com uma decisão de 2026-08-06       |
+
+### As duas fontes de tempo da execução, e o relógio que produz cada uma
+
+**Esta seção entrou aqui em 2026-08-07**, e vem de uma decisão fechada em 2026-08-06.
+Ela descreve comportamento desta capacidade, e nenhum ADR a carrega — por isso ele passa
+a viver aqui.
+
+`executed_at`, `concluded_at`, `created_at` e `updated_at` existem nas tabelas do Lab
+Plane, e **o valor vem do adaptador de relógio injetável, nunca de `DEFAULT now()`**. A
+razão não é de gosto: pelo alcance por papel do valor, se o veredito em formato curva do
+grupo D for construído sobre `executed_at` e `concluded_at`, esses valores entram no papel
+**veredito**, e a regra do relógio os alcança. É a primeira aplicação concreta daquela
+formulação.
+
+`P12` é o que a decisão deixou aberto. `executed_at` e `concluded_at` marcam a fronteira
+da janela medida pelo relógio do **instrumento**; o oráculo ordena eventos por LSN do WAL
+do **sistema medido**. São duas fontes de tempo distintas, e correlacioná-las é
+exatamente o problema que o grupo E estuda sob o nome de clock skew. Nada decide hoje como
+elas se alinham num relatório só.
 
 ## Adiado de propósito
 
 | Item                                                              | Gatilho que o retoma                              |
 |-------------------------------------------------------------------|---------------------------------------------------|
-| Veredito em formato curva (E4)                                    | a decisão "os dois formatos de veredito", na fila |
+| Veredito em formato curva (E4)                                    | a decisão dos formatos de veredito, ainda aberta  |
 | Nível de isolamento como parâmetro                                | o E5, que varre três níveis                       |
 | Definição do experimento: arquivo versionado ou registro no banco | o Experiment Designer da UI                       |
 

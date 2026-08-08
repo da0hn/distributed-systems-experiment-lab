@@ -180,3 +180,11 @@ Quando a etapa 6 introduzir um experimento que derruba o processo, "log em memó
 perdido se o processo morrer" deixa de ser aceitável. Quando o Experiment fixar como uma
 operação é versionada, a identidade de `Q-0001-1` é decidível lá — este ADR NÃO DEVE ser
 reaberto para isso.
+
+## Patches aplicados
+
+Nenhum patch aplicado.
+
+O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
+argumento que a sustentava.

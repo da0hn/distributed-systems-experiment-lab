@@ -673,3 +673,11 @@ Reveja também se a cláusula de honestidade falhar em qualquer experimento — 
 anomalia aparecer em alta resolução e nunca em baixa, sob carga alta. Essa falha não
 indica um experimento ruim; indica o runtime fabricando o fenômeno, e a forma da
 operação passa a ser a suspeita principal.
+
+## Patches aplicados
+
+Nenhum patch aplicado.
+
+O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
+argumento que a sustentava.

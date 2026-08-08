@@ -65,23 +65,54 @@ da seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 
 ## Perguntas em aberto
 
-| #  | Pergunta                                                          | Origem                                    |
-|----|-------------------------------------------------------------------|-------------------------------------------|
-| P2 | Quem estabelece o estado inicial entre execuções?                 | [`Q-0002-4`](../../questions/Q-0002-4.md) |
-| P4 | O oráculo lê o estado quiescente. E violação transitória?         | [`Q-0002-3`](../../questions/Q-0002-3.md) |
-| P5 | R11 exige pool maior que workers — quem verifica, e quando?       | nova                                      |
-| P6 | `capacity` existe, `increment` não a lê — intencional?            | nova                                      |
-| P7 | Três estratégias podem empatar em taxa zero — o que isso conclui? | [`Q-0004-5`](../../questions/Q-0004-5.md) |
-| P8 | A proibição de derivar de stream alcança `value_final`?           | nova, com o `ADR-0010`                    |
-| P9 | A emissão ao vivo entra na janela medida — usar buffer local?     | nova, com o `ADR-0010`                    |
+| #   | Pergunta                                                          | Origem                                    |
+|-----|-------------------------------------------------------------------|-------------------------------------------|
+| P2  | Quem estabelece o estado inicial entre execuções?                 | [`Q-0002-4`](../../questions/Q-0002-4.md) |
+| P4  | O oráculo lê o estado quiescente. E violação transitória?         | [`Q-0002-3`](../../questions/Q-0002-3.md) |
+| P5  | R11 exige pool maior que workers — quem verifica, e quando?       | nova                                      |
+| P6  | `capacity` existe, `increment` não a lê — intencional?            | nova                                      |
+| P7  | Três estratégias podem empatar em taxa zero — o que isso conclui? | [`Q-0004-5`](../../questions/Q-0004-5.md) |
+| P8  | A proibição de derivar de stream alcança `value_final`?           | nova, com o `ADR-0010`                    |
+| P9  | A emissão ao vivo entra na janela medida — usar buffer local?     | nova, com o `ADR-0010`                    |
+| P10 | Um experimento de clock skew pode ler `updated_at` como insumo?   | nova, com as decisões de 2026-08-06       |
 
 P1 e P3 foram respondidas por R14/R15 do ADR-0006, `Aceito`.
+
+### `updated_at` existe no esquema, e nenhuma estratégia pode lê-la
+
+**Esta seção entrou aqui em 2026-08-07**, e vem de duas decisões fechadas em 2026-08-06.
+Elas descrevem comportamento desta capacidade, e nenhum ADR as carrega — por isso ele
+passa a viver aqui.
+
+`created_at` e `updated_at` entram em `resource` e `allocation` como `timestamptz NOT
+NULL`, sem `DEFAULT` e sem trigger, com o valor vindo do adaptador de relógio no momento
+da escrita. A ausência de `DEFAULT` é deliberada: uma escrita que esqueça a coluna falha
+por `NOT NULL` em vez de gravar um valor plausível e errado.
+
+A objeção que a decisão não dissolveu é pedagógica, e vira regra escrita porque não é
+executável:
+
+> **Nenhuma estratégia de concorrência lê `updated_at`.** A coluna é metadado de
+> auditoria. `UPDATE resource SET value = ? WHERE id = ? AND updated_at = ?` é optimistic
+> locking escrito sem a palavra, e o E1 encontraria pronta metade da solução que ele deve
+> construir do zero. A estratégia `OPTIMISTIC` introduz a sua própria coluna de versão,
+> no ADR que a definir, depois de o experimento ter mostrado o problema.
+
+Ela é da mesma natureza das três regras que [`Q-0002-1`](../../questions/Q-0002-1.md)
+registra como texto sem guarda, e é **mais fácil de violar sem perceber**: a coluna estará
+lá, preenchida, e o código que a lê parecerá inocente.
+
+**A pressão de P10 é real e não é contradição hoje.** O grupo E estuda clock skew, e o
+insumo natural de um experimento assim é uma coluna de tempo escrita pela aplicação, com
+relógio que o experimento desloca. Se `updated_at` for esse insumo, ela deixa de ser
+metadado inerte. A regra acima fala de **estratégia de concorrência**, e não de oráculo
+nem de experimento — não há contradição hoje, e há pressão amanhã.
 
 ## Adiado de propósito
 
 | Item                                             | Gatilho                                    |
 |--------------------------------------------------|--------------------------------------------|
-| Migração da coluna `version`                     | arquitetura mínima (fila, posição 10)      |
+| Migração da coluna `version`                     | a decisão de arquitetura mínima            |
 | Nível de isolamento como parâmetro               | o E5, que varre três níveis                |
 | SQL exato de cada estratégia; mapa exceção→retry | código existir; `ADR-0006` fixa o contrato |
 

@@ -29,8 +29,10 @@ flowchart TD
 
 ## Colete o sinal nas quatro fontes
 
-Colete antes de interpretar. Cada achado leva evidência com caminho e linha, ou com
-identificador de sessão e trecho citado. Um achado sem evidência é descartado.
+Colete antes de interpretar. Cada achado leva evidência com caminho e âncora GFM —
+`arquivo.md#slug-do-título` —, ou com identificador de sessão e trecho citado. Cite por
+número de linha só quando o alvo não tiver título que a alcance. Um achado sem evidência
+é descartado.
 
 1. **Sessão atual.** Retrabalho, ferramenta que falhou, ordem que você inverteu e
    correção explícita do usuário.
@@ -66,7 +68,7 @@ Nem todo atrito é defeito de skill. Três destinos, e um deles é não fazer na
 | A regra atravessa skills                         | patch no `AGENTS.md`             |
 | Preferência da pessoa ainda não generalizada     | memória em `memory/`             |
 | Falha de execução sem padrão                     | nenhum — descarte com motivo     |
-| Decisão arquitetural do laboratório              | fila de `docs/adr/README.md`     |
+| Decisão arquitetural do laboratório              | `docs/adr/fila-de-decisoes.md`   |
 
 Uma dúvida entre dois destinos vira pergunta ao usuário, nunca escolha silenciosa.
 

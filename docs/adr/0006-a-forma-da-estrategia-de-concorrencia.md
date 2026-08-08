@@ -7,12 +7,14 @@
   substitui nem subsume nenhum ADR aceito.
 - **Fecha:** [`Q-0001-2`](../questions/Q-0001-2.md), [`Q-0005-1`](../questions/Q-0005-1.md).
 
-- **Última atualização:** 2026-08-05
-- **Errata:** a citação `README.md:515-539`, na seção `## Contexto`, quebrou em
+- **Última atualização:** 2026-08-07
+- **Errata:** a citação `README.md`, linhas 515-539, na seção `## Contexto`, quebrou em
   2026-08-03, quando o índice encolheu de 908 para 517 linhas. A seção citada era
   `### Q-0001-2`, extraída para
-  [`../questions/Q-0001-2.md`](../questions/Q-0001-2.md). O corpo não foi editado.
-  Decisão `C-6`, em `arquivo/proposta-2026-08-03/decisoes-pendentes.md`.
+  [`../questions/Q-0001-2.md`](../questions/Q-0001-2.md). Decisão `C-6`, em
+  `arquivo/proposta-2026-08-03/decisoes-pendentes.md`. **A citação foi consertada em
+  2026-08-07**, pelo patch registrado no fim deste arquivo; esta errata permanece como
+  registro do período em que o defeito não tinha conserto.
 
 ## Contexto
 
@@ -25,8 +27,8 @@ commit final, por resposta negativa da estratégia a 'há outra tentativa?', ou 
 não recuperada por ela" (`0005-a-forma-do-escalonador.md:19-21`);
 [`Q-0005-1`](../questions/Q-0005-1.md) diz que o critério de "falha não recuperada"
 pertence a esta decisão. [`Q-0001-2`](../questions/Q-0001-2.md) pede o espelho do
-controle negativo: uma estratégia cujas coincidências DEVEM ser exatamente zero
-(`README.md:515-539`).
+controle negativo: uma estratégia cujas coincidências DEVEM ser exatamente zero. O
+enunciado dela foi extraído do índice para aquele arquivo em 2026-08-03.
 
 O plano nomeia quatro estratégias para o E3 — `NONE`, `ATOMIC_UPDATE`, `OPTIMISTIC`,
 `PESSIMISTIC` (`plano-do-laboratorio.md:428-429`) — e registra que `PESSIMISTIC` "zera
@@ -171,3 +173,16 @@ contradiz o ADR-0001: o runtime NÃO DEVE gerar SQL.
 Reveja quando `JVM_LOCK` exigir mecanismo que o contrato de três pontos não descreva —
 garantia que dependa do número de instâncias, não do SQL. Sinal: a etapa 4 ganha gatilho
 (`plano-do-laboratorio.md:362-364`).
+
+## Patches aplicados
+
+O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
+argumento que a sustentava.
+
+| Data       | Seção do corpo | O que mudou                                                                             | Por quê                                                                                                                                                        |
+|------------|----------------|-----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-07 | `## Contexto`  | a citação `README.md`, linhas 515-539, passou a apontar para `../questions/Q-0001-2.md` | a seção `### Q-0001-2` foi extraída do índice em 2026-08-03 e a citação apontava além do fim do arquivo; a errata do cabeçalho a nomeava sem poder consertá-la |
+
+A entrada correspondente saiu de
+[`citations-baseline.txt`](../../scripts/citations-baseline.txt) no mesmo commit.

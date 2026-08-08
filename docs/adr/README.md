@@ -67,6 +67,12 @@ biblioteca ou o formato de um log não atende a nenhum dos quatro critérios.
   [`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py);
   rode-o em vez de estimar. **O corte sai da prosa, nunca da evidência** — um ADR que só
   cabe removendo citação cobre mais de uma decisão, e o caminho é dividi-lo.
+- **A seção `## Patches aplicados` não entra na contagem**, desde 2026-08-07: nada dali
+  para baixo é medido. Ela é livro-razão de manutenção, e não argumento. Sem a isenção,
+  torná-la obrigatória estouraria o limite de todo ADR que estivesse perto dele — os
+  ADRs 0011 e 0012 passaram de cerca de 11.990 para 12.265 caracteres só por ganhá-la —,
+  e a única saída seria encolher a prosa de um ADR aceito, que é exatamente o que um
+  patch NÃO DEVE fazer. O limite empurraria para a reescrita do argumento.
 - `## Quando esta decisão deixa de valer` precisa de um sinal concreto e observável, não
   de uma intenção vaga.
 - Sem emojis. Sem linguagem de marketing. Nada de "a melhor solução", "a solução ideal"
@@ -163,9 +169,13 @@ aceitação**. Um ADR NÃO DEVE ser aceito enquanto suas questões encaminhadas 
 estiverem transportadas: o enunciado se perde, e a linha da fila que o citava fica
 pendurada.
 
-Um ADR **aceito** nunca é editado nem apagado. Para mudar a decisão, escreva um ADR novo
-e marque o antigo como `Substituído por ADR-NNNN`. Enquanto estiver `Proposto`, editar é
-permitido.
+**A imutabilidade do corpo de um ADR aceito foi revogada em 2026-08-07.** Um ADR aceito
+PODE receber **patch**, e todo patch é registrado na seção `## Patches aplicados` do
+próprio arquivo. A regra está em
+[A revogação da imutabilidade](#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+
+Um ADR aceito continua não sendo **apagado**, e patch não muda **decisão**. Para mudar a
+decisão, escreva um ADR novo e marque o antigo como `Substituído por ADR-NNNN`.
 
 ### Substituição e subsunção são coisas diferentes
 
@@ -184,9 +194,12 @@ Três exigências separam a subsunção da edição disfarçada:
 - ele NÃO DEVE contradizer a regra antiga em caso nenhum. Se contradisser, é
   substituição, e a substituição é o caminho.
 
-O **corpo** do ADR antigo NÃO DEVE ser tocado. Quem o lê isolado lê o que se decidiu na
-época. Corpo é tudo a partir da primeira seção `##`: contexto, problema, decisão,
-justificativa, consequências, trade-offs e alternativas.
+O **corpo** do ADR antigo NÃO DEVE ser reescrito pela subsunção. Quem o lê isolado lê o
+que se decidiu na época. Corpo é tudo a partir da primeira seção `##`: contexto,
+problema, decisão, justificativa, consequências, trade-offs e alternativas. Desde
+2026-08-07 esse corpo PODE receber **patch**, que é outra coisa: patch conserta citação,
+caminho ou erro material, e NÃO DEVE alterar o que foi decidido nem o argumento que o
+sustentava.
 
 Registrado em 2026-07-31, para resolver a questão 1 do ADR-0004.
 
@@ -289,11 +302,13 @@ coisa, e a única que cresce sem parar.
 | citar pelo nome, e não pela posição | [como citar uma linha](fila-de-decisoes.md#como-citar-uma-linha-desta-fila)          |
 | as três subseções de comentário     | os três títulos abaixo, preservados                                                  |
 
-**As linhas 1 a 260 desta página não se moveram**, e os três títulos abaixo continuam
-existindo. Não é zelo: sete citações por número de linha e uma por âncora, vindas de
-ADRs **aceitos**, apontam para esta página, e o corpo de um ADR aceito NÃO PODE ser
-corrigido.
-Apagar um título quebraria a citação sem conserto possível.
+**Os três títulos abaixo continuam existindo**, porque citações vindas de ADRs
+**aceitos** apontam para esta página. O motivo original era mais forte: o corpo de um ADR
+aceito não podia ser corrigido, e apagar um título quebrava a citação sem conserto
+possível. Desde a revogação de 2026-08-07 o conserto existe — apagar um título quebra a
+citação, e o patch a conserta no ADR que a carrega. O título continua de pé porque mover
+o alvo antes de consertar a origem é a ordem errada, e não porque a origem seja
+intocável.
 
 ### A ordem da arquitetura mínima e da entrega contínua está sob tensão
 
@@ -335,41 +350,37 @@ um ADR aceito que precisa mudar sem que o corpo dele seja tocado.
 
 ### Esta página tem um teto de 514 linhas, e ele não é escolha
 
-**Sete citações por número de linha apontam para cá, e todas vêm de ADRs aceitos.** Seis
-estão no [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md), às
-linhas 13-18, 32, 153, 169-172, 171-172, 174 e 226-231. Nenhuma pode ser corrigida.
+**O teto foi levantado em 2026-08-07, e esta seção é a lápide dele.** O título permanece
+porque outro documento o cita por âncora.
 
-**Por isso esta seção está no fim, e não onde ela pertenceria.** A emenda pertence ao
-lado de "Substituição e subsunção são coisas diferentes". Escrevê-la ali deslocaria
-quatro das sete citações, e um ADR aceito não pode ser corrigido.
+**O que o teto era.** Oito citações por número de linha apontavam para cá, todas vindas
+de ADRs aceitos: seis no
+[ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md), e duas que
+apontavam **além do fim** desta página, pelo ADR-0005 e pelo ADR-0006. As duas últimas
+quebraram quando a página encolheu de 908 para 517 linhas, em 2026-08-03. Se a página
+voltasse a crescer, elas voltariam a resolver para o texto que estivesse ali — e o
+verificador ficaria **verde no momento exato em que o dano acontece**, porque ele detecta
+linha além do fim, e não linha que resolve para o texto errado.
 
-**O teto superior é 514 linhas, e ele é mais perigoso que o inferior.** Duas citações
-quebradas apontam além do fim desta página: às linhas 515 a 539, pelo ADR-0006, e às
-linhas 598 a 609, pelo ADR-0005. As duas quebraram quando esta página encolheu de 908
-para 517 linhas, em 2026-08-03, e a errata de `C-6` as declara no cabeçalho dos dois
-ADRs.
-
-**Os dois números acima estão escritos por extenso de propósito.** Escrevê-los na forma
-`arquivo:linha` faria o verificador de citações lê-los como citações reais desta página
-para si mesma, e acusar dois defeitos que não existem. A primeira versão desta seção
-cometeu esse erro.
-
-Se esta página voltar a passar de 514 linhas, aquelas citações **voltam a resolver** —
-para o texto que estiver ali, que não é o que elas citavam. O verificador de citações
-ficaria **verde no momento exato em que o dano acontece**, porque ele detecta linha além
-do fim, e não linha que resolve para o texto errado.
+**Por que ele deixou de existir.** O teto não protegia as citações: ele congelava esta
+página para não ter de consertar oito ADRs que ninguém podia consertar. Revogada a
+imutabilidade, as oito foram patchadas em 2026-08-07 — as seis do ADR-0009 viraram
+âncora, e as duas quebradas passaram a apontar para
+[`Q-0002-2`](../questions/Q-0002-2.md) e [`Q-0001-2`](../questions/Q-0001-2.md), que são
+os arquivos para onde as seções citadas foram extraídas. Nenhuma citação por número de
+linha aponta mais para esta página, e o comprimento dela deixou de ser perigoso.
 
 ```mermaid
 flowchart TD
-    A["esta página<br/>tem N linhas"] --> B{"N ≤ 514?"}
-    B -->|" sim "| C["as 2 citações quebradas<br/>continuam detectáveis"]
-    B -->|" não "| D["elas voltam a resolver<br/>para o texto errado"]
-    D --> E["o verificador fica verde<br/>e o leitor é enganado"]
+    A["citação por linha<br/>dentro de ADR aceito"] --> B{"o ADR pode<br/>ser patchado?"}
+    B -->|" não, até 2026-08-06 "| C["congelar a página citada<br/>teto de 514 linhas"]
+    B -->|" sim, desde 2026-08-07 "| D["patch converte a citação<br/>em âncora"]
+    D --> E["a página citada<br/>volta a ser editável"]
 ```
 
-**Regra.** Esta página NÃO DEVE passar de 514 linhas enquanto os ADRs 0005 e 0006
-existirem. Conteúdo novo que não caiba vai para arquivo próprio, com lápide aqui — como
-`B-1` fez com a fila.
+**Regra.** Uma citação por número de linha para documento editável é defeito a patchar,
+e não motivo para congelar o alvo. Converta-a em âncora GFM no ADR que a carrega, e
+registre o patch.
 
 ### A emenda, terceira forma ao lado da substituição e da subsunção
 
@@ -406,7 +417,8 @@ o ADR passa a se sustentar sozinho, e o documento citado pode ser apagado.
 Quatro regras governam o adendo:
 
 - O título DEVE ser `## Adendo de AAAA-MM-DD — <o que ele incorpora>`, e ele DEVE ser a
-  última seção do arquivo.
+  última seção do arquivo **antes** de `## Patches aplicados`, que desde 2026-08-07 é a
+  seção final de todo ADR.
 - O adendo NÃO DEVE contradizer o corpo. Se contradisser, o caminho é emenda ou
   substituição, e não adendo.
 - Ele DEVE dizer qual citação do corpo ele torna dispensável, pelo texto da citação.
@@ -436,3 +448,67 @@ Sem o ADR, o glossário permanece falso contra a própria definição de estado,
 
 Custo aceito e nomeado: quatro decisões num ADR, contra "um ADR por decisão". As quatro
 partilham tema, e separá-las faria o critério nomear casos em vez de enunciar regra.
+
+## A revogação da imutabilidade, decidida em 2026-08-07
+
+**O corpo de um ADR aceito PODE ser corrigido por patch.** A regra de que ele nunca era
+editado foi revogada nesta data, por decisão explícita da pessoa. O motivo é operacional
+e está medido no próprio repositório: a regra custava mais do que protegia.
+
+**O que ela custava.** Um teto de 514 linhas nesta página, que existia só para não
+deslocar citação de ADR. Catorze entradas em
+[`citations-baseline.txt`](../../scripts/citations-baseline.txt), cada uma um defeito
+declarado insolúvel. Uma errata no cabeçalho de dois ADRs para dizer que uma citação
+apontava para o lugar errado, sem poder consertá-la. Um adendo inventado para incorporar
+afirmação que uma citação quebrada sustentava. E, na fila de decisões, lápides mantidas
+em headings que ninguém podia deixar de citar.
+
+**O que a regra protegia, e como isso continua protegido.** Ela impedia que a decisão de
+ontem fosse reescrita para parecer a de hoje. O patch preserva essa proteção por outra
+via: ele é registrado, datado e limitado a texto que não carrega decisão.
+
+### O que é patch, e o que não é
+
+| PODE ser patch                                  | NÃO DEVE ser patch                          |
+|-------------------------------------------------|----------------------------------------------|
+| citação quebrada, ou por linha em alvo editável | a decisão, na seção `## Decisão`             |
+| caminho de arquivo que foi movido ou arquivado  | a justificativa que sustentava a decisão     |
+| âncora, link e nome de seção citada             | alternativa descartada, ou o motivo dela     |
+| erro material: número trocado, termo grafado mal | trade-off, consequência ou escopo            |
+
+**A fronteira é objetiva.** Se a correção muda o que alguém leria como escolha, ela não é
+patch: é emenda, subsunção ou substituição, e o caminho é um ADR novo. Na dúvida, o
+caminho é o ADR novo.
+
+### A seção `## Patches aplicados`
+
+**Todo ADR carrega essa seção, e ela é a última do arquivo** — depois de qualquer adendo.
+Um ADR sem patch a carrega mesmo assim, com a frase `Nenhum patch aplicado.`, porque uma
+seção ausente não distingue "não houve patch" de "houve patch e ninguém registrou".
+
+Quatro regras governam o registro:
+
+- Cada linha DEVE dizer a **data**, a **seção do corpo** alterada, **o que mudou** e **por
+  quê**. "Corrigido link" não resolve o problema que o registro existe para resolver.
+- Um patch NÃO DEVE ser aplicado sem a linha correspondente, **no mesmo commit**. Patch
+  sem registro é edição silenciosa, que é exatamente o que a regra revogada impedia.
+- O cabeçalho recebe `Última atualização`. `Alterado por` **não** — nenhum ADR alterou
+  este, e o campo mentiria sobre a origem.
+- Uma linha registrada NÃO DEVE ser removida por um patch posterior.
+
+```mermaid
+flowchart TD
+    D["um ADR aceito está errado"] --> Q{"o erro está na<br/>escolha ou no texto?"}
+    Q -->|" escolha "| A["ADR novo:<br/>substituição, subsunção<br/>ou emenda"]
+    Q -->|" texto: citação, caminho,<br/>erro material "| P["patch no corpo"]
+    P --> R["linha em ## Patches aplicados<br/>data, seção, o quê, por quê"]
+    R --> H["cabeçalho:<br/>Última atualização"]
+    P -.->|" sem registro "| X["edição silenciosa<br/>proibida"]
+```
+
+### As quatro formas antigas continuam valendo
+
+Substituição, subsunção, emenda e adendo tratam de **decisão e alcance**. O patch trata de
+**texto**. Nenhuma substitui a outra, e um ADR PODE receber as duas coisas em datas
+diferentes. O que mudou é que a correção de texto deixou de exigir uma dessas quatro
+formas para ser possível.

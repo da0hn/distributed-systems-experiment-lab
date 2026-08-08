@@ -8,7 +8,8 @@
   decidido em `docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md`, seção `A1`
   (linhas 1769-1802).
 
-- **Última atualização:** 2026-08-05, pelo adendo no fim deste arquivo.
+- **Última atualização:** 2026-08-07, pelo patch registrado no fim deste arquivo. O
+  adendo de 2026-08-05 continua onde estava.
 
 ## Contexto
 
@@ -28,7 +29,9 @@ carregando o termo que o glossário já não usa. A divergência está registrad
 em `docs/architecture/decisoes-pendentes.md:140-169`.
 
 Os dois ADRs afetados são `Aceito`, e o corpo de um ADR `Aceito` NÃO DEVE ser editado
-(`docs/adr/README.md:153` e `:174`). Em 2026-08-05 o processo de ADR ganhou um
+([`README.md#processo-de-debate`](README.md#processo-de-debate) e
+[`#substituição-e-subsunção-são-coisas-diferentes`](README.md#substituição-e-subsunção-são-coisas-diferentes)).
+Em 2026-08-05 o processo de ADR ganhou um
 terceiro caminho de alteração — a **emenda** — porque nem substituição nem subsunção
 descrevem o caso das duas regras: cada uma é acessória à decisão principal do ADR que
 a carrega, e removê-la não invalida essa decisão
@@ -102,7 +105,9 @@ segmento composto que as alternativas descartadas exigiriam.
 `Estado: Substituído por ADR-0009` no ADR-0008 e no ADR-0002 — mas a decisão de
 dois processos separados e a decisão do domínio mínimo continuam de pé, sem
 contradição alguma. A subsunção exige que a regra antiga continue válida no caso
-que ela enxergava (`docs/adr/README.md:169-172`), e nenhuma das duas continua: o
+que ela enxergava
+([`README.md#substituição-e-subsunção-são-coisas-diferentes`](README.md#substituição-e-subsunção-são-coisas-diferentes)),
+e nenhuma das duas continua: o
 nome do pacote muda, e o grupo do dual write muda. A emenda é o caminho cuja
 definição encaixa essa combinação: contradiz uma regra acessória, sem contradizer
 a decisão principal (`docs/architecture/decisoes-pendentes.md:1771-1779`).
@@ -123,7 +128,8 @@ a decisão principal (`docs/architecture/decisoes-pendentes.md:1771-1779`).
 ### Negativas
 
 - Corrigir um rótulo de grupo, isolado, não atende aos quatro critérios de ADR de
-  `docs/adr/README.md:13-18` — não tem alternativa plausível própria nem
+  [`README.md#uma-decisão-merece-adr-quando`](README.md#uma-decisão-merece-adr-quando)
+  — não tem alternativa plausível própria nem
   trade-off. O custo de juntá-lo à parte 2 é aceito e nomeado em
   `docs/architecture/decisoes-pendentes.md:235-237`: separar as duas produziria
   um documento para uma linha.
@@ -136,7 +142,8 @@ a decisão principal (`docs/architecture/decisoes-pendentes.md:1771-1779`).
 ### Neutras
 
 - O rastro de alterações retroativo aos oito ADRs aceitos
-  (`docs/adr/README.md:226-231`) continua pendente para os demais casos; este
+  ([`README.md#o-rastro-de-alterações-emendado-em-2026-08-04`](README.md#o-rastro-de-alterações-emendado-em-2026-08-04))
+  continua pendente para os demais casos; este
   ADR aplica o rastro só aos dois que altera.
 
 ## Trade-offs
@@ -172,7 +179,7 @@ separador, que nenhuma convenção do repositório trata
 **Descartada.** É mais curto que `systemundertest` e evita a sigla. Perde porque
 cria um terceiro nome para o conceito que `D-DOM-02` acabou de unificar em dois —
 o termo em português e `system under test` — violando "um conceito tem um nome"
-(`docs/adr/README.md:32`).
+([`README.md#convenções`](README.md#convenções)).
 
 ### Manter `controlplane`
 
@@ -182,8 +189,9 @@ pacote nomearia o plano pelo termo que o glossário já não usa.
 
 ### Substituição pela letra da regra atual
 
-**Descartada.** É a leitura literal de `docs/adr/README.md:171-172`: "se
-contradisser, é substituição". Perde porque o `Estado` do ADR-0008 passaria a
+**Descartada.** É a leitura literal de
+[`README.md#substituição-e-subsunção-são-coisas-diferentes`](README.md#substituição-e-subsunção-são-coisas-diferentes):
+"se contradisser, é substituição". Perde porque o `Estado` do ADR-0008 passaria a
 dizer que a decisão dos dois processos separados saiu de vigor, e ela não saiu.
 
 ### Alargar a subsunção para cobrir regra acessória contradita
@@ -235,3 +243,23 @@ afirmação que cada uma sustentava.
 `A1` a `A5` foram aplicadas em 2026-08-05, em
 [`README.md`](README.md#a-emenda-terceira-forma-ao-lado-da-substituição-e-da-subsunção)
 e em [`../CONTEXT.md`](../CONTEXT.md#a-sigla-sut-no-código-decidida-em-2026-08-05).
+
+## Patches aplicados
+
+O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
+argumento que a sustentava.
+
+| Data       | Seção do corpo                 | O que mudou                                                                                                            | Por quê                                                                                    |
+|------------|--------------------------------|------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
+| 2026-08-07 | `## Contexto`                  | `README.md:153` e `:174` viraram âncora para `#processo-de-debate` e `#substituição-e-subsunção-são-coisas-diferentes` | citação por linha para documento editável envelhece em silêncio na primeira edição do alvo |
+| 2026-08-07 | `## Justificativa`             | `README.md:169-172` virou âncora para `#substituição-e-subsunção-são-coisas-diferentes`                                | o mesmo motivo                                                                             |
+| 2026-08-07 | `### Negativas`                | `README.md:13-18` virou âncora para `#uma-decisão-merece-adr-quando`                                                   | o mesmo motivo                                                                             |
+| 2026-08-07 | `### Neutras`                  | `README.md:226-231` virou âncora para `#o-rastro-de-alterações-emendado-em-2026-08-04`                                 | o mesmo motivo                                                                             |
+| 2026-08-07 | `## Alternativas consideradas` | `README.md:32` virou âncora para `#convenções`                                                                         | o mesmo motivo                                                                             |
+| 2026-08-07 | `## Alternativas consideradas` | `README.md:171-172` virou âncora para `#substituição-e-subsunção-são-coisas-diferentes`                                | o mesmo motivo                                                                             |
+
+As seis citações eram o motivo do teto de 514 linhas do índice, revogado no mesmo dia. O
+texto do corpo continua afirmando que o corpo de um ADR aceito NÃO DEVE ser editado —
+essa era a regra em 2026-08-05, e o patch conserta o endereço da citação, não a
+afirmação que ela sustentava.

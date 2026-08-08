@@ -3,6 +3,13 @@
 Instruções operacionais para editar esta pasta. O contexto do projeto está no
 [`AGENTS.md` da raiz](../AGENTS.md); o mapa da pasta está em [`README.md`](README.md).
 
+**Este arquivo não reexplica processo, lifecycle nem limite.** Cada regra abaixo é
+acionável e aponta para o documento dono: o processo vive em
+[`specification-process.md`](specification-process.md#a-decisão-vem-antes-do-artefato),
+as formas de alterar um ADR aceito em
+[`adr/README.md`](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07), e o
+enforcement de limite no `check_artifact_limits.py`.
+
 ## A regra que vale antes de qualquer outra
 
 > **Nada que importa pode existir apenas na conversa.**
@@ -20,37 +27,32 @@ em aberto do `example-mapping.md`.
 Decidido em 2026-08-06. Um card não é resumo nem índice: **ele carrega tudo o que uma
 consulta precisa**, e quem o lê não deveria ter de abrir o ADR para saber o que o sistema
 faz. Por isso uma decisão arquitetural que mude comportamento entrega **ADR e card no
-mesmo commit** — um ADR que nasce sozinho deixa o repositório afirmando duas coisas
-contraditórias, e a regra `B-4` já proíbe card que contradiga ADR aceito.
+mesmo commit**.
 
 A divisão de trabalho não muda: o ADR diz **por que** e o card diz **o quê**. O que muda é
 que a segunda metade deixou de ser opcional.
 
 ## O que nunca é editado
 
-| Alvo                           | Por quê                                                                                |
-|--------------------------------|----------------------------------------------------------------------------------------|
-| `adr/arquivo/**`               | registra o que se pensava naquela data; editar apaga a evidência                       |
-| o **corpo** de um ADR `Aceito` | para mudar a decisão, escreva um ADR novo e marque o antigo `Substituído por ADR-NNNN` |
+| Alvo                                | Por quê                                                                          |
+|-------------------------------------|----------------------------------------------------------------------------------|
+| `adr/arquivo/**`                    | registra o que se pensava naquela data; editar apaga a evidência                 |
+| a **decisão** de um ADR `Aceito`    | para mudá-la, escreva um ADR novo e marque o antigo `Substituído por ADR-NNNN`   |
+| uma linha de `## Patches aplicados` | ela é o rastro que substituiu a proibição; removê-la apaga o que o rastro provava |
 
-Corpo é tudo a partir da primeira seção `##`. Um ADR `Proposto` **pode** ser editado.
-Hoje **nenhum** ADR da série corrente está nesse estado: os oito estão `Aceito`, e o
-corpo de nenhum deles pode ser editado.
+**A imutabilidade do corpo foi revogada em 2026-08-07.** O corpo — tudo a partir da
+primeira seção `##` — PODE receber **patch**, que conserta citação, caminho ou erro
+material e NÃO DEVE alterar a decisão nem o argumento que a sustentava. Nenhum patch
+existe sem a linha dele em `## Patches aplicados`, no mesmo commit.
 
-**O cabeçalho de um ADR aceito é editável num caso só, desde 2026-08-04.** Quando um ADR
-posterior o substitui, o emenda ou subsome uma regra dele, o ADR alterado recebe `Última
-atualização` e `Alterado por`, no mesmo commit em que o ADR novo nasce. A regra completa
-está em [`adr/README.md`](adr/README.md), seção "O rastro de alterações, emendado em
-2026-08-04"; a **emenda** entrou em 2026-08-05, pela decisão `A1`, e está descrita em
-[`adr/README.md`](adr/README.md#a-emenda-terceira-forma-ao-lado-da-substituição-e-da-subsunção).
+Cinco formas alteram um ADR aceito — substituição, subsunção, emenda, adendo e patch —,
+cada uma com gatilho e limite próprios, e nenhuma outra é permitida. A regra completa
+está em
+[`adr/README.md`](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Não a reproduza aqui nem em outro documento: aplique-a a partir de lá.
 
-**O adendo é a única alteração que acrescenta seção, e ele nasceu em 2026-08-05.** Ele
-serve a um caso só: um ADR aceito que cita um documento que vai deixar de existir. O
-adendo entra como **última seção** do arquivo, datado, e incorpora a afirmação que a
-citação sustentava — nunca o parágrafo de origem. O corpo permanece byte a byte, e por
-isso ele não é edição: nada do que se pensava naquela data é apagado. A regra está em
-[`adr/README.md`](adr/README.md#o-adendo-quarta-forma-e-a-única-que-acrescenta-seção).
-Nenhuma outra alteração de ADR aceito é permitida.
+Um ADR `Proposto` **pode** ser editado livremente; o estado de cada um está no
+[índice de ADRs](adr/README.md#índice), que é o dono dele.
 
 ## Qual artefato criar
 
@@ -66,17 +68,10 @@ flowchart TD
   Q3 -->|" não "| BDD["vira cenário Gherkin"]
 ```
 
-O teste que separa os dois primeiros:
-
-| Pergunta                                                | Sim → ADR | Sim → Feature Card |
-|---------------------------------------------------------|-----------|--------------------|
-| Existe alternativa que alguém defenderia com argumento? | sim       | —                  |
-| A escolha restringe o que se pode construir depois?     | sim       | —                  |
-| A frase descreve o que o sistema faz, e é verificável?  | —         | sim                |
-| Um teste poderia falhar por causa dela?                 | —         | sim                |
-
+O teste que separa os dois primeiros é uma tabela de quatro perguntas, e o dono dela é
+[`specification-process.md`](specification-process.md#adr--só-decisão-arquitetural-durável).
 Uma regra que caiba nas duas colunas indica um ADR carregando comportamento: escreva o
-ADR com o porquê, o card com o quê, e faça o card citar o ADR por arquivo e linha.
+ADR com o porquê, o card com o quê, e faça o card citar o ADR por caminho e âncora.
 
 ## Feature Card
 
@@ -86,56 +81,53 @@ Seções obrigatórias, nesta ordem: problema e resultado esperado; atores e gat
 escopo; fora de escopo; regras de negócio; integrações e contratos afetados; riscos e
 decisões pendentes; critérios de pronto; links.
 
-- **Máximo 5.500 caracteres de prosa.** Um card acima disso cobre mais de uma capacidade
-  — divida. O corte sai da prosa, **nunca da evidência**.
-
-  **Diagrama, bloco de código e tabela não entram na contagem.** A regra vale para todo
-  artefato `.md` com limite, e entrou em 2026-08-06. Os três são densos em caracteres e
-  pobres em prosa: um `flowchart` de dez nós custa mais que a seção que ele ilustra.
-  Contá-los punia exatamente o que estas instruções exigem — todo fluxo vai **também**
-  como Mermaid, e toda regra vai em tabela com evidência e com quem a aprovou —, e o
-  corte acabava saindo do diagrama ou da citação.
-
-  **Quem conta é o script, e não um comando de shell montado à mão:**
+- **Máximo 5.500 caracteres de prosa.** Diagrama, bloco de código e tabela **não**
+  entram na contagem, e a isenção vale para todo artefato `.md` com limite. Um card
+  acima do limite cobre mais de uma capacidade — divida. O corte sai da prosa, **nunca
+  da evidência**. A troca de unidade foi decidida em 2026-08-06, e o racional está em
+  [`specification-process.md`](specification-process.md#feature-card--o-padrão).
+- **Quem conta é o script, e ele é o único medidor:**
 
   ```bash
   python .claude/skills/feature-planning/scripts/check_artifact_limits.py \
     --root . --file docs/features/<slug>/feature-card.md
   ```
 
-  Ele imprime a contagem de prosa e, entre parênteses, o tamanho bruto. A medição
-  anterior era em palavras, com um `sed` que trocava `|` por espaço sem remover o
-  conteúdo da célula — ela descontava a moldura da tabela e cobrava o texto dentro dela.
+  Ele imprime a contagem de prosa e, entre parênteses, o tamanho bruto. **Nenhuma
+  medição montada à mão vale** — nem `wc`, nem contagem de palavras, nem tamanho bruto
+  do arquivo. Um número que não saiu do script não é evidência de limite.
 - **Um card cobre uma capacidade**, nunca um endpoint, uma classe ou uma tarefa técnica.
 - **Um card por oráculo, não por experimento.** É o oráculo que define o comportamento
   observável. E1 e E3 partilham o oráculo exato e vivem num card só.
-- **Toda regra leva evidência** com arquivo e linha, numa coluna própria da tabela.
+- **Toda regra leva evidência com caminho e âncora GFM**, numa coluna própria da tabela:
+  o caminho do arquivo mais o slug do título, no formato do GitHub Flavored Markdown.
+  Cite por número de linha só quando o alvo não tiver título que a alcance, dentro de um
+  bloco Mermaid por exemplo. É a decisão `C-1`, na
+  [política de citação da raiz](../AGENTS.md#ao-trabalhar-aqui), e o verificador é
+  `scripts/check_citations.py`.
 - **Toda regra leva quem a aprovou**, numa segunda coluna própria, ao lado da evidência.
-  É a decisão `B-3`, de 2026-08-05: aprova-se a **regra**, e não o card. Uma regra nasce
-  `pendente` e só uma pessoa a tira desse estado. O card **NÃO DEVE** ganhar estado nem
-  ato de aprovação — ele é o continente, e muda a cada exemplo novo.
+  Aprova-se a **regra**, e não o card: ela nasce `pendente` e só uma pessoa a tira desse
+  estado. O card **NÃO DEVE** ganhar estado nem ato de aprovação — ele é o continente, e
+  muda a cada exemplo novo. A regra está em
+  [`specification-process.md`](specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05).
 - **Uma regra `pendente` NÃO DEVE virar cenário Gherkin.** Escrever Gherkin sobre regra
   não aprovada congela a versão errada dela, pelo mesmo motivo que vale para regra em
   debate.
-- **Um card NÃO PODE contradizer um ADR aceito.** Pela decisão `B-4`, de 2026-08-05, a
-  contradição **é** decisão arquitetural nova: ela entra na
-  [fila de decisões](adr/fila-de-decisoes.md) no mesmo turno em que é vista, e o ADR que
-  sair dela emenda, substitui ou ratifica o antigo. O card é alinhado ao que o ADR
-  disser. O processo está em
-  [`specification-process.md`](specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05).
+- **Um card NÃO PODE contradizer um ADR aceito.** A contradição **é** decisão
+  arquitetural nova: ela entra na [fila de decisões](adr/fila-de-decisoes.md) no mesmo
+  turno em que é vista, e o card é alinhado ao que o ADR que sair dela disser.
 - Um diagrama pesado demais para o card vai para o `example-mapping.md`, e o card faz
-  link. **O motivo mudou:** desde que diagrama não conta caracteres, mover um deixou de
-  liberar orçamento — o que se ganha é foco, porque o card carrega o que uma consulta
-  precisa, e o Example Mapping carrega o que uma discussão precisa.
+  link. O ganho é foco, e não orçamento: o card carrega o que uma consulta precisa, e o
+  Example Mapping carrega o que uma discussão precisa.
 - Ao criar um card, acrescente a linha correspondente em [`features/README.md`](features/README.md)
-  e em [`README.md`](README.md), seção `## Estado da especificação`.
+  e em [`README.md`](README.md).
 
 ## Example Mapping
 
-Caminho: `features/<slug>/example-mapping.md`. **Não tem limite de tamanho**, decidido em
-2026-08-06: ele cresce por exemplo acrescentado, e acrescentar exemplo é o trabalho dele
-— um teto transformaria "achei mais um contraexemplo" em "preciso apagar um dos antigos".
-É o único artefato de `features/` sem freio, e o custo está aceito.
+Caminho: `features/<slug>/example-mapping.md`. **Não tem limite de tamanho** — ele
+cresce por exemplo acrescentado, e acrescentar exemplo é o trabalho dele. A ausência de
+teto foi decidida em 2026-08-06, e o verificador o isenta por nome — o racional está em
+[`specification-process.md`](specification-process.md#example-mapping--onde-as-dúvidas-ficam-visíveis).
 
 Quatro blocos obrigatórios — história, regras, exemplos concretos, perguntas em aberto —
 e um quinto para o que foi **adiado de propósito**, com o gatilho que o retoma.
@@ -159,6 +151,10 @@ Caminho: `features/<slug>/behavior.feature`.
   quando ele mudar o resultado.
 - **Só exemplo estabilizado vira cenário.** Regra em debate fica no Example Mapping.
   Escrever Gherkin sobre regra em debate congela a versão errada dela.
+- **Um `.feature` cujas regras ainda estejam `pendente` fica marcado como inativo, e não
+  é especificação viva.** Ele permanece na árvore, mas não sustenta teste, código nem
+  citação de comportamento; o estado das regras de cada capacidade está em
+  [`features/README.md`](features/README.md#índice).
 - Todo cenário leva a tag `@teste-ausente` enquanto não houver teste que o verifique.
   Quando o teste existir, troque a tag pelo identificador dele.
 - **Nenhuma dependência de BDD entra no projeto por causa disso.**
@@ -168,28 +164,27 @@ Caminho: `features/<slug>/behavior.feature`.
 Caminho: `contracts/openapi/` e `contracts/asyncapi/`.
 
 - **Um contrato é criado quando a interface
-  existir**, nunca antes. Hoje nenhuma existe, e
-  por isso os dois diretórios **não** foram criados.
+  existir**, nunca antes. O inventário e os
+  gatilhos de cada um vivem em [`contracts/README.md`](contracts/README.md); não
+  replique aqui o estado deles.
 - **Não crie diretório
   vazio.** Uma pasta `openapi/` sem conteúdo afirma que existem APIs
-  a documentar. O repositório já pagou por esse erro com o `services/` de pastas com
-  nome de dono, apagado em `83fcfc9`.
+  a documentar, e o repositório já pagou por esse erro uma vez.
 - O que estiver formalizado num contrato **NÃO DEVE** ser repetido em Markdown.
-- Ao criar o primeiro, atualize [`contracts/README.md`](contracts/README.md), que hoje
-  lista os gatilhos de cada um.
+- Ao criar o primeiro, atualize [`contracts/README.md`](contracts/README.md).
 
 ## Integrações
 
 Caminho: `architecture/integrations.md`.
 
-- A matriz separa **fato** de
-  **hipótese**. Fato é verificável hoje, na árvore versionada
-  ou num repositório externo nomeado. Hipótese é descrita em documento de planejamento e
-  nada a implementa.
+- **A matriz é a dona do estado e da topologia das fronteiras.** Não replique aqui, nem
+  em card ou ADR, o que existe, o que foi decidido e o que continua hipótese: o estado
+  envelhece em silêncio na cópia.
 - **Nunca promova hipótese a fato sem evidência
-  nova.** Hoje há uma integração real, e ela
-  está quebrada: o ArgoCD do homelab aponta para um `deploy/` que não existe.
-- Perguntas de integração recebem identificador `Q-INT-N`.
+  nova.** Evidência é caminho e âncora GFM
+  na árvore versionada, ou num repositório externo nomeado.
+- Uma pergunta de integração recebe o identificador definido em
+  [`questions/README.md`](questions/README.md#identificador), que é o dono do formato.
 
 ## ADR
 
@@ -200,17 +195,32 @@ mantém as convenções, o índice e o histórico da série.
 
 ## Glossário de domínio
 
-Caminho: `CONTEXT.md`, criado de forma preguiçosa quando o primeiro termo se
-cristalizar. Para manter o glossário no Claude Code, use a skill `domain-modeling`. Ela
-desafia termo ambíguo, cruza a linguagem com o código e atualiza o arquivo no mesmo
-turno em que um termo é resolvido — nunca em lote. O formato está em
-`.claude/skills/domain-modeling/references/context-format.md`.
+Caminho: [`CONTEXT.md`](CONTEXT.md), que **já existe**. Para mantê-lo no Claude Code, use
+a skill `domain-modeling`. Ela desafia termo ambíguo, cruza a linguagem com o código e
+atualiza o arquivo no mesmo turno em que um termo é resolvido — nunca em lote. O formato
+está em `.claude/skills/domain-modeling/references/context-format.md`, e o papel do
+artefato em
+[`specification-process.md`](specification-process.md#glossário-de-domínio--contextmd).
+
+Ele é o **glossário canônico do vocabulário vigente**, e cada entrada carrega quatro
+coisas: termo, definição breve, status ou sinônimos, e link de origem.
+
+**O que não entra nele**, mesmo quando fala de vocabulário:
+
+| Conteúdo                                | Onde vive                                       |
+|-----------------------------------------|-------------------------------------------------|
+| alternativa de nome, com o descartado   | [fila de decisões](adr/fila-de-decisoes.md)     |
+| decisão proposta e seu racional         | fila, e ADR quando a decisão for arquitetural   |
+| pergunta em aberto sobre um termo       | [`questions/`](questions/README.md)             |
+| backlog e ata de rodada                 | fila de decisões                                |
+
+Um termo resolvido chega ao glossário **já decidido**, com o link para onde a decisão
+foi tomada. O glossário não é um segundo repositório de decisões.
 
 ## Convenções de escrita
 
-As convenções gerais estão no [`AGENTS.md` da raiz](../AGENTS.md), seção `## Convenções
-de escrita, válidas em todo documento`, e a lista de palavras proibidas em
-[`adr/README.md`](adr/README.md). Elas valem aqui sem alteração.
+As convenções gerais estão no [`AGENTS.md` da raiz](../AGENTS.md), e a lista de palavras
+proibidas em [`adr/README.md`](adr/README.md#convenções). Elas valem aqui sem alteração.
 
 Dois pontos que só aparecem nesta pasta:
 
@@ -225,13 +235,19 @@ Dois pontos que só aparecem nesta pasta:
 
 ## Antes de encerrar uma edição
 
-- Toda afirmação relevante tem evidência com caminho e linha. O que não pôde ser
-  confirmado está como `Pergunta em aberto`, não como fato.
+- Toda afirmação relevante tem evidência com **caminho e âncora GFM**; número de linha
+  só quando o alvo não tiver título que a alcance. O que não pôde ser confirmado está
+  como `Pergunta em aberto`, não como fato.
 - Os links relativos resolvem. Um link entre níveis de diretório erra com facilidade —
   `docs/architecture/integrations.md` apontando para `../README.md` resolve para
   `docs/README.md`, e não para a raiz.
-- `check_artifact_limits.py` passa nos artefatos alterados. Ele mede prosa: diagrama,
-  bloco de código e tabela não entram na contagem de nenhum `.md`.
+- O verificador de citações passa:
+
+  ```bash
+  python scripts/check_citations.py --root . --baseline scripts/citations-baseline.txt
+  ```
+
+- `check_artifact_limits.py` passa nos artefatos alterados. Ele é o único medidor.
 - A capacidade nova aparece nos dois índices: [`features/README.md`](features/README.md) e
   [`README.md`](README.md).
 - `git add` apenas dos arquivos relacionados, e um único commit em Conventional Commits (skill `commit`).

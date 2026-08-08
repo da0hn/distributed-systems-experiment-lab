@@ -282,3 +282,11 @@ Revise também quando a etapa 5 chegar: um experimento que sabote o broker vai
 invalidar o veredito de toda execução, e não apenas de algumas, porque o objeto de
 estudo e o instrumento competem pela mesma peça — e a decisão de instância única
 precisará ser reaberta.
+
+## Patches aplicados
+
+Nenhum patch aplicado.
+
+O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
+argumento que a sustentava.

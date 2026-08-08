@@ -58,6 +58,12 @@ outra.
 **O orçamento é medido, não estimado.** Conte os caracteres do arquivo depois da
 mudança.
 
-**Patch em ADR aceito não existe.** Nenhum ADR aceito é editado. Quando o atrito
-apontar para uma decisão registrada em ADR, o destino é a fila de decisões de
-`docs/adr/fila-de-decisoes.md`, e o patch é rejeitado na origem.
+**Um patch desta skill NÃO DEVE alcançar um ADR.** A palavra colide, e as duas coisas
+são diferentes: aqui, patch muda a instrução que produziu o atrito; em `docs/adr/`,
+desde 2026-08-07, patch conserta citação, caminho ou erro material no corpo de um ADR
+aceito, e se registra na seção `## Patches aplicados` daquele arquivo. O regime é
+[o do índice de ADRs](../../../docs/adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+
+Quando o atrito apontar para a **decisão** registrada num ADR, o destino continua sendo
+a fila de `docs/adr/fila-de-decisoes.md`, e o patch de skill é rejeitado na origem. Nem
+o patch desta skill nem o patch de ADR muda decisão — só um ADR novo muda.

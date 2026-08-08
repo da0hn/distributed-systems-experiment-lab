@@ -607,3 +607,11 @@ Reveja a exposição de referência quando duas execuções com a mesma carga de
 produzirem contagens de coincidências que diferem por ordem de grandeza. O sinal
 significa que a igualdade declarada não implica a igualdade observada, e o veredito
 `protegido` da ordem 3 passa a depender de uma comparação sem base.
+
+## Patches aplicados
+
+Nenhum patch aplicado.
+
+O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
+argumento que a sustentava.

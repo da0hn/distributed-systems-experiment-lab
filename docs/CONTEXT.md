@@ -3,8 +3,8 @@
 O vocabulário de um único contexto: um instrumento que reproduz, observa e compara
 fenômenos de sistemas distribuídos. Não há domínio de negócio aqui, por decisão.
 
-- **Estado:** Proposta — `D-DOM-01` a `D-DOM-04` decididas; `D-DOM-05` e `D-DOM-06`
-  em aberto
+- **Estado:** Proposta — as decisões de vocabulário `D-DOM-NN` vivem na
+  [fila de decisões](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira), e não aqui
 - **Data:** 2026-08-03; termos convertidos para inglês e as quatro decisões de
   vocabulário tomadas em 2026-08-04
 - **Escopo:** consolidar a linguagem ubíqua do laboratório, marcando o que vem de ADR
@@ -160,15 +160,15 @@ palavra recusada vira o nome:
 | `seed`              | `seed`         | é o termo                                       |
 | `system under test` | `SUT`          | `SUT` continua recusado, por ser sigla          |
 
-**Duas escolhas não são forçadas pela tradução**, e estão registradas como `P7`: `load`
-para `carga` e `meeting` para `encontro`. Nos dois casos a palavra inglesa mais óbvia
-— `workload` e `rendezvous` — já estava na linha `_Evite_` da entrada portuguesa, e o
-glossário manteve a recusa.
+**Duas escolhas não são forçadas pela tradução**: `load` para `carga` e `meeting` para
+`encontro`. Nos dois casos a palavra inglesa mais óbvia — `workload` e `rendezvous` — já
+estava na linha `_Evite_` da entrada portuguesa, e a recusa ficou. Qual nome inglês fica
+é pergunta encaminhada a [`questions/`](questions/README.md#índice).
 
 **Uma colisão de nomes se dissolve.** Das sete palavras ambíguas, `execução` deixa de
 colidir, porque o inglês tem `run` e `execution` como palavras distintas. Cinco
 sobrevivem inalteradas — `control`, `barrier`, `strategy`, `verdict` e `attempt` — e uma
-já estava resolvida. O efeito sobre a decisão `D-DOM-01` está descrito na seção dela.
+já estava resolvida: `run` nomeia o experimento, e `operation execution`, o worker.
 
 ## Linguagem
 
@@ -329,7 +329,7 @@ _Evidência_: `docs/adr/0003-a-linguagem-do-agendamento.md:40,123-126`
 A unidade do agendamento, na forma `A antes de B`, onde `A` e `B` são eventos.
 _Evidência_: `docs/adr/0003-a-linguagem-do-agendamento.md:123-126`
 
-**meeting** — `estabelecido`, com nome inglês em revisão (`P7`)
+**meeting** — `estabelecido`, com nome inglês em revisão
 A forma curta que declara que todos os workers de um ou mais papéis esperam uns pelos
 outros numa fronteira. Expande em restrições de precedência.
 _Evite_: rendezvous, sync point, barrier.
@@ -541,14 +541,14 @@ anomalia é alcançável naquela operação, estratégia e nível de isolamento.
 `docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md:247-252`;
 `docs/adr/0003-a-linguagem-do-agendamento.md:181-196`
 
-**verdict** — `estabelecido`, com quatro formatos
-O que uma execução afirma. Hoje o termo nomeia quatro coisas: a taxa de violação, o
-rótulo de classificação de um zero, o booleano do predicado de capacidade, e a curva do
-grupo D — que não tem forma decidida. _Evidência_:
+**verdict** — `estabelecido`
+O que uma execução afirma. Cada formato decidido tem entrada própria neste glossário:
+`violation rate`, `zero classification` e o booleano do `predicate oracle`. Quantos
+formatos o termo reúne, e como eles se combinam, é decisão aberta em
+[`features/README.md`](features/README.md#capacidade-conhecida-e-não-especificada). _Evidência_:
 `docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md:105-122`;
 `docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md:206-218`;
-`docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:186-190`;
-`docs/plano-do-laboratorio.md:226-229`
+`docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:186-190`
 
 **zero classification** — `estabelecido`
 O procedimento que atribui um rótulo a uma execução medida com `violations = 0`,
@@ -658,33 +658,12 @@ _Evidência_: `docs/plano-do-laboratorio.md:339-352`
 
 ### Os contextos propostos
 
-Os seis nomes abaixo nascem nesta proposta e nomeiam bounded contexts, não módulos nem
-processos. O desenho está em
-[`adr/arquivo/proposta-2026-08-03/modelo-de-dominio.md`](adr/arquivo/proposta-2026-08-03/modelo-de-dominio.md).
+Os seis contextos que nasciam aqui — `D-DOM-07` a `D-DOM-12` — não são vocabulário
+vigente: sem decisão, eles pertencem à
+[fila de decisões](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira), e o desenho deles
+continua em [`modelo-de-dominio.md`](adr/arquivo/proposta-2026-08-03/modelo-de-dominio.md).
 
-**measured domain** — `proposto` (`D-DOM-07`)
-O contexto do system under test: `Resource`, `Allocation`, `increment`, `allocate` e as
-estratégias. Ele não conhece as palavras experimento, veredito nem coincidência.
-
-**execution runtime** — `proposto` (`D-DOM-12`)
-O contexto que constrói e executa as sequências de passos, cria o escopo de execução e
-emite observações.
-
-**scheduling** — `proposto` (`D-DOM-11`)
-O contexto que declara e executa o agendamento: papel, carga, restrição de precedência,
-encontro, chegada, travessia, término e desistência.
-
-**observation record** — `proposto` (`D-DOM-10`)
-O contexto do log e da timeline. Ele adota o vocabulário do runtime e do escalonamento
-sem acrescentar significado.
-
-**diagnosis** — `proposto` (`D-DOM-08`)
-O contexto dos oráculos, das contagens, da janela de exposição, das coincidências e da
-classificação do zero.
-
-**experiment definition** — `proposto` (`D-DOM-09`), sem dono decidido
-O contexto que declara o que uma execução roda antes de rodar. A decisão está na fila,
-posição 8.
+A entrada abaixo fica porque é termo, e não contexto.
 
 **observed invariant** — `proposto` (`D-DOM-08`)
 Uma regra que o laboratório verifica e que o sistema sob teste não impõe.
@@ -709,14 +688,17 @@ porque a colisão está no conceito e não na língua.
 | `control`     | `Control Plane`, o sistema sob teste  | `control run`, do Lab Plane            | resolvida (`D-DOM-02`)    |
 | `barrier`     | a instrução do ADR-0001               | o `positive control` do ADR-0004       | resolvida (`D-DOM-03`)    |
 | `strategy`    | composição de passos no Control Plane | rótulo opaco no Lab Plane              | resolvida (`D-DOM-04`)    |
-| `verdict`     | taxa, rótulo de zero, booleano, curva | —                                      | aberta (`D-DOM-05`)       |
+| `verdict`     | formatos distintos, composição aberta | —                                      | aberta (`D-DOM-05`)       |
 | `attempt`     | passagem pela sequência (ADR-0001)    | `launched attempt`, o `N` do ADR-0004  | aberta (`D-DOM-06`)       |
 | `constrained` | o booleano do evento (ADR-0007)       | a `precedence constraint` (ADR-0003)   | resolvida neste glossário |
 
-Cinco das sete estão resolvidas desde 2026-08-04, e duas continuam exigindo aprovação
-humana. A coluna `Sentido 1` de `control` e de `strategy` guarda o nome antigo de
-propósito: é assim que os ADRs aceitos escrevem, e eles não mudam. A hierarquia que
-separa os dois sentidos de `execution`:
+Cinco das sete estão resolvidas desde 2026-08-04, e duas continuam abertas na fila. A
+coluna `Sentido 1` de `control` e de `strategy` guarda o nome antigo de propósito: é
+assim que os ADRs aceitos escrevem, e eles não mudam. Quantos formatos `verdict` reúne,
+e como eles se combinam, é decisão que este glossário não toma:
+[`features/README.md`](features/README.md#capacidade-conhecida-e-não-especificada)
+registra a composição como não decidida. A hierarquia que separa os dois sentidos de
+`execution`:
 
 ```mermaid
 flowchart TD
@@ -735,331 +717,57 @@ flowchart TD
 
 ## As seis decisões de vocabulário
 
-Quatro foram tomadas em 2026-08-04, e três delas seguiram a recomendação. A quarta,
-`D-DOM-02`, foi decidida **contra** a recomendação, e as consequências disso estão
-escritas na seção dela.
-
-| ID       | Decisão                                          | Escolha                                                    | Estado                          |
-|----------|--------------------------------------------------|------------------------------------------------------------|---------------------------------|
-| D-DOM-01 | Se `run` e `execution` nomeiam níveis diferentes | `run` no experimento, `operation execution` na operação    | decidida, como recomendado      |
-| D-DOM-02 | Como separar `Control Plane` de `control run`    | renomear `Control Plane` para `system under test`          | decidida, contra a recomendação |
-| D-DOM-03 | Se `barrier` continua na linguagem               | aposentar, com citação histórica permitida                 | decidida, como recomendado      |
-| D-DOM-04 | Como nomear os dois sentidos de `strategy`       | `strategy` no system under test, `strategy label` no Lab Plane | decidida, como recomendado      |
-| D-DOM-05 | Se `verdict` vira quatro termos                  | —                                                          | em aberto                       |
-| D-DOM-06 | O que `N` conta                                  | —                                                          | em aberto                       |
-
-As duas em aberto continuam exigindo aprovação humana pelo mesmo motivo de antes:
-`D-DOM-05` depende dos formatos de veredito, que estão na fila, e `D-DOM-06` pode exigir
-um ADR que substitua a contagem do ADR-0004.
+`D-DOM-01` a `D-DOM-06` são decisões, e não vocabulário: o enunciado, as alternativas, a
+recomendação e a escolha de cada uma pertencem à fila —
+[Bloco 4](adr/fila-de-decisoes.md#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato)
+para as quatro fechadas em 2026-08-04, e
+[Bloco 3](adr/fila-de-decisoes.md#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora)
+para as duas abertas. O que cada escolha fixou já está escrito no estado dos termos
+acima, e as seis lápides abaixo dizem apenas isso.
 
 ### D-DOM-01 — Se `run` e `execution` nomeiam níveis diferentes
 
-**O problema, e o que a conversão muda nele.** Em português a palavra `execução` nomeava
-duas coisas. O ADR-0001 a usa para a invocação de uma operação por um worker (`:152-154`). Os ADRs 0003, 0004 e 0005 a usam para uma das quatro passagens de um
-experimento (`0003:154-157`, `0004:21`, `0005:60-61`). As duas conviviam em parágrafos
-vizinhos, e "o veredito da execução" mudava de referente conforme quem lesse.
-
-O inglês tem duas palavras para isso. Este glossário dá `run` ao nível do experimento —
-`measured run`, `control run`, `negative control`, `positive control`, `calibration` — e
-`operation execution` ao nível do worker. A palavra `execution` sozinha deixa de ter
-dono.
-
-**A colisão se dissolve, e a decisão não.** Essa separação é a alternativa B do
-enunciado original, agora escrita no próprio vocabulário em vez de numa convenção de
-prosa. Ela continua exigindo aprovação porque **muda a leitura de sete ADRs aceitos**:
-onde eles escrevem `execução` sozinha, é preciso saber qual dos dois níveis está em
-jogo, e a tabela de de/para não desfaz essa ambiguidade — ela só nomeia o destino de
-cada sentido.
-
-**Alternativa A — usar `execution` nos dois níveis, com qualificador obrigatório.** A
-favor: espelha o corpus português linha a linha, e a regra é verificável por busca de
-texto. Contra: reintroduz em inglês uma colisão que a língua não obriga, e o
-qualificador some na primeira frase escrita com pressa.
-
-**Alternativa B — `run` no experimento, `execution` na operação.** A favor: é o uso
-majoritário dos ADRs 0003 a 0005, inclusive em títulos de seção, e o inglês torna a
-regra lexical em vez de convencional. Contra: `execution scope`, `execution runtime` e
-`operation execution` ficam no nível do worker, e quem leu o corpus português precisa
-aprender de que lado cada composto está.
-
-**Alternativa C — reservar `run` para a operação e `execution` para o experimento.** A
-favor: nenhuma. Contra: contraria o uso dos três ADRs mais recentes e o sentido comum de
-`run` em Java, onde `Runnable.run` é a unidade de trabalho.
-
-**Recomendação.** Alternativa B. O corpus já a pratica, e ela não exige contrariar
-nenhum texto aceito.
-
-**Se a escolha for outra.** Com a alternativa A, todo Feature Card e todo diagrama
-passam a carregar o qualificador. Com a alternativa C, o ADR-0005 fica com o contador de
-ativos pendurado num referente que a linguagem deixou de nomear.
-
-**Decisão tomada em 2026-08-04: alternativa B.** `run` nomeia o nível do experimento e
-`operation execution` nomeia o nível do worker. A palavra `execution` sozinha NÃO DEVE
-ser usada sem qualificador em documento novo. As entradas deste glossário já praticam a
-escolha, e nenhuma delas muda.
-
-**A consequência que não estava escrita.** Os sete ADRs aceitos escrevem `execução`
-sozinha, e nenhum pode ser editado. A tabela de de/para nomeia o destino de cada
-sentido, e não desfaz a ambiguidade dentro daqueles textos. Quem ler um ADR aceito
-continua precisando decidir, pelo contexto, qual dos dois níveis está em jogo.
+Fechada em 2026-08-04: `run` nomeia o nível do experimento, e `operation execution` o do
+worker. O debate está na
+[fila, Bloco 4](adr/fila-de-decisoes.md#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato).
 
 ### D-DOM-02 — Como separar `Control Plane` de `control run`
 
-**O problema.** `Control Plane` é o sistema sob teste (`plano:550-555`). `control run` é
-um artefato do Lab Plane que existe para interpretar um resultado (`0004:29-30`). Um
-leitor que encontre "o controle violou" precisa de contexto externo para saber de qual
-dos dois se fala. A tradução não ajuda: em inglês a palavra colidente é `control`, e ela
-está nos dois termos.
-
-**Alternativa A — renomear `Control Plane`.** A favor: `system under test` já circula no
-corpus e diz exatamente a mesma coisa sem a palavra ambígua. Contra: o nome está no
-`AGENTS.md` da raiz, no plano e em cinco ADRs aceitos, e a renomeação invalidaria as
-citações por linha que este repositório exige.
-
-**Alternativa B — renomear `control run`.** A favor: o termo é mais novo e tem menos
-ocorrências. Contra: ele vem do vocabulário de método experimental, onde `negative
-control` e `positive control` são os nomes canônicos, e trocá-los apagaria a analogia
-que sustenta a decisão do ADR-0004.
-
-**Alternativa C — manter os dois, e preferir `system under test` na prosa.** A favor:
-nenhum ADR é contrariado, e a prosa deixa de usar a palavra ambígua no sentido de plano.
-Contra: os diagramas continuam rotulando a caixa como `Control Plane`, e a ambiguidade
-sobrevive na leitura de um diagrama isolado.
-
-**Recomendação.** Alternativa C, com `Control Plane` reservado para o par de planos em
-diagramas.
-
-**Se a escolha for outra.** Com a alternativa A, o `AGENTS.md` da raiz e a matriz de
-integrações mudam junto. Com a alternativa B, o ADR-0004 fica lido com um vocabulário
-que ele não usa.
-
-**Decisão tomada em 2026-08-04: alternativa A, contra a recomendação.** O termo do
-sistema medido passa a ser `system under test`, e `Control Plane` deixa de ser o nome
-dele. A escolha é legítima e o custo dela é o que a própria alternativa A nomeia: as
-citações por linha continuam válidas, e os textos que elas apontam continuam dizendo
-`Control Plane`.
-
-**O alcance medido em 2026-08-04.** A contagem de ocorrências, por leitura direta:
-
-| Onde                                    | Editável? | Ocorrências |
-|-----------------------------------------|-----------|-------------|
-| ADR-0001, ADR-0002, ADR-0006, ADR-0008  | não       | 18          |
-| `plano-do-laboratorio.md`               | sim       | 4           |
-| `AGENTS.md` da raiz                     | sim       | 2           |
-| dois Feature Cards e um Example Mapping | sim       | 3           |
-| nove documentos de `architecture/`      | sim       | 69          |
-| este glossário                          | sim       | 17          |
-
-**São quatro ADRs, e não cinco.** O enunciado da alternativa A dizia "cinco ADRs
-aceitos". A contagem verificada é quatro: ADR-0001, ADR-0002, ADR-0006 e ADR-0008. O
-ADR-0005 usa apenas `Lab Plane`.
-
-**`Lab Plane` NÃO acompanha a renomeação**, decidido em 2026-08-04. O nome nunca
-carregou a palavra ambígua `control`, e renomeá-lo seria mudança estética sobre cinco
-ADRs aceitos. O par deixa de ser simétrico de propósito: `system under test` de um lado,
-`Lab Plane` do outro. Um leitor de diagrama isolado descobre o motivo na entrada
-`Lab Plane` deste glossário.
-
-**A renomeação alcança todo o texto editável**, decidido em 2026-08-04. As 95 ocorrências
-em 15 arquivos foram convertidas no mesmo turno. Três classes de ocorrência **não**
-foram tocadas, e a distinção é o que separa renomear de falsificar:
-
-| O que não mudou                                   | Por quê                                          |
-|---------------------------------------------------|--------------------------------------------------|
-| as 18 ocorrências nos ADRs 0001, 0002, 0006, 0008 | ADR aceito não tem o corpo editado               |
-| a citação literal do ADR-0006, neste arquivo      | reescrever o que está entre aspas falsifica a fonte |
-| o enunciado histórico desta seção `D-DOM-02`      | ele registra o problema como ele era             |
-
-**O risco de desalinhamento, medido.** A contra-avaliação registra que edição em massa
-desloca citações `arquivo:linha` em silêncio ([`adr/arquivo/proposta-2026-08-03/contra-avaliacao.md`](adr/arquivo/proposta-2026-08-03/contra-avaliacao.md),
-seção `R12`). A conversão foi feita por substituição dentro da linha, sem inserir nem
-remover linha nenhuma, e a contagem de linhas de cada arquivo foi conferida antes e
-depois. Nenhuma citação externa se deslocou.
-
-**Pergunta em aberto.** Os nomes de pacote propostos em
-[`adr/arquivo/proposta-2026-08-03/modulos-e-fronteiras.md`](adr/arquivo/proposta-2026-08-03/modulos-e-fronteiras.md), linhas
-86 a 89 — `controlplane.dominio`, `controlplane.operacao`, `controlplane.estrategia`,
-`controlplane.persistencia` — carregam o termo aposentado. Eles são proposta de uma
-linha que continua aberta, e o ADR-0008 fixou só o pacote raiz. Renomeá-los é decisão da
-arquitetura mínima, e não desta.
+Fechada em 2026-08-04, contra a recomendação: o plano medido passa a se chamar `system
+under test`, e `Control Plane` está `aposentado`. O debate, o inventário das 95
+ocorrências e a pergunta aberta sobre os nomes de pacote estão na
+[fila, Bloco 4](adr/fila-de-decisoes.md#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato).
 
 ### D-DOM-03 — Se `barrier` continua na linguagem
 
-**O problema.** O ADR-0001 pressupõe `barreira` como termo (`:36`). O ADR-0003 retira o
-estatuto: "a barreira deixa de ser um termo próprio: o que existe é a restrição de
-precedência" (`:43-45`). O ADR-0004 mantém a palavra num título de seção, "A barreira é
-o controle positivo" (`:247`). O plano e o briefing a usam sem qualificação.
-
-**Alternativa A — aposentar a palavra.** A favor: é o que o ADR-0003 decidiu, e a
-convenção do repositório exige um nome por conceito. Contra: quebra a leitura do
-briefing e do cenário 25, que é o pedido original do usuário.
-
-**Alternativa B — manter como sinônimo de `precedence constraint`.** A favor: nenhum
-texto existente precisa ser relido. Contra: contraria uma decisão aceita, e o
-repositório trata dois nomes para o mesmo conceito como defeito.
-
-**Alternativa C — manter só em citação histórica.** A favor: preserva as referências ao
-briefing sem introduzir sinônimo vivo. Contra: exige que quem escreve saiba distinguir
-citação de uso, e a distinção não é verificável por teste.
-
-**Recomendação.** Alternativa A, com a alternativa C como regra de citação.
-
-**Se a escolha for outra.** Com a alternativa B, o glossário passa a ter dois nomes para
-`precedence constraint`, e a convenção do `adr/README.md` deixa de valer.
-
-**Decisão tomada em 2026-08-04: alternativa A, com a alternativa C como regra de
-citação.** `barrier` está `aposentado`, e a entrada dele acima deixa de ser aplicação
-antecipada da recomendação para ser registro da decisão. A palavra PODE aparecer em
-citação de um ADR aceito, do plano ou do briefing, e NÃO DEVE aparecer como termo em
-documento novo.
-
-**A consequência executada no mesmo turno.**
-[`adr/arquivo/proposta-2026-08-03/mensageria.md`](adr/arquivo/proposta-2026-08-03/mensageria.md) usava `barreira` como termo
-vivo e normativo em oito pontos, inclusive no enunciado e nas três alternativas de
-`D-MSG-11`. A ressalva estava em
-[`adr/arquivo/proposta-2026-08-03/contra-avaliacao.md`](adr/arquivo/proposta-2026-08-03/contra-avaliacao.md), linhas 143 a
-145. Aqueles pontos passaram a dizer `restrição de precedência`, e o mérito de
-`D-MSG-11` não mudou: a colisão continua sendo entre o que o escalonador segura e o
-relógio que o broker não deixa injetar.
-
-**Pergunta em aberto.** A palavra sobrevive em doze outros arquivos editáveis, e a
-decisão nomeou `mensageria.md` apenas. O plano do laboratório a usa 15 vezes; os Feature
-Cards e os Example Mappings, 8; `arquitetura-alvo.md`, `contratos-de-api.md` e
-`interface-web.md`, de uma a três cada. Parte é citação legítima — o plano cita o
-briefing, e o card de `execucao-de-experimento` cita o ADR-0001. Parte é termo vivo,
-como em `adr/arquivo/proposta-2026-08-03/arquitetura-alvo.md:390` e
-`adr/arquivo/proposta-2026-08-03/modulos-e-fronteiras.md:207`. Separar as duas exige leitura caso a caso, e
-não foi feita.
+Fechada em 2026-08-04: `barrier` está `aposentado`, e a palavra PODE aparecer em citação
+histórica. O debate, e a pendência de separar citação de termo vivo nos arquivos
+editáveis que ainda a usam, estão na
+[fila, Bloco 4](adr/fila-de-decisoes.md#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato).
 
 ### D-DOM-04 — Como nomear os dois sentidos de `strategy`
 
-**O problema.** O ADR-0006 nomeia a colisão e a deixa aberta: "Duas coisas têm o mesmo
-nome. No Control Plane, a estratégia é a composição de passos de `increment` [...] No
-Lab Plane, é um rótulo na declaração do experimento" (`:30-36`).
-
-**Alternativa A — dois nomes.** A favor: o Lab Plane fica proibido de ramificar por um
-conceito que ele não tem, e a regra vira verificável. Contra: acrescenta um termo ao
-glossário para descrever o mesmo dado visto de dois lados.
-
-**Alternativa B — um nome com qualificador em cada uso.** A favor: nenhum termo novo.
-Contra: o qualificador some na primeira frase que alguém escreve com pressa, e a
-proibição do ADR-0006 depende exatamente dessa distinção.
-
-**Alternativa C — manter a ambiguidade.** A favor: é o estado atual, e o ADR-0006
-funciona assim. Contra: a regra "nenhum componente do Lab Plane inspeciona o rótulo" é
-difícil de testar quando o rótulo e a implementação partilham o nome.
-
-**Recomendação.** Alternativa A: `strategy` para a composição de passos, `strategy
-label` para o dado de configuração.
-
-**Se a escolha for outra.** Com a alternativa C, a guarda que impede o Lab Plane de
-ramificar precisa nomear classes, e não conceitos.
-
-**Decisão tomada em 2026-08-04: alternativa A.** `strategy` nomeia a composição de
-passos do sistema medido; `strategy label` nomeia o dado opaco de configuração que o Lab
-Plane carrega. A entrada `strategy label` deixa de ser `proposto` e passa a
-`estabelecido`.
-
-**O que a escolha torna
-verificável.** A proibição do ADR-0006 — nenhum componente do Lab
-Plane inspeciona o rótulo — vira uma regra sobre tipos, e não sobre intenção. Um
-componente do Lab Plane que receba `strategy` em vez de `strategy label` é um defeito
-que a compilação ou uma guarda ArchUnit consegue apontar. Qual das duas a impõe é
-decisão da arquitetura mínima, em `D-ARQ-07`.
+Fechada em 2026-08-04: `strategy` nomeia a composição de passos do sistema medido, e
+`strategy label` o dado opaco de configuração do Lab Plane. O debate está na
+[fila, Bloco 4](adr/fila-de-decisoes.md#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato).
 
 ### D-DOM-05 — Se `verdict` vira quatro termos
 
-**O problema.** `verdict` nomeia a taxa de violação (`0004:112-113`), o rótulo da
-classificação do zero (`0004:206-218`), o booleano do predicado de capacidade (`0002:186-190`) e a curva do grupo D, que não tem forma decidida (`plano:226-229`).
-
-**Alternativa A — quatro termos distintos.** A favor: cada formato ganha nome, e a
-tabela comparativa do E3 deixa de misturar coisas diferentes na mesma coluna. Contra:
-antecipa a decisão da posição 9 da fila, que é justamente sobre como os formatos
-convivem.
-
-**Alternativa B — um termo com formato declarado.** A favor: o glossário fica estável
-enquanto a decisão dos formatos não é tomada, e o relatório declara o formato ao lado do
-número. Contra: quem lê um relatório precisa ler duas coisas para entender uma.
-
-**Alternativa C — adiar até a fila resolver.** A favor: nenhum termo nasce antes da
-decisão que o fixa. Contra: os quatro Feature Cards já usam a palavra, e o adiamento
-mantém a ambiguidade em documentos vivos.
-
-**Recomendação.** Alternativa B, com revisão obrigatória quando a decisão dos dois
-formatos de veredito for tomada.
-
-**Se a escolha for outra.** Com a alternativa A, o E4 ganha vocabulário antes de ter
-card, e o motivo registrado em `features/README.md:35-51` deixa de valer.
+**Aberta.** Nenhuma alternativa foi escolhida, e este glossário não escolhe: enquanto a
+composição dos formatos não for decidida, `verdict` é um termo só. A linha está na
+[fila, Bloco 3](adr/fila-de-decisoes.md#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora).
 
 ### D-DOM-06 — O que `N` conta
 
-**O problema.** [`Q-0003-8`](questions/Q-0003-8.md) mostra que as duas leituras de `N`
-quebram em pontos diferentes. Se `N` conta `attempt` do ADR-0001, ele inclui retries, e
-o número de retries é resultado da execução. Se conta `operation execution`, a taxa de
-aborto deixa de enxergar o trabalho descartado, que é o que ela existe para mostrar.
-
-**Alternativa A — `N` conta `attempt` do ADR-0001.** A favor: é a leitura literal de
-`launched attempt` no ADR-0004. Contra: sob `OPTIMISTIC` o número não é declarável antes
-de executar, e o E3 e o E4 rodam `OPTIMISTIC`.
-
-**Alternativa B — `N` conta `operation execution`.** A favor: é declarável antes.
-Contra: a taxa de aborto de uma execução que falha duas vezes e comete na terceira é
-zero, e a justificativa do ADR-0004 diz que essa taxa existe para mostrar o trabalho
-descartado.
-
-**Alternativa C — dois números, um declarado e um observado.** A favor: cada um mede o
-que sabe medir. Contra: exige um ADR que substitua a contagem de um ADR aceito, e
-`Q-0003-8` registra essa possibilidade sem escolhê-la.
-
-**Recomendação.** Manter a pergunta aberta e citá-la por `Q-0003-8` até a decisão
-`Experiment`. Este glossário não escolhe.
-
-**Se a escolha for outra.** Qualquer das três muda o significado da taxa de aborto na
-tabela comparativa do E3, que é um resultado já especificado em Feature Card.
+**Aberta.** A entrada `N` acima carrega a leitura em disputa, e a questão é
+[`Q-0003-8`](questions/Q-0003-8.md). A linha está na
+[fila, Bloco 3](adr/fila-de-decisoes.md#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora).
 
 ## Perguntas em aberto
 
-**P1 — O glossário não tem dono aprovador.** O `specification-process.md` registra que
-não está escrito quem aprova um Feature Card. A mesma lacuna alcança este arquivo:
-nenhum documento diz quem aceita um termo. Evidência: `AGENTS.md` da raiz, seção `###
-Pendências de processo`.
-
-**P2 — Um termo deste glossário pode contradizer um ADR aceito?** A mesma pergunta que o
-repositório registra para o Feature Card vale aqui, e ela não foi respondida.
-
-**P3 — `JVM_LOCK` está no glossário congelado e fora do ADR-0006.** Aquele ADR declara
-que `JVM_LOCK` não é avaliado ali (`docs/adr/0006-a-forma-da-estrategia-de-concorrencia.md:129`). Não foi possível
-confirmar se ele é uma estratégia no sentido do contrato de três pontos ou um
-experimento sobre arquitetura.
-
-**P4 — `worker` não tem definição em ADR aceito.** O termo aparece no plano e nos ADRs
-0003 a 0005 sem uma entrada de vocabulário própria. A definição desta proposta foi
-montada a partir de `plano:579-582` e de `0003:144-147`, e não de uma frase que a
-declare.
-
-**P5 — `experiment` é palavra estabelecida sem conceito decidido.** A forma dele está na
-fila, posição 8, e três questões pendentes mudam o escopo dela antes que seja tomada:
-[`Q-0002-4`](questions/Q-0002-4.md), [`Q-0003-8`](questions/Q-0003-8.md) e
-[`Q-0001-1`](questions/Q-0001-1.md).
-
-**P6 — Não existe termo para o instante comparável entre workers.**
-[`Q-0004-3`](questions/Q-0004-3.md) registra que nenhum documento diz qual relógio o log
-usa, nem qual a resolução dele. `wall-clock instant` nomeia o campo, e não o relógio que
-o produz.
-
-**P7 — Dois nomes ingleses não são forçados pela tradução.** `load` para `carga` e
-`meeting` para `encontro`. Nos dois casos a palavra inglesa mais óbvia já estava
-recusada na entrada portuguesa — `workload` e `rendezvous` — e a conversão manteve a
-recusa em vez de revisitá-la. `meeting` é a mais frágil das duas: ela não é termo
-consagrado de concorrência, e `join` ou `gather` diriam a mesma coisa. Nenhum documento
-sustenta a escolha, e por isso ela está aqui e não como fato.
-
-**P8 — A conversão não alcança o corpus.** Os sete ADRs aceitos, o plano do laboratório,
-os quatro Feature Cards e os dez documentos da rodada de arquitetura continuam escritos
-com os termos portugueses. Nenhum ADR aceito pode ser editado (`docs/AGENTS.md`, seção
-`## O que nunca é editado`), então a divergência entre este glossário e o corpus é
-permanente por construção. Não está decidido se os documentos editáveis — plano, Feature
-Cards, documentos de arquitetura — são convertidos, nem quando.
+O glossário não mantém backlog. As oito pendências que viviam aqui, `P1` a `P8`,
+pertencem a [`questions/`](questions/README.md#índice), que é o dono delas; duas já têm
+arquivo, [`Q-0003-8`](questions/Q-0003-8.md) e [`Q-0004-3`](questions/Q-0004-3.md).
 
 ## Os dois rótulos do instrumento, decididos em 2026-08-05
 
@@ -1103,19 +811,13 @@ Entra pela decisão `A5`. **A proibição de `SUT` na entrada `system under test
 prosa, e NÃO DEVE alcançar identificador de código.** O pacote `dev.da0hn.lab.sut` fica
 de pé.
 
-**Por que a separação precisou ser declarada.** A escolha do pacote se justifica dizendo
-que o glossário já define o termo por extenso, enquanto a entrada `system under test`
-lista `SUT` sob `_Evite_`, "por ser sigla sem expansão". Sem esta seção, o ADR que fixa
-o pacote e o glossário nascem se contradizendo — e a contradição estaria dentro de um
-ADR aceito, onde ninguém pode corrigi-la.
-
 **A regra, enunciada.** Em prosa, escreva `system under test` por extenso. Em nome de
 pacote, classe, variável ou coluna, `sut` é permitido e preferido — a sigla é padrão na
 literatura de teste, e o nome por extenso não cabe num segmento de pacote.
 
-Descartadas: rever o nome do pacote, por reabrir uma decisão do dia anterior e trazer de
-volta três alternativas já descartadas; e registrar como pergunta em aberto, por fazer o
-ADR nascer carregando contradição conhecida com este glossário.
+A justificativa da separação e as alternativas descartadas pertencem à
+[fila de decisões](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira), na linha `A5` de
+2026-08-05.
 
 **A entrada `system under test` não foi editada, e isso é deliberado.** Ela está nas
 linhas que o ADR-0009 cita por número, e deslocá-las quebraria quatro citações dentro de
