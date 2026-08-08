@@ -2279,6 +2279,48 @@ obrigatórias.** A regra de
 citado porque `scripts/check_citations.py` precisa que a âncora exista — e isso independe
 de o corpo do ADR ser editável. A premissa mudou; a conclusão não.
 
+## O rito que reconcilia a matriz com a árvore
+
+**Aberta, e nasce sem recomendação.** Ela veio da reestruturação do roteamento
+documental, que deu a `docs/README.md` o papel de roteador único. Não inaugura lote novo.
+
+**O problema.** O roteador declara dois donos para fatos vizinhos: a árvore versionada
+prova **o que existe e executa**, e a
+[matriz](../architecture/integrations.md#matriz) é dona do **estado de cada fronteira de
+processo**. Os dois respondem a perguntas diferentes, e por isso a divisão é boa — mas
+nada define o que fazer quando eles discordam. Uma fronteira marcada como decidida e
+ausente cujo código já está na árvore, ou uma marcada como implementada cujo módulo foi
+removido, são o mesmo defeito visto de dois lados, e hoje quem o encontra decide sozinho
+qual dos dois corrigir.
+
+**A tentação a evitar é a inferência automática:** tratar a árvore como sempre vencedora
+transformaria toda remoção temporária em regressão de estado documentado, e tratar a
+matriz como sempre vencedora reintroduz a hipótese promovida a fato que a própria matriz
+existe para impedir.
+
+**Três alternativas, e nenhuma escolhida.**
+
+| Rito                       | O que ele faz                                                                       | O custo                                                    |
+|----------------------------|-------------------------------------------------------------------------------------|------------------------------------------------------------|
+| árvore vence, sempre       | quem vir a divergência corrige a matriz no mesmo turno, citando o caminho           | uma remoção temporária vira regressão registrada           |
+| matriz vence até revisão   | a divergência abre linha aqui, e a matriz só muda por decisão                       | o documento fica errado enquanto a linha não fecha         |
+| verificação determinística | um script confere as afirmações da matriz que têm caminho versionado, e falha no CI | só alcança o que for expresso como caminho, e não o estado |
+
+```mermaid
+flowchart TD
+  D["a matriz e a árvore<br/>discordam"] --> Q{"qual rito?"}
+  Q -->|" árvore vence "| A["corrigir a matriz<br/>no mesmo turno"]
+  Q -->|" matriz vence "| B["abrir linha nesta fila<br/>e não editar a matriz"]
+  Q -->|" verificação "| C["script confere o que tem<br/>caminho versionado"]
+  A --> R["a divergência fecha"]
+  B --> R
+  C --> R
+```
+
+**A terceira não exclui as outras duas**, e é a única que impede a divergência de passar
+despercebida — as outras duas só dizem o que fazer depois que alguém a nota. A linha
+decide qual rito vale e, se for a terceira, o que exatamente o script consegue afirmar.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e

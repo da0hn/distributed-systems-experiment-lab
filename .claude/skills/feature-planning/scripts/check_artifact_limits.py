@@ -43,6 +43,21 @@ EXEMPT_BY_PATH = {
     # exemplo. Um teto ali obrigaria a omitir ADR do inventario, que e' o oposto do
     # que o arquivo existe para fazer.
     Path("docs/adr/README.md"),
+    # Os dois `AGENTS.md` sao instrucao, e nao artefato de planejamento: o harness os
+    # carrega inteiros antes de existir qualquer consulta, e o que eles carregam e'
+    # guardrail — a regra que o agente precisa ANTES de saber o que procurar. Cortar
+    # prosa deles para caber num teto apaga guardrail, e nao redundancia.
+    #
+    # A isencao e' declarada, e nao herdada. Ate ela existir, esses arquivos so
+    # escapavam porque o workflow `docs` media apenas `docs/adr/[0-9]*.md`, e ninguem
+    # havia medido os dois. Medidos, deram 21.322 caracteres de prosa na raiz e 11.665
+    # em `docs/`, ambos contra o generico de 4.000 — a distancia mostra que o teto
+    # generico nunca descreveu este tipo de arquivo.
+    #
+    # O que NAO esta isento e' a duplicacao: o roteamento documental tem um dono unico,
+    # `docs/README.md`, que cai no generico como qualquer outro Markdown.
+    Path("AGENTS.md"),
+    Path("docs/AGENTS.md"),
 }
 
 # `docs/adr/arquivo/` e' registro congelado do que se pensou naquela data, e o

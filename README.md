@@ -63,21 +63,18 @@ ainda.
 
 ## Como navegar pela documentação
 
-| Para entender                                 | Leia                                                                                                                     |
-|-----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| Mapa e ordem de leitura                       | [Documentação](docs/README.md#em-que-ordem-ler)                                                                          |
-| Taxonomia, dependências pedagógicas e roadmap | [Plano do laboratório](docs/plano-do-laboratorio.md#1-o-que-mudou-e-por-que-o-planejamento-anterior-não-serve-como-está) |
-| Decisões arquiteturais aceitas e pendentes    | [Índice de ADRs](docs/adr/README.md#índice) e [fila de decisões](docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira) |
-| Capacidades já especificadas                  | [Feature Cards](docs/features/README.md#índice)                                                                          |
-| Fronteiras entre processos e seu estado       | [Matriz de integrações](docs/architecture/integrations.md#matriz)                                                        |
-| Processo, aprovações e artefatos              | [Processo de especificação](docs/specification-process.md#a-decisão-vem-antes-do-artefato)                               |
-| Perguntas encaminhadas                        | [Índice de questões](docs/questions/README.md#índice)                                                                    |
-| Contratos formais e seus gatilhos             | [Contratos](docs/contracts/README.md#estado-nenhum-contrato-existe)                                                      |
-| Vocabulário vigente                           | [Glossário](docs/CONTEXT.md#linguagem)                                                                                   |
+**Há um roteador documental, e ele é um só:**
+[`docs/README.md`](docs/README.md#precedência-de-consulta). Entre por ele com a pergunta
+que você tem — estado de fronteira, decisão vigente, decisão aberta, comportamento,
+processo, vocabulário — e ele nomeia o documento dono e a âncora, em um salto.
+
+**Esta página não mantém tabela concorrente.** Um segundo mapa de navegação diverge do
+primeiro sem que ninguém perceba: cada cópia envelhece por conta própria, e nada avisa
+quando as duas passam a discordar.
 
 O plano organiza o estudo, os ADRs registram decisões duráveis e os Feature Cards
 descrevem comportamento. Quando houver divergência, a decisão aceita e a configuração
-versionada prevalecem sobre resumos de onboarding.
+versionada prevalecem sobre resumos de onboarding — inclusive sobre esta página.
 
 ## Para agentes e contribuidores
 

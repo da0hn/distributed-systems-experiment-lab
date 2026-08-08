@@ -79,18 +79,13 @@ entre eles, em
 **O plano não decide nada.** Ele é a análise que define quais decisões precisam ser
 tomadas e em que ordem, como diz o
 [índice de ADRs](docs/adr/README.md#índice). Tratá-lo como arquitetura vigente faz
-hipótese antiga prevalecer sobre ADR aceito. Use este roteador:
+hipótese antiga prevalecer sobre ADR aceito.
 
-| Procurando por                    | Documento dono                                                             |
-|-----------------------------------|----------------------------------------------------------------------------|
-| taxonomia, pedagogia e roadmap    | [plano do laboratório](docs/plano-do-laboratorio.md)                       |
-| decisão arquitetural durável      | ADR aceito, pelo [índice](docs/adr/README.md#índice)                       |
-| decisão ainda aberta              | [fila de decisões](docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira) |
-| comportamento de uma capacidade   | Feature Card, pelo [índice](docs/features/README.md#índice)                |
-| estado e topologia das fronteiras | [matriz de integrações](docs/architecture/integrations.md#matriz)          |
-| processo, lifecycle e aprovação   | [processo](docs/specification-process.md#a-decisão-vem-antes-do-artefato)  |
-| vocabulário vigente               | [glossário de domínio](docs/CONTEXT.md#linguagem)                          |
-| questão encaminhada               | [índice de questões](docs/questions/README.md#índice)                      |
+**Este arquivo não roteia consulta documental.** O roteador é um só, e é
+[`docs/README.md`](docs/README.md#precedência-de-consulta). **Não reponha aqui uma segunda
+tabela de navegação** — três mapas concorrentes já viraram um. O que fica neste arquivo é
+guardrail: a regra que o agente precisa antes de saber o que procurar, e que nenhum índice
+carrega.
 
 ## Como o planejamento funciona aqui
 
@@ -117,6 +112,13 @@ validações e ciclo de vida dos ADRs. O processo e a justificativa da mudança 
 
 O índice das capacidades está em [`docs/features/README.md`](docs/features/README.md).
 O registro histórico dos ADRs fica em [`docs/adr/README.md`](docs/adr/README.md).
+
+**Não existe catálogo de skills versionado, e não crie um.** A lista de skills
+disponíveis é recurso efêmero do ambiente que executa o agente, e quem a apresenta é o
+harness, não o repositório. Um catálogo em Markdown seria inventário de algo que este
+repositório não controla: ele divergiria na primeira skill instalada, removida ou
+renomeada fora daqui, e ninguém saberia. Uma skill citada por nome numa instrução
+continua valendo; o que não vale é a lista.
 
 ### Redação e revisão independente de ADR
 

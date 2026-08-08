@@ -43,8 +43,10 @@ comportamento, e vai para o Feature Card. O teste completo dessa fronteira está
 ## A escrita roda em sub-agente, e passa por revisão
 
 **Delegue a redação do arquivo a um sub-agente, em background.** Regra adotada em
-2026-08-04, registrada em `CLAUDE.md`. A sessão principal conduz a decisão e obtém a
-escolha explícita; o sub-agente recebe a escolha já feita e escreve o ADR.
+2026-08-04, e o dono dela é
+[`AGENTS.md`](../../../AGENTS.md#redação-e-revisão-independente-de-adr). A sessão
+principal conduz a decisão e obtém a escolha explícita; o sub-agente recebe a escolha já
+feita e escreve o ADR.
 
 Os dois agentes são registrados, e NÃO DEVE-se usar um `general-purpose` genérico:
 
@@ -55,8 +57,9 @@ Os dois agentes são registrados, e NÃO DEVE-se usar um `general-purpose` gené
 Depois que o escritor devolver o arquivo, rode o revisor de forma síncrona. Enquanto a
 resposta não for `SEM DEFEITOS`, mande a lista de volta ao escritor com `SendMessage`,
 que preserva o contexto dele. Pare na terceira rodada e leve o que sobrou ao usuário. O
-detalhe do loop está em `CLAUDE.md`, seção "Os dois agentes registrados, e o loop entre
-eles".
+contrato do loop — o que o escritor recebe, o que ele NÃO DEVE fazer, e quem decide
+quando não converge — está em
+[`AGENTS.md`](../../../AGENTS.md#redação-e-revisão-independente-de-adr).
 
 O sub-agente NÃO DEVE escolher entre alternativas nem fechar lacuna sozinho. Uma lacuna
 encontrada durante a redação vira linha em

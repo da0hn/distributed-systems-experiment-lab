@@ -1,33 +1,59 @@
 # Documentação
 
-Mapa da pasta `docs/`. O repositório tem um esqueleto executável — `pom.xml` na raiz,
-quatro módulos Maven, `compose.yaml`, `frontend/`, `local/` e dois workflows em
-`.github/workflows/` — e **nenhum fenômeno ou capacidade implementado**. A árvore
-versionada prova o que existe; esta pasta guarda o que foi decidido e o que segue
-aberto.
+**Este arquivo é o roteador documental do repositório.** Ele responde a uma pergunta só:
+qual documento é dono do fato que você procura, e em que âncora.
 
-## Em que ordem ler
+Ele **NÃO DEVE** conter estado, inventário, contagem, racional nem afirmação sobre o que
+está implementado. Cada um desses tem um dono nomeado abaixo, e uma segunda cópia
+envelhece em silêncio.
 
-1. [`plano-do-laboratorio.md`](plano-do-laboratorio.md) — a taxonomia dos itens do
-   briefing, as dependências pedagógicas, o roadmap, o MVP e as decisões adiadas.
-   **Ele não decide nada**: é a análise que define quais decisões precisam ser tomadas e
-   em que ordem.
-2. [`specification-process.md`](specification-process.md) — como uma funcionalidade é
-   especificada, e qual artefato responde a quê.
-3. [`CONTEXT.md`](CONTEXT.md) — o glossário canônico: qual termo vale, e o que ele
-   significa aqui.
-4. [`features/README.md`](features/README.md) — as capacidades, em Feature Card e
-   Example Mapping.
-5. [`architecture/integrations.md`](architecture/integrations.md) — o que atravessa uma
-   fronteira de processo, e em que estado cada travessia está.
-6. [`adr/README.md`](adr/README.md) — o processo de decisão e a fila do que precisa ser
-   decidido.
-7. [`questions/README.md`](questions/README.md) — as questões encaminhadas de um ADR
-   para outro, uma por arquivo.
-8. [`adr/arquivo/README.md`](adr/arquivo/README.md) — por que a primeira série foi
-   arquivada e o que sobreviveu dela.
+**O roteamento documental vive num arquivo só, e é este.** Ele já existiu em três lugares
+— aqui, no [`README.md`](../README.md) da raiz e no [`AGENTS.md`](../AGENTS.md) —, e três
+mapas divergem sem que ninguém perceba, porque cada um envelhece por conta própria.
 
-## O que vive em cada diretório
+Os guardrails que valem antes de qualquer consulta estão no
+[`AGENTS.md` da raiz](../AGENTS.md#ao-trabalhar-aqui). As regras de quem **edita** esta
+pasta estão no [`AGENTS.md` daqui](AGENTS.md).
+
+## Precedência de consulta
+
+Uma consulta alcança o documento dono em no máximo dois saltos: esta tabela, e o índice
+que ela nomeia. A terceira coluna diz o que aquele documento **não** prova.
+
+| Você procura por                      | Documento dono                                                                                  | Limite da inferência                                           |
+|---------------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
+| o que existe e executa                | a árvore versionada, `pom.xml`, `compose.yaml`, `frontend/package.json` e os testes             | configuração prova presença, e não funcionamento               |
+| o estado de uma fronteira de processo | [matriz de integrações](architecture/integrations.md#matriz)                                    | abra a evidência primária citada antes de concluir             |
+| a decisão arquitetural vigente        | [índice de ADRs](adr/README.md#índice)                                                          | plano e auditoria não substituem decisão aceita                |
+| a decisão ainda aberta                | [fila de decisões](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira)                           | não feche a lacuna por inferência                              |
+| o comportamento de uma capacidade     | [índice de capacidades](features/README.md#índice)                                              | regra `pendente` não é comportamento aprovado                  |
+| se algo merece ADR                    | [critérios do índice](adr/README.md#uma-decisão-merece-adr-quando)                              | o artefato é escolhido depois da decisão, nunca antes          |
+| como alterar um ADR aceito            | [revogação da imutabilidade](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) | nenhuma forma além das listadas lá é permitida                 |
+| como citar a série antiga             | [duas séries](adr/README.md#duas-séries-e-como-citá-las)                                        | sem o prefixo `arquivo/` a referência é ambígua                |
+| processo, artefato e aprovação        | [processo de especificação](specification-process.md#a-decisão-vem-antes-do-artefato)           | skill não altera o lifecycle                                   |
+| o vocabulário vigente                 | [glossário de domínio](CONTEXT.md#linguagem)                                                    | termo em disputa não é vocabulário vigente                     |
+| uma questão encaminhada               | [índice de questões](questions/README.md#índice)                                                | `Q-INT-*` tem outro dono, e é a matriz                         |
+| uma pergunta de integração            | [perguntas da matriz](architecture/integrations.md#perguntas-em-aberto)                         | ela **NÃO DEVE** entrar no índice de questões                  |
+| um contrato formal entre processos    | [contratos](contracts/README.md#estado-nenhum-contrato-existe)                                  | um contrato nasce com a interface, nunca antes dela            |
+| taxonomia, pedagogia e roadmap        | [plano do laboratório](plano-do-laboratorio.md#3-taxonomia-refinada)                            | o plano não decide nada; ele define o que precisa ser decidido |
+| o limite de tamanho de um artefato    | `.claude/skills/feature-planning/scripts/check_artifact_limits.py`                              | nenhum número citado de memória vale; rode o script            |
+
+```mermaid
+flowchart TD
+    Q["consulta"] --> T{"que tipo de<br/>fato é?"}
+    T -->|" implementação "| E["árvore, configuração<br/>e teste"]
+    T -->|" estado de fronteira "| I["matriz de integrações"]
+    T -->|" decisão "| A["índice de ADRs<br/>ou fila de decisões"]
+    T -->|" comportamento "| F["índice de capacidades<br/>e Feature Card"]
+    T -->|" processo ou termo "| P["processo de especificação<br/>ou glossário"]
+    E --> V["evidência verificável:<br/>caminho e âncora"]
+    I --> V
+    A --> V
+    F --> V
+    P --> V
+```
+
+## O que vive em cada caminho
 
 | Caminho                    | O que vive ali                                     |
 |----------------------------|----------------------------------------------------|
@@ -39,88 +65,26 @@ aberto.
 | `architecture/`            | a matriz das fronteiras de processo e seu estado   |
 | `adr/`                     | as decisões arquiteturais duráveis, e a fila       |
 | `questions/`               | uma questão encaminhada por arquivo                |
+| `audits/`                  | auditoria datada; recomendação, e nunca decisão    |
 | `adr/arquivo/`             | a primeira série, preservada e nunca editada       |
 | `diagrams/`                | o que o Mermaid não expressa, em `.excalidraw.svg` |
 
-**Esta página não conta nada.** Quantidade e estado envelhecem em silêncio quando são
-copiados, e cada um tem um índice dono: as capacidades em
-[`features/README.md`](features/README.md#índice), os ADRs em
-[`adr/README.md`](adr/README.md#índice), as questões em
-[`questions/README.md`](questions/README.md#índice), os contratos e seus gatilhos em
-[`contracts/README.md`](contracts/README.md), e o estado de cada fronteira de processo
-em [`architecture/integrations.md`](architecture/integrations.md#matriz).
+**Uma auditoria não vale como decisão.** Ela levanta achado e propõe plano; o que dela
+vira regra passa pelo [processo](specification-process.md#a-decisão-vem-antes-do-artefato)
+como qualquer outra decisão, e uma pergunta que ela abre não tem regra de transporte
+decidida — o caso está em
+[origem nova](questions/README.md#origem-nova-e-o-que-ainda-não-tem-regra).
 
-## Como o planejamento funciona
+## O que este arquivo deixou de responder
 
-Desde 2026-08-01 o ADR deixou de ser a forma principal de documentação:
+Cada linha abaixo já foi prosa daqui, e saiu porque tem dono. Consultar o dono é o
+primeiro salto, e não o segundo.
 
-> **O ADR guarda o porquê da escolha. O Feature Card guarda o quê do comportamento.**
-
-O motivo está medido em [`specification-process.md`](specification-process.md): os ADRs
-passaram a carregar decisão arquitetural, regra de negócio e tabela de decisão no mesmo
-arquivo, e só a primeira é decisão.
-
-```mermaid
-flowchart TB
-    CAP["uma capacidade nova<br/>ou mudança relevante"] --> FC["Feature Card<br/>features/&lt;slug&gt;/"]
-    FC --> EM["Example Mapping<br/>regras, exemplos, perguntas"]
-    EM -->|" regra aprovada e<br/>exemplo estabilizado "| BDD["behavior.feature"]
-    EM -->|" regra pendente ou<br/>pergunta em aberto "| Q["fica registrada<br/>não vira cenário"]
-    FC -->|" atravessa fronteira<br/>de processo "| CT["contrato<br/>contracts/"]
-    FC -->|" alternativa plausível<br/>e impacto duradouro "| ADR["ADR<br/>adr/"]
-    FC -.->|" termo novo<br/>ou ambíguo "| CTX["CONTEXT.md<br/>glossário de domínio"]
-    EM -.->|" termo novo<br/>ou ambíguo "| CTX
-    ADR -.->|" termo novo<br/>ou ambíguo "| CTX
-```
-
-## Estado da especificação
-
-As capacidades já especificadas, o que cada uma cobre e o ADR que a originou estão em
-[`features/README.md`](features/README.md#índice), que também registra qual capacidade é
-conhecida e **não** tem card. **Nenhuma delas está implementada.**
-
-**Os `.feature` que existem não são especificação viva.** Enquanto nenhuma regra tiver a
-coluna `Aprovada por` preenchida, eles não descrevem comportamento aprovado: o
-[processo](specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05) proíbe
-Gherkin sobre regra pendente, e aprova-se a regra, nunca o card. Os arquivos permanecem
-na árvore como **inativos** — não são apagados nem migrados —, e nenhum deles vira teste
-antes de uma pessoa aprovar a regra que o sustenta.
-
-## Onde as perguntas em aberto vivem
-
-Elas estão em três lugares, e a distinção importa:
-
-| Lugar                                    | O que guarda                                       |
-|------------------------------------------|----------------------------------------------------|
-| `questions/`, um arquivo por questão     | questões transportadas de um ADR aceito para outro |
-| `adr/NNNN-*.md`, `## Questões em aberto` | questões vivas de um ADR ainda `Proposto`          |
-| `features/<slug>/example-mapping.md`     | perguntas levantadas no refinamento da capacidade  |
-
-**Use e cite o identificador definido no
-[índice de questões](questions/README.md#identificador)**, nunca "a questão K do
-ADR-NNNN" — aquela seção deixa de existir quando o ADR é aceito. O índice é o dono da
-regra: ele define o formato das questões novas e mantém o legado congelado ao lado dele.
-
-## Duas séries de ADR
-
-A numeração foi reiniciada em 2026-07-28. Um mesmo número existe nas duas séries.
-
-| Forma de citar | Onde vive                               | O que é                   |
-|----------------|-----------------------------------------|---------------------------|
-| `ADR-0001`     | [`adr/`](adr/README.md)                 | série corrente            |
-| `arquivo/0001` | [`adr/arquivo/`](adr/arquivo/README.md) | primeira série, arquivada |
-
-**Use sempre o prefixo `arquivo/` ao citar a série antiga.** Sem ele a referência é
-ambígua.
-
-## Convenções de escrita
-
-Valem em todo documento desta pasta: português do Brasil com acentuação correta, voz
-ativa, uma ideia por frase, linhas quebradas em ~88 colunas, requisito normativo em RFC
-2119 traduzida (`DEVE`, `NÃO DEVE`, `DEVERIA`, `PODE`), sem emojis e sem linguagem de
-marketing. A lista de palavras proibidas está em [`adr/README.md`](adr/README.md).
-
-Todo fluxo descrito em prosa vai **também** como diagrama Mermaid, junto do parágrafo que
-o descreve.
-
-As instruções operacionais para quem edita aqui estão em [`AGENTS.md`](AGENTS.md).
+| Fato que já viveu aqui                        | Dono atual                                                                                                     |
+|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| o que está implementado                       | a árvore, e a [matriz](architecture/integrations.md#matriz)                                                    |
+| quais capacidades existem, e o estado         | [índice de capacidades](features/README.md#índice)                                                             |
+| onde cada tipo de pergunta em aberto vive     | [índice de questões](questions/README.md#de-onde-uma-questão-vem)                                              |
+| as duas séries de ADR, e como citá-las        | [`adr/README.md`](adr/README.md#duas-séries-e-como-citá-las)                                                   |
+| por que o ADR deixou de ser a forma principal | [processo](specification-process.md#a-decisão-vem-antes-do-artefato)                                           |
+| as convenções de escrita                      | [`AGENTS.md` da raiz](../AGENTS.md#convenções-gerais-de-escrita) e [`adr/README.md`](adr/README.md#convenções) |
