@@ -2321,6 +2321,116 @@ flowchart TD
 despercebida — as outras duas só dizem o que fazer depois que alguém a nota. A linha
 decide qual rito vale e, se for a terceira, o que exatamente o script consegue afirmar.
 
+## O orçamento de prosa: quem é dono do teto, e o que ele alcança
+
+**Aberta.** Ela é a segunda das quatro perguntas do plano de navegação documental, que
+nasceu em `4d15bd6` e foi removido da árvore em `4f04246` — o texto original é recuperável
+por `git show 4d15bd6:docs/audits/2026-08-07-navegacao-documental-para-agentes.md`. A
+primeira daquelas perguntas fechou no [`AGENTS.md`](../../AGENTS.md#como-o-planejamento-funciona-aqui),
+e a quarta é a linha [acima](#o-rito-que-reconcilia-a-matriz-com-a-árvore). Esta e a
+[seguinte](#o-que-apura-a-âncora-citada-antes-de-uma-redução) ficaram sem dono quando o
+arquivo saiu, e voltam aqui por isso. Não inaugura lote novo.
+
+**O problema.** O teto genérico de prosa é 4.000 caracteres, e quem o aplica é
+[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py).
+O workflow [`docs`](../../.github/workflows/docs.yml) só o executa sobre
+`docs/adr/[0-9]*.md`. Fora desse glob, ninguém mede — e medidos em 2026-08-08, sete
+arquivos excedem o genérico sem que nada falhe:
+
+| Arquivo                                  | Prosa medida | Teto aplicado hoje |
+|------------------------------------------|--------------|--------------------|
+| `docs/plano-do-laboratorio.md`           | 48.253       | genérico, 4.000    |
+| `docs/CONTEXT.md`                        | 35.633       | genérico, 4.000    |
+| `docs/adr/plano-de-escrita-do-lote-e.md` | 25.405       | genérico, 4.000    |
+| `docs/specification-process.md`          | 18.493       | genérico, 4.000    |
+| `docs/questions/README.md`               | 10.442       | genérico, 4.000    |
+| `docs/features/README.md`                | 4.616        | genérico, 4.000    |
+
+**Duas coisas distintas estão fundidas.** Um teto que descreve mal o artefato é defeito de
+regra; um teto que ninguém executa é defeito de alcance. A isenção de `AGENTS.md` e
+`docs/AGENTS.md`, declarada em `4f04246` dentro do próprio script, resolveu dois casos pelo
+primeiro eixo e deixou o segundo intacto — os seis acima não estão isentos, estão fora do
+alcance da medição.
+
+**A tentação a evitar é declarar isenção nova a cada arquivo que exceda.** Cada isenção
+carrega justificativa escrita, o que é bom; o que falta é o critério contra o qual a
+próxima seria conferida, e sem ele a soma das justificativas **é** o critério, sem nunca
+ter sido decidida.
+
+**Três alternativas, e nenhuma escolhida.**
+
+| Alternativa                  | O que ela faz                                                                                | O custo                                                               |
+|------------------------------|----------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| isenção declarada, uma a uma | mantém o que `4f04246` fez, e o script segue sendo o dono do número e das exceções           | o critério fica implícito na soma das justificativas                  |
+| teto por classe de artefato  | o processo declara classes — instrução, índice, plano, glossário, fila — e um teto para cada | classificar artefato novo vira decisão, e há artefato em duas classes |
+| medir tudo sem falhar        | o CI mede todo Markdown e publica o número, falhando só nas classes com teto                 | o número deixa de ser guardrail e vira relatório que ninguém lê       |
+
+```mermaid
+flowchart TD
+  A["um Markdown excede<br/>o teto genérico"] --> Q{"qual regime?"}
+  Q -->|" isenção uma a uma "| I["justificativa no script,<br/>caso a caso"]
+  Q -->|" teto por classe "| C["classificar o artefato,<br/>e aplicar o teto da classe"]
+  Q -->|" medir sem falhar "| M["publicar a medição,<br/>falhar só onde há teto"]
+  I --> D["o alcance da medição<br/>continua a decidir"]
+  C --> D
+  M --> D
+```
+
+**A linha decide três coisas, e não uma:** qual arquivo é dono do número — hoje ele vive
+no script e o [processo](../specification-process.md#feature-card--o-padrão) o cita —,
+quais caminhos a medição alcança no CI, e como uma isenção nasce. Decidir só a primeira
+deixa os seis arquivos acima exatamente como estão.
+
+## O que apura a âncora citada antes de uma redução
+
+**Aberta.** Terceira das quatro perguntas do mesmo plano removido, e irmã da linha
+[acima](#o-orçamento-de-prosa-quem-é-dono-do-teto-e-o-que-ele-alcança).
+
+**O que já está decidido, e não é objeto desta linha.** A lápide é obrigatória: a regra de
+[`A saída, decidida em 2026-08-06`](#a-saída-decidida-em-2026-08-06) preserva o heading
+citado, e a [revogação da imutabilidade](#a-imutabilidade-do-corpo-de-um-adr-aceito-revogada-em-2026-08-07)
+mudou a premissa sem mudar a conclusão. A pergunta aqui é **como se descobre quais headings
+são esses**, antes de encolher qualquer documento.
+
+**O problema.** Fechar
+[A-09](../audits/2026-08-06-coerencia-e-limites-documentais.md#a-09--contextmd-é-glossário-proposta-decisão-e-backlog-ao-mesmo-tempo)
+e
+[A-11](../audits/2026-08-06-coerencia-e-limites-documentais.md#a-11--a-fila-ativa-contém-narrativa-integral-de-decisões-fechadas)
+exige remover texto de dois documentos citados de fora. Hoje a apuração é manual e não
+existe: quem reduzir precisa varrer o corpus atrás de quem cita o heading que vai apagar, e
+[`check_citations.py`](../../scripts/check_citations.py) só acusa o defeito **depois** de
+ele ser cometido, na próxima execução.
+
+**A objeção que sustenta a urgência.** O
+[plano de escrita do Lote E](plano-de-escrita-do-lote-e.md) registra que a verificação de
+2026-08-06 concluiu que nenhuma citação externa apontava para as seções de rodada — e que a
+conclusão deixou de valer no ato de escrever os ADRs 0010 a 0012, que passaram a citá-las.
+Uma apuração manual foi feita, estava correta, e envelheceu em horas.
+
+**Três alternativas, e nenhuma escolhida.**
+
+| Alternativa                    | O que ela faz                                                                      | O custo                                                           |
+|--------------------------------|------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| inventário aprovado por pessoa | levanta-se a lista reversa uma vez, e a pessoa aprova quais headings ganham lápide | envelhece na primeira citação nova, como já envelheceu uma vez    |
+| índice reverso gerado          | um script deriva, de todas as citações, quem aponta para cada heading              | é derivado, e um arquivo derivado versionado diverge da fonte     |
+| guarda no CI                   | `check_citations.py` passa a falhar quando um heading citado desaparece do alvo    | exige comparar contra o estado anterior, e não só contra a árvore |
+
+```mermaid
+flowchart TD
+  R["quero reduzir<br/>um documento"] --> Q{"como sei quais<br/>headings são citados?"}
+  Q -->|" inventário "| I["lista aprovada<br/>numa data"]
+  Q -->|" índice gerado "| G["script deriva<br/>quem cita o quê"]
+  Q -->|" guarda no CI "| C["a remoção falha<br/>o build"]
+  I --> P["a redução acontece<br/>com lápide onde é preciso"]
+  G --> P
+  C --> P
+```
+
+**As duas últimas são parentes da terceira alternativa da linha do rito**, e as três podem
+sair de um mesmo script — mas são decisões separadas, e fundi-las escolheria a ferramenta
+antes do problema. Enquanto esta linha não fechar, **nenhuma redução de `CONTEXT.md` ou da
+fila deve começar**: é o que separa fechar A-09 e A-11 de quebrar citação de ADR aceito.
+
 ## O nível de isolamento não tem lugar nesta fila
 
 O E5 exige a comparação do mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e

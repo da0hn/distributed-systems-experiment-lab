@@ -119,8 +119,9 @@ decisões pendentes; critérios de pronto; links.
 - Um diagrama pesado demais para o card vai para o `example-mapping.md`, e o card faz
   link. O ganho é foco, e não orçamento: o card carrega o que uma consulta precisa, e o
   Example Mapping carrega o que uma discussão precisa.
-- Ao criar um card, acrescente a linha correspondente em [`features/README.md`](features/README.md)
-  e em [`README.md`](README.md).
+- Ao criar um card, acrescente a linha correspondente em
+  [`features/README.md`](features/README.md), que é o índice dono da lista — e **não** em
+  [`README.md`](README.md), que é roteador e não carrega inventário.
 
 ## Example Mapping
 
@@ -248,6 +249,6 @@ Dois pontos que só aparecem nesta pasta:
   ```
 
 - `check_artifact_limits.py` passa nos artefatos alterados. Ele é o único medidor.
-- A capacidade nova aparece nos dois índices: [`features/README.md`](features/README.md) e
-  [`README.md`](README.md).
+- A capacidade nova aparece no índice que é dono da lista,
+  [`features/README.md`](features/README.md), e em nenhum outro.
 - `git add` apenas dos arquivos relacionados, e um único commit em Conventional Commits (skill `commit`).
