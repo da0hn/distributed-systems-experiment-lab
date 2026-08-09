@@ -18,6 +18,24 @@ Quem declara a operação escreve a sequência de passos. O runtime a constrói 
 Escalonador e injetor de falha são consultados em cada fronteira. Gatilho: o runtime
 inicia uma tentativa.
 
+```mermaid
+sequenceDiagram
+    participant RT as runtime (lab-plane)
+    participant ES as escalonador
+    participant FI as injetor de falha
+    participant PS as passo (system-under-test)
+    participant LJ as lab-journal
+    Note over RT: fronteira = rótulo, lado (entrada ou saída)<br/>e seletor de tentativa
+    RT ->> ES: consulta a fronteira
+    ES -->> RT: libera ou retém
+    RT ->> FI: consulta a mesma fronteira
+    FI -->> RT: injeta ou não
+    RT ->> LJ: observação, ao vivo, com o número da tentativa
+    RT ->> PS: chama o passo, por rede
+    PS -->> RT: retorno opaco
+    Note over RT, PS: o passo nunca chama o runtime
+```
+
 ## Escopo
 
 A operação como sequência ordenada e finita de passos nomeados. O endereço canônico de

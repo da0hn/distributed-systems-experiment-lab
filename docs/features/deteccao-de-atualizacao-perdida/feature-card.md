@@ -64,16 +64,44 @@ isolamento, classificação do veredito zero e formato curva estão em outros ca
 | R15 | `ATOMIC_UPDATE` é a estratégia de calibração exigida pelo ADR-0002 R3.                                                                                                            | [ADR-0006, `ATOMIC_UPDATE` é a calibração](../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#atomic_update-é-a-estratégia-de-calibração)                      | pendente     |
 | R16 | Uma estratégia **PODE** exigir coluna além das cinco do ADR-0002; a migração nasce no mesmo commit que a introduz no código.                                                      | [ADR-0006, Decisão](../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão)                                                                                | pendente     |
 
-O diagrama das duas contagens está no [Example Mapping](example-mapping.md).
+O diagrama das duas contagens, e do caminho que produz cada uma, está em
+[Integrações e contratos afetados](#integrações-e-contratos-afetados).
 
 ## Integrações e contratos afetados
 
 `increment` emite `SELECT` e `UPDATE` contra `resource` — isso é o domínio do sistema
-medido, e não mudou. **O oráculo não emite `SELECT` nenhum.** Ele consome uma conexão de
-replicação lógica sobre o WAL, e o schema do `system-under-test` permanece inacessível a
-ele: não há `GRANT` cruzado. O transporte entre o WAL e o oráculo — conector, broker,
-filtro por execução — é decisão própria, que depende desta. **Não existe DDL nem contrato
-de esquema** — ver `Q-INT-5` em
+medido, e não mudou. **O oráculo não emite `SELECT` nenhum, e também não abre conexão de
+replicação:** o `REPLICATION` é papel do conector, e o `lab-plane` consome do broker. O
+schema do `system-under-test` permanece inacessível a ele: não há `GRANT` cruzado.
+
+**O transporte entre o WAL e o oráculo está decidido, e não é decisão desta
+capacidade.** Debezium Server em processo próprio pelo plugin `pgoutput`, RabbitMQ em
+instância única, e o filtro por execução no consumidor — que exige o `lab-plane` em
+réplica única, pela mesma
+[decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão).
+O que continua sem escolha é o sink do conector, nas
+[neutras](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#neutras).
+
+```mermaid
+flowchart LR
+    RT["runtime no lab-plane<br/>conta AFTER_COMMIT"]
+    WK["worker do<br/>system-under-test"]
+    RS[("resource<br/>schema sut")]
+    WAL[("WAL do sut")]
+    DS["Debezium Server<br/>processo próprio, pgoutput"]
+    RB["RabbitMQ<br/>instância única"]
+    OR["oráculo no lab-plane<br/>réplica única, sem REPLICATION"]
+    VD["perdidas = commits −<br/>(value_final − value_inicial)"]
+    RT -->|" chamada de passo, por rede "| WK
+    WK -->|" SELECT e UPDATE "| RS
+    RS --> WAL --> DS --> RB
+    RB -->|" ordena, desduplica e detecta<br/>buraco pelo LSN "| OR
+    RT -->|" commits "| VD
+    OR -->|" value_final "| VD
+    RS -.->|" SELECT cruzado — proibido "| OR
+```
+
+**Não existe DDL nem contrato de esquema** — ver `Q-INT-5` em
 [`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto).
 
 ## Riscos e decisões pendentes

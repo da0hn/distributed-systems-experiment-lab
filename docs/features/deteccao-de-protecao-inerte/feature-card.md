@@ -65,6 +65,28 @@ substitui aquele `SELECT sum` não existe ainda.** **Não existe DDL nem contrat
 esquema** — ver `Q-INT-5` em
 [`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto).
 
+O transporte decidido pelo
+[ADR-0012](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
+alcança o contador do oráculo exato, e **não fecha esta lacuna**: aqui o total não é lido,
+é reconstruído a partir de eventos, e se a proibição do ADR-0002 alcança essa soma é
+exatamente o que R5 deixa em aberto. É por isso que o E5 não roda.
+
+```mermaid
+flowchart LR
+    WK["workers do<br/>system-under-test"]
+    AL[("allocation<br/>schema sut")]
+    WAL[("WAL do sut")]
+    QQ["de onde vem Σ amount?<br/>decisão aberta"]
+    OR["oráculo do predicado<br/>no lab-plane"]
+    VD["booleano: Σ amount<br/>maior que capacity"]
+    WK -->|" SELECT sum e INSERT "| AL
+    AL --> WAL
+    AL -.->|" SELECT cruzado — proibido "| QQ
+    WAL -.->|" somar eventos de INSERT —<br/>alcance da proibição não decidido "| QQ
+    QQ --> OR --> VD
+    style QQ fill: #4a1d1d, stroke: #f87171, color: #e5e7eb
+```
+
 O nível de isolamento é parâmetro da execução, e nada hoje o declara.
 
 ## Riscos e decisões pendentes

@@ -65,6 +65,27 @@ O custo disso está nomeado: um resultado deixa de aparecer em diff, de ser revi
 e de sobreviver a um banco recriado. **Nenhum contrato o formaliza** — `Q-INT-1` em
 [`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto).
 
+A espera pelo LSN é o que separa o fim da execução do veredito, e ela atravessa três
+processos:
+
+```mermaid
+sequenceDiagram
+    participant RT as runtime (lab-plane)
+    participant RB as RabbitMQ
+    participant OR as oráculo (lab-plane)
+    participant LJ as lab-journal
+    participant FE as frontend
+    RT ->> RT: a última tentativa commita
+    RT ->> OR: execução encerrada, com o LSN do commit final
+    loop até o stream alcançar aquele LSN
+        RB -->> OR: evento do WAL, cada um com o seu LSN
+    end
+    OR ->> OR: só agora compara, e produz o veredito
+    OR ->> LJ: relatório, persistido no banco do caderno
+    FE ->> LJ: leitura da execução, pelo prefixo /api/journal
+    Note over FE, LJ: nada disso atravessa para o Git
+```
+
 ## Riscos e decisões pendentes
 
 | Questão                                   | O que está em jogo                                                       |
