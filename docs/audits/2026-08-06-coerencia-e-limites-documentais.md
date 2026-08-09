@@ -46,6 +46,19 @@ um teto genérico de 4.000. "Glossário cresce com o vocabulário" não explica 
 porque o excesso não é vocabulário — uma isenção declarada hoje congelaria o defeito em
 vez de reconhecer a natureza do artefato.
 
+**Estado em 2026-08-08: a migração não resolve o tamanho, e isto é medição, não
+estimativa.** As seções da tabela acima somam 5.863 caracteres de prosa, num arquivo de
+34.602 na mesma contagem. Migrá-las deixa cerca de 28.700 contra o teto genérico de
+4.000, porque `## Linguagem` sozinha carrega 24.750 — e ela **é** vocabulário vigente. A
+correção abaixo continua certa pela natureza do artefato, e **não** é solução de
+tamanho: o glossário precisará de teto próprio ou de isenção de qualquer maneira, o que
+o torna dependente da linha do
+[orçamento de prosa](../adr/fila-de-decisoes.md#o-orçamento-de-prosa-quem-é-dono-do-teto-e-o-que-ele-alcança).
+
+**A contagem deste achado diverge da tabela dele.** A frase de abertura diz que quatro
+seções continuam no arquivo, e a tabela lista cinco. Qual das duas está certa não foi
+apurado, e a divergência fica registrada em vez de desaparecer numa correção silenciosa.
+
 **Correção one-shot:** manter apenas termo, definição breve, status ou sinônimo e link
 de origem; mover alternativa e justificativa para a fila ou ADR, e pergunta para
 `docs/questions/`. Medir o arquivo **depois** da migração, e só então decidir se
@@ -76,6 +89,31 @@ flowchart TB
     M --> H
     H --> A["corpo ativo:<br/>só decisão aberta"]
 ```
+
+**Estado em 2026-08-08: a poda é por linha, e não por rodada.** A consulta reversa
+decidida na
+[linha da apuração](../adr/fila-de-decisoes.md#o-que-apura-a-âncora-citada-antes-de-uma-redução)
+responde por título, e mediu esta divisão nos três níveis de heading que a fila usa:
+
+| Situação da seção                       | Seções | Prosa  |
+|-----------------------------------------|--------|--------|
+| citada de fora, exige lápide            | 34     | 33.286 |
+| sem citação alguma                      | 70     | 71.488 |
+| só âncora interna, quebra em silêncio   | 7      | 14.202 |
+
+**A segunda linha não é movível em bloco, e a razão é o aninhamento.** Uma narrativa de
+rodada, em nível 3, não é citada por ninguém, enquanto as linhas `E-NN` que ela contém,
+em nível 4, são citadas por ADR aceito — `E-11`, `E-12`, `E-13`, `E-18`, `E-24` e `E-32`
+estão nesse caso. Mover a rodada inteira levaria junto o heading que o ADR alcança.
+
+Um levantamento que agregue o nível 4 no pai mede errado, e mediu: a primeira apuração
+desta data contou 32 seções e 61.530 caracteres como movíveis, e refazê-la com a
+granularidade correta desmontou o número. Fica registrado porque o erro é reincidente —
+é o mesmo de 2026-08-06, quando uma apuração correta envelheceu em horas.
+
+Isso reconduz a correção ao que o processo já exige: a poda acontece **uma linha por
+vez**, pela regra de [`AGENTS.md`](../../AGENTS.md#pendências-de-processo), e nunca por
+lote de rodada.
 
 **Correção one-shot:** levantar todos os títulos da fila citados por ADR aceito; mover a
 narrativa fechada para um arquivo histórico do Lote E; deixar no caminho atual uma
