@@ -2334,7 +2334,7 @@ arquivo saiu, e voltam aqui por isso. Não inaugura lote novo.
 **O problema.** O teto genérico de prosa é 4.000 caracteres, e quem o aplica é
 [`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py).
 O workflow [`docs`](../../.github/workflows/docs.yml) só o executa sobre
-`docs/adr/[0-9]*.md`. Fora desse glob, ninguém mede — e medidos em 2026-08-08, sete
+`docs/adr/[0-9]*.md`. Fora desse glob, ninguém mede — e medidos em 2026-08-08, seis
 arquivos excedem o genérico sem que nada falhe:
 
 | Arquivo                                  | Prosa medida | Teto aplicado hoje |
@@ -2396,8 +2396,8 @@ são esses**, antes de encolher qualquer documento.
 [A-09](../audits/2026-08-06-coerencia-e-limites-documentais.md#a-09--contextmd-é-glossário-proposta-decisão-e-backlog-ao-mesmo-tempo)
 e
 [A-11](../audits/2026-08-06-coerencia-e-limites-documentais.md#a-11--a-fila-ativa-contém-narrativa-integral-de-decisões-fechadas)
-exige remover texto de dois documentos citados de fora. Hoje a apuração é manual e não
-existe: quem reduzir precisa varrer o corpus atrás de quem cita o heading que vai apagar, e
+exige remover texto de dois documentos citados de fora. **Nenhuma apuração existe**: quem
+reduzir precisa varrer o corpus à mão atrás de quem cita o heading que vai apagar, e
 [`check_citations.py`](../../scripts/check_citations.py) só acusa o defeito **depois** de
 ele ser cometido, na próxima execução.
 
