@@ -13,6 +13,10 @@ frontend/dist/
 # Configuração local de máquina (allowlist de permissões, output style).
 .claude/settings.local.json
 
+# Worktrees efêmeras criadas pelo harness. O diretório carrega um arquivo
+# `.git`, e um `git add -A` distraído o transformaria em gitlink.
+.claude/worktrees/
+
 # Bytecode dos scripts das skills
 __pycache__/
 
