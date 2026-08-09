@@ -234,6 +234,26 @@ Dois pontos que só aparecem nesta pasta:
   fora.** Repetir a mesma informação
   em duas formas não é redundância útil quando as duas dizem exatamente o mesmo.
 
+## Antes de reduzir um documento
+
+**Rode a consulta reversa antes de apagar um heading, e nunca depois:**
+
+```bash
+python scripts/check_citations.py --root . --quem-cita docs/CONTEXT.md
+```
+
+Ela responde quem cita cada heading do alvo, e marca as duas origens que exigem cuidado
+próprio: `adr/arquivo/**`, que nunca é editado e por isso torna a citação inconsertável,
+e a âncora interna `[texto]` seguida de `(#slug)`, que o verificador **não** acusa. Nada
+é gravado na árvore — a resposta é recalculada a cada execução, e por isso não existe
+derivado a envelhecer. Decidido em 2026-08-08, na
+[fila](adr/fila-de-decisoes.md#o-que-apura-a-âncora-citada-antes-de-uma-redução).
+
+Onde a consulta apontar citação, o heading permanece com lápide, pela regra do
+[lifecycle](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07). O
+verificador é a rede embaixo da consulta, e não substitui: ele acusa a âncora externa
+quebrada na execução **seguinte** à remoção, quando o estrago já está no commit.
+
 ## Antes de encerrar uma edição
 
 - Toda afirmação relevante tem evidência com **caminho e âncora GFM**; número de linha

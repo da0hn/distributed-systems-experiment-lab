@@ -29,6 +29,10 @@ from typing import Iterable, NamedTuple, Optional
 LINE_CITATION = re.compile(r"(?<![\w/])([\w./-]+\.md):(\d+)(?:-(\d+))?")
 # `arquivo.md#slug-do-titulo`. O slug aceita acento, por `C-1a`.
 ANCHOR_CITATION = re.compile(r"(?<![\w/])([\w./-]+\.md)#([^\s`\)\]\|,;]+)")
+# `[texto](#slug)`, a ancora interna de um documento para si mesmo. Ela NAO e'
+# verificada — o padrao acima exige o `.md` antes do `#` —, e por isso so
+# aparece no modo de consulta, onde uma reducao precisa dela.
+INTERNAL_ANCHOR = re.compile(r"\]\(#([^\s)]+)\)")
 # Um ADR abreviado: `0008-...md`, sem o prefixo da pasta.
 ADR_ABBREVIATION = re.compile(r"^(\d{4})-")
 HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$")
@@ -40,6 +44,32 @@ class Defect(NamedTuple):
     line_number: int
     citation: str
     reason: str
+
+
+class Reference(NamedTuple):
+    """Uma citacao que aponta para um heading, do ponto de vista do alvo."""
+
+    source: Path
+    line_number: int
+    slug: str
+    internal: bool
+    frozen: bool
+
+
+def outside_fences(text: str) -> Iterable[tuple[int, str]]:
+    """Cada linha fora de bloco cercado, com o numero dela."""
+    in_fence = False
+    for number, raw in enumerate(text.splitlines(), 1):
+        if FENCE.match(raw):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        yield number, raw
+
+
+def sources_of(root: Path) -> list[Path]:
+    return sorted(root.glob("docs/**/*.md")) + sorted(root.glob("*.md"))
 
 
 def gfm_slug(heading: str) -> str:
@@ -58,13 +88,8 @@ def gfm_slug(heading: str) -> str:
 def headings_of(path: Path) -> list[str]:
     slugs: list[str] = []
     seen: dict[str, int] = {}
-    in_fence = False
-    for raw in path.read_text(encoding="utf-8", errors="replace").splitlines():
-        if FENCE.match(raw):
-            in_fence = not in_fence
-            continue
-        if in_fence:
-            continue
+    text = path.read_text(encoding="utf-8", errors="replace")
+    for _, raw in outside_fences(text):
         match = HEADING.match(raw)
         if not match:
             continue
@@ -115,14 +140,7 @@ def line_count(path: Path) -> int:
 
 def inspect(source: Path, root: Path) -> Iterable[Defect]:
     text = source.read_text(encoding="utf-8", errors="replace")
-    in_fence = False
-    for number, raw in enumerate(text.splitlines(), 1):
-        if FENCE.match(raw):
-            in_fence = not in_fence
-            continue
-        if in_fence:
-            continue
-
+    for number, raw in outside_fences(text):
         for match in ANCHOR_CITATION.finditer(raw):
             target, slug = match.group(1), match.group(2)
             citation = f"{target}#{slug}"
@@ -149,6 +167,61 @@ def inspect(source: Path, root: Path) -> Iterable[Defect]:
                              f"linha citada alem do fim: o alvo tem {total}")
 
 
+def references_to(target: Path, root: Path) -> dict[str, list[Reference]]:
+    """Quem cita cada heading de `target`, em todo o corpus.
+
+    Duas formas contam. A citacao externa, `arquivo.md#slug`, partindo de
+    qualquer documento. E a ancora interna, `[texto](#slug)`, dentro do proprio
+    alvo — que o verificador nao acusa, e cuja remocao quebra link em silencio.
+
+    `docs/adr/arquivo/**` entra na varredura de proposito. A verificacao o
+    ignora porque a citacao que parte de la' e' inconsertavel; e' exatamente por
+    ser inconsertavel que ela e' a que mais exige lapide.
+    """
+    frozen_root = root / "docs" / "adr" / "arquivo"
+    found: dict[str, list[Reference]] = {}
+    for source in sources_of(root):
+        frozen = frozen_root in source.parents
+        text = source.read_text(encoding="utf-8", errors="replace")
+        for number, raw in outside_fences(text):
+            for match in ANCHOR_CITATION.finditer(raw):
+                if resolve(match.group(1), source, root) != target:
+                    continue
+                found.setdefault(match.group(2), []).append(
+                    Reference(source, number, match.group(2), False, frozen))
+            if source != target:
+                continue
+            for match in INTERNAL_ANCHOR.finditer(raw):
+                found.setdefault(match.group(1), []).append(
+                    Reference(source, number, match.group(1), True, frozen))
+    return found
+
+
+def report_references(target: Path, root: Path, slug: Optional[str]) -> int:
+    """Imprime quem cita os headings do alvo. Consulta, e nunca veredito."""
+    found = references_to(target, root)
+    if slug is not None:
+        found = {slug: found.get(slug, [])}
+    existing = set(headings_of(target))
+    shown = target.relative_to(root).as_posix()
+    total = sum(len(refs) for refs in found.values())
+    print(f"{shown}: {len(found)} heading(s) citado(s), {total} citacao(oes).")
+    print("Apague um heading desta lista e a citacao quebra. Deixe lapide.\n")
+    for name in sorted(found):
+        ausente = "" if name in existing else "   (AUSENTE do alvo)"
+        print(f"  #{name}{ausente}")
+        for ref in sorted(found[name], key=lambda r: (r.source, r.line_number)):
+            origem = ref.source.relative_to(root).as_posix()
+            marcas = []
+            if ref.internal:
+                marcas.append("interna, nao verificada pelo CI")
+            if ref.frozen:
+                marcas.append("arquivo congelado, inconsertavel")
+            sufixo = f"   [{'; '.join(marcas)}]" if marcas else ""
+            print(f"      {origem}:{ref.line_number}{sufixo}")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Verifica as citacoes de evidencia dos documentos."
@@ -163,9 +236,31 @@ def main() -> int:
              "envelhece a cada commit nao serve para nada. Linhas iniciadas "
              "por # sao comentario.",
     )
+    parser.add_argument(
+        "--quem-cita",
+        dest="quem_cita",
+        metavar="ALVO",
+        help="Consulta, e nao verificacao: responde quem cita cada heading de "
+             "ALVO, que e' `caminho/arquivo.md` ou `caminho/arquivo.md#slug`. "
+             "Rode ANTES de reduzir um documento, para saber onde a lapide e' "
+             "obrigatoria. Nada e' gravado: a resposta e' recalculada a cada "
+             "execucao, e por isso nao existe derivado a envelhecer.",
+    )
     args = parser.parse_args()
 
     root = args.root.resolve()
+
+    if args.quem_cita is not None:
+        written, _, slug = args.quem_cita.partition("#")
+        # A consulta nao parte de documento nenhum: o caminho e' escrito pela
+        # pessoa, relativo a raiz ou a `docs/`. A origem ficticia so entrega a
+        # raiz como pasta de partida, e os outros candidatos de `resolve`
+        # cobrem o resto.
+        target = resolve(written, root / "consulta-sem-origem.md", root)
+        if target is None:
+            print(f"alvo inexistente: {written}", file=sys.stderr)
+            return 2
+        return report_references(target, root, slug or None)
     accepted: set[str] = set()
     if args.baseline is not None and args.baseline.is_file():
         for raw in args.baseline.read_text(encoding="utf-8").splitlines():

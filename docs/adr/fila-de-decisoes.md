@@ -2383,8 +2383,41 @@ deixa os seis arquivos acima exatamente como estão.
 
 ## O que apura a âncora citada antes de uma redução
 
-**Aberta.** Terceira das quatro perguntas do mesmo plano removido, e irmã da linha
+**Fechada em 2026-08-08, por decisão explícita da pessoa.** Terceira das quatro perguntas
+do mesmo plano removido, e irmã da linha
 [acima](#o-orçamento-de-prosa-quem-é-dono-do-teto-e-o-que-ele-alcança).
+
+**A decisão.** [`check_citations.py`](../../scripts/check_citations.py) ganha um modo de
+consulta que responde, sob demanda, quem cita cada heading de um arquivo. **Nada é gravado
+na árvore**: a resposta é recalculada no momento da redução e descartada, e por isso não
+existe derivado a envelhecer. A guarda que o verificador já executa no CI permanece como a
+rede de segurança embaixo da consulta.
+
+Duas alternativas foram descartadas com motivo. O **índice reverso versionado** grava a
+mesma resposta num arquivo da árvore, e diverge da fonte no primeiro commit que ninguém
+regenerar. O **inventário aprovado por pessoa** não carrega decisão humana nenhuma: a
+lápide já é obrigatória para todo heading citado, de modo que o inventário apenas dataria
+uma descoberta técnica — e datá-la é o defeito que ele tenta evitar, como a verificação de
+2026-08-06 provou ao envelhecer em horas.
+
+**A consulta alcança também a âncora interna, e por um defeito descoberto ao decidir
+isto.** Verificado em 2026-08-08: o verificador reconhece a citação externa e **não**
+reconhece a interna, porque o padrão exige o `.md` antes do `#`.
+
+```text
+reconhecida:      <arquivo>.md#<slug>
+não reconhecida:  [texto](#<slug>)
+```
+
+Uma âncora interna apontando para título inexistente passa sem defeito nenhum. Esta fila
+carrega 16 links dessa forma, e podá-la sem cobri-los quebraria até 16 deles em
+silêncio; `CONTEXT.md` carrega
+zero, e por isso [A-09](../audits/2026-08-06-coerencia-e-limites-documentais.md#a-09--contextmd-é-glossário-proposta-decisão-e-backlog-ao-mesmo-tempo)
+não corre esse risco.
+
+**Pergunta em aberto.** Se o verificador **também** passa a acusar âncora interna quebrada
+no CI, e não apenas a responder por ela na consulta, continua sem decisão. Ampliar o que
+ele acusa muda o que o corpus precisa satisfazer, e essa é decisão da pessoa.
 
 **O que já está decidido, e não é objeto desta linha.** A lápide é obrigatória: a regra de
 [`A saída, decidida em 2026-08-06`](#a-saída-decidida-em-2026-08-06) preserva o heading
@@ -2409,11 +2442,11 @@ Uma apuração manual foi feita, estava correta, e envelheceu em horas.
 
 **Três alternativas, e nenhuma escolhida.**
 
-| Alternativa                    | O que ela faz                                                                      | O custo                                                           |
-|--------------------------------|------------------------------------------------------------------------------------|-------------------------------------------------------------------|
-| inventário aprovado por pessoa | levanta-se a lista reversa uma vez, e a pessoa aprova quais headings ganham lápide | envelhece na primeira citação nova, como já envelheceu uma vez    |
-| índice reverso gerado          | um script deriva, de todas as citações, quem aponta para cada heading              | é derivado, e um arquivo derivado versionado diverge da fonte     |
-| guarda no CI                   | `check_citations.py` passa a falhar quando um heading citado desaparece do alvo    | exige comparar contra o estado anterior, e não só contra a árvore |
+| Alternativa                    | O que ela faz                                                                      | O custo                                                        |
+|--------------------------------|------------------------------------------------------------------------------------|----------------------------------------------------------------|
+| inventário aprovado por pessoa | levanta-se a lista reversa uma vez, e a pessoa aprova quais headings ganham lápide | envelhece na primeira citação nova, como já envelheceu uma vez |
+| índice reverso gerado          | um script deriva, de todas as citações, quem aponta para cada heading              | é derivado, e um arquivo derivado versionado diverge da fonte  |
+| guarda no CI                   | `check_citations.py` já falha quando um heading citado desaparece do alvo          | não é preventiva: acusa depois da remoção, e não antes dela    |
 
 ```mermaid
 flowchart TD
@@ -2426,8 +2459,35 @@ flowchart TD
   C --> P
 ```
 
-**As duas últimas são parentes da terceira alternativa da linha do rito**, e as três podem
-sair de um mesmo script — mas são decisões separadas, e fundi-las escolheria a ferramenta
+**A terceira alternativa já está implementada, e descobrir isso reformula a pergunta.**
+Verificado em 2026-08-08:
+[`check_citations.py`](../../scripts/check_citations.py) compara cada âncora citada
+contra os títulos do alvo, e emite `ancora nao corresponde a titulo nenhum do alvo`.
+Ele **já falha** quando um heading citado desaparece, e a comparação corre contra a
+árvore atual — não contra o estado anterior, que uma leitura anterior desta linha supunha
+necessário. Reproduz-se com dois arquivos, um citando o outro por âncora, e o heading
+apagado do alvo.
+
+O que falta, portanto, não é detecção: é **antecedência**. O verificador responde "você
+quebrou" na execução seguinte à remoção; esta linha pergunta o que responde "vai quebrar"
+**antes** dela, para que a lápide entre no mesmo commit que reduz o texto. A escolha real
+está entre as duas primeiras alternativas, e a terceira deixa de ser trabalho a fazer para
+virar a rede de segurança que já existe embaixo delas.
+
+**A segunda alternativa é mais barata do que a tabela sugere**, e isso também é
+descoberta desta verificação: `inspect()` já resolve, para cada citação, o par (arquivo
+alvo, slug). Um índice reverso não exige um analisador novo — exige inverter e agrupar o
+que a função já computa.
+
+E o custo que restava a ela **pressupõe uma premissa que não é obrigatória**: um derivado
+só diverge da fonte se for **versionado**. Um modo de consulta que responda, sob demanda,
+quem cita um heading não deixa arquivo nenhum na árvore para envelhecer — ele é lido no
+momento da redução e descartado. A escolha, então, não é entre inventário e índice: é
+entre **guardar a resposta** e **saber recalculá-la**, e é a mesma escolha que a regra
+de não repetir estado que outro documento é dono de manter já fez em toda esta base.
+
+**As duas primeiras são parentes da terceira alternativa da linha do rito**, e podem sair
+de um mesmo script — mas são decisões separadas, e fundi-las escolheria a ferramenta
 antes do problema. Enquanto esta linha não fechar, **nenhuma redução de `CONTEXT.md` ou da
 fila deve começar**: é o que separa fechar A-09 e A-11 de quebrar citação de ADR aceito.
 
