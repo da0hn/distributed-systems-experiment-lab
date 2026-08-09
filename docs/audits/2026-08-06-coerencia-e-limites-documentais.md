@@ -1,7 +1,7 @@
 # Auditoria de coerência e limites documentais
 
 **Data do recorte:** 2026-08-06
-**Última verificação:** 2026-08-07
+**Última verificação:** 2026-08-09
 **Escopo:** árvore de trabalho atual, incluindo a documentação ainda não consolidada
 dos ADRs 0010 a 0012. Corpo de ADR aceito e conteúdo em `docs/adr/arquivo/` não são
 erro por preservarem o passado, e não se alteram.
@@ -66,7 +66,8 @@ glossário precisa de limite próprio.
 
 ## A-11 — A fila ativa contém narrativa integral de decisões fechadas
 
-**Estado em 2026-08-07:** aberto. As lápides existem; as narrativas nunca migraram.
+**Estado em 2026-08-09:** aberto por dívida de ADR. A leitura de 2026-08-07 — "as lápides
+existem; as narrativas nunca migraram" — valia para duas seções, e não para todas.
 **Classificação:** redundância estrutural e violação de processo, alta.
 
 [A saída, decidida em 2026-08-06](../adr/fila-de-decisoes.md#a-saída-decidida-em-2026-08-06)
@@ -82,12 +83,11 @@ pelas formas do
 
 ```mermaid
 flowchart TB
-    L["linha fechada,<br/>narrativa integral"] --> C{"algum ADR aceito<br/>cita este título?"}
-    C -->|" sim "| T["lápide no caminho atual:<br/>título, estado, ADR e link"]
-    C -->|" não "| M["move inteira para<br/>o arquivo histórico"]
-    T --> H["arquivo histórico<br/>do Lote E"]
-    M --> H
-    H --> A["corpo ativo:<br/>só decisão aberta"]
+    L["linha fechada,<br/>narrativa integral"] --> N{"o ADR dela<br/>já nasceu?"}
+    N -->|" não "| F["fica na fila,<br/>narrativa inteira"]
+    N -->|" sim "| C{"algum documento<br/>cita este título?"}
+    C -->|" sim "| T["lápide: heading byte a byte,<br/>estado, ADR e link"]
+    C -->|" não "| D["narrativa apagada"]
 ```
 
 **Estado em 2026-08-08: a poda é por linha, e não por rodada.** A consulta reversa
@@ -107,18 +107,49 @@ em nível 4, são citadas por ADR aceito — `E-11`, `E-12`, `E-13`, `E-18`, `E-
 estão nesse caso. Mover a rodada inteira levaria junto o heading que o ADR alcança.
 
 Um levantamento que agregue o nível 4 no pai mede errado, e mediu: a primeira apuração
-desta data contou 32 seções e 61.530 caracteres como movíveis, e refazê-la com a
-granularidade correta desmontou o número. Fica registrado porque o erro é reincidente —
-é o mesmo de 2026-08-06, quando uma apuração correta envelheceu em horas.
+desta data contou 32 seções e 61.530 caracteres como movíveis. O erro é reincidente — é o
+mesmo de 2026-08-06, quando uma apuração correta envelheceu em horas.
 
-Isso reconduz a correção ao que o processo já exige: a poda acontece **uma linha por
-vez**, pela regra de [`AGENTS.md`](../../AGENTS.md#pendências-de-processo), e nunca por
-lote de rodada.
+**Estado em 2026-08-09: três afirmações acima estavam erradas, e a poda que a regra
+vigente autoriza foi aplicada.**
 
-**Correção one-shot:** levantar todos os títulos da fila citados por ADR aceito; mover a
-narrativa fechada para um arquivo histórico do Lote E; deixar no caminho atual uma
-lápide com título, estado, ADR e link, preservando a âncora e a evidência que o ADR
-alcança. No corpo ativo, só decisão aberta.
+Os 119.084 caracteres são a prosa da **fila inteira** — 118.976 na medição de hoje, em 109
+seções —, e não das rodadas dos ADRs 0010 a 0012. O número estava no objeto errado, e era
+ele que fazia o achado parecer maior do que é.
+
+As rodadas quarta, quinta e sexta do grupo I **já eram lápides** de três a seis linhas: a
+poda de 2026-08-07 as alcançou. Narrativa integral restava em duas seções — a segunda e a
+terceira rodadas do grupo I —, e as duas eram **mistas**, narrando `E-14` e `E-15`, que
+vivem no ADR-0011, junto de `E-4` e `E-6`, que não têm ADR.
+
+O destino "arquivo histórico" contradiz a regra de saída, refinada no dia seguinte ao
+recorte desta auditoria: onde ninguém cita, a narrativa é **apagada**; onde um documento
+cita o heading, ele permanece byte a byte com a lápide sob ele. Arquivo histórico não
+existe nessa regra, e o diagrama acima foi corrigido.
+
+**A poda de 2026-08-09 reduziu `E-14` e `E-15` a lápide**, preservando os parágrafos de
+`E-4` e `E-6`. Ela mostrou por que o levantamento por seção não basta: um desenho
+registrado como possibilidade não escolhida — o relatório de execução incorporando a
+definição usada — não estava em ADR nenhum, nem como decisão, nem como alternativa
+descartada, nem como pergunta em aberto, e teria sido apagado junto. Ele virou
+[`E-42`](../adr/fila-de-decisoes.md#e-42--o-relatório-de-execução-incorpora-a-definição-usada-ou-a-cita).
+
+**A fila não encolheu, e isto não é falha da poda.** Ela saiu de 128.181 para 128.471
+caracteres de prosa: a narrativa removida tinha o tamanho da linha nova que a substituiu.
+Este achado nunca foi de tamanho — era de **dono**, e o texto mudou de uma narrativa de
+rodada para uma linha de decisão aberta.
+
+**A regra de `AGENTS.md` invocada em 2026-08-08 não alcança este achado.** O escopo dela
+são as linhas que são comportamento disfarçado de arquitetura, ainda **abertas**, em
+[pendências de processo](../../AGENTS.md#pendências-de-processo); aqui se trata de linha
+fechada com ADR nascido. A conclusão de podar uma por vez continua valendo, sustentada
+pelo aninhamento, e não por aquela regra.
+
+**Correção:** para cada linha `E-NN` cujo ADR já nasceu, reduzir a narrativa a uma lápide
+com estado, o que ficou decidido e o link com âncora; preservar o que a mesma seção narra
+sobre linha sem ADR; abrir linha nova para o que nenhum ADR absorveu. O achado permanece
+aberto por **dívida de ADR**: vinte e seis das vinte e nove linhas fechadas não têm ADR, e
+pela regra de saída elas ficam.
 
 ## Critérios de aceite
 
@@ -126,7 +157,8 @@ Restam os dois que alcançam os achados acima; os demais saíram junto com os ac
 os originaram.
 
 - CONTEXT contém somente vocabulário vigente.
-- A fila ativa contém pendência e lápide, e nenhuma narrativa de rodada fechada.
+- A fila ativa contém pendência e lápide, e nenhuma narrativa de rodada cujo ADR já
+  nasceu. O critério não alcança linha fechada sem ADR: pela regra de saída, ela fica.
 
 Depois de cada correção, conferir âncoras e medir os artefatos alcançados:
 

@@ -1008,45 +1008,16 @@ build, e a frase do plano segundo a qual a interface é servida pela própria ap
 deixa de ser verdadeira. O framework de componentes fica em aberto — é `D-UI-03`, ainda
 na fila.
 
-**`E-14` — a base do `lab-plane` antecipa uma decisão do Bloco 3.** Guardar "as
-configurações do experimento e as execuções solicitadas" põe a definição de experimento
-numa tabela. `D-DAT-07` e `D-UI-01` perguntam exatamente onde essa definição vive, e a
-recomendação das duas é **não decidir agora**, porque elas pertencem ao ADR de
-Experiment — a posição 8 desta fila.
-
-A tensão é real e está escrita desde o replanejamento: o
-[`../../AGENTS.md`](../../AGENTS.md) diz que `experiments/` guarda definições, que
-`docs/experiments/` guarda resultados, e que **os dois entram no Git** — juntos, o
-histórico vira um caderno de laboratório. Uma definição que só existe numa linha de
-tabela não é versionada, não aparece em diff e não sobrevive a um banco recriado.
-
-```mermaid
-flowchart LR
-    G["experiments/<br/>definição versionada"]
-    DB[("base do lab-plane<br/>execução solicitada")]
-    UI["frontend<br/>o usuário aciona"]
-    RUN["execução medida"]
-    G -->|" importada "| DB
-    UI -->|" solicita "| DB
-    DB --> RUN
-    RUN -->|" relatório "| G
-```
-
-O desenho acima é **uma** saída, e não a decidida: a definição continua versionada e é
-importada; o banco guarda a **execução solicitada**, que é dado de operação e não de
-especificação. Registrado como possibilidade, e a escolha pertence a `E-14`.
-
-**`E-15` — o serviço de histórico não tem decisão, e o argumento a favor é forte.**
-Ele é o mesmo do [ADR-0008](0008-os-dois-planos-em-processos-separados.md), aplicado um nível
-abaixo: quem consulta não pode compartilhar destino com quem mede. Uma consulta da
-interface sobre o histórico, dentro do processo que executa o experimento, perturba a
-medida pelo mecanismo que aquele ADR nomeia — pausa de GC, pool esgotado, contenção.
-
-O argumento contra também é do repositório: o
-[ADR-0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md) mantém o log em memória
-e fixa a **etapa 6** como o gatilho da persistência durável. Um serviço de histórico
-hoje antecipa esse gatilho, e a regra estrutural exige nomear a limitação concreta que
-a peça nova resolve antes de ela entrar.
+**`E-14` e `E-15` nasceram nesta rodada, e as duas vivem em ADR.** `E-14` fechou na
+terceira rodada e `E-15` na quinta; a definição de um experimento, o resultado dela e a
+topologia que os guarda estão no
+[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git).
+A saída discutida aqui — manter `experiments/` versionado e importá-lo para o banco — é a
+que o ADR [descartou](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#alternativas-consideradas)
+por nome, e a objeção do ADR-0007 contra antecipar a persistência durável está
+registrada como
+[consequência negativa](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#negativas)
+dele.
 
 ### A terceira rodada, em 2026-08-06: duas linhas fechadas e a nomenclatura
 
@@ -1060,36 +1031,17 @@ executáveis, publica a imagem no GHCR e bumpa a tag nos manifests de `deploy/`.
 experimento roda no CI. Uma imagem publicada é uma imagem que passou nas provas exigidas
 por ADR aceito, e o veredito probabilístico nunca pinta a build de vermelho.
 
-**`E-14` fecha contra a recomendação, e fecha três linhas de outros blocos junto.**
-`D-DAT-07`, `D-UI-01` e a tensão 1 do plano perguntam a mesma coisa: onde vive a
-definição de experimento. A resposta é a tabela, e o Designer na interface passa a ser
-a fonte. As três saem da posição 8 desta fila.
+**`E-14` fecha contra a recomendação, e fecha três linhas de outros blocos junto.** A
+definição de experimento vive só no banco, o Experiment Designer na interface passa a ser
+a fonte, e `D-DAT-07`, `D-UI-01` e a tensão 1 do plano saem da posição 8 desta fila com
+ela. A decisão e o custo — perda de diff, de revisão em PR e de sobrevivência a um banco
+recriado — vivem no
+[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git).
 
-**O que a escolha custa, nomeado.** O [`../../AGENTS.md`](../../AGENTS.md) afirma que
-`experiments/` guarda definições, que `docs/experiments/` guarda resultados e que os
-dois entram no Git — "juntos, o histórico vira um caderno de laboratório". A metade das
-definições deixa de valer: elas não aparecem em diff, não são revisadas em PR e não
-sobrevivem a um banco recriado. O texto muda no commit que criar a tabela.
-
-**Um desenho em que o custo desaparece, registrado como possibilidade.** Se o relatório
-de execução que vai para `docs/experiments/` **incorporar a definição completa que foi
-usada**, o Git volta a guardar tudo que reproduz a execução — só que como parte do
-resultado, e não como fonte. A definição deixa de ser artefato a sincronizar e passa a
-ser um campo do relatório, o que elimina a pergunta de qual representação manda.
-A escolha entre isto e um relatório que só cite a definição por identificador **não foi
-feita**.
-
-```mermaid
-flowchart LR
-    UI["frontend<br/>o usuário define"]
-    DB[("base do lab-plane<br/>definição e execução")]
-    RUN["execução medida"]
-    REL["docs/experiments/<br/>relatório versionado"]
-    UI --> DB
-    DB --> RUN
-    RUN --> REL
-    DB -.->|" a definição usada,<br/>copiada para dentro "| REL
-```
+**A escolha que ela deixou em aberto virou linha própria em 2026-08-09**, ao podar esta
+narrativa: entre o relatório que incorpora a definição usada e o que a cita por
+identificador, ninguém escolheu — é
+[`E-42`](#e-42--o-relatório-de-execução-incorpora-a-definição-usada-ou-a-cita).
 
 #### A nomenclatura dos módulos e dos serviços
 
@@ -2159,6 +2111,51 @@ antecipou foi a existência do broker, e não o uso dele pelos grupos B e C.
 quando um ADR nasce; ela envelheceu porque a checagem não existe, e não porque alguém
 esqueceu. Se cada ADR passa a listar o que desfaz fora de si — e se a checagem disso é
 humana ou executável — **ninguém decidiu**: `Pergunta em aberto`.
+
+#### `E-42` — o relatório de execução incorpora a definição usada, ou a cita
+
+Aberta em 2026-08-09, pela poda de `E-14`. A escolha nunca foi feita, e o registro dela
+sobreviveu apenas dentro da narrativa que esta poda reduziu a lápide: nenhum ADR a
+absorveu.
+
+**O problema.** O
+[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)
+põe a definição de um experimento e o resultado dela no banco do `lab-journal`, e nomeia
+o custo nas
+[consequências negativas](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#negativas):
+um resultado deixa de aparecer em diff, de ser revisado em PR e de sobreviver a um banco
+recriado. O que ele não decide é **o que o relatório carrega** quando sai do banco.
+
+**A primeira forma é o relatório incorporar a definição completa que foi usada.** O que
+reproduz a execução volta a estar num artefato único, e a definição deixa de ser algo a
+sincronizar — ela passa a ser um campo do resultado, e não uma fonte à parte. É o desenho
+em que o custo nomeado pelo ADR-0011 desaparece.
+
+```mermaid
+flowchart LR
+    UI["frontend<br/>o usuário define"]
+    DB[("base do lab-journal<br/>definição e execução")]
+    RUN["execução medida"]
+    REL["relatório de execução"]
+    UI --> DB
+    DB --> RUN
+    RUN --> REL
+    DB -.->|" a definição usada,<br/>copiada para dentro "| REL
+```
+
+**A segunda é o relatório citar a definição por identificador.** O relatório fica menor e
+não duplica o que o banco já guarda; em troca, reproduzir uma execução antiga exige o
+banco que ainda tenha aquele identificador — que é exatamente o que a decisão do ADR-0011
+admitiu não sobreviver.
+
+**Ela alcança um contrato que ainda não existe.** O JSON Schema do relatório de execução
+está listado como não decidido em
+[`../contracts/README.md`](../contracts/README.md#estado-nenhum-contrato-existe), com o
+primeiro relatório emitido como gatilho. Decidir `E-42` depois desse gatilho fixaria a
+forma por omissão.
+
+**Sem recomendação.** A linha nasce com o registro do que a poda teria apagado, e nada
+além disso.
 
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 
