@@ -126,6 +126,7 @@ O motivo do arquivamento e o que sobreviveu estão em
 | [0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md)           | A fronteira de schema e o CDC como fonte do veredito                    | `Aceito` |
 | [0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md) | A topologia de serviços e o caderno de laboratório fora do Git          | `Aceito` |
 | [0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md)    | O broker no caminho do veredito, e a dispensa que ele exigiu            | `Aceito` |
+| [0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md)  | A proveniência da fonte como critério da proibição do oráculo           | `Aceito` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele
 **não decide nada** — é a análise que define quais decisões precisam ser tomadas e em

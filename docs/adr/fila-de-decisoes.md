@@ -1965,6 +1965,79 @@ evento, sem somar, e se a mesma proibição o alcança nunca foi decidido. A lin
 alcance e, em consequência, **se o E5 tem oráculo**. As regras `R3` e `R5` do card de
 proteção inerte ficam sem mecanismo até ela fechar.
 
+**A apuração de 2026-08-09 achou que o enunciado acima descreve a proibição errada.** Ela
+nomeia uma **fonte**, e não uma operação: a letra é "Nenhum dos dois deriva o estado final
+do log de observações do runtime", na seção
+[o oráculo lê o banco](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações),
+e o critério que a sustenta está escrito ali: "o banco é o sistema sob teste, e é o único
+lugar onde a resposta é independente do instrumento". A
+[alternativa E](0002-o-dominio-minimo-e-os-dois-oraculos.md#alternativa-e--o-oráculo-derivado-do-log-de-observações)
+foi descartada porque "o oráculo passaria a medir o instrumento com o instrumento".
+
+**O WAL não é produzido pelo instrumento.** Quem o escreve é o PostgreSQL, a partir das
+escritas reais do sistema medido. Pelo critério de proveniência acima, ele tem a
+independência que a proibição protege — e o enunciado desta linha não considerava isso,
+por tratar a proibição como sendo sobre reconstruir total a partir de sequência.
+
+**O risco real existe, e é outro.** Somar eventos exige **completude** do stream; ler o
+último valor exige apenas **recência**. Um `INSERT` perdido reduz `Σ amount`, e o veredito
+de capacidade sai **verde** sobre um banco que violou o limite — falso negativo
+silencioso. A mesma perda não altera o último valor de `resource.value`, e a espera pelo
+LSN do commit final, decidida em `O19`, já cobre a recência.
+
+**A guarda que a soma exigiria já foi nomeada, e não por esta linha.** O
+[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
+registra que um buraco na sequência de LSN é detectável e invalida o veredito. Exigir
+contiguidade antes de calcular a soma converteria o falso negativo silencioso em execução
+invalidada, que é ruidosa. **Nada disto decide a linha**, e a escolha continua da pessoa.
+
+#### `E-37` fecha na proveniência, e a contiguidade deixa de ser opcional
+
+**Escolhido pela pessoa em 2026-08-09.** A proibição do ADR-0002 alcança **fonte
+produzida pelo instrumento**, e nada além disso. O WAL não é uma delas, e é fonte legítima
+para os dois oráculos: `Σ amount` vem de lá, somando os eventos de `INSERT`. A leitura vale
+para os dois oráculos pelo mesmo critério, e a distinção entre ler o último valor e somar
+deixa de separá-los quanto à **permissão**.
+
+**A contiguidade de LSN é condição, e não recomendação.** O oráculo confere a sequência
+antes de somar, e um buraco **invalida a execução** em vez de produzir veredito. Sem essa
+guarda a escolha não vale, porque é ela que separa esta decisão do falso negativo
+silencioso que a apuração acima descreve.
+
+**O E5 volta a ter oráculo**, e as regras `R3` e `R5` do
+[card de proteção inerte](../features/deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)
+ganham mecanismo. As duas dizem hoje que a fonte segue sem decisão, e mudam no commit que
+registrar esta escolha.
+
+**O custo, nomeado.** A completude do stream passa a ser responsabilidade do instrumento.
+Com o `SELECT sum`, ela era do PostgreSQL, garantida pela visão transacional da consulta;
+fora do banco, some — e o que a repõe é a guarda, que por isso é parte do oráculo e não
+acessório dele.
+
+**O artefato foi escolhido pela pessoa no mesmo dia:** o
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md), redigido
+pelo par escritor/revisor. Ele fixa a decisão e o argumento; o que o cerca — o card do E5,
+o `AGENTS.md` da raiz e a matriz — muda no mesmo commit.
+
+**Três coisas que esta linha NÃO decide, e ficam abertas.** A primeira é se a execução
+invalidada por buraco de LSN recebe o rótulo
+[`fonte atrasada`](../CONTEXT.md#os-dois-rótulos-do-instrumento-decididos-em-2026-08-05),
+que `A3` deu ao estouro do limite de espera pelo CDC, ou um distinto — são falhas
+diferentes, e o relatório que as confunde afirma duas coisas com uma palavra só.
+
+A segunda é **onde a conferência de contiguidade vive**: no conector de CDC, no consumidor
+do broker ou no próprio oráculo. Nenhum código de oráculo existe na árvore, e o lugar muda
+quem detém o custo — a fronteira do
+[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão) põe
+o conector em processo próprio, e uma guarda ali protege todo consumidor, enquanto uma
+guarda no oráculo protege só o veredito.
+
+A terceira apareceu ao revisar o ADR-0013, e é a mais fina: **somar exige saber quando
+parar**, e a espera pelo LSN do commit final foi decidida em `O19` para o oráculo exato. Se
+ela alcança também o oráculo do predicado é pergunta em aberto, e não corolário. Sem
+condição de término, a soma pode ser lida cedo demais e produzir um `Σ amount` parcial —
+que é o mesmo falso negativo que a contiguidade evita, por outra porta.
+
 ### `E-38` — o limite do Feature Card contra o card como fonte de verdade
 
 Aberta em 2026-08-06, ao reconciliar os cards com o ADR-0010. **A decisão de que
@@ -1985,6 +2058,12 @@ A medição depois da reconciliação, com o verificador de limites:
 card de atualização perdida violava o limite de palavras já estava registrada, e nunca foi
 decidida — o que mudou é que agora ela alcança todos os quatro, e por um motivo novo: não é
 prosa em excesso, é conteúdo que a decisão de fonte de verdade exige que esteja ali.
+
+**Cuidado ao comparar com estes números.** Eles são anteriores à isenção de diagrama,
+código e tabela, decidida em 2026-08-06 no fecho abaixo — a tabela daquele fecho remede os
+mesmos cards sob a regra vigente, e é ela que vale para comparação. Confrontar uma medição
+pré-isenção com uma pós-isenção faz um card que cresceu parecer que encolheu, e isso já
+aconteceu uma vez, em 2026-08-09.
 
 Três saídas, nenhuma escolhida. Dividir cada card em dois artefatos, e decidir o que fica
 em qual. Subir o limite, e aceitar que um card longo deixa de ser lido de ponta a ponta.
@@ -2156,6 +2235,50 @@ forma por omissão.
 
 **Sem recomendação.** A linha nasce com o registro do que a poda teria apagado, e nada
 além disso.
+
+#### `E-43` — as três pendências do ADR-0013 vivem dentro de uma linha fechada
+
+Aberta em 2026-08-09, pela revisão do ADR-0013. O
+[fecho de `E-37`](#e-37-fecha-na-proveniência-e-a-contiguidade-deixa-de-ser-opcional)
+enumera três coisas que aquela linha não decide, e o ADR-0013 as declara em
+`### Negativas`. Mas `E-37` está **fechada**, e uma pendência registrada dentro de uma
+linha fechada não é enfileirada por ninguém: ela só é encontrada por quem já sabe que
+existe. O precedente contrário é `E-42`, aberta no commit anterior exatamente para isso.
+
+**As três.** O rótulo da execução invalidada por buraco de LSN — se é
+[`fonte atrasada`](../CONTEXT.md#os-dois-rótulos-do-instrumento-decididos-em-2026-08-05),
+que `A3` deu ao estouro do limite de espera, ou um distinto. Onde a conferência de
+contiguidade vive: conector de CDC, consumidor do broker ou o próprio oráculo. E se a
+espera pelo LSN do commit final alcança também o oráculo do predicado.
+
+**A terceira não é igual às outras duas**, e é por isso que a linha existe em vez de as
+três ficarem onde estão. Sem condição de término, a soma pode ser lida cedo demais e sair
+parcial — o mesmo falso negativo silencioso que a guarda de contiguidade evita, por outra
+porta. O card diz isso na letra:
+[a terceira ainda produz veredito errado](../features/deteccao-de-protecao-inerte/feature-card.md#riscos-e-decisões-pendentes).
+
+**Decidir se elas viram uma linha, três linhas ou questões em `docs/questions/`** é o que
+esta linha enfileira. Sem recomendação.
+
+#### `E-44` — o glossário define o oráculo do predicado por um `SELECT sum` retirado
+
+Aberta em 2026-08-09, pela revisão do ADR-0013. O
+[`CONTEXT.md`](../CONTEXT.md) define **predicate oracle** como o oráculo que avalia
+`Σ amount ≤ capacity` "com um `SELECT sum` emitido depois do fim da execução". O
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) retirou
+esse `SELECT`, e o
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
+pôs o WAL no lugar. **O glossário canônico contradiz dois ADRs aceitos ao mesmo tempo.**
+
+**Não é só a definição.** A entrada cita a evidência por número de linha
+(`0002-...md:186-190`), contra a decisão `C-1` — e o alvo já foi editado desde então, o
+que é exatamente o modo de falha que aquela decisão descreve.
+
+**O que esta linha enfileira não é a correção**, que é mecânica, e sim **quem a faz e
+quando**. O glossário é mantido pela skill `domain-modeling`, que atualiza um termo no
+turno em que ele é resolvido, e nunca em lote; corrigi-lo aqui, de passagem, seria fazer
+em lote o que aquela regra proíbe. A alternativa é tratá-lo como erro material e aplicar
+patch. Sem recomendação.
 
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 

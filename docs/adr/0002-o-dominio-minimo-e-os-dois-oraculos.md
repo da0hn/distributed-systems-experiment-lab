@@ -12,7 +12,7 @@
 - **Questões que este ADR encaminha:** [`Q-0002-1`](../questions/Q-0002-1.md) a
   [`Q-0002-4`](../questions/Q-0002-4.md), na mesma seção.
 
-- **Última atualização:** 2026-08-06
+- **Última atualização:** 2026-08-09
 - **Alterado por:** [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)
   — emenda; a classificação do dual write como "o fenômeno do grupo B que a etapa 6
   estuda" (seção "O oráculo exato", `:175`) passa a grupo C, escrita parcial.
@@ -24,6 +24,10 @@
   `value_inicial` passa a vir do `INSERT` do estado inicial, e `value_final` do último
   evento de `resource.value` no WAL, por replicação lógica; a fonte do oráculo de
   capacidade fica sem decisão, registrada como pergunta em aberto.
+- **Alterado por:**
+  [ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md) —
+  subsunção; o alcance da proibição da seção "O oráculo lê o banco, e NÃO DEVE ler o log
+  de observações" passa a ser critério de proveniência.
 
 ## Vocabulário
 

@@ -621,13 +621,14 @@ O `arquivo/0001` chama este de resultado mais valioso que o laboratório pode pr
   para versionar. A anotação está lá, o engenheiro acredita estar protegido, e a
   invariante quebra em silêncio. Chamamos isso de **proteção presente e inerte**.
 - **Detecção:** o oráculo aqui é um predicado sobre um conjunto, não uma contagem:
-  `Σ amount > capacity`. **De onde sai essa soma não está decidido, e o E5 não roda até
-  que esteja.** O
+  `Σ amount > capacity`. O
   [ADR-0010](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)
-  proibiu o `SELECT` no schema medido e não deu fonte a este oráculo; somar eventos de
-  `INSERT` vindos do WAL é reconstruir um total a partir de um stream, que é o que o
-  [card](features/deteccao-de-protecao-inerte/feature-card.md#atores-e-gatilho) registra
-  como lacuna. O CDC foi decidido para o **contador**, e não para este predicado.
+  proibiu o `SELECT` no schema medido e deixou este oráculo sem fonte; o
+  [ADR-0013](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
+  pôs o WAL no lugar, em 2026-08-09: a soma vem dos eventos de `INSERT`, e é precedida da
+  conferência de contiguidade de LSN, sem a qual a execução é invalidada. O
+  [card](features/deteccao-de-protecao-inerte/feature-card.md#atores-e-gatilho) carrega o
+  mecanismo.
 - **Interface:** a timeline precisa mostrar os dois `SELECT sum` retornando o mesmo
   valor **antes** de qualquer `INSERT`. É o único desenho que explica por que travar uma
   linha não ajudaria: a linha que quebra a invariante ainda não existe.

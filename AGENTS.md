@@ -41,11 +41,15 @@ WAL por replicação lógica, e o transporte entre o WAL e o oráculo é o do
 [ADR-0012](docs/adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão).
 Nenhum `SELECT` cruzado é solução atual, em documento nenhum deste repositório.
 
-**A decisão de CDC alcança o contador, e não todo oráculo.** De onde o oráculo do
-predicado obtém `Σ amount` continua **aberto**, e o E5 não roda até que esteja decidido
-— [feature card de proteção
-inerte](docs/features/deteccao-de-protecao-inerte/feature-card.md#atores-e-gatilho). Não
-generalize "CDC resolve todo oráculo".
+**O WAL alcança os dois oráculos, e o critério que o permite é a proveniência.** Este
+parágrafo dizia que a decisão de CDC alcançava o contador e não todo oráculo; a decisão do
+[ADR-0013](docs/adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão),
+de 2026-08-09, tirou essa frase de efeito. A proibição do ADR-0002 alcança fonte
+**produzida pelo instrumento**, e o WAL não é uma delas: o oráculo do predicado obtém
+`Σ amount` somando os eventos de `INSERT` de lá. O que a mesma decisão **não** dispensa é a
+guarda — somar exige completude do stream, e o oráculo **DEVE** conferir a contiguidade de
+LSN antes da soma, sob pena de falso negativo silencioso, em [feature card de proteção
+inerte](docs/features/deteccao-de-protecao-inerte/feature-card.md#atores-e-gatilho).
 
 **Cada executável tem a sua própria folha de bootstrap em `dev.da0hn.lab.application`.**
 Um pacote único ali seria dividido entre artefatos distintos. A região de pacote do
