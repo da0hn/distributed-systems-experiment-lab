@@ -25,8 +25,7 @@ Gatilho: uma execução de experimento sobre `allocate`.
 
 **A fonte foi decidida em 2026-08-09**, pelo
 [`ADR-0013`](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md):
-`Σ amount` vem do WAL, e a soma é precedida da guarda de `R8` — a proibição do ADR-0002
-alcança fonte **produzida pelo instrumento**, e o WAL não é uma delas.
+`Σ amount` vem do WAL, e a soma é precedida da guarda de `R8`.
 
 ## Escopo
 
@@ -59,10 +58,8 @@ O diagrama de por que travar a linha do recurso não ajudaria está no
 
 `allocate` emite um `SELECT sum` e um `INSERT` contra `allocation` — isso é o domínio do
 sistema medido, e não mudou. **O oráculo não emite `SELECT`**: o schema do
-`system-under-test` é inacessível ao Lab Plane, sem `GRANT` cruzado. **Quem substitui
-aquele `SELECT sum` é o WAL**, pelo
-[ADR-0013](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão).
-**Não existe DDL nem contrato de esquema** — `Q-INT-5` em
+`system-under-test` é inacessível ao Lab Plane, sem `GRANT` cruzado. Quem o substitui é o
+WAL, por `R3`. **Não existe DDL nem contrato de esquema** — `Q-INT-5` em
 [`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto).
 
 O transporte do
@@ -105,11 +102,15 @@ quiescente, e serve ao E5: uma alocação excedente não sai da tabela.
 
 **O E5 deixou de estar bloqueado pela fonte do oráculo em 2026-08-09**, pelo
 [`ADR-0013`](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md),
-que pôs o WAL onde o ADR-0010 deixara vazio. Três pendências sobraram, no
-[fecho de `E-37`](../../adr/fila-de-decisoes.md#e-37-fecha-na-proveniência-e-a-contiguidade-deixa-de-ser-opcional):
-o rótulo da execução invalidada, onde a conferência de `R8` vive, e o que diz **quando
-parar de somar**. **A terceira ainda produz veredito errado**: sem condição de término,
-`Σ amount` sai parcial, e o falso negativo volta por outra porta.
+que pôs o WAL onde o ADR-0010 deixara vazio. Três pendências sobraram, e desde 2026-08-10
+cada uma tem linha própria na fila: o rótulo da execução invalidada em
+[`E-45`](../../adr/fila-de-decisoes.md#e-45--o-buraco-de-lsn-não-cabe-em-nenhum-dos-dois-rótulos-do-instrumento),
+onde a conferência de `R8` vive em
+[`E-46`](../../adr/fila-de-decisoes.md#e-46--onde-a-conferência-de-contiguidade-de-lsn-vive),
+e **quando parar de somar** em
+[`E-47`](../../adr/fila-de-decisoes.md#e-47--a-soma-do-oráculo-do-predicado-não-tem-condição-de-término).
+**A terceira ainda produz veredito errado**: sem condição de término, `Σ amount` sai
+parcial.
 
 **`R8` herda a pergunta mais séria do ADR-0012**, nas
 [consequências negativas](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas):

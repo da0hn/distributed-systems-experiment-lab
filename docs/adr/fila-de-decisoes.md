@@ -2260,6 +2260,70 @@ porta. O card diz isso na letra:
 **Decidir se elas viram uma linha, três linhas ou questões em `docs/questions/`** é o que
 esta linha enfileira. Sem recomendação.
 
+**A apuração de 2026-08-10 achou que uma das três alternativas embute uma decisão que
+esta linha não toma.** As três pendências nasceram na revisão de um ADR que nasceu
+`Aceito`. A pasta `docs/questions/` tem regra de transporte para duas origens apenas,
+[`ADR proposto` e `contra-avaliação`](../questions/README.md#de-onde-uma-questão-vem), e
+nenhuma delas alcança um ADR aceito. Pela
+[origem nova](../questions/README.md#origem-nova-e-o-que-ainda-não-tem-regra), as três
+entrariam com `Tipo de origem` sem decisão, e repetiriam o precedente das sete linhas de
+`auditoria documental` — que o [índice](../questions/README.md#índice) declara descritivo,
+e não regra decidida.
+
+**As três não têm o mesmo destino, e o índice de questões exige um.** A coluna
+`Destino na fila` é obrigatória lá. O rótulo da execução invalidada pertence ao
+vocabulário do relatório, ao lado de `A3` e de
+[`E-42`](#e-42--o-relatório-de-execução-incorpora-a-definição-usada-ou-a-cita). O lugar da
+conferência pertence à fronteira do
+[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão), e
+não é decidível hoje: nenhum código de oráculo, de conector ou de consumidor existe na
+árvore. A condição de término pertence a
+[`O19`](arquivo/proposta-2026-08-03/decisoes-pendentes.md#o19-fecha-o-oráculo-espera-o-cdc-com-limite-declarado),
+que fechou em 2026-08-05 para o oráculo exato.
+
+**A terceira tem urgência que as outras duas não têm.** Ela produz veredito errado hoje,
+pela letra do
+[card](../features/deteccao-de-protecao-inerte/feature-card.md#riscos-e-decisões-pendentes).
+As outras duas fixam um nome e um lugar de código. Uma linha única faz a terceira esperar
+o tempo das outras duas, e uma citação vinda do card deixa de dizer qual das três ela
+alcança.
+
+| Alternativa | O que faz                                             | Custo                                                      |
+|-------------|-------------------------------------------------------|------------------------------------------------------------|
+| A           | uma linha, as três juntas                             | mistura urgência e destino; a citação do card fica ambígua |
+| B           | três linhas, uma por pendência                        | a fila cresce em três, e duas delas são pequenas           |
+| C           | três questões em `docs/questions/`                    | decide de passagem a origem nova, que segue sem decisão    |
+| D           | a terceira em linha própria, as duas primeiras juntas | duas linhas em vez de uma ou três                          |
+
+**Uma linha cujo gatilho ainda não ocorreu tem precedente nesta fila.** A própria
+[`E-42`](#e-42--o-relatório-de-execução-incorpora-a-definição-usada-ou-a-cita) alcança um
+contrato que ainda não existe, e foi aberta assim de propósito. O custo de `B` não é,
+portanto, a indecidibilidade de uma das três: é apenas o tamanho da fila.
+
+**Nada disto decide a linha**, e a escolha continua da pessoa.
+
+#### `E-43` fecha em três linhas, escolhidas em 2026-08-10
+
+**Escolhido pela pessoa em 2026-08-10**, pela alternativa `B`. Cada pendência recebe linha
+própria nesta fila, com nome, destino e citação inequívoca:
+[`E-45`](#e-45--o-buraco-de-lsn-não-cabe-em-nenhum-dos-dois-rótulos-do-instrumento),
+[`E-46`](#e-46--onde-a-conferência-de-contiguidade-de-lsn-vive) e
+[`E-47`](#e-47--a-soma-do-oráculo-do-predicado-não-tem-condição-de-término).
+
+**As duas descartadas, e o motivo de cada uma.** A alternativa `C` decidiria de passagem o
+critério de entrada de uma origem nova em `docs/questions/`, que a
+[origem nova](../questions/README.md#origem-nova-e-o-que-ainda-não-tem-regra) declara sem
+decisão. A alternativa `D` agruparia duas pendências por urgência, e não por assunto — e
+esta fila cita linha [pelo nome](#como-citar-uma-linha-desta-fila), de modo que um nome
+que cobrisse "o rótulo e o lugar do código" não diria qual das duas alcança.
+
+**O card do E5 passa a citar as três**, no lugar do fecho de `E-37`. As quatro citações
+que o
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas)
+faz ao fecho de `E-37` **não** são patchadas: elas não estão erradas, porque aquele fecho
+continua enumerando as três, e o corpo de um ADR aceito só muda pelas formas do
+[lifecycle](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+
 #### `E-44` — o glossário define o oráculo do predicado por um `SELECT sum` retirado
 
 Aberta em 2026-08-09, pela revisão do ADR-0013. O
@@ -2279,6 +2343,73 @@ quando**. O glossário é mantido pela skill `domain-modeling`, que atualiza um 
 turno em que ele é resolvido, e nunca em lote; corrigi-lo aqui, de passagem, seria fazer
 em lote o que aquela regra proíbe. A alternativa é tratá-lo como erro material e aplicar
 patch. Sem recomendação.
+
+#### `E-45` — o buraco de LSN não cabe em nenhum dos dois rótulos do instrumento
+
+Aberta em 2026-08-10, pelo fecho de `E-43`. É a primeira das três pendências que o
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas)
+declara.
+
+**O par de rótulos é fechado, e foi desenhado como par.** O
+[glossário](../CONTEXT.md#os-dois-rótulos-do-instrumento-decididos-em-2026-08-05) diz que
+os dois formam um par legível: "uma fonte diverge; a outra não chega". Ele diz também que
+um rótulo só esconderia qual componente falhou. O diagrama daquela seção ramifica em duas
+perguntas, e só duas: as fontes alcançaram o commit final, e elas concordam.
+
+**O buraco de LSN não responde a nenhuma das duas.** A fonte chegou, e chegou incompleta.
+Ela não está atrasada, e não existe uma segunda fonte com que divergir desde que o
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) retirou o
+`SELECT` cruzado de schema.
+
+**Duas saídas.** A primeira reusa `fonte atrasada`, e aceita que uma palavra nomeie duas
+falhas diferentes — que é exatamente o que `A3` recusou ao criar dois rótulos em vez de
+um. A segunda cria um terceiro rótulo, e aceita que o par legível vire trio. Sem
+recomendação.
+
+#### `E-46` — onde a conferência de contiguidade de LSN vive
+
+Aberta em 2026-08-10, pelo fecho de `E-43`. É a segunda das três pendências que o
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas)
+declara.
+
+**Três lugares, e cada um dá o custo a um dono diferente.** No conector de CDC, a guarda
+protege todo consumidor, e a fronteira do
+[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão) já
+põe o conector em processo próprio. No consumidor do broker, ela protege quem lê, e não
+quem produz. No próprio oráculo, ela protege só o veredito.
+
+**Nenhum dos três existe na árvore.** A linha não é decidível hoje, e o gatilho dela é o
+primeiro código de conector, de consumidor ou de oráculo a entrar. Uma linha cujo gatilho
+ainda não ocorreu tem precedente aqui, em
+[`E-42`](#e-42--o-relatório-de-execução-incorpora-a-definição-usada-ou-a-cita).
+
+Sem recomendação.
+
+#### `E-47` — a soma do oráculo do predicado não tem condição de término
+
+Aberta em 2026-08-10, pelo fecho de `E-43`. É a terceira das três pendências que o
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas)
+declara, e a única que produz veredito errado hoje.
+
+**A guarda de contiguidade não alcança o fim do stream.** Ela detecta buraco entre dois
+eventos recebidos, e não diz que o último evento chegou. Sem condição de término,
+`Σ amount` é lido cedo demais e sai parcial — o mesmo falso negativo silencioso que a
+contiguidade evita, por outra porta. O
+[card](../features/deteccao-de-protecao-inerte/feature-card.md#riscos-e-decisões-pendentes)
+diz isso na letra.
+
+**`O19` é a candidata óbvia, e o texto dela não menciona esta soma.** Ela decidiu em
+2026-08-05 que o oráculo aguarda o CDC alcançar o LSN do commit final antes de comparar as
+duas fontes, com limite declarado por execução, em
+[`O19`](arquivo/proposta-2026-08-03/decisoes-pendentes.md#o19-fecha-o-oráculo-espera-o-cdc-com-limite-declarado).
+O texto foi escrito para a comparação de **duas** fontes, e não cita o oráculo do predicado
+nem `Σ amount`. Estender uma decisão pela semelhança do mecanismo é dedução, e esta fila
+não a aceita no lugar de evidência.
+
+**O valor do limite de espera é `Pergunta em aberto`.** A seção de `O19` declara que o
+limite existe e que ele é exigência, e não o quantifica.
+
+Sem recomendação.
 
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 
