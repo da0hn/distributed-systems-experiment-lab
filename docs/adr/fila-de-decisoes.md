@@ -2324,92 +2324,142 @@ faz ao fecho de `E-37` **não** são patchadas: elas não estão erradas, porque
 continua enumerando as três, e o corpo de um ADR aceito só muda pelas formas do
 [lifecycle](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 
-#### `E-44` — o glossário define o oráculo do predicado por um `SELECT sum` retirado
-
-Aberta em 2026-08-09, pela revisão do ADR-0013. O
-[`CONTEXT.md`](../CONTEXT.md) define **predicate oracle** como o oráculo que avalia
-`Σ amount ≤ capacity` "com um `SELECT sum` emitido depois do fim da execução". O
-[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) retirou
-esse `SELECT`, e o
-[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
-pôs o WAL no lugar. **O glossário canônico contradiz dois ADRs aceitos ao mesmo tempo.**
-
-**Não é só a definição.** A entrada cita a evidência por número de linha
-(`0002-...md:186-190`), contra a decisão `C-1` — e o alvo já foi editado desde então, o
-que é exatamente o modo de falha que aquela decisão descreve.
-
-**O que esta linha enfileira não é a correção**, que é mecânica, e sim **quem a faz e
-quando**. O glossário é mantido pela skill `domain-modeling`, que atualiza um termo no
-turno em que ele é resolvido, e nunca em lote; corrigi-lo aqui, de passagem, seria fazer
-em lote o que aquela regra proíbe. A alternativa é tratá-lo como erro material e aplicar
-patch. Sem recomendação.
-
 #### `E-45` — o buraco de LSN não cabe em nenhum dos dois rótulos do instrumento
 
-Aberta em 2026-08-10, pelo fecho de `E-43`. É a primeira das três pendências que o
-[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas)
-declara.
-
-**O par de rótulos é fechado, e foi desenhado como par.** O
-[glossário](../CONTEXT.md#os-dois-rótulos-do-instrumento-decididos-em-2026-08-05) diz que
-os dois formam um par legível: "uma fonte diverge; a outra não chega". Ele diz também que
-um rótulo só esconderia qual componente falhou. O diagrama daquela seção ramifica em duas
-perguntas, e só duas: as fontes alcançaram o commit final, e elas concordam.
-
-**O buraco de LSN não responde a nenhuma das duas.** A fonte chegou, e chegou incompleta.
-Ela não está atrasada, e não existe uma segunda fonte com que divergir desde que o
-[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) retirou o
-`SELECT` cruzado de schema.
-
-**Duas saídas.** A primeira reusa `fonte atrasada`, e aceita que uma palavra nomeie duas
-falhas diferentes — que é exatamente o que `A3` recusou ao criar dois rótulos em vez de
-um. A segunda cria um terceiro rótulo, e aceita que o par legível vire trio. Sem
-recomendação.
+**Fechada em 2026-08-10.** O terceiro rótulo do instrumento é `fonte incompleta`, e o par
+legível vira trio. O racional vive em
+[`E-45` fecha em `fonte incompleta`](#e-45-fecha-em-fonte-incompleta-escolhida-em-2026-08-10).
 
 #### `E-46` — onde a conferência de contiguidade de LSN vive
 
-Aberta em 2026-08-10, pelo fecho de `E-43`. É a segunda das três pendências que o
-[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas)
-declara.
-
-**Três lugares, e cada um dá o custo a um dono diferente.** No conector de CDC, a guarda
-protege todo consumidor, e a fronteira do
-[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão) já
-põe o conector em processo próprio. No consumidor do broker, ela protege quem lê, e não
-quem produz. No próprio oráculo, ela protege só o veredito.
-
-**Nenhum dos três existe na árvore.** A linha não é decidível hoje, e o gatilho dela é o
-primeiro código de conector, de consumidor ou de oráculo a entrar. Uma linha cujo gatilho
-ainda não ocorreu tem precedente aqui, em
-[`E-42`](#e-42--o-relatório-de-execução-incorpora-a-definição-usada-ou-a-cita).
-
-Sem recomendação.
+**Fechada em 2026-08-10.** A guarda vive no consumidor do broker, e o oráculo recebe um
+stream já atestado. O racional vive em
+[`E-46` fecha no consumidor do broker](#e-46-fecha-no-consumidor-do-broker-escolhida-em-2026-08-10).
 
 #### `E-47` — a soma do oráculo do predicado não tem condição de término
 
-Aberta em 2026-08-10, pelo fecho de `E-43`. É a terceira das três pendências que o
-[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas)
-declara, e a única que produz veredito errado hoje.
+**Fechada em 2026-08-10.** O sistema medido escreve uma marca de fim fora da janela medida,
+e o oráculo soma até reconhecê-la no stream. O racional vive em
+[`E-47` fecha na sentinela](#e-47-fecha-na-sentinela-escolhida-em-2026-08-10).
 
-**A guarda de contiguidade não alcança o fim do stream.** Ela detecta buraco entre dois
-eventos recebidos, e não diz que o último evento chegou. Sem condição de término,
-`Σ amount` é lido cedo demais e sai parcial — o mesmo falso negativo silencioso que a
-contiguidade evita, por outra porta. O
-[card](../features/deteccao-de-protecao-inerte/feature-card.md#riscos-e-decisões-pendentes)
-diz isso na letra.
+### A rodada de 2026-08-10: a completude do stream ganha dono, e o par vira trio
 
-**`O19` é a candidata óbvia, e o texto dela não menciona esta soma.** Ela decidiu em
-2026-08-05 que o oráculo aguarda o CDC alcançar o LSN do commit final antes de comparar as
-duas fontes, com limite declarado por execução, em
-[`O19`](arquivo/proposta-2026-08-03/decisoes-pendentes.md#o19-fecha-o-oráculo-espera-o-cdc-com-limite-declarado).
-O texto foi escrito para a comparação de **duas** fontes, e não cita o oráculo do predicado
-nem `Σ amount`. Estender uma decisão pela semelhança do mecanismo é dedução, e esta fila
-não a aceita no lugar de evidência.
+**Quatro linhas fecharam em 2026-08-10**, tratadas juntas porque as quatro descendem da
+mesma retirada: o
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) tirou o
+`SELECT sum` do oráculo do predicado, e o
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
+pôs o WAL no lugar. `E-47` fixou como o oráculo sabe que pode somar, `E-46` fixou quem
+confere a contiguidade, `E-45` nomeou a execução invalidada e `E-44` mandou reparar o
+glossário.
 
-**O valor do limite de espera é `Pergunta em aberto`.** A seção de `O19` declara que o
-limite existe e que ele é exigência, e não o quantifica.
+#### `E-47` fecha na sentinela, escolhida em 2026-08-10
 
-Sem recomendação.
+**Escolhido pela pessoa em 2026-08-10**, pela sentinela. O sistema medido escreve uma marca
+de fim depois que todos os workers terminam, e o oráculo soma até reconhecer o evento dessa
+marca no stream. O LSN da marca é o "LSN do commit final" que
+[`O19`](arquivo/proposta-2026-08-03/decisoes-pendentes.md#o19-fecha-o-oráculo-espera-o-cdc-com-limite-declarado)
+nomeia, obtido sem consultar relógio.
+
+**O limite de espera continua existindo, e muda de papel.** Ele deixa de decidir quando o
+resultado está pronto, e passa a decidir apenas quando desistir. A desistência produz
+`fonte atrasada`, que já existe no glossário, e não um veredito. Pela formulação por papel
+do valor fixada em `E-13`, um limite que não entra em veredito não é alcançado pela regra
+do relógio injetável. **O valor dele segue `Pergunta em aberto`**, e a razão mudou: ele
+deixou de ser insumo de veredito.
+
+**As três descartadas, e o motivo de cada uma.** Estender `O19`, esperando o LSN do commit
+final sob limite de tempo, faria o veredito depender de quando o CDC chegou: a mesma
+execução, com a mesma semente, poderia sair `protegido` numa vez e invalidada noutra.
+Contar eventos supõe que o número de passagens por `AFTER_COMMIT` iguale o número de
+eventos de `INSERT`, e `allocate` insere apenas quando couber — a diferença entre os dois
+números é exatamente o que
+[`R6`](../features/deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio) exige que
+a amostra contenha. Atribuir a completude ao transporte não é resposta própria: desloca a
+pergunta para `E-46`, que fechou no mesmo dia.
+
+**O que esta linha não decide.** A forma da marca — tabela própria, coluna em tabela
+existente, ou outra — não foi escolhida, nem quem a emite dentro do sistema medido. O que
+ficou fixado é que ela é escrita **pelo sistema medido**, fora da janela medida: o Lab
+Plane escrever ali quebraria a fronteira do
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
+
+#### `E-46` fecha no consumidor do broker, escolhida em 2026-08-10
+
+**Escolhido pela pessoa em 2026-08-10.** A conferência de contiguidade de LSN vive no
+consumidor do broker. Ele entrega ao oráculo um stream já atestado, e qualquer leitor
+futuro herda a guarda sem reimplementá-la.
+
+**A completude passa a ter dono único, e era esse o risco.** A mesma camada confere o
+buraco no meio e reconhece a marca de fim que `E-47` escolheu. Sem isso, a guarda ficaria
+num lugar e a espera noutro, e nenhum dos dois poderia afirmar que o stream está completo.
+
+**As duas descartadas.** O conector é o Debezium Server, e o que se versiona dele é
+configuração declarativa: pôr a guarda ali exigiria transformação própria ou fork, e
+nenhuma das duas é configuração. O oráculo protegeria apenas o veredito, e obrigaria um
+segundo consumidor futuro a reimplementar a mesma guarda.
+
+**A linha fecha antes do gatilho, de propósito.** Nenhum dos componentes existe na árvore.
+O que a decisão evita é o gatilho chegar e o dono ser escolhido por omissão, pelo primeiro
+código que alguém escrever — o mesmo modo de falha que
+[`E-42`](#e-42--o-relatório-de-execução-incorpora-a-definição-usada-ou-a-cita) nomeia.
+
+**A apuração do fecho achou que os dois ADRs aceitos já divergiam no ator.** O
+[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão) diz
+que **o `lab-plane`** DEVE usar o LSN para ordenar, desduplicar e detectar buraco na
+sequência antes de calcular o veredito, e põe o filtro por execução no consumidor, dentro
+do `lab-plane`. O
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
+diz que **o oráculo** DEVE conferir a contiguidade. Os dois atores vivem no mesmo processo,
+e nenhum dos dois ADRs escolheu a camada — a negativa do ADR-0013 declara isso na letra.
+Esta linha escolhe a camada, e por isso **não** contradiz nenhum dos dois: ela fecha uma
+lacuna que os dois deixaram.
+
+**O que sobra é a frase "parte do oráculo, e não acessório", do ADR-0013.** Ela diz que sem
+a guarda o veredito não vale, e continua verdadeira: o oráculo recebe um stream atestado, e
+não produz veredito sem o atestado. Lida como **condição de validade**, a frase convive com
+esta decisão. Lida como **localização**, ela a contradiz, e aí seria preciso ADR. A leitura
+adotada aqui é a primeira, e quem discordar tem nesta linha o registro de que a escolha
+existiu.
+
+#### `E-45` fecha em `fonte incompleta`, escolhida em 2026-08-10
+
+**Escolhido pela pessoa em 2026-08-10**, pela criação de um terceiro rótulo, e o nome dele
+é `fonte incompleta`. Ele nomeia a fonte que alcançou o ponto declarado e chegou com buraco
+na sequência de LSN. O par legível vira trio, e lê-se em série: uma fonte diverge, a outra
+não chega, a terceira chega incompleta.
+
+**Os três nomes descartados, e o motivo de cada um.** `fonte descontínua` nomeia o defeito
+com precisão, e é menos legível ao lado de `protegido` e `violado`. `fonte com lacuna`
+carrega `lacuna`, que neste repositório já significa ausência documental. `fonte truncada`
+sugere corte no fim, e o defeito é buraco no meio. Reusar `fonte atrasada`, que era a outra
+saída, perde por fazer uma palavra nomear duas falhas diferentes — que é o que `A3` recusou
+ao criar dois rótulos em vez de um.
+
+**O glossário é corrigido no mesmo dia**, pelo fecho de `E-44`, e o terceiro rótulo entra
+na tabela de classificação do ADR-0004 pelo caminho de subsunção que o par já usou.
+
+#### `E-44` fecha em reparo imediato, escolhida em 2026-08-10
+
+**Escolhido pela pessoa em 2026-08-10.** O glossário é corrigido agora, no mesmo ato que
+registra `E-45`, e não num turno futuro da skill `domain-modeling`. A regra daquela skill
+fala do turno em que um termo é resolvido; o termo foi resolvido em 2026-08-09, pelo
+ADR-0013, e o glossário não mudou naquele turno. O que se faz hoje é reparo, e não lote.
+
+**A correção tem duas partes, e as duas saem juntas.** A entrada `predicate oracle` deixa
+de descrever o `SELECT sum` que o ADR-0010 retirou, e passa a citar a evidência por âncora
+GFM em vez de número de linha, como `C-1` exige. A seção dos rótulos recebe `fonte
+incompleta`, com o título preservado porque ele é citado por âncora.
+
+**A alternativa descartada era esperar a skill.** Ela perde porque a contradição com dois
+ADRs aceitos permaneceria até um turno que ninguém agendou, e porque corrigir junto do
+rótulo novo toca o arquivo uma vez em vez de duas.
+
+**Quem é dono do glossário continua `Pergunta em aberto`.** Nenhuma frase de
+[`CONTEXT.md`](../CONTEXT.md) diz quem o mantém ou como uma entrada errada é reparada; a
+regra vive fora dele, no
+[`AGENTS.md` de `docs/`](../AGENTS.md#glossário-de-domínio). A pessoa não fechou essa
+ausência neste ato.
 
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 
@@ -2596,6 +2646,13 @@ arquivos excedem o genérico sem que nada falhe:
 | `docs/specification-process.md`          | 18.493       | genérico, 4.000    |
 | `docs/questions/README.md`               | 10.442       | genérico, 4.000    |
 | `docs/features/README.md`                | 4.616        | genérico, 4.000    |
+
+**A foto acima é de 2026-08-08, e um dos seis já cresceu.** A correção do glossário
+decidida em [`E-44`](#e-44-fecha-em-reparo-imediato-escolhida-em-2026-08-10) acrescentou
+prosa ao `docs/CONTEXT.md`, que passou de 35.633 para 37.328 caracteres em 2026-08-10 —
+mais de nove vezes o teto genérico, sem que nada falhasse, porque ele segue fora do glob do
+workflow. A tabela **não** é atualizada: ela é a medição daquela data. O que este parágrafo
+registra é que a linha aberta tem custo crescente, e não que a foto esteja errada.
 
 **Duas coisas distintas estão fundidas.** Um teto que descreve mal o artefato é defeito de
 regra; um teto que ninguém executa é defeito de alcance. A isenção de `AGENTS.md` e
