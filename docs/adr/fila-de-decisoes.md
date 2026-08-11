@@ -2317,7 +2317,9 @@ decisão. A alternativa `D` agruparia duas pendências por urgência, e não por
 esta fila cita linha [pelo nome](#como-citar-uma-linha-desta-fila), de modo que um nome
 que cobrisse "o rótulo e o lugar do código" não diria qual das duas alcança.
 
-**O card do E5 passa a citar as três**, no lugar do fecho de `E-37`. As quatro citações
+**O card do E5 passa a citar os fechos das linhas que viram regra**, no lugar do fecho de
+`E-37`: `R8` cita `E-46` e `R9` cita `E-47`. `E-45` fica de fora porque ela nomeia um
+rótulo, e quem define rótulo é o glossário. As quatro citações
 que o
 [ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas)
 faz ao fecho de `E-37` **não** são patchadas: elas não estão erradas, porque aquele fecho
@@ -2344,8 +2346,8 @@ e o oráculo soma até reconhecê-la no stream. O racional vive em
 
 ### A rodada de 2026-08-10: a completude do stream ganha dono, e o par vira trio
 
-**Quatro linhas fecharam em 2026-08-10**, tratadas juntas porque as quatro descendem da
-mesma retirada: o
+**As quatro linhas desta rodada fecharam em 2026-08-10**, tratadas juntas porque as
+quatro descendem da mesma retirada: o
 [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) tirou o
 `SELECT sum` do oráculo do predicado, e o
 [ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
@@ -2369,8 +2371,11 @@ do relógio injetável. **O valor dele segue `Pergunta em aberto`**, e a razão 
 deixou de ser insumo de veredito.
 
 **As três descartadas, e o motivo de cada uma.** Estender `O19`, esperando o LSN do commit
-final sob limite de tempo, faria o veredito depender de quando o CDC chegou: a mesma
-execução, com a mesma semente, poderia sair `protegido` numa vez e invalidada noutra.
+final sob limite de tempo, não diz ao oráculo que o stream acabou: ele soma o que chegou
+até o limite e **emite veredito** sobre uma soma parcial. Um `Σ amount` incompleto sai
+abaixo de `capacity` e produz `protegido` sobre um banco violado — veredito errado, e não a
+ausência de veredito que a desistência da sentinela produz. Essa é a diferença entre as
+duas, e não a estabilidade do desfecho.
 Contar eventos supõe que o número de passagens por `AFTER_COMMIT` iguale o número de
 eventos de `INSERT`, e `allocate` insere apenas quando couber — a diferença entre os dois
 números é exatamente o que
@@ -2387,17 +2392,22 @@ Plane escrever ali quebraria a fronteira do
 #### `E-46` fecha no consumidor do broker, escolhida em 2026-08-10
 
 **Escolhido pela pessoa em 2026-08-10.** A conferência de contiguidade de LSN vive no
-consumidor do broker. Ele entrega ao oráculo um stream já atestado, e qualquer leitor
-futuro herda a guarda sem reimplementá-la.
+consumidor do broker. Ele entrega ao oráculo um stream já atestado, e todo leitor a jusante
+dele herda a guarda sem reimplementá-la.
 
 **A completude passa a ter dono único, e era esse o risco.** A mesma camada confere o
 buraco no meio e reconhece a marca de fim que `E-47` escolheu. Sem isso, a guarda ficaria
 num lugar e a espera noutro, e nenhum dos dois poderia afirmar que o stream está completo.
 
-**As duas descartadas.** O conector é o Debezium Server, e o que se versiona dele é
-configuração declarativa: pôr a guarda ali exigiria transformação própria ou fork, e
-nenhuma das duas é configuração. O oráculo protegeria apenas o veredito, e obrigaria um
-segundo consumidor futuro a reimplementar a mesma guarda.
+**As duas descartadas.** O conector é o Debezium Server, pelo
+[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão), e
+o que se versiona dele é configuração declarativa, como a apuração de
+[`E-31`](#e-31--a-variável-de-ambiente-sobrepõe-tudo-e-isso-dissolve-a-tensão-do-secret)
+levantou: pôr a guarda ali exigiria transformação própria ou fork, e nenhuma das duas é
+configuração. O oráculo protegeria apenas a si: qualquer outro leitor do mesmo stream —
+uma projeção, um exportador — ficaria sem guarda, ainda que dentro do `lab-plane`. Um
+segundo **consumidor** do broker reimplementaria a guarda nos dois desenhos; a diferença
+está em quantos leitores um único consumidor cobre.
 
 **A linha fecha antes do gatilho, de propósito.** Nenhum dos componentes existe na árvore.
 O que a decisão evita é o gatilho chegar e o dono ser escolhido por omissão, pelo primeiro
@@ -2429,12 +2439,12 @@ existiu.
 na sequência de LSN. O par legível vira trio, e lê-se em série: uma fonte diverge, a outra
 não chega, a terceira chega incompleta.
 
-**Os três nomes descartados, e o motivo de cada um.** `fonte descontínua` nomeia o defeito
-com precisão, e é menos legível ao lado de `protegido` e `violado`. `fonte com lacuna`
-carrega `lacuna`, que neste repositório já significa ausência documental. `fonte truncada`
-sugere corte no fim, e o defeito é buraco no meio. Reusar `fonte atrasada`, que era a outra
-saída, perde por fazer uma palavra nomear duas falhas diferentes — que é o que `A3` recusou
-ao criar dois rótulos em vez de um.
+**Os quatro nomes descartados, e o motivo de cada um.** `fonte descontínua` nomeia o
+defeito com precisão, e é menos legível ao lado de `protegido` e `violado`. `fonte com
+lacuna` carrega `lacuna`, que neste repositório já significa ausência documental. `fonte
+truncada` sugere corte no fim, e o defeito é buraco no meio. Reusar `fonte atrasada`, que
+era a alternativa a criar rótulo novo, perde por fazer uma palavra nomear duas falhas
+diferentes — que é o que `A3` recusou ao criar dois rótulos em vez de um.
 
 **O glossário é corrigido no mesmo dia**, pelo fecho de `E-44`, e o terceiro rótulo entra
 na tabela de classificação do ADR-0004 pelo caminho de subsunção que o par já usou.
@@ -2460,6 +2470,243 @@ rótulo novo toca o arquivo uma vez em vez de duas.
 regra vive fora dele, no
 [`AGENTS.md` de `docs/`](../AGENTS.md#glossário-de-domínio). A pessoa não fechou essa
 ausência neste ato.
+
+**O reparo alcançou só `predicate oracle` e o rótulo novo, e nada além disso.** As
+demais entradas do glossário que citam o ADR-0002 por número de linha continuam como
+estavam antes deste fecho, e pelo menos quatro já citam um número que não alcança mais o
+trecho que sustentou a entrada — o próprio defeito que `C-1` proíbe: `exact oracle` e
+`materialized truth` apontam para linha fora de
+[`## Vocabulário`](0002-o-dominio-minimo-e-os-dois-oraculos.md#vocabulário) e de
+[`### O oráculo exato`](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato), e
+`Resource` e `Allocation` apontam para linha fora de
+[`## Decisão`](0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão), que é onde as duas
+entidades estão hoje. Consertar essas quatro citações não foi decidido aqui — a linha
+fica dívida nomeada no glossário, não fato reparado por este fecho.
+
+#### `E-48` — a precedência entre `fonte incompleta` e `fonte atrasada` diverge entre os dois diagramas
+
+Aberta em 2026-08-10, achada ao conferir os diagramas que os fechos de `E-46` e `E-47`
+levaram para dois documentos diferentes.
+
+**O problema.** O diagrama de [`CONTEXT.md`](../CONTEXT.md), num bloco Mermaid sem
+título que o alcance (`docs/CONTEXT.md:827-836`), pergunta primeiro se as duas fontes
+alcançaram o commit final — o que produz `fonte atrasada` quando a resposta é não — e só
+depois confere a contiguidade de LSN, que produz `fonte incompleta`. O diagrama do
+[card de detecção de proteção
+inerte](../features/deteccao-de-protecao-inerte/feature-card.md), também num bloco
+Mermaid sem título que o alcance
+(`docs/features/deteccao-de-protecao-inerte/feature-card.md:71-96`), inverte a ordem: a
+contiguidade de LSN é conferida primeiro, e a marca de fim só depois. Para um stream que
+chega com buraco **e** estoura o limite de espera na mesma execução, os dois documentos
+rotulam o mesmo caso de formas diferentes — `fonte atrasada` no primeiro, `fonte
+incompleta` no segundo.
+
+**Nenhum dos dois fechos decidiu a ordem entre as duas condições.**
+[`E-46`](#e-46-fecha-no-consumidor-do-broker-escolhida-em-2026-08-10) escolheu **quem**
+confere a contiguidade, e [`E-47`](#e-47-fecha-na-sentinela-escolhida-em-2026-08-10)
+escolheu **como** o oráculo reconhece o fim do stream; nenhuma das duas linhas comparou
+as duas verificações entre si nem previu o caso em que ambas falham juntas.
+
+**Duas saídas, e o custo de cada uma.**
+
+- **A marca de fim é conferida primeiro**, como em `CONTEXT.md`. Uma execução que nunca
+  alcança o commit final sai `fonte atrasada`, mesmo que o stream recebido até o limite
+  de espera já tivesse um buraco. O custo é descartar informação: o buraco existiu, e o
+  rótulo não o carrega.
+- **A contiguidade é conferida primeiro**, como no card. Uma execução com buraco sai
+  `fonte incompleta`, mesmo que ela também nunca fosse alcançar o commit final. O custo
+  é o mesmo, do lado oposto: o estouro do limite de espera existiu, e o rótulo não o
+  carrega.
+
+```mermaid
+flowchart TD
+    E["a execução termina com<br/>buraco de LSN e estouro do<br/>limite de espera juntos"] --> Q{"qual condição é<br/>conferida primeiro?"}
+    Q -->|" marca de fim<br/>(CONTEXT.md) "| A["fonte atrasada"]
+    Q -->|" contiguidade de LSN<br/>(feature-card.md) "| I["fonte incompleta"]
+```
+
+**Sem recomendação.** A linha nasce com a divergência registrada entre os dois
+documentos, e nenhum dos dois diagramas foi alterado para resolvê-la.
+
+#### `E-49` — o `CONTEXT.md` cita a fila instável, e a citação vira lápide
+
+Aberta em 2026-08-10, achada ao registrar `E-44` e `E-45` no glossário. A pessoa
+objetou ao padrão antes da próxima citação nascer: o `CONTEXT.md` não deveria
+referenciar um arquivo instável como esta fila.
+
+**O problema, na formulação da pessoa.** O [`CONTEXT.md`](../CONTEXT.md) cresce, funde
+e poda linha a linha, pela regra de
+[`Como citar uma linha desta fila`](#como-citar-uma-linha-desta-fila). Um glossário que
+existe para fixar vocabulário estável passa a citar um documento cujo próprio nome —
+fila — é a promessa de que ele muda.
+
+**Até 2026-08-10 o glossário só citava a moldura da fila.** No último commit que
+tocou o arquivo, `a84ce7b` (2026-08-07), havia onze citações, e as onze apontavam
+para heading `##` ou `###` — moldura estrutural, que sobrevive a qualquer poda de
+linha individual: três para
+[`#o-que-esta-fila-enfileira`](#o-que-esta-fila-enfileira), cinco para
+[`#bloco-4`](#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato) e três para
+[`#bloco-3`](#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora).
+
+**As três citações a um fecho de linha individual nasceram neste turno.** Ao registrar
+`E-44` e `E-45` no glossário, este mesmo turno acrescentou uma citação ao
+[`E-44` fecha em reparo imediato](#e-44-fecha-em-reparo-imediato-escolhida-em-2026-08-10)
+e duas ao
+[`E-45` fecha em `fonte incompleta`](#e-45-fecha-em-fonte-incompleta-escolhida-em-2026-08-10),
+levando o total a catorze. Nenhuma citação do glossário a um fecho de linha
+individual existia antes de hoje — foi exatamente essa mudança de padrão que a pessoa
+notou.
+
+**O glossário não é o maior citador desta fila — os ADRs aceitos são.** Por `grep`, em
+2026-08-10: o
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) cita cinco
+vezes, sobre quatro âncoras distintas; o
+[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md)
+cita dez vezes, sobre dez âncoras distintas; o
+[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md) cita
+cinco vezes, sobre cinco âncoras distintas; o
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md) cita
+sete vezes, sobre duas âncoras distintas. As quatro somam vinte e sete citações,
+quase o dobro das catorze do glossário. Isto importa porque um ADR aceito NÃO PODE ser
+editado para desfazer a citação, pelas formas do
+[lifecycle](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07): a
+instabilidade que o problema aponta já produz lápide permanente nos quatro ADRs, e a
+fila não pode desamarrar essas citações mesmo se o glossário parar de citá-la.
+
+**O mecanismo é um cliquet, e ele só gira numa direção.** A regra de poda em
+[A saída, decidida em 2026-08-06](#a-saída-decidida-em-2026-08-06) diz que heading
+citado por documento imutável permanece byte a byte; onde ninguém cita, a narrativa é
+apagada sem lápide. Cada citação externa nova — de um ADR aceito ou do glossário —
+converte uma linha que seria podável em texto permanente, e a fila só encolhe onde
+ninguém apontou. As três citações de hoje já fizeram isso: `E-44` e `E-45` não podem
+mais virar lápide sem quebrar o `CONTEXT.md`.
+
+```mermaid
+flowchart LR
+    L["linha da fila,<br/>ainda podável"] --> C{"algum documento<br/>cita o heading dela?"}
+    C -->|" ADR aceito<br/>ou glossário cita "| P["heading permanece<br/>byte a byte, para sempre"]
+    C -->|" ninguém cita "| D["heading PODE virar<br/>lápide ou ser apagado"]
+    P --> N["a fila não encolhe<br/>naquele ponto"]
+```
+
+**Quatro saídas, e o custo de cada uma.**
+
+| Alternativa | O que faz                                                                                                                 | Custo                                                                                                                                   |
+|-------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| A           | só a moldura é citável: o glossário PODE citar heading estrutural e NÃO DEVE citar fecho de linha individual              | perde-se navegação clicável para o racional de `E-44` e `E-45`; a distinção entre moldura e linha não está escrita em lugar nenhum hoje |
+| B           | nenhuma citação à fila: as 14 saem, e as seis seções `D-DOM-01` a `D-DOM-06` nomeiam a decisão só pelo identificador      | 14 links viram texto; a saída não alcança os ADRs aceitos, que continuam citando a fila e não podem ser editados                        |
+| C           | inverter a direção: o glossário nunca cita a fila; a fila passa a citar o glossário quando uma linha fecha em vocabulário | exige varrer a fila e reescrever os fechos de vocabulário; também não alcança os ADRs aceitos                                           |
+| D           | status quo: a regra de lápide cobre o caso, e nenhuma citação quebrou na poda de 2026-08-10                               | a fila cresce monotonicamente — cada citação externa nova é uma lápide que nunca sai                                                    |
+
+**Sem recomendação.** A linha nasce com o mecanismo e as quatro saídas registrados, e
+nenhum diagrama ou tabela deste repositório foi alterado para escolher entre elas.
+
+#### `E-49` fecha em nenhuma citação à fila, com alcance estendido aos ADRs aceitos, escolhida em 2026-08-10
+
+**Escolhido pela pessoa em 2026-08-10**, pela alternativa `B` — nenhuma citação a esta
+fila sobrevive em documento estável — **estendida a um alcance que a própria linha não
+previa**: as quatro alternativas registradas em `E-49` comparavam apenas o glossário
+contra a fila; a pessoa estendeu a mesma regra aos quatro ADRs aceitos que citam esta
+página, o que nenhuma das quatro enunciava.
+
+**O CONTEXT.md.** As catorze citações da tabela do enunciado saíram. Três delas — as que
+apontavam para o heading estrutural
+[`#o-que-esta-fila-enfileira`](#o-que-esta-fila-enfileira) — viraram menção sem link ao
+substantivo "fila de decisões". As onze restantes — cinco para o
+[Bloco 4](#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato), três para o
+[Bloco 3](#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora)
+e uma para cada um dos fechos de [`E-44`](#e-44-fecha-em-reparo-imediato-escolhida-em-2026-08-10)
+e [`E-45`](#e-45-fecha-em-fonte-incompleta-escolhida-em-2026-08-10) — viraram menção ao
+identificador da decisão (`D-DOM-01` a `D-DOM-06`, `E-44`, `E-45`, `A5`) como texto, sem
+link. Nenhuma das catorze apagou informação: o fato que cada uma sustentava continua no
+glossário, só deixou de ser uma citação formal com caminho e âncora para esta fila.
+
+**Os ADRs aceitos, dentro do que o lifecycle permitiu.** Das vinte e sete citações que o
+enunciado mediu em quatro ADRs, quatro saíram por **patch**, registrado em
+`## Patches aplicados` de cada arquivo alterado, no mesmo commit deste fecho:
+
+| ADR      | Onde               | O que a fila dizia                               | Para onde foi                                                                                                                                 |
+|----------|--------------------|--------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| ADR-0010 | `### Neutras`      | fecho de `E-12`, sobre quem decidiu o transporte | âncora para o próprio [ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão), que existe e fixa o mesmo fato |
+| ADR-0010 | `### Neutras`      | "o que o esqueleto prova e o que ele não prova"  | citação removida; o fato já está evidenciado no `## Contexto` do próprio ADR-0010                                                             |
+| ADR-0010 | `### Neutras`      | "o que `E-18` preserva e o que ela desmonta"     | citação removida; o fato é a própria `## Decisão` do ADR-0010                                                                                 |
+| ADR-0013 | `## Justificativa` | fecho de `E-37`, sobre a guarda de contiguidade  | referência ao item 3 da própria `## Decisão` do ADR-0013                                                                                      |
+
+As quatro se qualificaram como patch porque a correção trocou só a âncora — o fato citado
+continuava vale, e nenhuma mudou a decisão, a justificativa, a alternativa descartada ou o
+trade-off que a citação sustentava, na letra da
+[fronteira objetiva](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) do
+regime de patch.
+
+**O que esta escolha não resolve.** Vinte e três das vinte e sete citações continuam
+citando esta fila, porque nenhuma forma que o lifecycle permite as alcança sem forçar.
+Nomeadas uma a uma:
+
+- **ADR-0010, `### Negativas`** — as duas citações ao fecho aberto de
+  [`E-37`](#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança) ("a fonte do
+  oráculo de capacidade fica sem decisão" e "se a proibição alcança também a leitura
+  direta não está decidido"). Redirecioná-las para o ADR-0013, que fechou `E-37` depois
+  desta escrita, inverteria o que a `## Consequências` deste ADR afirma sobre o próprio
+  estado do ADR-0010 em 2026-08-06 — mudança de consequência, e não de citação.
+- **ADR-0011** — as dez citações, em `## Contexto`, `## Decisão`, `## Justificativa` e
+  `### Neutras`: a tabela de rodadas que sustenta "por que a contagem de quatro deixa de
+  valer", o "sem BFF" dentro de `## Decisão`, e cada trade-off do componente de
+  identidade. Nenhum ADR nem questão registra o mesmo fato; a fila é a única fonte, e
+  remover a citação deixaria a afirmação sem evidência — o que a
+  [política de citação da raiz](../../AGENTS.md#ao-trabalhar-aqui) proíbe.
+- **ADR-0012** — as cinco citações (`E-31`, `E-32`, `E-34`, `E-35`, `E-5`), quatro delas
+  marcando `Pergunta em aberto`. Nenhum `E-*` desta fila tem contraparte em
+  `docs/questions/`, porque a origem `E-*` de um ADR aceito não tem regra de transporte
+  ([`questions/README.md`](../questions/README.md#origem-nova-e-o-que-ainda-não-tem-regra)).
+  Sem alternativa e sem citação, a `## Consequências` ficaria sem evidência nenhuma.
+- **ADR-0013** — as seis restantes: as três ao fecho aberto de
+  [`E-37`](#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança) (`## Relacionado`,
+  `## Contexto` e `## Problema`, estabelecendo o problema que este ADR resolve) e três das
+  quatro ao fecho fechado — o rótulo de `fonte atrasada` versus um rótulo novo, onde a
+  guarda de contiguidade vive, e se a espera de `O19` alcança o oráculo do predicado.
+  As três últimas seguem `Pergunta em aberto` na letra do ADR-0013; as respostas de fato
+  vieram de `E-45`, `E-46` e `E-47`, nenhuma delas um ADR — redirecionar mudaria o que o
+  leitor entende como decidido, sem que nenhum ADR novo tenha sido escrito para isso.
+
+**A consequência sobre a poda.** A saída da citação não fecha lápide nenhuma sozinha —
+[o mecanismo é um cliquet](#e-49--o-contextmd-cita-a-fila-instável-e-a-citação-vira-lápide):
+um heading só volta a ser podável quando **nenhuma** citação externa restar. Apurado em
+2026-08-10, depois desta edição, com o comando abaixo, aplicado a cada heading:
+
+```bash
+python scripts/check_citations.py --root . --quem-cita "docs/adr/fila-de-decisoes.md#<slug>"
+```
+
+| Heading                                                                            | Citantes restantes                                                                         | Elegível para poda?                |
+|------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|------------------------------------|
+| `#e-44-fecha-em-reparo-imediato-escolhida-em-2026-08-10`                           | só internos (`fila-de-decisoes.md:2553`, `:2618`, `:2898`)                                 | **sim**                            |
+| `#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato`                      | só internos (`fila-de-decisoes.md:207`, `:2548`, `:2616`)                                  | **sim**                            |
+| `#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora` | só internos (`:331`, `:2549`, `:2617`)                                                     | **sim**                            |
+| `#e-45-fecha-em-fonte-incompleta-escolhida-em-2026-08-10`                          | só internos (`:2333`, `:2555`, `:2619`)                                                    | **sim**                            |
+| `#e-12-fecha-no-broker-e-o-lsn-é-o-que-torna-a-escolha-defensável`                 | nenhum                                                                                     | **sim**                            |
+| `#o-que-o-esqueleto-prova-e-o-que-ele-não-prova`                                   | nenhum                                                                                     | **sim**                            |
+| `#o-que-e-18-preserva-e-o-que-ela-desmonta`                                        | nenhum                                                                                     | **sim**                            |
+| `#o-que-esta-fila-enfileira`                                                       | `AGENTS.md` (×4), `docs/README.md`, `docs/plano-do-laboratorio.md` (×3), `docs/audits/...` | não — nunca dependeu do CONTEXT.md |
+| `#e-37-fecha-na-proveniência-e-a-contiguidade-deixa-de-ser-opcional`               | `docs/adr/0013-...md:136,141,145` (as três protegidas acima)                               | não                                |
+
+Sete headings ficaram elegíveis. **Nenhum é podado neste ato**: a
+[regra da própria fila](#o-que-esta-fila-enfileira) é que a poda acontece uma linha por
+vez, quando a pessoa escolhe — este fecho apura a elegibilidade, e não decide sobre ela.
+
+**As três descartadas, e o custo de cada uma — da tabela do enunciado.**
+
+- **A** — só a moldura é citável, e fecho de linha individual não. Perde porque a
+  distinção entre "moldura" e "linha" não está escrita em regra nenhuma deste
+  repositório hoje, e a pessoa preferiu não inventar essa fronteira só para justificar
+  duas das catorze citações do CONTEXT.md.
+- **C** — inverter a direção, e a fila passar a citar o glossário. Perde pelo mesmo custo
+  que a tabela já nomeava: exige varrer a fila inteira reescrevendo os fechos de
+  vocabulário, e não alcança os ADRs aceitos, que continuam citando esta página nos
+  pontos que o lifecycle não libera.
+- **D** — manter o status quo, confiando na regra de lápide. Perde porque é exatamente o
+  crescimento monotônico que a pessoa objetou: cada citação nova de um documento estável
+  converte uma linha podável em permanente, e nada neste fecho aceita continuar
+  produzindo esse efeito.
 
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 
@@ -2648,11 +2895,13 @@ arquivos excedem o genérico sem que nada falhe:
 | `docs/features/README.md`                | 4.616        | genérico, 4.000    |
 
 **A foto acima é de 2026-08-08, e um dos seis já cresceu.** A correção do glossário
-decidida em [`E-44`](#e-44-fecha-em-reparo-imediato-escolhida-em-2026-08-10) acrescentou
-prosa ao `docs/CONTEXT.md`, que passou de 35.633 para 37.328 caracteres em 2026-08-10 —
-mais de nove vezes o teto genérico, sem que nada falhasse, porque ele segue fora do glob do
-workflow. A tabela **não** é atualizada: ela é a medição daquela data. O que este parágrafo
-registra é que a linha aberta tem custo crescente, e não que a foto esteja errada.
+decidida em [`E-44`](#e-44-fecha-em-reparo-imediato-escolhida-em-2026-08-10), e o
+registro da dívida nomeada que ela deixou, acrescentaram prosa ao `docs/CONTEXT.md`, que
+passou de 35.633 para 38.079 caracteres em 2026-08-10, medidos por
+`check_artifact_limits.py` — mais de nove vezes o teto genérico, sem que nada falhasse,
+porque ele segue fora do glob do workflow. A tabela **não** é atualizada: ela é a
+medição daquela data. O que este parágrafo registra é que a linha aberta tem custo
+crescente, e não que a foto esteja errada.
 
 **Duas coisas distintas estão fundidas.** Um teto que descreve mal o artefato é defeito de
 regra; um teto que ninguém executa é defeito de alcance. A isenção de `AGENTS.md` e

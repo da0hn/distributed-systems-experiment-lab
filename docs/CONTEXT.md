@@ -3,8 +3,8 @@
 O vocabulário de um único contexto: um instrumento que reproduz, observa e compara
 fenômenos de sistemas distribuídos. Não há domínio de negócio aqui, por decisão.
 
-- **Estado:** Proposta — as decisões de vocabulário `D-DOM-NN` vivem na
-  [fila de decisões](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira), e não aqui
+- **Estado:** Proposta — as decisões de vocabulário `D-DOM-NN` vivem na fila de
+  decisões, e não aqui
 - **Data:** 2026-08-03; termos convertidos para inglês e as quatro decisões de
   vocabulário tomadas em 2026-08-04
 - **Escopo:** consolidar a linguagem ubíqua do laboratório, marcando o que vem de ADR
@@ -38,8 +38,11 @@ português. Eles descrevem o processo deste repositório e nunca viram identific
 ## Como ler cada entrada
 
 Cada termo traz um estado, uma definição de uma ou duas frases, e a evidência com
-arquivo e linha. `_Evite_` lista as palavras **inglesas** que este glossário recusa para
-o mesmo conceito. `_Não é_` aparece só onde existe risco concreto de confusão.
+arquivo e **âncora nomeada**, na forma que a decisão `C-1` exige. Uma entrada que ainda
+cita por número de linha não é só forma legada: pelo menos quatro já apontam para o
+trecho errado do ADR-0002, porque o documento mudou depois da citação, e o fecho de
+`E-44` nomeia quais. `_Evite_` lista as palavras **inglesas** que este glossário recusa
+para o mesmo conceito. `_Não é_` aparece só onde existe risco concreto de confusão.
 
 O nome português de cada termo aparece **uma vez só**, na tabela de de/para. Ele não é
 repetido dentro da entrada, para que os dois lugares não possam divergir.
@@ -428,10 +431,13 @@ _Evidência_: `docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:128-130`;
 ### A medida e o veredito
 
 **oracle** — `estabelecido`
-O procedimento do Lab Plane que compara o estado final do banco com o resultado que o
-experimento declarou esperar. Ele lê o banco, e não o log de observações.
+O procedimento do Lab Plane que compara o estado final do sistema medido com o resultado
+que o experimento declarou esperar. Ele lê fonte produzida pelas **escritas reais** — hoje,
+o WAL —, e nunca o log de observações do instrumento.
 _Evite_: checker, assert, validator.
-_Evidência_: `docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:26-27,214-217`
+_Evidência_:
+`docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações`;
+`docs/adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão`
 
 **exact oracle** — `estabelecido`
 O oráculo do contador, que produz `perdidas = commits − (value_final − value_inicial)`.
@@ -439,9 +445,14 @@ _Evite_: counter oracle, numeric oracle.
 _Evidência_: `docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:135-141`
 
 **predicate oracle** — `estabelecido`
-O oráculo da capacidade, que avalia `Σ amount ≤ capacity` com um `SELECT sum` emitido
-depois do fim da execução. O veredito é booleano e carrega os dois números.
-_Evidência_: `docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:186-190`
+O oráculo da capacidade, que avalia `Σ amount ≤ capacity` depois do fim da execução.
+`Σ amount` vem dos eventos de `INSERT` no WAL, e **não** de um `SELECT` no schema do
+sistema medido; a soma é precedida da guarda de contiguidade de LSN. O veredito é
+booleano e carrega os dois números.
+_Evidência_:
+`docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-do-predicado`;
+`docs/adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão`;
+`docs/adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão`
 
 **commits** — `estabelecido`
 O número de passagens pela fronteira `AFTER_COMMIT`, contadas por tentativa. É o
@@ -590,9 +601,11 @@ _Evidência_: `docs/adr/0001-o-passo-como-unidade-de-execucao.md:245-254`
 **observation log** — `estabelecido`
 A sequência apensável de eventos, uma por execução, em memória, populada pelo runtime.
 _Evite_: history, event store, audit. _Não
-é_: fonte para o oráculo. Os dois oráculos leem o banco.
+é_: fonte para o oráculo. A fonte legítima é a produzida pelas escritas reais, e não pelo
+instrumento.
 _Evidência_: `docs/adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md:85-88`;
-`docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:214-217`
+`docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações`;
+`docs/adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão`
 
 **raw facts** — `estabelecido`
 O payload opaco que um passo devolve ao runtime, presente só nos eventos de resultado
@@ -659,9 +672,8 @@ _Evidência_: `docs/plano-do-laboratorio.md:339-352`
 ### Os contextos propostos
 
 Os seis contextos que nasciam aqui — `D-DOM-07` a `D-DOM-12` — não são vocabulário
-vigente: sem decisão, eles pertencem à
-[fila de decisões](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira), e o desenho deles
-continua em [`modelo-de-dominio.md`](adr/arquivo/proposta-2026-08-03/modelo-de-dominio.md).
+vigente: sem decisão, eles pertencem à fila de decisões, e o desenho deles continua em
+[`modelo-de-dominio.md`](adr/arquivo/proposta-2026-08-03/modelo-de-dominio.md).
 
 A entrada abaixo fica porque é termo, e não contexto.
 
@@ -718,50 +730,45 @@ flowchart TD
 ## As seis decisões de vocabulário
 
 `D-DOM-01` a `D-DOM-06` são decisões, e não vocabulário: o enunciado, as alternativas, a
-recomendação e a escolha de cada uma pertencem à fila —
-[Bloco 4](adr/fila-de-decisoes.md#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato)
-para as quatro fechadas em 2026-08-04, e
-[Bloco 3](adr/fila-de-decisoes.md#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora)
-para as duas abertas. O que cada escolha fixou já está escrito no estado dos termos
-acima, e as seis lápides abaixo dizem apenas isso.
+recomendação e a escolha de cada uma pertencem à fila de decisões — Bloco 4 para as
+quatro fechadas em 2026-08-04, e Bloco 3 para as duas abertas. O que cada escolha fixou
+já está escrito no estado dos termos acima, e as seis lápides abaixo dizem apenas isso.
 
 ### D-DOM-01 — Se `run` e `execution` nomeiam níveis diferentes
 
 Fechada em 2026-08-04: `run` nomeia o nível do experimento, e `operation execution` o do
-worker. O debate está na
-[fila, Bloco 4](adr/fila-de-decisoes.md#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato).
+worker. O debate está na fila de decisões, na decisão `D-DOM-01`, Bloco 4.
 
 ### D-DOM-02 — Como separar `Control Plane` de `control run`
 
 Fechada em 2026-08-04, contra a recomendação: o plano medido passa a se chamar `system
 under test`, e `Control Plane` está `aposentado`. O debate, o inventário das 95
-ocorrências e a pergunta aberta sobre os nomes de pacote estão na
-[fila, Bloco 4](adr/fila-de-decisoes.md#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato).
+ocorrências e a pergunta aberta sobre os nomes de pacote estão na fila de decisões, na
+decisão `D-DOM-02`, Bloco 4.
 
 ### D-DOM-03 — Se `barrier` continua na linguagem
 
 Fechada em 2026-08-04: `barrier` está `aposentado`, e a palavra PODE aparecer em citação
 histórica. O debate, e a pendência de separar citação de termo vivo nos arquivos
-editáveis que ainda a usam, estão na
-[fila, Bloco 4](adr/fila-de-decisoes.md#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato).
+editáveis que ainda a usam, estão na fila de decisões, na decisão `D-DOM-03`, Bloco 4.
 
 ### D-DOM-04 — Como nomear os dois sentidos de `strategy`
 
 Fechada em 2026-08-04: `strategy` nomeia a composição de passos do sistema medido, e
-`strategy label` o dado opaco de configuração do Lab Plane. O debate está na
-[fila, Bloco 4](adr/fila-de-decisoes.md#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato).
+`strategy label` o dado opaco de configuração do Lab Plane. O debate está na fila de
+decisões, na decisão `D-DOM-04`, Bloco 4.
 
 ### D-DOM-05 — Se `verdict` vira quatro termos
 
 **Aberta.** Nenhuma alternativa foi escolhida, e este glossário não escolhe: enquanto a
-composição dos formatos não for decidida, `verdict` é um termo só. A linha está na
-[fila, Bloco 3](adr/fila-de-decisoes.md#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora).
+composição dos formatos não for decidida, `verdict` é um termo só. A linha está na fila
+de decisões, na decisão `D-DOM-05`, Bloco 3.
 
 ### D-DOM-06 — O que `N` conta
 
 **Aberta.** A entrada `N` acima carrega a leitura em disputa, e a questão é
-[`Q-0003-8`](questions/Q-0003-8.md). A linha está na
-[fila, Bloco 3](adr/fila-de-decisoes.md#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora).
+[`Q-0003-8`](questions/Q-0003-8.md). A linha está na fila de decisões, na decisão
+`D-DOM-06`, Bloco 3.
 
 ## Perguntas em aberto
 
@@ -771,9 +778,13 @@ arquivo, [`Q-0003-8`](questions/Q-0003-8.md) e [`Q-0004-3`](questions/Q-0004-3.m
 
 ## Os dois rótulos do instrumento, decididos em 2026-08-05
 
-Entram pela decisão `A3`. Os dois falam do **instrumento**, e nenhum é veredito sobre o
-system under test — confundir isso transforma falha de medição em resultado de
-consistência.
+**A contagem no título deste heading não vale mais**: desde 2026-08-10 os rótulos do
+instrumento são três, pela decisão `E-45` da fila de decisões. O título permanece porque
+um ADR aceito e a fila o citam por esta âncora.
+
+**fontes divergentes** e **fonte atrasada** entram pela decisão `A3`; **fonte incompleta**
+entra por `E-45`. Os três falam do **instrumento**, e nenhum é veredito sobre o system
+under test — confundir isso transforma falha de medição em resultado de consistência.
 
 **fontes divergentes** — `estabelecido` desde `O14`, em 2026-08-05
 As duas fontes de observação alcançaram o commit final e **discordam**. O nome
@@ -788,14 +799,29 @@ fonte deixar de ser CDC, o rótulo mente; `espera do observador esgotada`, longo
 para um rótulo que aparece ao lado de `protegido` e `violado`; `observação incompleta`,
 por não dizer o que falhou nem por quê.
 
-**Os dois formam um par legível, e é por isso que são dois.** Uma fonte diverge; a outra
-não chega. Um rótulo só esconderia qual componente falhou.
+**fonte incompleta** — `estabelecido` desde `E-45`, em 2026-08-10
+A fonte **alcançou** o ponto declarado e chegou **incompleta**: a sequência de LSN tem
+buraco. A execução é invalidada, e o oráculo não produz veredito.
+_Não é_: `fonte atrasada`, porque a fonte chegou; nem `fontes divergentes`, porque o
+defeito é buraco dentro de **uma** fonte, e não desacordo entre duas.
+_Evidência_: a decisão `E-45` da fila de decisões;
+`docs/adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão`
+
+**O par original é legível, e é por isso que eram dois.** Uma fonte diverge; a outra não
+chega. Um rótulo só esconderia qual componente falhou.
+
+**O terceiro não desfaz o par, e entra por outro motivo.** O par separa duas falhas do
+mesmo momento — o commit final —, e nenhuma das duas perguntas alcança uma fonte que
+chega, e chega incompleta. Uma fonte diverge; a outra não chega; a terceira chega
+incompleta.
 
 ```mermaid
 flowchart TD
     E["a execução termina"] --> Q{"as duas fontes<br/>alcançaram o commit final?"}
     Q -->|" não "| A["fonte atrasada"]
-    Q -->|" sim "| D{"elas concordam?"}
+    Q -->|" sim "| C{"a sequência de LSN<br/>é contígua?"}
+    C -->|" não "| I["fonte incompleta"]
+    C -->|" sim "| D{"elas concordam?"}
     D -->|" não "| F["fontes divergentes"]
     D -->|" sim "| V["o veredito do experimento"]
 ```
@@ -803,7 +829,9 @@ flowchart TD
 Os dois entram na tabela de classificação do ADR-0004 por **subsunção**, pelo caminho
 que o ADR-0005 usou para acrescentar o sexto valor: o ADR-0004 permanece `Aceito`, os
 cinco valores dele continuam válidos para o caso que enxergavam, e os rótulos novos
-cobrem o caso que nenhum previa.
+cobrem o caso que nenhum previa. **`fonte incompleta` entra pelo mesmo caminho**, agora
+percorrido uma terceira vez: nada no ADR-0004 é reaberto, e o rótulo cobre o caso que
+nem os cinco valores nem o par enxergavam.
 
 ## A sigla `SUT` no código, decidida em 2026-08-05
 
@@ -815,9 +843,8 @@ de pé.
 pacote, classe, variável ou coluna, `sut` é permitido e preferido — a sigla é padrão na
 literatura de teste, e o nome por extenso não cabe num segmento de pacote.
 
-A justificativa da separação e as alternativas descartadas pertencem à
-[fila de decisões](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira), na linha `A5` de
-2026-08-05.
+A justificativa da separação e as alternativas descartadas pertencem à fila de
+decisões, na linha `A5` de 2026-08-05.
 
 **A entrada `system under test` não foi editada, e isso é deliberado.** Ela está nas
 linhas que o ADR-0009 cita por número, e deslocá-las quebraria quatro citações dentro de

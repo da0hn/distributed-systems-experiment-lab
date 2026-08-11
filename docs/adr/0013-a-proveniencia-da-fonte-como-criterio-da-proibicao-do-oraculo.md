@@ -14,6 +14,8 @@
   Usa a detecção de buraco de LSN do
   [ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão).
 
+- **Última atualização:** 2026-08-10, pelo patch registrado no fim deste arquivo.
+
 ## Contexto
 
 O [ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações)
@@ -108,8 +110,8 @@ recência não sofre disso, porque um evento perdido no meio do stream não muda
 **último** valor visto. A guarda de contiguidade de LSN, que o
 [ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
 já usa para detectar buraco antes de calcular o veredito, repõe a completude que o
-`SELECT sum` garantia pela visão transacional da consulta
-([`E-37`, fecho](fila-de-decisoes.md#e-37-fecha-na-proveniência-e-a-contiguidade-deixa-de-ser-opcional)).
+`SELECT sum` garantia pela visão transacional da consulta — a mesma completude que o
+item 3 de [`## Decisão`](#decisão) deste ADR exige antes de somar.
 
 ## Consequências
 
@@ -205,8 +207,10 @@ transporte, e não a exceção, reabrindo a discussão que o custo desta decisã
 
 ## Patches aplicados
 
-Nenhum patch aplicado.
-
 O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
+
+| Data       | Seção do corpo     | O que mudou                                                                                       | Por quê                                                                                                                             |
+|------------|--------------------|---------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-10 | `## Justificativa` | a citação ao fecho de `E-37` na fila virou referência ao item 3 de `## Decisão` deste próprio ADR | documentos estáveis deixam de citar a fila de decisões, que cresce, funde e poda linha a linha; o argumento e a decisão não mudaram |

@@ -8,6 +8,8 @@
   atualização` e `Alterado por` no mesmo commit. Depende do
   [ADR-0001](0001-o-passo-como-unidade-de-execucao.md), que fixa `AFTER_COMMIT`.
 
+- **Última atualização:** 2026-08-10, pelo patch registrado no fim deste arquivo.
+
 ## Contexto
 
 Três serviços têm cada um o próprio schema, sem acesso cruzado: os três papéis recebem
@@ -135,14 +137,13 @@ ninguém decidiu: `Pergunta em aberto`.
 
 ### Neutras
 
-- O transporte entre o WAL e o oráculo — conector, broker, filtro por execução — já foi
-  decidido na fila (`E-12`, `E-28`, `E-29`) e fica para o ADR-0012, que depende deste
-  ([`fila-de-decisoes.md`](fila-de-decisoes.md#e-12-fecha-no-broker-e-o-lsn-é-o-que-torna-a-escolha-defensável)).
-- Hoje só `wal_level=logical` e `REPLICATION` existem; o oráculo não, e o CDC está
-  provisionado mas não consumido
-  ([`fila-de-decisoes.md`](fila-de-decisoes.md#o-que-o-esqueleto-prova-e-o-que-ele-não-prova)).
-  O CDC deixa de ser infraestrutura da etapa 5, e entra no dia zero
-  ([`fila-de-decisoes.md`](fila-de-decisoes.md#o-que-e-18-preserva-e-o-que-ela-desmonta)).
+- O transporte entre o WAL e o oráculo — conector, broker, filtro por execução — está
+  descrito no
+  [ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão),
+  que depende deste.
+- Hoje só `wal_level=logical` e `REPLICATION` existem, como o `## Contexto` acima já
+  evidencia; o oráculo não, e o CDC está provisionado mas não consumido. O CDC deixa de
+  ser infraestrutura da etapa 5 e entra no dia zero — a própria decisão deste ADR.
   `commits` segue contagem interna do `lab-plane`.
 
 ## Trade-offs
@@ -182,8 +183,10 @@ falha que o laboratório estuda.
 
 ## Patches aplicados
 
-Nenhum patch aplicado.
-
 O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
+
+| Data       | Seção do corpo | O que mudou                                                                                                                                                                                                                                                                                                | Por quê                                                                                                                             |
+|------------|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-10 | `### Neutras`  | a citação ao fecho de `E-12` na fila virou âncora para `0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão`; as duas citações à fila sobre o estado do esqueleto e sobre `E-18` foram removidas, por já estarem evidenciadas no `## Contexto` e na própria `## Decisão` deste ADR | documentos estáveis deixam de citar a fila de decisões, que cresce, funde e poda linha a linha; a decisão e o argumento não mudaram |
