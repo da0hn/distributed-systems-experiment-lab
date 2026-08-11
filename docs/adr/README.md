@@ -112,21 +112,22 @@ O motivo do arquivamento e o que sobreviveu estão em
 
 ## Índice
 
-| ADR                                                                            | Título                                                                  | Estado   |
-|--------------------------------------------------------------------------------|-------------------------------------------------------------------------|----------|
-| [0001](0001-o-passo-como-unidade-de-execucao.md)                               | O passo como unidade de execução, observação e injeção de falha         | `Aceito` |
-| [0002](0002-o-dominio-minimo-e-os-dois-oraculos.md)                            | O domínio mínimo: contador com oráculo exato e predicado de capacidade  | `Aceito` |
-| [0003](0003-a-linguagem-do-agendamento.md)                                     | A linguagem do agendamento: como uma barreira é declarada               | `Aceito` |
-| [0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)       | O estatuto da barreira e o diagnóstico da não ocorrência                | `Aceito` |
-| [0005](0005-a-forma-do-escalonador.md)                                         | A forma do escalonador: estado, decisão e protocolo de desistência      | `Aceito` |
-| [0006](0006-a-forma-da-estrategia-de-concorrencia.md)                          | A forma da estratégia de concorrência: contrato plugável e calibração   | `Aceito` |
-| [0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md)                   | O log de observações: forma, ordem e onde vive                          | `Aceito` |
-| [0008](0008-os-dois-planos-em-processos-separados.md)                          | Os dois planos em processos separados, desde o dia zero                 | `Aceito` |
-| [0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)             | A classificação do dual write e a região de pacote do sistema sob teste | `Aceito` |
-| [0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md)           | A fronteira de schema e o CDC como fonte do veredito                    | `Aceito` |
-| [0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md) | A topologia de serviços e o caderno de laboratório fora do Git          | `Aceito` |
-| [0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md)    | O broker no caminho do veredito, e a dispensa que ele exigiu            | `Aceito` |
-| [0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md)  | A proveniência da fonte como critério da proibição do oráculo           | `Aceito` |
+| ADR                                                                                 | Título                                                                  | Estado   |
+|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------|----------|
+| [0001](0001-o-passo-como-unidade-de-execucao.md)                                    | O passo como unidade de execução, observação e injeção de falha         | `Aceito` |
+| [0002](0002-o-dominio-minimo-e-os-dois-oraculos.md)                                 | O domínio mínimo: contador com oráculo exato e predicado de capacidade  | `Aceito` |
+| [0003](0003-a-linguagem-do-agendamento.md)                                          | A linguagem do agendamento: como uma barreira é declarada               | `Aceito` |
+| [0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)            | O estatuto da barreira e o diagnóstico da não ocorrência                | `Aceito` |
+| [0005](0005-a-forma-do-escalonador.md)                                              | A forma do escalonador: estado, decisão e protocolo de desistência      | `Aceito` |
+| [0006](0006-a-forma-da-estrategia-de-concorrencia.md)                               | A forma da estratégia de concorrência: contrato plugável e calibração   | `Aceito` |
+| [0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md)                        | O log de observações: forma, ordem e onde vive                          | `Aceito` |
+| [0008](0008-os-dois-planos-em-processos-separados.md)                               | Os dois planos em processos separados, desde o dia zero                 | `Aceito` |
+| [0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)                  | A classificação do dual write e a região de pacote do sistema sob teste | `Aceito` |
+| [0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md)                | A fronteira de schema e o CDC como fonte do veredito                    | `Aceito` |
+| [0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md)      | A topologia de serviços e o caderno de laboratório fora do Git          | `Aceito` |
+| [0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md)         | O broker no caminho do veredito, e a dispensa que ele exigiu            | `Aceito` |
+| [0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md)       | A proveniência da fonte como critério da proibição do oráculo           | `Aceito` |
+| [0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md) | O broker na travessia da observação, e o cursor monotônico do replay    | `Aceito` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele
 **não decide nada** — é a análise que define quais decisões precisam ser tomadas e em

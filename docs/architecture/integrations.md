@@ -92,7 +92,7 @@ que a consumiria não existe. É provisionamento sem consumo, e está assim de p
 ## A topologia decidida, e o que falta dela
 
 O diagrama abaixo mostra **apenas o que falta**: os elementos e as travessias que os ADRs
-0010, 0011 e 0012 fixaram e que nenhum arquivo da árvore implementa. Ele não repete
+0010, 0011, 0012 e 0014 fixaram e que nenhum arquivo da árvore implementa. Ele não repete
 nenhuma aresta do diagrama anterior.
 
 ```mermaid
@@ -104,11 +104,12 @@ flowchart TB
     ID["serviço de identidade<br/>sem schema"]
     W[("WAL do sut")]
     DS["Debezium Server<br/>pgoutput, processo próprio"]
-    RB["RabbitMQ<br/>instância única"]
+    RB["RabbitMQ<br/>instância única, agora também<br/>no caminho da observação"]
     LP -->|" deriva ids na fase de seeding "| ID
     LP -->|" chamada de passo, por rede "| ST
-    LP -->|" observação, evento por evento "| LJ
-    LJ -->|" SSE da timeline "| FE
+    LP -->|" observação "| RB
+    RB -->|" consumo, persiste antes de emitir "| LJ
+    LJ -->|" SSE, replay por cursor "| FE
     W --> DS
     DS -->|" o evento carrega o LSN "| RB
     RB -->|" consumo, filtro no consumidor "| LP
@@ -125,10 +126,11 @@ constrói o oráculo com `SELECT` cruzado, que os ADRs 0010 e 0012 proíbem.
 |---------------------|----------------------------------|------------------------------------------------------|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|-----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `frontend`          | `lab-plane`                      | HTTP, prefixo `/api/runs`                            | comandar uma execução de experimento                  | `decidido/não implementado` — a rota existe em dois roteadores, o endpoint não                                       | nenhum; `Q-INT-1`                 | [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff); `frontend/nginx.conf:13`; `frontend/vite.config.ts:16`                                                                               |
 | `frontend`          | `lab-journal`                    | HTTP, prefixo `/api/journal`                         | ler o caderno e o histórico de execuções              | `decidido/não implementado` — a rota existe em dois roteadores, o endpoint não                                       | nenhum; `Q-INT-1`                 | [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff); `frontend/nginx.conf:18`; `frontend/vite.config.ts:17`                                                                               |
-| `frontend`          | `lab-journal`                    | SSE, sobre o mesmo prefixo                           | alimentar a timeline ao vivo                          | `decidido/não implementado` — o nginx já desliga buffer e cache; nada emite evento                                   | nenhum; `Q-INT-2`                 | `frontend/nginx.conf:22-27`; [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff)                                                                                                          |
+| `frontend`          | `lab-journal`                    | SSE, `Last-Event-ID` e replay por cursor             | alimentar a timeline ao vivo, e repor o histórico      | `decidido/não implementado` — o nginx já desliga buffer e cache; nada emite evento                                   | nenhum                            | `frontend/nginx.conf:22-27`; [ADR-0014](../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-replay-por-cursor-é-o-único-mecanismo-com-ou-sem-histórico-completo)                                                                                   |
 | `lab-plane`         | serviço de identidade            | chamada de rede, na fase de seeding                  | derivar identificadores a partir da semente           | `decidido/não implementado` — não há módulo, imagem nem papel no banco                                               | nenhum                            | [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade)                                                                                                                                                                |
 | `lab-plane`         | `system-under-test`              | chamada de passo, por rede; sentido inverso proibido | executar cada passo da operação medida                | `decidido/não implementado` — os dois processos sobem; nenhuma chamada existe                                        | nenhum                            | [ADR-0008](../adr/0008-os-dois-planos-em-processos-separados.md#decisão); `system-under-test/pom.xml` não declara dependência do `lab-plane`                                                                                                                                        |
-| `lab-plane`         | `lab-journal`                    | observação, evento por evento, ao vivo               | alimentar o caderno durante a execução                | `decidido/não implementado`                                                                                          | nenhum                            | [ADR-0010](../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão); a tensão com a janela medida está nas [negativas](../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#negativas)                                                           |
+| `lab-plane`         | RabbitMQ                         | AMQP; mensagem de negócio, sem LSN                   | levar a observação até o `lab-journal`                | `decidido/não implementado`                                                                                          | nenhum                            | [ADR-0014](../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-evento-sai-do-passo-pelo-broker)                                                                                                                                                    |
+| RabbitMQ            | `lab-journal`                    | AMQP; persiste, depois emite                         | alimentar o caderno durante a execução                | `decidido/não implementado`                                                                                          | nenhum                            | [ADR-0014](../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#no-lab-journal-a-ordem-é-serial-persiste-depois-emite)                                                                                                                                |
 | `system-under-test` | PostgreSQL, schema `sut`         | JDBC, uma conexão por worker                         | executar as operações do sistema medido               | `implementado` — conexão e schema existem; `resource` e `allocation` não                                             | esquema ainda em prosa; `Q-INT-5` | `system-under-test/src/main/resources/application.yml:12-23`; `system-under-test/src/main/resources/db/migration/V1__criar_schema_do_sut.sql`                                                                                                                                       |
 | `lab-plane`         | PostgreSQL, schema `lab_plane`   | JDBC                                                 | schema próprio do instrumento, hoje sem tabela        | `implementado` — schema vazio; a primeira tabela depende de decisão em aberto                                        | —                                 | `lab-plane/src/main/resources/application.yml:12-18`; `lab-plane/src/test/java/dev/da0hn/lab/application/labplane/LabPlaneApplicationTests.java:36-43`; [ADR-0012, negativas](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)                 |
 | `lab-journal`       | PostgreSQL, schema `lab_journal` | JDBC                                                 | guardar a definição e o resultado de cada experimento | `implementado` — schema vazio                                                                                        | —                                 | `lab-journal/src/main/resources/application.yml:11-17`; [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)                                                                                               |
@@ -256,11 +258,13 @@ proxy do Vite. O que continua sem decisão é o resto: quais recursos existem, q
 formato do relatório e qual o corpo de cada requisição. Enquanto isso, `contracts/openapi/`
 não é criado.
 
-**`Q-INT-2` — o mecanismo de streaming não foi escolhido por ADR.** O `nginx.conf` já
-pressupõe SSE e desliga buffer e cache por causa dele, e a rodada de arquitetura propôs
-SSE com dois limiares numéricos — que ninguém mediu, como registra
-[`Q-0022`](../questions/Q-0022.md). Configuração implementada não é decisão tomada: a
-escolha entre SSE e WebSocket, e o critério que a dispara, continuam sem ADR.
+**`Q-INT-2` — resolvida.** O mecanismo é **SSE, com `Last-Event-ID` e replay por
+cursor**, decidido pelo
+[ADR-0014](../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-replay-por-cursor-é-o-único-mecanismo-com-ou-sem-histórico-completo),
+sem condicionar a escolha a um limiar. O `nginx.conf` já pressupunha SSE; o que faltava
+era o ADR. Os dois limiares que a rodada de arquitetura propôs para trocar polling por
+SSE — nunca medidos, como registra [`Q-0022`](../questions/Q-0022.md) — perderam a
+premissa: o ADR-0014 não condiciona o mecanismo a um número de eventos.
 
 **`Q-INT-3` — resolvida.** O PostgreSQL é o **compartilhado da Camada 6 do homelab**, com
 schema por aplicação — decidido em 2026-08-06, contra a recomendação, e registrado nas

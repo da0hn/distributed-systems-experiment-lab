@@ -68,7 +68,7 @@ decisão registrada, e este card não o decide.
 | R9  | `COMMIT` é o retorno do callback do `TransactionTemplate`, não um passo. `AFTER_COMMIT` é a primeira fronteira depois do escopo.                                                                          | [ADR-0001, A transação é demarcada através do Spring](../../adr/0001-o-passo-como-unidade-de-execucao.md#a-transação-é-demarcada-através-do-spring-não-no-lugar-dele)           | pendente     |
 | R10 | Um teste executável **DEVE** provar que as duas resoluções emitem o mesmo traço de SQL numa execução sem concorrência. Sem esse teste, a cláusula de honestidade **NÃO DEVE** ser considerada satisfeita. | [ADR-0001, A equivalência entre as duas resoluções](../../adr/0001-o-passo-como-unidade-de-execucao.md#a-equivalência-entre-as-duas-resoluções-é-provada-por-teste)             | pendente     |
 | R11 | Toda anomalia reproduzida com barreiras **DEVE** aparecer também sem barreiras, sob carga alta.                                                                                                           | [ADR-0001, A cláusula de honestidade](../../adr/0001-o-passo-como-unidade-de-execucao.md#a-cláusula-de-honestidade)                                                             | pendente     |
-| R12 | As observações **DEVEM** atravessar para o `lab-journal` ao vivo, evento por evento. O Lab Plane **NÃO DEVE** acumulá-las para enviar ao fim da execução.                                                 | [ADR-0010, Decisão](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)                                                                             | pendente     |
+| R12 | As observações **DEVEM** atravessar para o `lab-journal` ao vivo, evento por evento, pelo broker que o ADR-0012 introduziu. O Lab Plane **NÃO DEVE** acumulá-las para enviar ao fim da execução.          | [ADR-0014, O evento sai do passo pelo broker](../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-evento-sai-do-passo-pelo-broker)          | pendente     |
 
 O critério de igualdade entre dois traços foi fixado depois, pelo
 [`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-critério-de-igualdade-entre-dois-traços-de-sql).
@@ -79,19 +79,24 @@ Um passo emite SQL real contra o PostgreSQL, numa transação real. Não há con
 formalizado: o esquema existe apenas como prosa no ADR-0002 — ver `Q-INT-5` em
 [`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto).
 
-**Cada observação atravessa a rede até o `lab-journal` no instante em que nasce**, desde o
-[`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md). O
-`lab-journal` é serviço próprio, com schema próprio, e o Lab Plane não escreve no schema
-dele por acesso direto. **Nenhum contrato formaliza essa travessia.**
+**Cada observação atravessa a rede até o `lab-journal` no instante em que nasce, pelo
+broker do**
+[`ADR-0012`](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md),
+mecanismo fixado pelo
+[`ADR-0014`](../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#decisão).
+O `lab-journal` é serviço próprio, com schema próprio, e o Lab Plane não escreve no
+schema dele por acesso direto. **Nenhum contrato formaliza essa travessia** — a forma
+concreta do registro é pergunta em aberto do próprio ADR-0014.
 
 ## Riscos e decisões pendentes
 
-| Questão                                   | O que está em jogo                                                                                                                                                  |
-|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [`Q-0001-1`](../../questions/Q-0001-1.md) | o corpo de um passo muda com o rótulo intacto, e o replay mede outra operação em silêncio; quatro candidatas de mecanismo, nenhuma escolhida                        |
-| [`Q-0002-1`](../../questions/Q-0002-1.md) | "relógio injetável" e "aleatoriedade semeada" são texto, não regra executável; uma chamada a `Instant.now()` faz R10 reprovar um par correto, de forma intermitente |
-| [`Q-0004-2`](../../questions/Q-0004-2.md) | nada obriga um passo a reportar a chave de contenção                                                                                                                |
-| a emissão ao vivo entra na janela medida  | o E1 emite de 900 a 1500 observações por execução, e cada travessia é somada ao que se mede; o buffer local não bloqueante existe como saída e não foi escolhido    |
+| Questão                                      | O que está em jogo                                                                                                                                                                                                                                                                                                                 |
+|----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`Q-0001-1`](../../questions/Q-0001-1.md)    | o corpo de um passo muda com o rótulo intacto, e o replay mede outra operação em silêncio; quatro candidatas de mecanismo, nenhuma escolhida                                                                                                                                                                                       |
+| [`Q-0002-1`](../../questions/Q-0002-1.md)    | "relógio injetável" e "aleatoriedade semeada" são texto, não regra executável; uma chamada a `Instant.now()` faz R10 reprovar um par correto, de forma intermitente                                                                                                                                                                |
+| [`Q-0004-2`](../../questions/Q-0004-2.md)    | nada obriga um passo a reportar a chave de contenção                                                                                                                                                                                                                                                                               |
+| a emissão ao vivo saiu do caminho bloqueante | o [`ADR-0014`](../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#negativas) tira as 900 a 1500 travessias do E1 da janela medida, mas o broker PODE duplicar, reordenar ou perder mensagem sem LSN para deduplicar                                                                             |
+| [`Q-0004-3`](../../questions/Q-0004-3.md)    | se a contagem de coincidências do ADR-0004 ler este log e uma observação se perder em trânsito, a contagem cai a zero e produz `protegido` sobre banco violado — [`ADR-0014`](../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#negativas) não fecha nem essa nem a monotonicidade do instante |
 
 ## Critérios de pronto
 

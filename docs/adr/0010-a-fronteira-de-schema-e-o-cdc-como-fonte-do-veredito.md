@@ -8,7 +8,12 @@
   atualização` e `Alterado por` no mesmo commit. Depende do
   [ADR-0001](0001-o-passo-como-unidade-de-execucao.md), que fixa `AFTER_COMMIT`.
 
-- **Última atualização:** 2026-08-10, pelo patch registrado no fim deste arquivo.
+- **Última atualização:** 2026-08-10, pelo patch registrado no fim deste arquivo e pela
+  emenda abaixo.
+- **Alterado por:**
+  [ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)
+  — emenda; a regra de que as observações atravessam "ao vivo, evento por evento" sem
+  mecanismo fixado, em ## Decisão, passa a nomear o broker do ADR-0012 como o transporte.
 
 ## Contexto
 

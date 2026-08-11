@@ -11,6 +11,12 @@
 - **Reencaminha:** [`Q-0001-1`](../questions/Q-0001-1.md) para Experiment, e a metade
   medida de `Q-0003-3` para os dois formatos de veredito.
 
+- **Última atualização:** 2026-08-10
+- **Alterado por:**
+  [ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)
+  — emenda; a seção "A forma de um evento" ganha o cursor monotônico por execução e os
+  dois instantes (ocorrência e persistência) como campos do evento, em ## Decisão.
+
 ## Contexto
 
 O ADR-0001 fixou três tipos de evento observados no instante em que ocorrem — resultado

@@ -11,6 +11,12 @@
   [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) (schema por
   serviço, já aplicável aos três com estado).
 
+- **Última atualização:** 2026-08-10
+- **Alterado por:**
+  [ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)
+  — emenda; a aresta `LP -->|" observações "| LJ` do diagrama "Comando no `lab-plane`,
+  leitura no `lab-journal`, sem BFF", em ## Decisão, passa pelo broker.
+
 ## Contexto
 
 O ADR-0008 fixou dois planos em dois processos, com a chamada de passo atravessando a
