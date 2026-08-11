@@ -11,9 +11,10 @@ Quando os três existirem e os cards estiverem reconciliados, **apague este arqu
 ## As três regras que governam cada sequência
 
 **A escrita roda em sub-agente.** A sessão principal não redige ADR. O par é
-[`adr-writer`](../../.claude/agents/adr-writer.md), em background, e
-[`adr-reviewer`](../../.claude/agents/adr-reviewer.md), síncrono e sem `Write`. No
-máximo três rodadas de correção; na terceira sem convergir, relate à pessoa.
+[`feature-writer`](../../.claude/agents/feature-writer.md), em background, e
+[`feature-reviewer`](../../.claude/agents/feature-reviewer.md), síncrono e sem
+`Write`. A réplica só acontece quando o revisor achar defeito, e existem no máximo
+três; na terceira sem convergir, relate à pessoa.
 
 **`docs/features/` é fonte de verdade, junto dos ADRs.** Decidido em 2026-08-06. Um ADR
 que nasce sem o card correspondente reconciliado deixa o repositório afirmando duas
@@ -57,8 +58,8 @@ Uma linha `fechada` continua sinalizada como tal no texto da própria rodada.
 ```mermaid
 flowchart TD
     P["ler a seção deste plano"]
-    W["adr-writer · background"]
-    R["adr-reviewer · síncrono"]
+    W["feature-writer · background"]
+    R["feature-reviewer · síncrono"]
     Q{"SEM DEFEITOS?"}
     C["reconciliar os cards afetados"]
     F["podar a fila e fechar o commit"]

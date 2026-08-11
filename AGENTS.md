@@ -124,17 +124,30 @@ repositório não controla: ele divergiria na primeira skill instalada, removida
 renomeada fora daqui, e ninguém saberia. Uma skill citada por nome numa instrução
 continua valendo; o que não vale é a lista.
 
-### Redação e revisão independente de ADR
+### Redação e revisão independente de especificação
 
-Depois que a pessoa decidir uma questão que merece ADR, a sessão principal continua dona
-da decisão e delega a redação a um agente escritor. Um agente revisor independente confere
-o texto antes de ele voltar para a pessoa. A regra é agnóstica de ferramenta, modelo e
-provedor.
+Depois que a pessoa decidir, a sessão principal continua dona da decisão e delega a
+redação a um agente escritor. Um agente revisor independente confere os artefatos antes
+de eles voltarem para a pessoa. A regra é agnóstica de ferramenta, modelo e provedor.
+
+**O par escreve especificação, e o ADR é um dos artefatos que ela PODE gerar.** Até
+2026-08-10 o par era específico de ADR, e isso invertia a ordem do processo: o artefato
+padrão é o Feature Card, e o ADR nasce só quando a escolha atende aos
+[quatro critérios](docs/adr/README.md#uma-decisão-merece-adr-quando). O escritor escreve
+os artefatos que o prompt nomeia; ele NÃO DEVE criar um ADR que o prompt não nomeou, nem
+omitir um que ele nomeou. Quando os quatro critérios discordarem do que o prompt pediu,
+ele entrega o que foi pedido e **relata a divergência** — quem a resolve é a pessoa.
 
 O escritor recebe a decisão tomada, alternativas descartadas e seus motivos, evidências
 com caminho e âncora GFM, e o estado inicial exigido pelo processo. Ele NÃO DEVE escolher
-alternativa, inventar evidência ou fechar lacuna. O revisor NÃO DEVE editar o ADR: ele
-devolve uma lista numerada de defeitos para o escritor corrigir.
+alternativa, inventar evidência ou fechar lacuna. O revisor NÃO DEVE editar artefato
+nenhum: ele devolve uma lista numerada de defeitos para o escritor corrigir.
+
+**A réplica é condicional, e não etapa do fluxo.** O revisor roda uma vez sobre o que o
+escritor entregou. Se ele responder `SEM DEFEITOS`, o ciclo termina ali, com zero
+réplicas. Cada lista de defeitos gera uma réplica ao **mesmo** escritor, com a lista
+preservada, e existem no máximo três. Se a terceira não convergir, a sessão devolve à
+pessoa os pontos em aberto; ela decide, e não o escritor ou o revisor.
 
 ```mermaid
 sequenceDiagram
@@ -143,17 +156,18 @@ sequenceDiagram
     participant W as Escritor independente
     participant R as Revisor independente
     P->>S: decisão explícita
-    S->>W: decisão, alternativas e evidências
+    S->>W: decisão, alternativas, evidências e artefatos nomeados
+    W->>W: card, example mapping, BDD e o ADR quando nomeado
     W->>R: rascunho
-    R-->>W: defeitos ou aprovação
-    W-->>S: texto revisado
-    S-->>P: ADR para revisão
+    loop no máximo três réplicas, e só enquanto houver defeito
+        R-->>W: lista numerada de defeitos
+        W-->>R: correção item por item
+    end
+    R-->>S: SEM DEFEITOS, ou o que sobrou na terceira réplica
+    S-->>P: artefatos para revisão
 ```
 
-Uma discordância ou defeito volta ao mesmo escritor, com a lista do revisor preservada.
-O ciclo tem no máximo três rodadas. Se não convergir, a sessão devolve à pessoa os pontos
-em aberto; ela decide, e não o escritor ou o revisor. O ciclo de vida de ADR aceito,
-incluindo emenda, subsunção e adendo, continua no
+O ciclo de vida de ADR aceito, incluindo emenda, subsunção e adendo, continua no
 [`docs/adr/README.md`](docs/adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05).
 
 ## Convenções gerais de escrita

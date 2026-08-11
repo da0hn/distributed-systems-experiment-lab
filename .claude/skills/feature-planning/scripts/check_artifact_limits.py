@@ -99,8 +99,8 @@ CONTRACT_LIMIT = 16000
 INSTRUCTIONS_WITHOUT_LIMITS = (
     Path(".claude/skills/feature-planning/SKILL.md"),
     Path(".claude/skills/adr/SKILL.md"),
-    Path(".claude/agents/adr-writer.md"),
-    Path(".claude/agents/adr-reviewer.md"),
+    Path(".claude/agents/feature-writer.md"),
+    Path(".claude/agents/feature-reviewer.md"),
 )
 
 # Duas formas de declarar limite em prosa: um numero seguido de "caracteres", ou a

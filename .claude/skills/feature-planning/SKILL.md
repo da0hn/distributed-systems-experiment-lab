@@ -70,6 +70,34 @@ escolher por conta própria.
 Quando a mudança exigir ADR, acione a skill adr antes de criar, aceitar, alterar ou
 patchar uma decisão.
 
+## A redação roda em sub-agente, e passa por revisão
+
+**Delegue a redação dos artefatos a um sub-agente, e não os escreva na sessão
+principal.** A sessão principal conduz a decisão com a pessoa e obtém a escolha
+explícita; o par de agentes recebe a escolha já feita. O dono da regra é
+[`AGENTS.md`](../../../AGENTS.md#redação-e-revisão-independente-de-especificação).
+
+- **`feature-writer`** (`.claude/agents/feature-writer.md`) redige e corrige. Ele escreve
+  o Feature Card, o Example Mapping e o BDD, e escreve o ADR **só quando o prompt o
+  nomear**.
+- **`feature-reviewer`** (`.claude/agents/feature-reviewer.md`) revisa e devolve uma lista
+  numerada de defeitos. Ele não tem Write nem Edit, de propósito.
+
+**A réplica é condicional, e não etapa.** O revisor roda uma vez sobre o que o escritor
+entregou. Um `SEM DEFEITOS` encerra o ciclo com zero réplicas; cada lista de defeitos
+gera uma réplica ao mesmo escritor, e existem no máximo três. Na terceira sem convergir,
+leve os pontos em aberto à pessoa.
+
+```mermaid
+flowchart LR
+    S["sessão principal:<br/>decisão da pessoa"] --> W["feature-writer"]
+    W --> R["feature-reviewer"]
+    R -->|" SEM DEFEITOS "| P["entrega à pessoa"]
+    R -->|" lista de defeitos "| C{"terceira réplica<br/>já aconteceu?"}
+    C -->|" não "| W
+    C -->|" sim "| P
+```
+
 ## Os limites não estão nesta skill
 
 **Esta skill não declara limite nenhum, e nenhum número pode voltar para cá** — o

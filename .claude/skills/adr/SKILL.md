@@ -44,22 +44,26 @@ comportamento, e vai para o Feature Card. O teste completo dessa fronteira está
 
 **Delegue a redação do arquivo a um sub-agente, em background.** Regra adotada em
 2026-08-04, e o dono dela é
-[`AGENTS.md`](../../../AGENTS.md#redação-e-revisão-independente-de-adr). A sessão
-principal conduz a decisão e obtém a escolha explícita; o sub-agente recebe a escolha já
-feita e escreve o ADR.
+[`AGENTS.md`](../../../AGENTS.md#redação-e-revisão-independente-de-especificação). A
+sessão principal conduz a decisão e obtém a escolha explícita; o sub-agente recebe a
+escolha já feita e escreve o ADR.
 
-Os dois agentes são registrados, e NÃO DEVE-se usar um `general-purpose` genérico:
+**O par não é específico de ADR desde 2026-08-10.** Ele escreve especificação, e o ADR é
+um dos artefatos que ela PODE gerar — o par anterior, `adr-writer` e `adr-reviewer`, foi
+substituído. Os dois agentes são registrados, e NÃO DEVE-se usar um `general-purpose`
+genérico:
 
-- **`adr-writer`** (`.claude/agents/adr-writer.md`, modelo Haiku) redige e corrige.
-- **`adr-reviewer`** (`.claude/agents/adr-reviewer.md`, modelo Opus) revisa e devolve uma
-  lista numerada de defeitos. Ele não tem `Write` nem `Edit`, de propósito.
+- **`feature-writer`** (`.claude/agents/feature-writer.md`, modelo Sonnet) redige e
+  corrige. Ele escreve o ADR **só quando o prompt o nomear**.
+- **`feature-reviewer`** (`.claude/agents/feature-reviewer.md`, modelo Opus) revisa e
+  devolve uma lista numerada de defeitos. Ele não tem `Write` nem `Edit`, de propósito.
 
-Depois que o escritor devolver o arquivo, rode o revisor de forma síncrona. Enquanto a
-resposta não for `SEM DEFEITOS`, mande a lista de volta ao escritor com `SendMessage`,
-que preserva o contexto dele. Pare na terceira rodada e leve o que sobrou ao usuário. O
-contrato do loop — o que o escritor recebe, o que ele NÃO DEVE fazer, e quem decide
-quando não converge — está em
-[`AGENTS.md`](../../../AGENTS.md#redação-e-revisão-independente-de-adr).
+Depois que o escritor devolver o arquivo, rode o revisor de forma síncrona. **A réplica é
+condicional:** um `SEM DEFEITOS` encerra o ciclo sem réplica nenhuma. Enquanto a resposta
+for uma lista, mande-a de volta ao escritor com `SendMessage`, que preserva o contexto
+dele. Pare na terceira réplica e leve o que sobrou ao usuário. O contrato do loop — o que
+o escritor recebe, o que ele NÃO DEVE fazer, e quem decide quando não converge — está em
+[`AGENTS.md`](../../../AGENTS.md#redação-e-revisão-independente-de-especificação).
 
 O sub-agente NÃO DEVE escolher entre alternativas nem fechar lacuna sozinho. Uma lacuna
 encontrada durante a redação vira linha em
