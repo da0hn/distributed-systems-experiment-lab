@@ -86,37 +86,55 @@ explícita; o par de agentes recebe a escolha já feita. O dono da regra é
 - **`feature-reviewer`** (`.claude/agents/feature-reviewer.md`) revisa e devolve uma lista
   numerada de defeitos. Ele não tem Write nem Edit, de propósito.
 
-**A sessão principal aciona o escritor, e mais ninguém.** Cada agente aciona o próximo ao
-terminar a sua etapa: o escritor chama o verificador, o verificador chama o revisor, e o
-veredito volta pelo mesmo caminho. Acionar o verificador ou o revisor por fora **duplica
-uma etapa que já vai acontecer**, e a segunda medição chega ao revisor como se fosse a
-primeira.
+**O escritor aciona o verificador; a sessão principal aciona o revisor.** O elo
+escritor → verificador é mecânico e automático: terminada a redação, o escritor chama o
+verificador, que mede e devolve o relatório **a ele**. Acionar o verificador por fora
+duplica uma etapa que já vai acontecer.
+
+**O revisor é acionado pela sessão, e nunca pelo escritor ou pelo verificador.** É a
+garantia da independência dele: **o prompt de quem revisa não pode ser composto por quem
+está sob revisão.** O bloco que enquadra o que conta como decidido e quais alternativas
+foram descartadas viria do escritor — e um revisor que o recebe pela mão da parte revisada
+herda os pontos cegos dela. A sessão tem a decisão da pessoa em primeira mão, e é ela que
+compõe.
 
 **O verificador entra entre os dois, e não é opcional.** Isso separa o que a máquina
 decide — alvo inexistente, âncora sem título, prosa acima do orçamento, CRLF — do que
 exige leitura: se a citação sustenta a afirmação. **Nem o escritor nem o revisor rodam
-esses scripts.**
+esses scripts**, e o relatório do verificador entra no prompt do revisor como fato já
+medido, para que ele não gaste a rodada remedindo.
 
 **A réplica é condicional, e não etapa.** Um `SEM DEFEITOS` encerra o ciclo com zero
-réplicas; cada lista de defeitos gera uma réplica, e existem no máximo três. Uma
+réplicas; cada lista de defeitos gera uma réplica, e um ciclo tem no máximo três. Uma
 reprovação do verificador conta como defeito e entra na mesma lista. Na terceira sem
-convergir, o escritor devolve os pontos em aberto, e quem os resolve é a pessoa.
+convergir, o escritor devolve os pontos em aberto.
 
-**O laço acontece dentro do escritor, e essa é a razão de ele existir ali.** A réplica
-volta ao **mesmo** escritor, com o contexto da redação inteiro — um escritor novo a cada
-rodada releria tudo e perderia o motivo de cada escolha. A profundidade de aninhamento
-também fica em três, qualquer que seja o número de réplicas.
+**O teto de três encerra o ciclo, e não o trabalho.** Decidido em 2026-08-10. A sessão
+principal abre um **ciclo novo**, com escritor novo, sobre o que sobrou — passando o que
+já foi tentado, para que o ciclo seguinte não repita o caminho que não convergiu.
+**Nenhum defeito é abandonado por esgotamento de réplica.** À pessoa vai só o defeito que
+exige uma decisão que ninguém tomou: aí um ciclo novo não resolve nada, porque nenhum
+escritor pode decidir.
+
+**A réplica volta ao mesmo escritor**, com o contexto da redação inteiro — um escritor
+novo a cada rodada releria tudo e perderia o motivo de cada escolha. Quem conta as
+réplicas é a sessão, e ela informa o `N` no prompt de cada agente.
 
 ```mermaid
 flowchart TD
     S["sessão principal:<br/>decisão da pessoa"] --> W["feature-writer<br/>redige ou corrige"]
     W --> V["artifact-verifier<br/>citação, tamanho, LF"]
-    V --> R["feature-reviewer<br/>evidência, contradição, template"]
-    R -->|" veredito "| V
-    V -->|" relatório + veredito "| W
-    W --> D{"SEM DEFEITOS,<br/>ou terceira réplica?"}
+    V -->|" relatório "| W
+    W -->|" arquivos + relatório "| S
+    S -->|" ela compõe o prompt "| R["feature-reviewer<br/>evidência, contradição, template"]
+    R -->|" veredito "| D{"SEM DEFEITOS,<br/>ou terceira réplica?"}
     D -->|" não "| W
-    D -->|" sim "| P["devolve à sessão principal,<br/>e ela entrega à pessoa"]
+    D -->|" sim "| P["a sessão fecha o ciclo"]
+    P --> Q{"sobrou defeito?"}
+    Q -->|" não "| F["entrega à pessoa"]
+    Q -->|" sim, e é redação "| N["ciclo novo,<br/>escritor novo"]
+    Q -->|" sim, e exige decisão "| F
+    N --> W
 ```
 
 ## Os limites não estão nesta skill
