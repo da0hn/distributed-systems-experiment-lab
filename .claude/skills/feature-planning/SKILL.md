@@ -205,6 +205,29 @@ houver evidência ou decisão. Diferencie comando de evento de domínio.
 Não crie diretório vazio, contrato de intenção ou campo preenchido por analogia.
 Não repita em Markdown o que o contrato formal já define.
 
+### Esquema de banco
+
+Documente a forma das tabelas em docs/architecture/esquemas.md. Não a documente
+no feature card, que descreve comportamento externo, nem no ADR, cujo corpo só
+muda por emenda, adendo ou patch — o esquema muda antes disso.
+
+Use erDiagram do Mermaid. Não escreva DDL, nem executável nem ilustrativo. Um
+bloco SQL ao lado do diagrama cria um segundo lugar onde a forma da tabela vive,
+e os dois divergem.
+
+Desenhe um erDiagram por schema. Não desenhe dois schemas no mesmo canvas: a
+linha de relacionamento entre eles renderiza a chave estrangeira que a fronteira
+de schema proíbe. A ausência de linha é a decisão.
+
+Escreva abaixo de cada diagrama a prosa das ausências. O erDiagram não expressa
+ordem de coluna na chave composta, índice, ausência de DEFAULT, ausência de
+trigger nem ausência de chave estrangeira. Cada uma é decisão, e some se ficar
+só no desenho.
+
+Equalize o diagrama com as migrações Flyway no mesmo commit. O verificador é
+scripts/check_schema_sync.py, e ele compara nome de tabela. Uma divergência
+deliberada entra na baseline dele, declarada.
+
 ### Artefatos excepcionais
 
 Crie um documento de desenho completo somente para alto risco, vários processos ou
