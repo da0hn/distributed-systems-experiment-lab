@@ -36,6 +36,27 @@ LIMITS_BY_PATH = {
     # continua sendo a linha aberta na fila sobre quem e' dono do orcamento de prosa.
     # A pessoa decidiu em 2026-08-11.
     Path("docs/plano-do-laboratorio.md"): 50000,
+    # O ADR-0015 e o `esquemas.md` sao um par, e o par e' a razao de nenhum dos dois
+    # caber no teto que herdaria. O ADR roteia a FORMA das tabelas para o `esquemas.md`
+    # e continua carregando a DECISAO — chave, discriminador e colunas de tempo —, de
+    # modo que ele paga o custo de prosa das duas coisas: a decisao, e o roteamento que
+    # impede a decisao de ser copiada. Os 12.000 do `ADR_LIMIT` nao previram esse
+    # roteamento, e o `esquemas.md` nao e' Feature Card: ele cresce por tabela
+    # documentada e por ausencia sustentada com evidencia, e nao por capacidade.
+    #
+    # Os dois estouraram em 2026-08-11 por consequencia DIRETA de correcoes que a
+    # revisao exigiu — repor argumento, separar o que era do ADR do que era do
+    # `esquemas.md`, nomear a linha da fila que continua bloqueando o `CREATE TABLE`.
+    # Comprimir teria desfeito a revisao, e por isso o escritor foi instruido a relatar
+    # o excesso em vez de amputar. Os numeros ficam pouco acima do tamanho medido
+    # naquele dia — 12.369 e 4.850 —, para que o vermelho do script continue
+    # significando alguma coisa, e nao viram isencao.
+    #
+    # A divisao do par NAO e' a saida quando um deles estourar: separar `esquemas.md`
+    # em dois arquivos quebraria o "dono unico da forma", que e' a decisao inteira. A
+    # pessoa decidiu em 2026-08-11.
+    Path("docs/adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md"): 12600,
+    Path("docs/architecture/esquemas.md"): 5000,
 }
 # Isento por nome. Sem esta linha o `example-mapping.md` cairia no MARKDOWN_LIMIT
 # generico de 4000, que e' mais apertado do que o teto que a decisao removeu.
