@@ -86,28 +86,37 @@ explícita; o par de agentes recebe a escolha já feita. O dono da regra é
 - **`feature-reviewer`** (`.claude/agents/feature-reviewer.md`) revisa e devolve uma lista
   numerada de defeitos. Ele não tem Write nem Edit, de propósito.
 
-**O verificador entra entre os dois, e não é opcional.** A sessão principal o aciona com
-a lista de arquivos que o escritor devolveu, e passa o relatório dele ao revisor. Isso
-separa o que a máquina decide — alvo inexistente, âncora sem título, prosa acima do
-orçamento, CRLF — do que exige leitura: se a citação sustenta a afirmação. **Nem o
-escritor nem o revisor rodam esses scripts**, e o escritor sequer poderia criar o
-verificador, porque não tem a ferramenta `Agent`.
+**A sessão principal aciona o escritor, e mais ninguém.** Cada agente aciona o próximo ao
+terminar a sua etapa: o escritor chama o verificador, o verificador chama o revisor, e o
+veredito volta pelo mesmo caminho. Acionar o verificador ou o revisor por fora **duplica
+uma etapa que já vai acontecer**, e a segunda medição chega ao revisor como se fosse a
+primeira.
 
-**A réplica é condicional, e não etapa.** O revisor roda uma vez sobre o que o escritor
-entregou. Um `SEM DEFEITOS` encerra o ciclo com zero réplicas; cada lista de defeitos
-gera uma réplica ao mesmo escritor, e existem no máximo três. Uma reprovação do
-verificador conta como defeito e entra na mesma lista. Na terceira sem convergir, leve os
-pontos em aberto à pessoa.
+**O verificador entra entre os dois, e não é opcional.** Isso separa o que a máquina
+decide — alvo inexistente, âncora sem título, prosa acima do orçamento, CRLF — do que
+exige leitura: se a citação sustenta a afirmação. **Nem o escritor nem o revisor rodam
+esses scripts.**
+
+**A réplica é condicional, e não etapa.** Um `SEM DEFEITOS` encerra o ciclo com zero
+réplicas; cada lista de defeitos gera uma réplica, e existem no máximo três. Uma
+reprovação do verificador conta como defeito e entra na mesma lista. Na terceira sem
+convergir, o escritor devolve os pontos em aberto, e quem os resolve é a pessoa.
+
+**O laço acontece dentro do escritor, e essa é a razão de ele existir ali.** A réplica
+volta ao **mesmo** escritor, com o contexto da redação inteiro — um escritor novo a cada
+rodada releria tudo e perderia o motivo de cada escolha. A profundidade de aninhamento
+também fica em três, qualquer que seja o número de réplicas.
 
 ```mermaid
-flowchart LR
-    S["sessão principal:<br/>decisão da pessoa"] --> W["feature-writer"]
+flowchart TD
+    S["sessão principal:<br/>decisão da pessoa"] --> W["feature-writer<br/>redige ou corrige"]
     W --> V["artifact-verifier<br/>citação, tamanho, LF"]
-    V --> R["feature-reviewer"]
-    R -->|" SEM DEFEITOS "| P["entrega à pessoa"]
-    R -->|" lista de defeitos "| C{"terceira réplica<br/>já aconteceu?"}
-    C -->|" não "| W
-    C -->|" sim "| P
+    V --> R["feature-reviewer<br/>evidência, contradição, template"]
+    R -->|" veredito "| V
+    V -->|" relatório + veredito "| W
+    W --> D{"SEM DEFEITOS,<br/>ou terceira réplica?"}
+    D -->|" não "| W
+    D -->|" sim "| P["devolve à sessão principal,<br/>e ela entrega à pessoa"]
 ```
 
 ## Os limites não estão nesta skill
