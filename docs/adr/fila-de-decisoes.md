@@ -91,10 +91,11 @@ Sessenta e seis linhas com identificador `D-*`, agrupadas por bloco. O agrupamen
 **não** é o documento que cada assunto vai gerar: esse só existe depois da escolha.
 
 **Três linhas já fecharam** — `D-ARQ-05`, `D-ARQ-06` e `D-ARQ-01`, todas pelo
-[ADR-0008](0008-os-dois-planos-em-processos-separados.md). **Quatro mais** — as do Bloco
-4 — fecharam em 2026-08-04, e o debate delas vive **neste arquivo** desde 2026-08-07,
-quando [`../CONTEXT.md`](../CONTEXT.md) voltou a ser só glossário. **Uma quinta**,
-`D-DAT-05`, fechou em 2026-08-05.
+[ADR-0008](0008-os-dois-planos-em-processos-separados.md). **Quatro mais** — `D-DOM-01` a
+`D-DOM-04`, as de vocabulário — fecharam em 2026-08-04, e o Bloco 4 que carregava o
+debate delas foi apagado em 2026-08-10, por não ser citado de lugar nenhum. O estado de
+cada termo e a lápide de cada uma das quatro decisões vivem em
+[`../CONTEXT.md`](../CONTEXT.md). **Uma quinta**, `D-DAT-05`, fechou em 2026-08-05.
 
 ### Bloco 0 — sem estas seis, nenhuma linha de código é escrita
 
@@ -203,8 +204,8 @@ provável de esta rodada causar dano. A recomendação de cada uma é adiar.
 
 Duas das oito são decisões de vocabulário, e o debate delas foi trazido de
 [`../CONTEXT.md`](../CONTEXT.md) em 2026-08-07, quando o glossário voltou a ser só
-glossário. A tabela das seis decisões de vocabulário está no
-[Bloco 4](#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato). **`D-DOM-05` e
+glossário. As outras quatro do mesmo conjunto — `D-DOM-01` a `D-DOM-04` — fecharam em
+2026-08-04, e o Bloco 4 que as carregava saiu desta fila em 2026-08-10. **`D-DOM-05` e
 `D-DOM-06` continuam abertas**, e nada abaixo as fecha: o que veio do glossário é o
 enunciado, as alternativas e a recomendação de cada uma.
 
@@ -266,323 +267,6 @@ que sabe medir. Contra: exige um ADR que substitua a contagem de um ADR aceito, 
 
 **Se a escolha for outra.** Qualquer das três muda o significado da taxa de aborto na
 tabela comparativa do E3, que é um resultado já especificado em Feature Card.
-
-### Bloco 4 — vocabulário, decidível a qualquer momento e barato
-
-**As quatro estão fechadas desde 2026-08-04.** As escolhas e as consequências de cada
-uma vivem **aqui**, nas quatro seções ao fim deste bloco. Elas moravam em
-[`../CONTEXT.md`](../CONTEXT.md), seção "As seis decisões de vocabulário", e vieram para
-cá em 2026-08-07: o glossário guarda hoje o estado de cada termo e uma lápide por
-decisão, e não o debate.
-
-| ID         | Decisão                                             | Escolha                                                 | Seguiu a recomendação? |
-|------------|-----------------------------------------------------|---------------------------------------------------------|------------------------|
-| `D-DOM-01` | qual sentido `execução` carrega sozinha             | `run` no experimento, `operation execution` na operação | sim                    |
-| `D-DOM-02` | separar `system under test` de execução de controle | renomear para `system under test`                       | **não**                |
-| `D-DOM-03` | se `barreira` continua na linguagem                 | aposentar, com citação histórica permitida              | sim                    |
-| `D-DOM-04` | os dois sentidos de `estratégia`                    | `strategy` e `strategy label`                           | sim                    |
-
-`D-DOM-03` foi executada no mesmo turno: os oito pontos de
-[`arquivo/proposta-2026-08-03/mensageria.md`](arquivo/proposta-2026-08-03/mensageria.md) que usavam `barreira` como termo passaram a dizer
-`restrição de precedência` ou `espera`, e o mérito de `D-MSG-11` não mudou.
-
-`D-DOM-02` foi decidida contra a recomendação, e abriu duas perguntas que a alternativa
-A não tratava: se `Lab Plane` acompanha a renomeação, e se ela alcança as 95 ocorrências
-em texto editável ou só o glossário. As duas estão na seção
-[`D-DOM-02`](#d-dom-02--como-separar-control-plane-de-control-run) ao fim deste bloco,
-trazida de [`../CONTEXT.md`](../CONTEXT.md) em 2026-08-07.
-
-**Pergunta em aberto.** Qual artefato registra estas quatro? O processo de
-[`README.md`](README.md) prevê ADR ou artefato de
-[`../features/`](../features/README.md), e vocabulário não é nem um nem outro — ele vive
-no glossário, por instrução de [`../AGENTS.md`](../AGENTS.md), seção `## Glossário de
-domínio`. `D-DOM-02` é a que mais puxa para ADR: ela renomeia um termo presente em
-quatro ADRs aceitos, e o rastro de alterações adotado em 2026-08-04 obrigaria a carimbar
-os quatro.
-
-Estas quatro existem porque **os ADRs aceitos já colidem entre si no
-vocabulário**. Decidi-las é barato agora e caro depois de existir código.
-
-**A contra-avaliação sustenta este bloco.** Ele é "o único bloco aprovável como está"
-([`arquivo/proposta-2026-08-03/contra-avaliacao.md`](arquivo/proposta-2026-08-03/contra-avaliacao.md), linhas 430 a 434), porque as quatro
-colisões são reais entre ADRs aceitos, independem da fila e ficam caras depois de
-existir código. Nenhuma das quatro pode ser resolvida editando um ADR.
-
-Dois fatos levantados em 2026-08-04, antes de qualquer escolha.
-
-**O glossário já aplicou a recomendação de `D-DOM-03` sem a decisão existir.**
-[`../CONTEXT.md`](../CONTEXT.md), linha 355, marca `barrier` como `aposentado`, e a
-tabela de estados daquele arquivo (linha 49) reserva esse rótulo para o que "existiu em
-ADR aceito e foi retirado da linguagem por outro ADR". A recomendação virou texto antes
-de virar escolha. Se a decisão for outra, aquela entrada muda junto, e o registro disso
-não pode depender da memória de quem editou.
-
-**Aprovar `D-DOM-03` obriga reescrever [`arquivo/proposta-2026-08-03/mensageria.md`](arquivo/proposta-2026-08-03/mensageria.md) no mesmo
-turno.** A palavra é termo vivo e normativo ali:
-`arquivo/proposta-2026-08-03/mensageria.md:520`, `:539`, `:548-553`, `:805` e `:1034-1054`,
-inclusive no enunciado e nas três alternativas de `D-MSG-11`. A ressalva está em [`arquivo/proposta-2026-08-03/contra-avaliacao.md`](arquivo/proposta-2026-08-03/contra-avaliacao.md), linhas 143
-a 145; o inventário de linhas é novo.
-
-#### As seis decisões de vocabulário
-
-**Trazido de [`../CONTEXT.md`](../CONTEXT.md) em 2026-08-07**, da seção
-`## As seis decisões de vocabulário`, que lá virou lápide. A tabela cobre as seis, e por
-isso fica aqui: as quatro fechadas são deste bloco, e `D-DOM-05` e `D-DOM-06` estão no
-[Bloco 3](#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora),
-onde o debate das duas também foi absorvido.
-
-Quatro foram tomadas em 2026-08-04, e três delas seguiram a recomendação. A quarta,
-`D-DOM-02`, foi decidida **contra** a recomendação, e as consequências disso estão
-escritas na seção dela.
-
-| ID       | Decisão                                          | Escolha                                                        | Estado                          |
-|----------|--------------------------------------------------|----------------------------------------------------------------|---------------------------------|
-| D-DOM-01 | Se `run` e `execution` nomeiam níveis diferentes | `run` no experimento, `operation execution` na operação        | decidida, como recomendado      |
-| D-DOM-02 | Como separar `Control Plane` de `control run`    | renomear `Control Plane` para `system under test`              | decidida, contra a recomendação |
-| D-DOM-03 | Se `barrier` continua na linguagem               | aposentar, com citação histórica permitida                     | decidida, como recomendado      |
-| D-DOM-04 | Como nomear os dois sentidos de `strategy`       | `strategy` no system under test, `strategy label` no Lab Plane | decidida, como recomendado      |
-| D-DOM-05 | Se `verdict` vira quatro termos                  | —                                                              | em aberto                       |
-| D-DOM-06 | O que `N` conta                                  | —                                                              | em aberto                       |
-
-As duas em aberto continuam exigindo aprovação humana pelo mesmo motivo de antes:
-`D-DOM-05` depende dos formatos de veredito, que estão na fila, e `D-DOM-06` pode exigir
-um ADR que substitua a contagem do ADR-0004.
-
-#### D-DOM-01 — Se `run` e `execution` nomeiam níveis diferentes
-
-**Trazido de [`../CONTEXT.md`](../CONTEXT.md) em 2026-08-07**, da seção `D-DOM-01`, que
-lá virou lápide. O texto é o de lá, com o nível de título rebaixado; "este glossário"
-nomeia [`../CONTEXT.md`](../CONTEXT.md), e não esta fila.
-
-**O problema, e o que a conversão muda nele.** Em português a palavra `execução` nomeava
-duas coisas. O ADR-0001 a usa para a invocação de uma operação por um worker
-(`:152-154`). Os ADRs 0003, 0004 e 0005 a usam para uma das quatro passagens de um
-experimento (`0003:154-157`, `0004:21`, `0005:60-61`). As duas conviviam em parágrafos
-vizinhos, e "o veredito da execução" mudava de referente conforme quem lesse.
-
-O inglês tem duas palavras para isso. Este glossário dá `run` ao nível do experimento —
-`measured run`, `control run`, `negative control`, `positive control`, `calibration` — e
-`operation execution` ao nível do worker. A palavra `execution` sozinha deixa de ter
-dono.
-
-**A colisão se dissolve, e a decisão não.** Essa separação é a alternativa B do
-enunciado original, agora escrita no próprio vocabulário em vez de numa convenção de
-prosa. Ela continua exigindo aprovação porque **muda a leitura de sete ADRs aceitos**:
-onde eles escrevem `execução` sozinha, é preciso saber qual dos dois níveis está em
-jogo, e a tabela de de/para não desfaz essa ambiguidade — ela só nomeia o destino de
-cada sentido.
-
-**Alternativa A — usar `execution` nos dois níveis, com qualificador obrigatório.** A
-favor: espelha o corpus português linha a linha, e a regra é verificável por busca de
-texto. Contra: reintroduz em inglês uma colisão que a língua não obriga, e o
-qualificador some na primeira frase escrita com pressa.
-
-**Alternativa B — `run` no experimento, `execution` na operação.** A favor: é o uso
-majoritário dos ADRs 0003 a 0005, inclusive em títulos de seção, e o inglês torna a
-regra lexical em vez de convencional. Contra: `execution scope`, `execution runtime` e
-`operation execution` ficam no nível do worker, e quem leu o corpus português precisa
-aprender de que lado cada composto está.
-
-**Alternativa C — reservar `run` para a operação e `execution` para o experimento.** A
-favor: nenhuma. Contra: contraria o uso dos três ADRs mais recentes e o sentido comum de
-`run` em Java, onde `Runnable.run` é a unidade de trabalho.
-
-**Recomendação.** Alternativa B. O corpus já a pratica, e ela não exige contrariar
-nenhum texto aceito.
-
-**Se a escolha for outra.** Com a alternativa A, todo Feature Card e todo diagrama
-passam a carregar o qualificador. Com a alternativa C, o ADR-0005 fica com o contador de
-ativos pendurado num referente que a linguagem deixou de nomear.
-
-**Decisão tomada em 2026-08-04: alternativa B.** `run` nomeia o nível do experimento e
-`operation execution` nomeia o nível do worker. A palavra `execution` sozinha NÃO DEVE
-ser usada sem qualificador em documento novo. As entradas deste glossário já praticam a
-escolha, e nenhuma delas muda.
-
-**A consequência que não estava escrita.** Os sete ADRs aceitos escrevem `execução`
-sozinha, e nenhum pode ser editado. A tabela de de/para nomeia o destino de cada
-sentido, e não desfaz a ambiguidade dentro daqueles textos. Quem ler um ADR aceito
-continua precisando decidir, pelo contexto, qual dos dois níveis está em jogo.
-
-#### D-DOM-02 — Como separar `Control Plane` de `control run`
-
-**Trazido de [`../CONTEXT.md`](../CONTEXT.md) em 2026-08-07**, da seção `D-DOM-02`, que
-lá virou lápide. O texto é o de lá, com o nível de título rebaixado e os caminhos
-relativos reescritos de `docs/` para `docs/adr/`. **"Este glossário", "este arquivo" e
-"a entrada `Lab Plane` deste glossário" nomeiam [`../CONTEXT.md`](../CONTEXT.md)**, e
-não esta fila.
-
-**O problema.** `Control Plane` é o sistema sob teste (`plano:550-555`). `control run` é
-um artefato do Lab Plane que existe para interpretar um resultado (`0004:29-30`). Um
-leitor que encontre "o controle violou" precisa de contexto externo para saber de qual
-dos dois se fala. A tradução não ajuda: em inglês a palavra colidente é `control`, e ela
-está nos dois termos.
-
-**Alternativa A — renomear `Control Plane`.** A favor: `system under test` já circula no
-corpus e diz exatamente a mesma coisa sem a palavra ambígua. Contra: o nome está no
-`AGENTS.md` da raiz, no plano e em cinco ADRs aceitos, e a renomeação invalidaria as
-citações por linha que este repositório exige.
-
-**Alternativa B — renomear `control run`.** A favor: o termo é mais novo e tem menos
-ocorrências. Contra: ele vem do vocabulário de método experimental, onde `negative
-control` e `positive control` são os nomes canônicos, e trocá-los apagaria a analogia
-que sustenta a decisão do ADR-0004.
-
-**Alternativa C — manter os dois, e preferir `system under test` na prosa.** A favor:
-nenhum ADR é contrariado, e a prosa deixa de usar a palavra ambígua no sentido de plano.
-Contra: os diagramas continuam rotulando a caixa como `Control Plane`, e a ambiguidade
-sobrevive na leitura de um diagrama isolado.
-
-**Recomendação.** Alternativa C, com `Control Plane` reservado para o par de planos em
-diagramas.
-
-**Se a escolha for outra.** Com a alternativa A, o `AGENTS.md` da raiz e a matriz de
-integrações mudam junto. Com a alternativa B, o ADR-0004 fica lido com um vocabulário
-que ele não usa.
-
-**Decisão tomada em 2026-08-04: alternativa A, contra a recomendação.** O termo do
-sistema medido passa a ser `system under test`, e `Control Plane` deixa de ser o nome
-dele. A escolha é legítima e o custo dela é o que a própria alternativa A nomeia: as
-citações por linha continuam válidas, e os textos que elas apontam continuam dizendo
-`Control Plane`.
-
-**O alcance medido em 2026-08-04.** A contagem de ocorrências, por leitura direta:
-
-| Onde                                    | Editável? | Ocorrências |
-|-----------------------------------------|-----------|-------------|
-| ADR-0001, ADR-0002, ADR-0006, ADR-0008  | não       | 18          |
-| `plano-do-laboratorio.md`               | sim       | 4           |
-| `AGENTS.md` da raiz                     | sim       | 2           |
-| dois Feature Cards e um Example Mapping | sim       | 3           |
-| nove documentos de `architecture/`      | sim       | 69          |
-| este glossário                          | sim       | 17          |
-
-**São quatro ADRs, e não cinco.** O enunciado da alternativa A dizia "cinco ADRs
-aceitos". A contagem verificada é quatro: ADR-0001, ADR-0002, ADR-0006 e ADR-0008. O
-ADR-0005 usa apenas `Lab Plane`.
-
-**`Lab Plane` NÃO acompanha a renomeação**, decidido em 2026-08-04. O nome nunca
-carregou a palavra ambígua `control`, e renomeá-lo seria mudança estética sobre cinco
-ADRs aceitos. O par deixa de ser simétrico de propósito: `system under test` de um lado,
-`Lab Plane` do outro. Um leitor de diagrama isolado descobre o motivo na entrada
-`Lab Plane` deste glossário.
-
-**A renomeação alcança todo o texto editável**, decidido em 2026-08-04. As 95 ocorrências
-em 15 arquivos foram convertidas no mesmo turno. Três classes de ocorrência **não**
-foram tocadas, e a distinção é o que separa renomear de falsificar:
-
-| O que não mudou                                   | Por quê                                             |
-|---------------------------------------------------|-----------------------------------------------------|
-| as 18 ocorrências nos ADRs 0001, 0002, 0006, 0008 | ADR aceito não tem o corpo editado                  |
-| a citação literal do ADR-0006, neste arquivo      | reescrever o que está entre aspas falsifica a fonte |
-| o enunciado histórico desta seção `D-DOM-02`      | ele registra o problema como ele era                |
-
-**O risco de desalinhamento, medido.** A contra-avaliação registra que edição em massa
-desloca citações `arquivo:linha` em silêncio
-([`arquivo/proposta-2026-08-03/contra-avaliacao.md`](arquivo/proposta-2026-08-03/contra-avaliacao.md),
-seção `R12`). A conversão foi feita por substituição dentro da linha, sem inserir nem
-remover linha nenhuma, e a contagem de linhas de cada arquivo foi conferida antes e
-depois. Nenhuma citação externa se deslocou.
-
-**Pergunta em aberto.** Os nomes de pacote propostos em
-[`arquivo/proposta-2026-08-03/modulos-e-fronteiras.md`](arquivo/proposta-2026-08-03/modulos-e-fronteiras.md),
-linhas 86 a 89 — `controlplane.dominio`, `controlplane.operacao`, `controlplane.estrategia`,
-`controlplane.persistencia` — carregam o termo aposentado. Eles são proposta de uma
-linha que continua aberta, e o ADR-0008 fixou só o pacote raiz. Renomeá-los é decisão da
-arquitetura mínima, e não desta.
-
-#### D-DOM-03 — Se `barrier` continua na linguagem
-
-**Trazido de [`../CONTEXT.md`](../CONTEXT.md) em 2026-08-07**, da seção `D-DOM-03`, que
-lá virou lápide. O texto é o de lá, com o nível de título rebaixado e os caminhos
-relativos reescritos de `docs/` para `docs/adr/`; "a entrada dele acima" nomeia a entrada
-`barrier` de [`../CONTEXT.md`](../CONTEXT.md). A **Pergunta em aberto** do fim já tem
-questão própria, [`Q-0020`](../questions/Q-0020.md).
-
-**O problema.** O ADR-0001 pressupõe `barreira` como termo (`:36`). O ADR-0003 retira o
-estatuto: "a barreira deixa de ser um termo próprio: o que existe é a restrição de
-precedência" (`:43-45`). O ADR-0004 mantém a palavra num título de seção, "A barreira é
-o controle positivo" (`:247`). O plano e o briefing a usam sem qualificação.
-
-**Alternativa A — aposentar a palavra.** A favor: é o que o ADR-0003 decidiu, e a
-convenção do repositório exige um nome por conceito. Contra: quebra a leitura do
-briefing e do cenário 25, que é o pedido original do usuário.
-
-**Alternativa B — manter como sinônimo de `precedence constraint`.** A favor: nenhum
-texto existente precisa ser relido. Contra: contraria uma decisão aceita, e o
-repositório trata dois nomes para o mesmo conceito como defeito.
-
-**Alternativa C — manter só em citação histórica.** A favor: preserva as referências ao
-briefing sem introduzir sinônimo vivo. Contra: exige que quem escreve saiba distinguir
-citação de uso, e a distinção não é verificável por teste.
-
-**Recomendação.** Alternativa A, com a alternativa C como regra de citação.
-
-**Se a escolha for outra.** Com a alternativa B, o glossário passa a ter dois nomes para
-`precedence constraint`, e a convenção do `adr/README.md` deixa de valer.
-
-**Decisão tomada em 2026-08-04: alternativa A, com a alternativa C como regra de
-citação.** `barrier` está `aposentado`, e a entrada dele acima deixa de ser aplicação
-antecipada da recomendação para ser registro da decisão. A palavra PODE aparecer em
-citação de um ADR aceito, do plano ou do briefing, e NÃO DEVE aparecer como termo em
-documento novo.
-
-**A consequência executada no mesmo turno.**
-[`arquivo/proposta-2026-08-03/mensageria.md`](arquivo/proposta-2026-08-03/mensageria.md)
-usava `barreira` como termo vivo e normativo em oito pontos, inclusive no enunciado e nas
-três alternativas de `D-MSG-11`. A ressalva estava em
-[`arquivo/proposta-2026-08-03/contra-avaliacao.md`](arquivo/proposta-2026-08-03/contra-avaliacao.md),
-linhas 143 a 145. Aqueles pontos passaram a dizer `restrição de precedência`, e o mérito
-de `D-MSG-11` não mudou: a colisão continua sendo entre o que o escalonador segura e o
-relógio que o broker não deixa injetar.
-
-**Pergunta em aberto.** A palavra sobrevive em doze outros arquivos editáveis, e a
-decisão nomeou `mensageria.md` apenas. O plano do laboratório a usa 15 vezes; os Feature
-Cards e os Example Mappings, 8; `arquitetura-alvo.md`, `contratos-de-api.md` e
-`interface-web.md`, de uma a três cada. Parte é citação legítima — o plano cita o
-briefing, e o card de `execucao-de-experimento` cita o ADR-0001. Parte é termo vivo,
-como em `arquivo/proposta-2026-08-03/arquitetura-alvo.md:390` e
-`arquivo/proposta-2026-08-03/modulos-e-fronteiras.md:207`. Separar as duas exige leitura
-caso a caso, e não foi feita.
-
-#### D-DOM-04 — Como nomear os dois sentidos de `strategy`
-
-**Trazido de [`../CONTEXT.md`](../CONTEXT.md) em 2026-08-07**, da seção `D-DOM-04`, que
-lá virou lápide. O texto é o de lá, com o nível de título rebaixado; "a entrada
-`strategy label`" é a de [`../CONTEXT.md`](../CONTEXT.md).
-
-**O problema.** O ADR-0006 nomeia a colisão e a deixa aberta: "Duas coisas têm o mesmo
-nome. No Control Plane, a estratégia é a composição de passos de `increment` [...] No
-Lab Plane, é um rótulo na declaração do experimento" (`:30-36`).
-
-**Alternativa A — dois nomes.** A favor: o Lab Plane fica proibido de ramificar por um
-conceito que ele não tem, e a regra vira verificável. Contra: acrescenta um termo ao
-glossário para descrever o mesmo dado visto de dois lados.
-
-**Alternativa B — um nome com qualificador em cada uso.** A favor: nenhum termo novo.
-Contra: o qualificador some na primeira frase que alguém escreve com pressa, e a
-proibição do ADR-0006 depende exatamente dessa distinção.
-
-**Alternativa C — manter a ambiguidade.** A favor: é o estado atual, e o ADR-0006
-funciona assim. Contra: a regra "nenhum componente do Lab Plane inspeciona o rótulo" é
-difícil de testar quando o rótulo e a implementação partilham o nome.
-
-**Recomendação.** Alternativa A: `strategy` para a composição de passos, `strategy
-label` para o dado de configuração.
-
-**Se a escolha for outra.** Com a alternativa C, a guarda que impede o Lab Plane de
-ramificar precisa nomear classes, e não conceitos.
-
-**Decisão tomada em 2026-08-04: alternativa A.** `strategy` nomeia a composição de
-passos do sistema medido; `strategy label` nomeia o dado opaco de configuração que o Lab
-Plane carrega. A entrada `strategy label` deixa de ser `proposto` e passa a
-`estabelecido`.
-
-**O que a escolha torna verificável.** A proibição do ADR-0006 — nenhum componente do Lab
-Plane inspeciona o rótulo — vira uma regra sobre tipos, e não sobre intenção. Um
-componente do Lab Plane que receba `strategy` em vez de `strategy label` é um defeito
-que a compilação ou uma guarda ArchUnit consegue apontar. Qual das duas a impõe é
-decisão da arquitetura mínima, em `D-ARQ-07`.
 
 ### Bloco 5 — etapa 4 e adiante, sem gatilho disparado hoje
 
@@ -782,32 +466,6 @@ migração). A exigência de nascer entregando as junta — o `Dockerfile` e o
 `deploy/kustomization.yaml` fixam a forma do artefato, e a forma do artefato **é** o
 conteúdo da arquitetura mínima.
 
-### Os dois grupos, e a ordem entre eles
-
-O grupo I produz um repositório que compila, empacota e é reconciliado pelo ArgoCD, com
-zero regra de negócio dentro. O grupo II produz a primeira migração e as duas tabelas.
-Os dois são sequenciais e não concorrentes: o grupo II precisa do build escolhido em
-`E-1` para ter onde pôr o arquivo de migração.
-
-```mermaid
-flowchart LR
-    I["grupo I<br/>o artefato que nasce entregando<br/>E-1 a E-6"]
-    II["grupo II<br/>o esquema e a primeira migração<br/>E-7 a E-13"]
-    C1["primeiro commit:<br/>compila, empacota,<br/>ArgoCD verde"]
-    C2["segundo commit:<br/>resource e allocation,<br/>semeadura"]
-    E1["E1 executável:<br/>o laboratório detecta"]
-    I --> C1
-    C1 --> II
-    II --> C2
-    C2 --> E1
-```
-
-**O grupo I não espera o grupo II, e essa é a única razão de existirem dois.** Um
-repositório que compila e é reconciliado, sem tabela nenhuma, já apaga o
-`ComparisonError` que o cluster reporta hoje e prova a esteira inteira. Adiar o primeiro
-commit até o esquema estar decidido acopla a prova da esteira à discussão de chave
-primária, que não tem relação nenhuma com ela.
-
 ### Grupo I — sem estas seis, não existe `pom.xml`
 
 | ID    | Decisão                                          | Origem     | Recomendação da proposta              |
@@ -845,57 +503,6 @@ e em
 [`Perguntas em aberto`](arquivo/proposta-2026-08-03/modelo-de-dados.md#perguntas-em-aberto)
 do mesmo documento, e **nunca estiveram em bloco nenhum** — elas nasceram como
 consequência de `D-DAT-05`, decidida em 2026-08-05, depois de os blocos existirem.
-
-### Seis achados do levantamento, e nenhum deles é opinião
-
-**A recomendação de `D-ARQ-12` ficou órfã.** Ela argumentava a favor de Maven porque
-`D-ARQ-05` propunha a fronteira entre regiões como dependência declarada entre módulos
-Maven. O [ADR-0008](0008-os-dois-planos-em-processos-separados.md) decidiu **contra**
-essa proposta: a fronteira é o processo, e não o módulo. O apoio técnico da recomendação
-caiu junto, e o que resta a favor de Maven é de governança — a escolha por Gradle na ADR
-0017 foi feita como detalhe de contexto de uma decisão de CI/CD, sem debate aqui.
-
-**A recomendação de `D-ARQ-15` está vencida na letra.** Ela diz `Deployment` de **uma**
-réplica, e foi escrita em 2026-08-03. O ADR-0008 é de 2026-08-04 e põe os dois planos em
-processos separados — o `deploy/` nasce com **dois** `Deployment`, o que o próprio ADR
-registra nas consequências. A escolha entre as três alternativas não muda; o manifesto
-que a alternativa 1 descreve muda.
-
-**`D-ARQ-05` já foi respondida para o mecanismo, e não para a contagem.** O ADR-0008
-fixou a fronteira (processo) e as quatro regiões de pacote. Ele **não** fixou quantos
-módulos de build existem nem quantos artefatos executáveis são publicados. Dois
-processos exigem no mínimo dois executáveis; se `shared` é um módulo próprio, ou se os
-quatro pacotes vivem em dois módulos, continua aberto. É `E-2`, e ela é a linha nova
-deste lote.
-
-**O argumento contra `bigint` em `D-DAT-01` caiu.** Ele era a colisão entre duas
-execuções da mesma semente. `D-DAT-05` pôs um discriminador UUIDv7 de execução na chave
-primária das duas tabelas, e a colisão deixou de existir — o próprio texto da decisão
-registra que `D-DAT-01` permanece, com o discriminador como segunda coluna da chave e
-não como substituição. `E-8` é hoje mais barata do que era quando foi enunciada.
-
-**`D-DOM-13` é subsumida por `E-7`.** Ela pergunta se o Shared Kernel entre os dois
-planos ganha contrato verificável, e recomenda que sim, deixando a forma "para quem
-decide o esquema". Escolher uma ferramenta de migração com SQL versionado **é** essa
-forma: o arquivo de migração passa a ser o contrato, e o Markdown não pode repeti-lo. A
-linha fecha quando `E-7` fechar, sem decisão própria.
-
-**`P-DAT-12` é o item mais perigoso do lote, e ele não estava em lista nenhuma.** Sem
-reset, uma consulta que esqueça o filtro por discriminador soma linhas de execuções
-anteriores ao `value_final` do oráculo exato, e o veredito sai errado **sem sintoma**.
-Com `TRUNCATE` o mesmo esquecimento era inofensivo, porque não havia outra execução no
-banco. A decisão de 2026-08-05 trocou dois riscos ruidosos por um silencioso, e nada
-hoje obriga o filtro.
-
-### O que este lote NÃO inclui, de propósito
-
-- **As guardas executáveis** de [`Q-0002-1`](../questions/Q-0002-1.md) — `D-ARQ-07`,
-  `D-ARQ-08` e `D-ARQ-09`. Elas pertencem ao Bloco 2, e nenhuma linha de código as
-  espera: uma regra sem código para vigiar não tem o que verificar.
-- **O modelo de thread do worker** (`D-ARQ-04`) e **o nível de isolamento**
-  (`D-DAT-08`), que o E1 exige e o esqueleto não.
-- **As dezenove linhas de interface web** do Bloco 2, menos `E-6`, que entra só porque
-  fixa o número de imagens do `Dockerfile`.
 
 ### As decisões do grupo I, em 2026-08-06
 
@@ -978,227 +585,30 @@ e fixa a etapa 6 como o gatilho da persistência durável. Um Flyway no `lab-pla
 zero teria zero migrações. Se o módulo já carrega a ferramenta com o diretório vazio, ou
 se ela entra quando a primeira tabela existir, **não foi decidido**.
 
-### A segunda rodada do grupo I mudou o desenho, em 2026-08-06
-
-Três respostas fecharam linha, e duas abriram decisão que a fila mantinha adiada de
-propósito. O registro é literal, antes de qualquer escolha nova.
-
-| ID     | Escolha                                                        | Efeito                                 |
-|--------|----------------------------------------------------------------|----------------------------------------|
-| `E-4`  | o pipeline constrói a imagem e atualiza o `deploy/`; nada mais | contraria a alternativa 1 em parte     |
-| `E-6`  | frontend em contêiner próprio, React                           | contraria a recomendação de `D-ARQ-02` |
-| `E-14` | o `lab-plane` tem base própria desde o dia zero                | linha nova; antecipa `D-DAT-07`        |
-| `E-15` | serviço próprio para o histórico de execução                   | linha nova, **em aberto**              |
-
-**`E-4` — o experimento sai do pipeline, e a interface o aciona.** A parte que coincide
-com a recomendação é a que importa: nenhum experimento roda no CI, então o veredito
-probabilístico nunca pinta a build de vermelho. A parte nova é que guardas, provas e
-testes **também** ficaram de fora do enunciado, e isso ainda não foi confirmado.
-
-**`E-4` colide com o mecanismo da ADR 0017 do homelab.** Aquele documento fixa **ArgoCD
-por polling**, com intervalo de cerca de três minutos: o workflow da `master` bumpa
-a tag da imagem nos manifests Kustomize de `deploy/`, e o ArgoCD percebe sozinho. Não há
-notificação do pipeline para o ArgoCD. "Avisar" exigiria webhook ou credencial de
-escrita no painel do homelab — que é a mesma objeção com que `D-ARQ-13` descartou a
-alternativa 3. O efeito prático é o mesmo, e o mecanismo é outro.
-
-**`E-6` — três imagens no dia zero.** A escolha é a alternativa 2 de `D-ARQ-02`, contra
-a recomendação. O custo nomeado passa a valer: o workflow ganha uma segunda matriz de
-build, e a frase do plano segundo a qual a interface é servida pela própria aplicação
-deixa de ser verdadeira. O framework de componentes fica em aberto — é `D-UI-03`, ainda
-na fila.
-
-**`E-14` e `E-15` nasceram nesta rodada, e as duas vivem em ADR.** `E-14` fechou na
-terceira rodada e `E-15` na quinta; a definição de um experimento, o resultado dela e a
-topologia que os guarda estão no
-[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git).
-A saída discutida aqui — manter `experiments/` versionado e importá-lo para o banco — é a
-que o ADR [descartou](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#alternativas-consideradas)
-por nome, e a objeção do ADR-0007 contra antecipar a persistência durável está
-registrada como
-[consequência negativa](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#negativas)
-dele.
-
-### A terceira rodada, em 2026-08-06: duas linhas fechadas e a nomenclatura
-
-| ID     | Escolha                                              | Seguiu a recomendação? |
-|--------|------------------------------------------------------|------------------------|
-| `E-4`  | build, testes e guardas; depois imagem e bump da tag | sim                    |
-| `E-14` | a definição de experimento vive **só no banco**      | **não**                |
-
-**`E-4` fecha.** O workflow compila, roda os testes com Testcontainers e as guardas
-executáveis, publica a imagem no GHCR e bumpa a tag nos manifests de `deploy/`. Nenhum
-experimento roda no CI. Uma imagem publicada é uma imagem que passou nas provas exigidas
-por ADR aceito, e o veredito probabilístico nunca pinta a build de vermelho.
-
-**`E-14` fecha contra a recomendação, e fecha três linhas de outros blocos junto.** A
-definição de experimento vive só no banco, o Experiment Designer na interface passa a ser
-a fonte, e `D-DAT-07`, `D-UI-01` e a tensão 1 do plano saem da posição 8 desta fila com
-ela. A decisão e o custo — perda de diff, de revisão em PR e de sobrevivência a um banco
-recriado — vivem no
-[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git).
-
-**A escolha que ela deixou em aberto virou linha própria em 2026-08-09**, ao podar esta
-narrativa: entre o relatório que incorpora a definição usada e o que a cita por
-identificador, ninguém escolheu — é
-[`E-42`](#e-42--o-relatório-de-execução-incorpora-a-definição-usada-ou-a-cita).
-
-#### A nomenclatura dos módulos e dos serviços
-
-Levantada na mesma rodada, e ela ainda não fechou.
-
-**`system-under-test` como nome de módulo, `sut` como segmento de pacote.** A separação
-já existe e é a decisão `A5`, em
-[`../CONTEXT.md`](../CONTEXT.md#a-sigla-sut-no-código-decidida-em-2026-08-05): em prosa,
-por extenso; em identificador de código, a sigla. Um nome de módulo e de imagem não é
-nenhum dos dois — ele aparece em `deploy/`, no GHCR e no log do cluster, onde a sigla
-não tem expansão à vista. O par por extenso no módulo e sigla no pacote é coerente com a
-regra, e a fixa para um caso que ela não previa.
-
-**`lab-auditory` não pode ser o nome, e o motivo é de idioma.** Em inglês `auditory` é
-"auditivo", relativo à audição; "auditoria" é `audit`. Como todo identificador é escrito
-em inglês pelo [ADR-0008](0008-os-dois-planos-em-processos-separados.md), o nome errado
-ficaria em pacote, imagem e manifesto. As candidatas com o sentido pretendido são
-`lab-audit`, `lab-journal`, `lab-ledger` e `lab-notebook` — as duas últimas alinhadas à
-metáfora do caderno de laboratório que o repositório já usa.
-
-**A contagem de serviços continua aberta**, e ela é o que resta de `E-2` e `E-15`.
-
 ### A quarta rodada, em 2026-08-06: uma contradição com ADR aceito
 
-**Fechada em 2026-08-06.** `E-16` fixou o nome `lab-journal` e `E-17` tirou o caderno de
-laboratório do Git — declarando **sem valor** a frase do `AGENTS.md` segundo a qual
-`experiments/` e `docs/experiments/` entram no Git e "juntos, o histórico vira um caderno
-de laboratório". As duas vivem em
-[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git).
-`E-18` — um schema por serviço, sem acesso cruzado, contra a aresta `SELECT após a
-quiescência` do ADR-0008 — vive em
-[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
+**Estado:** `fechada`, em 2026-08-06.
+**Absorvida por:** [ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)
+(`E-16`, `E-17`) e [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) (`E-18`).
 
 ### A quinta rodada, em 2026-08-06: o CDC, conferido
 
-**Fechada em 2026-08-06.** `E-15` fechou em **quatro serviços no dia zero** e `E-19`
-mandou as observações de passo atravessarem para o `lab-journal` ao vivo, evento por
-evento; `E-20` nasceu aqui e fechou na rodada seguinte. A topologia vive em
-[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#cinco-serviços-e-o-quatro-do-agentsmd-deixa-de-valer)
-e a emissão ao vivo em
-[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
+**Estado:** `fechada`, em 2026-08-06.
+**Absorvida por:** [ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#cinco-serviços-e-o-quatro-do-agentsmd-deixa-de-valer)
+(`E-15`, `E-20`) e [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) (`E-19`).
 
 #### `E-19` — ao vivo, e a tensão com o ADR-0008
 
-**Fechada em 2026-08-06.** As observações de passo atravessam para o `lab-journal`
-**evento por evento**, e cada travessia entra na janela medida — o ADR-0008 já registrava
-que a latência de rede entra na medida de todo experimento, e o E1 emite entre 900 e 1500
-observações por execução. A decisão vive em
-[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão), e a
-saída não escolhida — buffer local com remetente próprio — continua aberta em
+**Estado:** `fechada`, em 2026-08-06. A saída não escolhida segue aberta em
 [`E-36`](#e-36--a-emissão-ao-vivo-entra-na-janela-que-o-experimento-mede).
+**Absorvida por:** [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
 
 ### A sexta rodada, em 2026-08-06: o CDC vira fonte do veredito
 
-**Fechada em 2026-08-06.** `E-18` pôs o CDC como **fonte do veredito**, sem `SELECT`
-cruzado, e `E-20` fechou **sem BFF** — o frontend manda comando ao `lab-plane` e lê
-histórico e streaming do `lab-journal`. A primeira vive em
-[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão), a segunda em
-[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff).
-
-#### O que `E-18` preserva, e o que ela desmonta
-
-**Fechada em 2026-08-06.** Ela preserva a regra de schema sem exceção — uma conexão de
-replicação lógica consome o WAL e não faz `SELECT` em tabela alheia —, desmonta a
-detecção cruzada e o rótulo `fontes divergentes`, e **tira o CDC da etapa 5 para o dia
-zero**. O racional inteiro vive em
-[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#consequências).
-
-### O esqueleto do grupo I, escrito em 2026-08-06
-
-O primeiro código do repositório entrou no mesmo dia em que o grupo I fechou. Ele
-compila, empacota, sobe contra PostgreSQL real e **não implementa nada**.
-
-| Decisão | Como ela virou arquivo                                           |
-|---------|------------------------------------------------------------------|
-| `E-1`   | `pom.xml` reactor, Java 25, Spring Boot 4.1.0                    |
-| `E-2`   | `shared`, `lab-plane`, `lab-journal`, `system-under-test`        |
-| `E-4`   | `.github/workflows/build.yml`: verify, depois imagem no GHCR     |
-| `E-5`   | `compose.yaml` e `local/postgres-init.sql`, um papel por serviço |
-| `E-6`   | `frontend/`, React 19 com `Dockerfile` e nginx próprios          |
-| `E-7`   | Flyway configurado nos três, com `create-schemas`                |
-| `E-18`  | `ALTER ROLE lab_plane REPLICATION`, e nenhum `GRANT` cruzado     |
-| `E-20`  | dois caminhos no `nginx.conf` e no proxy do Vite                 |
-
-#### Cinco coisas que escrever o código decidiu, e que ninguém tinha perguntado
-
-**A região `application` do ADR-0008 vira três folhas.** Aquele ADR nomeia
-`dev.da0hn.lab.application` como a região de composição e ponto de entrada. Com três
-executáveis, um pacote único ali ficaria dividido entre três artefatos — split package,
-que compila e envenena qualquer análise por pacote. Cada bootstrap ganhou folha própria:
-`application.labplane`, `application.journal` e `application.sut`, com
-`scanBasePackages` declarado. **A emenda ao ADR-0008 precisa cobrir isto**, junto da
-região `journal`, que também não existe lá.
-
-**A direção proibida do ADR-0008 deixou de precisar de guarda.** O `system-under-test`
-não declara dependência do `lab-plane`, então a chamada proibida é erro de compilação. O
-ArchUnit foi **retirado** dos `pom.xml` por isso: uma dependência declarada sem uso é
-exatamente o que a regra estrutural do repositório proíbe. Ele volta quando `D-ARQ-07`
-decidir o que cada classe de regra verifica.
-
-**O `public` foi revogado no banco local.** Um schema comum a todos os papéis é o
-caminho por onde `E-18` vazaria sem ninguém notar: bastaria uma tabela criada sem
-qualificar o schema. `REVOKE ALL ON SCHEMA public FROM PUBLIC` fecha isso.
-
-**O SSE exige três diretivas no nginx.** Sem `proxy_buffering off`, o servidor acumula a
-resposta e entrega o evento só quando o buffer enche — o que transforma "ao vivo" de
-`E-19` em "em lote", sem erro nenhum aparecer. É a classe de defeito que o repositório
-mais teme: o silencioso.
-
-**O `lab-journal` já pode ter migração, e os outros dois não.** O
-[ADR-0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md) já fixou a forma e a
-ordem do log de observações, então a primeira migração do histórico não depende do grupo
-II. As tabelas `resource` e `allocation` dependem, porque `E-8` a `E-13` continuam
-abertas. Nenhuma migração entrou neste commit.
-
-#### Cinco defeitos que o esqueleto teve, e o que cada um ensina
-
-Nenhum deles apareceu como erro. Os cinco produziram **verde**, que é a forma de falha
-que este repositório mais teme.
-
-**A auto-configuração do Flyway saiu de `spring-boot-autoconfigure` no Spring Boot 4.**
-Ela vive num módulo próprio, `spring-boot-flyway`. Sem ele, o `flyway-core` fica no
-classpath, o contexto sobe, o health check responde `UP`, e **nenhuma migração roda**.
-
-**O Flyway não cria schema quando não há migração a aplicar.** `create-schemas: true` é
-condição, e não ordem: ele cria o schema antes de aplicar a primeira migração, e sem
-nenhuma ele não faz nada. As três `V1` existem por isso, e criam apenas um
-`COMMENT ON SCHEMA`.
-
-**Os dois defeitos acima se somam num terceiro.** A fronteira de `E-18` ficava declarada
-em `application.yml` e ausente no banco: os três serviços conectavam ao mesmo
-`database`, nenhum schema existia, e nada os impedia de escrever no mesmo espaço de
-nomes. A regra estava escrita e não estava valendo.
-
-**O teste `contextLoads` não pega nada disso.** Ele prova que o Spring sobe, o que é
-verdade mesmo com o Flyway inerte. Os testes passaram a consultar `pg_namespace` e
-afirmar que o schema daquele processo existe — o que falha se qualquer um dos três
-defeitos voltar.
-
-**A tabela de controle do Flyway tem uma coluna `version`.** Uma guarda ingênua para a
-proibição do ADR-0006 acusaria defeito na primeira execução. A verificação exclui
-`flyway_schema_history`: a coluna pertence à ferramenta de migração, e não ao domínio
-medido.
-
-Um sexto, de ambiente e não de decisão: a imagem `postgres:18` mudou o ponto de
-montagem para `/var/lib/postgresql`, porque os dados passaram a viver num subdiretório
-por versão maior. Montar `/var/lib/postgresql/data` faz o contêiner recusar-se a subir —
-este falhou ruidosamente, e por isso não está na lista acima.
-
-#### O que o esqueleto prova, e o que ele não prova
-
-Prova: os quatro artefatos constroem, os três serviços Java sobem contra PostgreSQL 18
-real por Testcontainers, o Flyway cria o schema de cada um, e o `compose.yaml` levanta o
-conjunto com `wal_level=logical`.
-
-Não prova nada sobre consistência distribuída. Nenhum dos 42 fenômenos é reproduzível, o
-oráculo não existe, e o CDC está provisionado mas não consumido.
+**Estado:** `fechada`, em 2026-08-06.
+**Absorvida por:** [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)
+(`E-18`) e [ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff)
+(`E-20`).
 
 ### `E-21`: pular o build do módulo que não mudou, aberto em 2026-08-06
 
@@ -1261,89 +671,6 @@ reportado em [`githubstatus.com`](https://www.githubstatus.com/) na mesma data. 
 neste repositório o provoca e nada aqui o resolve; a medição espera o serviço
 normalizar.
 
-### O grupo II, reaberto em 2026-08-06: quatro achados antes de qualquer escolha
-
-As seis linhas `E-8` a `E-13` foram enunciadas em 2026-08-03, e três decisões
-posteriores mudaram o terreno delas sem que nenhuma fosse reescrita: `D-DAT-05` pôs um
-discriminador de execução na chave primária das duas tabelas, `E-5` pôs um schema por
-serviço, e `E-18` tirou o `SELECT` cruzado do oráculo e pôs o CDC no lugar. O que segue
-é o efeito disso, registrado antes da rodada e **sem decidir nada**.
-
-| Achado                                           | Linha atingida | Efeito                        |
-|--------------------------------------------------|----------------|-------------------------------|
-| a ordem das colunas da chave primária é ambígua  | linha nova     | `E-22`                        |
-| Row Level Security deixou de alcançar o veredito | `E-12`         | uma das duas candidatas cai   |
-| a chave estrangeira teria de ser composta        | `E-9`          | o argumento contra cresce     |
-| o índice em debate não é sobre `(resource_id)`   | `E-10`         | enunciado corrigido, e barato |
-
-#### `E-22` — a própria `D-DAT-05` diz duas coisas sobre a ordem da chave
-
-A tabela da decisão diz que "a chave primária das duas tabelas passa a incluir a
-execução". O diagrama da mesma seção rotula a tabela como "PK começa pelo
-discriminador". As consequências dizem que "todo índice passa a começar pelo
-discriminador" e, na frase seguinte, que "o discriminador é a **segunda** coluna da
-chave". Começar e ser segundo não são compatíveis, e as três frases estão em
-[`modelo-de-dados.md`](arquivo/proposta-2026-08-03/modelo-de-dados.md#d-dat-05--reset-entre-execuções).
-
-A escolha não é cosmética, e o motivo é o mesmo pelo qual aquela decisão preferiu
-UUIDv7 a UUIDv4. Com `(execution_id, id)`, o prefixo de instante do UUIDv7 é crescente
-e toda inserção cai no fim da B-tree. Com `(id, execution_id)`, a coluna à esquerda é o
-`bigint` derivado da semente — valores pequenos que **se repetem** a cada execução —, e
-as inserções se espalham pelo índice inteiro. É exatamente a fragmentação dentro da
-janela de medida que a decisão diz querer evitar.
-
-```mermaid
-flowchart TB
-    subgraph A["(execution_id, id)"]
-        A1["UUIDv7 à esquerda<br/>prefixo cresce no tempo"]
-        A2["inserção no fim da B-tree"]
-        A3["consulta por execução<br/>usa o prefixo"]
-        A1 --> A2
-        A1 --> A3
-    end
-    subgraph B["(id, execution_id)"]
-        B1["bigint da semente à esquerda<br/>repete a cada execução"]
-        B2["inserção espalhada<br/>fragmenta durante a medida"]
-        B1 --> B2
-    end
-```
-
-O acesso do `increment` conhece os dois valores e funciona em qualquer das duas ordens,
-então nada quebra — o custo é só de desempenho, dentro da janela medida.
-
-#### `E-9` — a chave estrangeira teria de ser composta
-
-`D-DAT-02` pesou uma chave estrangeira simples, de `allocation.resource_id` para
-`resource.id`. Com o discriminador na chave primária, `resource.id` sozinho deixa de ser
-único, e a referência passa a ser `(resource_id, execution_id)` para `(id,
-execution_id)` — o que exige a coluna do discriminador também em `allocation`, e ela já
-está lá pela mesma decisão.
-
-O argumento contra cresce em duas frentes. O lock `FOR KEY SHARE` que
-[`D-DAT-02`](arquivo/proposta-2026-08-03/modelo-de-dados.md#d-dat-02--chave-estrangeira-de-allocationresource_id)
-nomeia continua igual, e agora o vocabulário do Lab Plane — que `D-DAT-05` aceitou pôr
-na chave do sistema medido — passa a aparecer também na restrição de integridade dele.
-
-#### `E-10` — o índice em debate é `(execution_id, resource_id)`
-
-[`D-DAT-03`](arquivo/proposta-2026-08-03/modelo-de-dados.md#d-dat-03--índice-sobre-allocationresource_id)
-debate um índice sobre `allocation(resource_id)`. A consequência de `D-DAT-05` diz que
-todo índice começa pelo discriminador, então o índice em debate é
-`(execution_id, resource_id)`, e o enunciado de 2026-08-03 está vencido na letra.
-
-**A decisão ficou mais barata do que era.** Sem o discriminador, o índice servia a uma
-finalidade só, e discutível: aproximar o predicate lock do `SERIALIZABLE` do conflito
-real. Com ele, o índice também é o que impede uma consulta por execução de varrer o
-histórico inteiro — o crescimento monotônico que `P-DAT-11` aceitou sem particionamento
-e sem retenção.
-
-**O que não mudou:** a replicação lógica decodifica mudança de heap, e não de índice. O
-índice não altera o que o oráculo de `E-18` enxerga. Ele altera o custo de escrita
-dentro da janela medida, que é o argumento contra registrado em `D-DAT-03`.
-
-Nenhum dos quatro é decisão. `E-22` é linha nova; os outros três levam `E-9`, `E-10` e
-`E-12` à rodada com o enunciado corrigido.
-
 ### A primeira rodada do grupo II, em 2026-08-06
 
 | ID     | Escolha                                                   | Seguiu a recomendação? |
@@ -1398,40 +725,6 @@ pena de o número não ser interpretável. O custo é escrita de índice a cada 
 E5, dentro da janela medida. **Se `E-22` escolher `(execution_id, id)`**, a chave
 primária de `allocation` já começa pelo discriminador e este índice é adicional; se
 escolher `(id, execution_id)`, ele passa a ser o único caminho de acesso por execução.
-
-#### `E-22` — as duas premissas que a rodada corrigiu
-
-A pergunta que a linha recebeu foi se a ordem `(id, execution_id)` é o que permite uma
-segunda execução, "já que o `id` é auto-incrementado". As duas metades são falsas, e a
-segunda é a que importa.
-
-**O `id` não é auto-incrementado, e não pode ser.** O
-[ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md) determina que o identificador é
-gerado no código do sistema medido a partir da semente, e que o esquema NÃO DEVE usar
-`SERIAL`, `IDENTITY`, `nextval` nem valor padrão do banco. Duas execuções da mesma
-semente produzem **os mesmos** identificadores, por exigência — e foi precisamente isso
-que obrigou o discriminador a entrar na chave.
-
-**A ordem das colunas não muda o que a chave permite.** `PRIMARY KEY (a, b)` e
-`PRIMARY KEY (b, a)` impõem a mesma restrição: o **par** é único, e nenhuma das duas diz
-nada sobre `a` ou `b` isoladamente. As duas ordens permitem a segunda execução
-igualmente, e o que a permite é o discriminador **estar** na chave — decidido em
-`D-DAT-05`, não nesta linha.
-
-```mermaid
-flowchart LR
-    subgraph U["o que as duas ordens têm em comum"]
-        U1["o par é único"]
-        U2["a segunda execução cabe"]
-    end
-    subgraph D["o que a ordem decide"]
-        D1["qual WHERE o índice serve"]
-        D2["onde a inserção cai na B-tree"]
-    end
-```
-
-`E-22` decide desempenho e caminho de acesso dentro da janela medida, e **não** decide
-capacidade nenhuma do esquema.
 
 #### `E-22` fecha em `(execution_id, id)`, e a linha foi decidida duas vezes
 
@@ -1513,43 +806,30 @@ e o `CREATE TABLE` não pode ser escrito antes disso.
 
 #### `E-11` mudou de terreno: o instrumento já publica identidade no sistema medido
 
-**Fechada em 2026-08-06.** A recomendação da proposta era o **domínio medido derivar o
-identificador, ciente da semente**, e os três achados desta fila mostraram que ela perdeu
-o apoio depois que `D-DAT-05` pôs o discriminador do Lab Plane na chave primária das
-tabelas medidas. O racional vive em
-[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#identidade-embutida-no-domínio-medido-ou-no-lab-plane).
+**Estado:** `fechada`, em 2026-08-06.
+**Absorvida por:** [ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#identidade-embutida-no-domínio-medido-ou-no-lab-plane).
 
 ### A segunda rodada do grupo II, em 2026-08-06
 
-**Fechada em 2026-08-06 na parte da identidade.** `E-11` escolheu **onde a regra de
-derivação mora** — um componente próprio, com contrato — e abriu `E-24` no mesmo ato; o
-racional vive em
-[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade).
-`E-13` fechou por papel do valor, e as duas seções de `E-23` continuam abaixo por não
-terem ADR que as carregue.
+**Estado:** `fechada` na parte da identidade, em 2026-08-06. As duas seções de `E-23`
+continuam abaixo por não terem ADR que as carregue.
+**Absorvida por:** [ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade)
+(`E-11`, `E-13`).
 
 #### `E-11` fecha no componente próprio, e abre `E-24` no mesmo ato
 
-**Fechada em 2026-08-06, contra a recomendação.** A escolha aceita o custo de **um
-contexto inteiro por uma regra de uma linha**, em troca de a regra ficar isolada e com
-contrato testável. O racional vive em
-[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade).
+**Estado:** `fechada`, em 2026-08-06, contra a recomendação.
+**Absorvida por:** [ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade).
 
 #### `E-24` — a alternativa C isola a regra, e não decide quem a invoca
 
-**Fechada em 2026-08-06.** `E-11` respondeu onde a regra mora, e não quem a chama; das
-três formas, a de **serviço próprio é a única que dispensa escolher entre os dois
-planos**, ao custo de uma chamada de rede. O racional vive em
-[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade).
+**Estado:** `fechada`, em 2026-08-06.
+**Absorvida por:** [ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade).
 
 #### `E-13` fecha por papel do valor, e o `AGENTS.md` muda no mesmo commit
 
-**Fechada em 2026-08-06, e ela não gerou ADR.** As regras de aleatoriedade e de relógio
-alcançam todo valor que entra em veredito, em escalonamento ou em identidade derivada da
-semente, indiferentemente do plano que o produz — e o discriminador de execução não entra
-em nenhum dos três papeis. A regra e o porquê dela vivem no
-[`AGENTS.md` da raiz](../../AGENTS.md#regras-estruturais-que-valem-sempre), alterado no
-mesmo commit, que passa a ser o dono desta decisão.
+**Estado:** `fechada`, em 2026-08-06. Não gerou ADR.
+**Absorvida por:** [`AGENTS.md` da raiz](../../AGENTS.md#regras-estruturais-que-valem-sempre).
 
 #### `E-23` ganhou uma quarta candidata: nome diferente de cada lado
 
@@ -1678,28 +958,23 @@ nome de clock skew. Nada nesta fila decide como elas se alinham.
 
 ### A terceira rodada do grupo II, em 2026-08-06
 
-**Fechada em 2026-08-06.** `E-12` pôs um broker entre o conector de CDC e o Lab Plane,
-`E-24` escolheu o **serviço próprio** para o componente de identidade, e `E-25` e `E-26`
-fixaram as colunas de tempo dos dois lados da fronteira. O broker vive em
-[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão), o serviço de identidade em
-[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade), e as colunas de tempo nos Example Mapping de
+**Estado:** `fechada` para `E-12` e `E-24`, em 2026-08-06. `E-25` e `E-26` permanecem
+abertas, registradas nas seções `Perguntas em aberto` dos Example Mapping de
 [atualização perdida](../features/deteccao-de-atualizacao-perdida/example-mapping.md#perguntas-em-aberto)
 e de [execução de experimento](../features/execucao-de-experimento/example-mapping.md#perguntas-em-aberto).
+**Absorvida por:** [ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
+(`E-12`) e [ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade)
+(`E-24`).
 
 #### `E-12` fecha no broker, e o LSN é o que torna a escolha defensável
 
-**Fechada em 2026-08-06, contra a recomendação.** O transporte entre o WAL e o oráculo —
-conector, broker e filtro por execução, com `E-28` e `E-29` — vive em
-[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão), junto do argumento do LSN que
-torna a escolha defensável e da **dispensa explicita** da regra de tecnologia.
+**Estado:** `fechada`, em 2026-08-06, contra a recomendação.
+**Absorvida por:** [ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão).
 
 #### `E-24` fecha no serviço próprio, e a latência sai da janela se a derivação for antes
 
-**Fechada em 2026-08-06.** A objeção da latência **some se a derivação acontecer na fase
-de seeding**, antes de a janela medida abrir, e nenhum dos quatro experimentos hoje
-especificados pede identidade nova durante os passos — se um pedir, a linha reabre. O
-racional vive em
-[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade).
+**Estado:** `fechada`, em 2026-08-06.
+**Absorvida por:** [ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade).
 
 ### Quatro linhas novas, abertas pelas escolhas da terceira rodada
 
@@ -1723,29 +998,6 @@ banco compartilhado do homelab, com vizinhos. `max_slot_wal_keep_size` volta a s
 mitigação, e continua sendo parâmetro de cluster que afeta terceiros.
 
 ### O que a quarta rodada apurou antes de perguntar, em 2026-08-06
-
-#### `E-27` ganhou uma quarta forma, e ela separa dois defeitos que estavam juntos
-
-As três formas registradas acima misturam dois defeitos distintos de `DEFAULT now()`: o
-relógio ser o do servidor, e o valor ser o instante de **início da transação**. A segunda
-metade tem saída própria — `clock_timestamp()` devolve o instante real da chamada, e duas
-linhas gravadas na mesma transação recebem valores diferentes. O relógio continua sendo o
-do servidor, e continua fora de qualquer adaptador.
-
-| Forma                       | Relógio      | Instante            |
-|-----------------------------|--------------|---------------------|
-| `DEFAULT now()`             | do servidor  | início da transação |
-| `DEFAULT clock_timestamp()` | do servidor  | da chamada          |
-| trigger `BEFORE UPDATE`     | do servidor  | da chamada          |
-| aplicação, pelo adaptador   | do adaptador | da chamada          |
-
-**A tensão que ninguém viu ao fechar `E-25`.** O grupo E estuda clock skew, e o insumo
-natural de um experimento assim é justamente uma coluna de tempo escrita pela aplicação,
-com relógio que o experimento pode deslocar. Se `updated_at` vier do adaptador, ela deixa
-de ser metadado inerte e vira matéria-prima possível — e a regra escrita em `E-25`, de que
-nenhuma estratégia a lê, passa a conviver com um experimento que a lê por outro motivo. A
-regra fala de estratégia de concorrência e não de oráculo, então não há contradição hoje.
-**Há pressão sobre uma regra recém-escrita, e ela precisa ficar visível.**
 
 #### `E-30` não entra nesta rodada, e a razão é que ela depende de `E-5`
 
@@ -1810,7 +1062,9 @@ e registrado em
 ### O que a quinta rodada apurou antes de perguntar, em 2026-08-06
 
 Dois achados sobre `E-31`, verificados na documentação do Debezium Server e na própria
-árvore, e um deles abre `E-34`, uma linha que ninguém tinha visto.
+árvore, e um deles abriu `E-34`, uma linha que ninguém tinha visto. O registro daquele
+segundo achado foi apagado em 2026-08-10, por não ser citado de lugar nenhum, e o
+enunciado de `E-34` continua adiante.
 
 #### `E-31` — a variável de ambiente sobrepõe tudo, e isso dissolve a tensão do Secret
 
@@ -1842,21 +1096,6 @@ aplicação.
 A terceira não é neutra. Enquanto ela durar, o Debezium Server roda no `compose.yaml` de
 desenvolvimento e **não existe no homelab** — o que significa que o veredito não pode ser
 produzido lá.
-
-#### `E-34`, aberta pela apuração: o sink tem duas formas, e elas não são intercambiáveis
-
-O Debezium Server oferece **dois** sinks de RabbitMQ: `rabbitmq`, sobre AMQP 0-9-1, com
-`exchange` e `routingKey`; e `rabbitmqstream`, sobre o protocolo de stream, com semântica
-de offset e retenção.
-
-**A escolha entre eles amarra o objeto de estudo do grupo B.** O grupo estuda fila cheia e
-consumidor lento — e uma *queue* AMQP que enche não é a mesma coisa que um *stream* com
-retenção configurada, onde o produtor não é bloqueado pelo consumidor lento da mesma forma.
-Escolher o sink pelo conforto do consumidor escolheria, sem dizer, qual fenômeno de
-saturação o laboratório consegue reproduzir.
-
-A linha não entra nesta rodada. Ela depende de o grupo B ter experimento especificado, e
-hoje ele não tem.
 
 ### A quinta rodada do grupo II, em 2026-08-06
 
@@ -1894,13 +1133,8 @@ daqui a produz. Se isso é caso previsto ou lacuna, não foi conferido aqui.
 
 #### `E-32` fecha na cadeia inteira, e o teste ganha uma segunda asserção
 
-**Fechada em 2026-08-06.** O teste é de aceitação e sobe **três contêineres** — PostgreSQL
-com `wal_level=logical` por comando explícito, Debezium Server e RabbitMQ —, escrevendo,
-lendo do broker e comparando o LSN lido com o `pg_current_wal_lsn()` do momento da
-escrita. A segunda asserção é o que o torna guarda em vez de conferência: ela falha se
-alguém ligar o `ExtractNewRecordState` e o bloco `source` desaparecer. **O teste não
-existe**, e até existir o veredito repousa sobre uma promessa de terceiro —
-[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas).
+**Estado:** `fechada`, em 2026-08-06. **O teste não existe.**
+**Absorvida por:** [ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas).
 
 #### `E-33` fecha na distinção, e ela transforma uma recomendação de `E-3` em requisito
 
@@ -2291,85 +1525,14 @@ resolver a origem do primeiro.
 
 #### `E-37` — o que a proibição de derivar estado de stream alcança
 
-O ADR-0002 proíbe o oráculo derivar o estado final de um log. O oráculo do predicado
-precisa de `Σ amount`, e obtê-la do WAL é somar eventos de `INSERT` — reconstruir um total
-a partir de um stream, que é o que a proibição descreve. O oráculo exato lê o **último**
-evento, sem somar, e se a mesma proibição o alcança nunca foi decidido. A linha decide o
-alcance e, em consequência, **se o E5 tem oráculo**. As regras `R3` e `R5` do card de
-proteção inerte ficam sem mecanismo até ela fechar.
-
-**A apuração de 2026-08-09 achou que o enunciado acima descreve a proibição errada.** Ela
-nomeia uma **fonte**, e não uma operação: a letra é "Nenhum dos dois deriva o estado final
-do log de observações do runtime", na seção
-[o oráculo lê o banco](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações),
-e o critério que a sustenta está escrito ali: "o banco é o sistema sob teste, e é o único
-lugar onde a resposta é independente do instrumento". A
-[alternativa E](0002-o-dominio-minimo-e-os-dois-oraculos.md#alternativa-e--o-oráculo-derivado-do-log-de-observações)
-foi descartada porque "o oráculo passaria a medir o instrumento com o instrumento".
-
-**O WAL não é produzido pelo instrumento.** Quem o escreve é o PostgreSQL, a partir das
-escritas reais do sistema medido. Pelo critério de proveniência acima, ele tem a
-independência que a proibição protege — e o enunciado desta linha não considerava isso,
-por tratar a proibição como sendo sobre reconstruir total a partir de sequência.
-
-**O risco real existe, e é outro.** Somar eventos exige **completude** do stream; ler o
-último valor exige apenas **recência**. Um `INSERT` perdido reduz `Σ amount`, e o veredito
-de capacidade sai **verde** sobre um banco que violou o limite — falso negativo
-silencioso. A mesma perda não altera o último valor de `resource.value`, e a espera pelo
-LSN do commit final, decidida em `O19`, já cobre a recência.
-
-**A guarda que a soma exigiria já foi nomeada, e não por esta linha.** O
-[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
-registra que um buraco na sequência de LSN é detectável e invalida o veredito. Exigir
-contiguidade antes de calcular a soma converteria o falso negativo silencioso em execução
-invalidada, que é ruidosa. **Nada disto decide a linha**, e a escolha continua da pessoa.
+**Estado:** `fechada`, em 2026-08-09. Os três desdobramentos que esta linha deixou
+abertos viraram `E-45`, `E-46` e `E-47`, adiante.
+**Absorvida por:** [ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md).
 
 #### `E-37` fecha na proveniência, e a contiguidade deixa de ser opcional
 
-**Escolhido pela pessoa em 2026-08-09.** A proibição do ADR-0002 alcança **fonte
-produzida pelo instrumento**, e nada além disso. O WAL não é uma delas, e é fonte legítima
-para os dois oráculos: `Σ amount` vem de lá, somando os eventos de `INSERT`. A leitura vale
-para os dois oráculos pelo mesmo critério, e a distinção entre ler o último valor e somar
-deixa de separá-los quanto à **permissão**.
-
-**A contiguidade de LSN é condição, e não recomendação.** O oráculo confere a sequência
-antes de somar, e um buraco **invalida a execução** em vez de produzir veredito. Sem essa
-guarda a escolha não vale, porque é ela que separa esta decisão do falso negativo
-silencioso que a apuração acima descreve.
-
-**O E5 volta a ter oráculo**, e as regras `R3` e `R5` do
-[card de proteção inerte](../features/deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)
-ganham mecanismo. As duas dizem hoje que a fonte segue sem decisão, e mudam no commit que
-registrar esta escolha.
-
-**O custo, nomeado.** A completude do stream passa a ser responsabilidade do instrumento.
-Com o `SELECT sum`, ela era do PostgreSQL, garantida pela visão transacional da consulta;
-fora do banco, some — e o que a repõe é a guarda, que por isso é parte do oráculo e não
-acessório dele.
-
-**O artefato foi escolhido pela pessoa no mesmo dia:** o
-[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md), redigido
-pelo par escritor/revisor. Ele fixa a decisão e o argumento; o que o cerca — o card do E5,
-o `AGENTS.md` da raiz e a matriz — muda no mesmo commit.
-
-**Três coisas que esta linha NÃO decide, e ficam abertas.** A primeira é se a execução
-invalidada por buraco de LSN recebe o rótulo
-[`fonte atrasada`](../CONTEXT.md#os-dois-rótulos-do-instrumento-decididos-em-2026-08-05),
-que `A3` deu ao estouro do limite de espera pelo CDC, ou um distinto — são falhas
-diferentes, e o relatório que as confunde afirma duas coisas com uma palavra só.
-
-A segunda é **onde a conferência de contiguidade vive**: no conector de CDC, no consumidor
-do broker ou no próprio oráculo. Nenhum código de oráculo existe na árvore, e o lugar muda
-quem detém o custo — a fronteira do
-[ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão) põe
-o conector em processo próprio, e uma guarda ali protege todo consumidor, enquanto uma
-guarda no oráculo protege só o veredito.
-
-A terceira apareceu ao revisar o ADR-0013, e é a mais fina: **somar exige saber quando
-parar**, e a espera pelo LSN do commit final foi decidida em `O19` para o oráculo exato. Se
-ela alcança também o oráculo do predicado é pergunta em aberto, e não corolário. Sem
-condição de término, a soma pode ser lida cedo demais e produzir um `Σ amount` parcial —
-que é o mesmo falso negativo que a contiguidade evita, por outra porta.
+**Estado:** `fechada`, em 2026-08-09, pela pessoa, redigida pelo par escritor/revisor.
+**Absorvida por:** [ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md).
 
 ### `E-38` — o limite do Feature Card contra o card como fonte de verdade
 
@@ -2954,9 +2117,14 @@ fila — é a promessa de que ele muda.
 tocou o arquivo, `a84ce7b` (2026-08-07), havia onze citações, e as onze apontavam
 para heading `##` ou `###` — moldura estrutural, que sobrevive a qualquer poda de
 linha individual: três para
-[`#o-que-esta-fila-enfileira`](#o-que-esta-fila-enfileira), cinco para
-[`#bloco-4`](#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato) e três para
+[`#o-que-esta-fila-enfileira`](#o-que-esta-fila-enfileira), cinco para `#bloco-4` e três
+para
 [`#bloco-3`](#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora).
+
+> **A premissa de que moldura sobrevive a qualquer poda caiu em 2026-08-10.** O Bloco 4
+> foi apagado nesse dia, depois que as cinco citações do glossário saíram por este mesmo
+> fecho: sem citante, moldura também é podável. O que protege um heading é a citação, e
+> não o nível dele.
 
 **As três citações a um fecho de linha individual nasceram neste turno.** Ao registrar
 `E-44` e `E-45` no glossário, este mesmo turno acrescentou uma citação ao
@@ -3022,8 +2190,8 @@ página, o que nenhuma das quatro enunciava.
 **O CONTEXT.md.** As catorze citações da tabela do enunciado saíram. Três delas — as que
 apontavam para o heading estrutural
 [`#o-que-esta-fila-enfileira`](#o-que-esta-fila-enfileira) — viraram menção sem link ao
-substantivo "fila de decisões". As onze restantes — cinco para o
-[Bloco 4](#bloco-4--vocabulário-decidível-a-qualquer-momento-e-barato), três para o
+substantivo "fila de decisões". As onze restantes — cinco para o Bloco 4, apagado desta
+fila em 2026-08-10, três para o
 [Bloco 3](#bloco-3--pertencem-a-um-adr-já-enfileirado-e-a-recomendação-é-não-decidir-agora)
 e uma para cada um dos fechos de [`E-44`](#e-44-fecha-em-reparo-imediato-escolhida-em-2026-08-10)
 e [`E-45`](#e-45-fecha-em-fonte-incompleta-escolhida-em-2026-08-10) — viraram menção ao
@@ -3118,65 +2286,12 @@ vez, quando a pessoa escolhe — este fecho apura a elegibilidade, e não decide
   converte uma linha podável em permanente, e nada neste fecho aceita continuar
   produzindo esse efeito.
 
-## A dívida de ADR do Lote E, levantada em 2026-08-06
+## A saída, decidida em 2026-08-06
 
-**Vinte e nove linhas fecharam desde 2026-08-06, e nenhum ADR nasceu.** O último é o
-[ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md), de 2026-08-05,
-vindo do Lote A. Todo o Lote E vive nesta fila, e em nenhum outro lugar.
-
-Isso **não** foi decidido. A regra de 2026-08-04 diz que a escolha do artefato acontece
-depois da decisão, e a escolha simplesmente não foi feita — nem a favor do ADR, nem a
-favor de `docs/features/`. A fila virou o depósito de tudo, por omissão.
-
-### Três defeitos que já são visíveis, e nenhum é hipótese
-
-**Uma linha desta fila foi decidida duas vezes.** `E-22` fechou, e reabriu, e fechou de
-novo — o registro está em
-[`E-22` fecha em `(execution_id, id)`](#e-22-fecha-em-execution_id-id-e-a-linha-foi-decidida-duas-vezes).
-Uma decisão que não é consultável como registro é uma decisão que se retoma sem perceber.
-
-**`E-18` é citada como regra estabelecida, e não tem estatuto de regra.** O
-[`AGENTS.md`](../../AGENTS.md) a invoca para explicar por que o oráculo lê o WAL; o
-[`compose.yaml`](../../compose.yaml) a invoca em comentário; três rodadas desta fila a
-usam como premissa. Ela vive numa linha de um arquivo de 2431 linhas, **sem estado, sem
-rastro de alteração e sem mecanismo de substituição** — que é exatamente o que
-[`README.md`](README.md#estados) dá a um ADR.
-
-**A fila não tem teto, e o índice de ADR tem.** Esta página passou de 2009 para 2431
-linhas em três rodadas de um único dia. O [`README.md`](README.md#esta-página-tem-um-teto-de-514-linhas-e-ele-não-é-escolha)
-carrega um teto de 514 linhas justamente porque um documento que só cresce deixa de ser
-lido. Nada equivalente protege esta fila.
-
-### A triagem contra os quatro critérios
-
-Aplicando [os quatro critérios](README.md#uma-decisão-merece-adr-quando) às vinte e nove
-linhas fechadas, elas se agrupam em **seis temas**, e não em vinte e nove artefatos. Duas
-linhas não atendem a critério nenhum, e três seguem abertas.
-
-| Tema candidato                                       | Linhas fechadas                                | Estado                         |
-|------------------------------------------------------|------------------------------------------------|--------------------------------|
-| a fronteira de schema e o CDC como fonte do veredito | `E-18`, `E-19`                                 | **contradiz o ADR-0002**       |
-| os quatro serviços e o caderno fora do Git           | `E-14` a `E-17`, `E-20`                        | **emenda o ADR-0008**          |
-| o transporte do veredito até o oráculo               | `E-12`, `E-28`, `E-29`, `E-33`                 | maduro                         |
-| o alcance das regras estruturais por papel do valor  | `E-13`                                         | maduro; já mudou o `AGENTS.md` |
-| a identidade derivada da semente                     | `E-8`, `E-11`, `E-24`                          | maduro                         |
-| a chave, o discriminador e as colunas de tempo       | `E-9`, `E-10`, `E-22`, `E-23`, `E-25` a `E-27` | maduro                         |
-| a entrega: build, imagem, banco e configuração       | `E-1` a `E-7`, `E-21`, `E-31`                  | **incompleto**: `E-3` aberta   |
-
-**Os dois primeiros não são opcionais.** A decisão `B-4`, de 2026-08-05, diz que
-contradição com ADR aceito **é** decisão arquitetural nova e gera ADR. `E-18` contradiz o
-oráculo do ADR-0002, que pressupunha ler o estado final do sistema medido; `E-14` a `E-17`
-emendam o ADR-0008, que fala em dois planos onde hoje existem quatro serviços. Os dois
-já estão registrados como pendência nesta fila, e nenhum foi escrito.
-
-**Duas linhas não viram ADR, e é o critério que diz isso.** `E-16` escolheu o nome
-`lab-journal` — nome não atende a nenhum dos quatro. `E-32` decidiu a forma de um teste,
-e o artefato dela é o próprio teste, não um documento.
-
-**O sétimo tema não está pronto.** A entrega tem `E-3` aberta, e agora `E-31` também. Um
-ADR de entrega escrito hoje registraria metade de uma decisão.
-
-### A saída, decidida em 2026-08-06
+**A dívida de ADR que enunciou esta linha saiu da fila em 2026-08-10**, por não ser
+citada de lugar nenhum: o levantamento de 2026-08-06 dizia que seis temas mereciam ADR,
+e quatro deles já existem — os ADRs 0010, 0011, 0012 e 0013. O que fica é a **regra de
+poda** que esta linha fixou, e ela é citada de fora.
 
 **Os seis são escritos em sequência, um por vez, com o contexto limpo entre eles.** O
 roteiro de cada sequência e o conteúdo que cada ADR precisa carregar estão em
@@ -3377,10 +2492,11 @@ não reconhecida:  [texto](#<slug>)
 ```
 
 Uma âncora interna apontando para título inexistente passa sem defeito nenhum. Esta fila
-carrega 16 links dessa forma, e podá-la sem cobri-los quebraria até 16 deles em
-silêncio; `CONTEXT.md` carrega
+carrega links dessa forma — 16 em 2026-08-08, 52 em 2026-08-10 —, e podá-la sem
+cobri-los quebraria qualquer um deles em silêncio; `CONTEXT.md` carrega
 zero, e por isso [A-09](../audits/2026-08-06-coerencia-e-limites-documentais.md#a-09--contextmd-é-glossário-proposta-decisão-e-backlog-ao-mesmo-tempo)
-não corre esse risco.
+não corre esse risco. O número cresce a cada fecho que aponta para outro, e por isso ele
+é remedido a cada poda em vez de citado de memória.
 
 **Pergunta em aberto.** Se o verificador **também** passa a acusar âncora interna quebrada
 no CI, e não apenas a responder por ela na consulta, continua sem decisão. Ampliar o que
@@ -3455,8 +2571,13 @@ de não repetir estado que outro documento é dono de manter já fez em toda est
 
 **As duas primeiras são parentes da terceira alternativa da linha do rito**, e podem sair
 de um mesmo script — mas são decisões separadas, e fundi-las escolheria a ferramenta
-antes do problema. Enquanto esta linha não fechar, **nenhuma redução de `CONTEXT.md` ou da
-fila deve começar**: é o que separa fechar A-09 e A-11 de quebrar citação de ADR aceito.
+antes do problema.
+
+**O bloqueio que este parágrafo carregava caiu com o próprio fecho.** Até 2026-08-08 ele
+dizia que nenhuma redução de `CONTEXT.md` ou da fila deveria começar enquanto esta linha
+não fechasse. Ela fechou naquela data, o modo de consulta existe, e a condição virou
+procedimento: **toda redução roda a consulta reversa antes**, e é ela que separa fechar
+A-09 e A-11 de quebrar citação de ADR aceito.
 
 ## O nível de isolamento não tem lugar nesta fila
 
