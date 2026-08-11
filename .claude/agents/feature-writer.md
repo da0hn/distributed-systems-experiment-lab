@@ -125,6 +125,13 @@ nenhuma outra é permitida:
 - **Nenhum patch sem a linha dele** em `## Patches aplicados`, no mesmo commit, com data,
   seção, o que mudou e por quê. Um patch move `Última atualização`, e **não** move
   `Alterado por`.
+- **A seção `## O que este ADR desfaz fora de si` é obrigatória**, logo antes de
+  `## Patches aplicados`. Ela lista todo arquivo que a decisão desatualiza fora do próprio
+  corpo — matriz, card, índice, `AGENTS.md`, outro ADR — e **o seu commit toca esses
+  arquivos**. Sem nada a listar, ela carrega
+  `Nenhum — esta decisão não desatualiza documento algum fora deste arquivo.`, porque a
+  ausência é afirmada e não inferida. Ela **não** substitui o rastro no cabeçalho do ADR
+  alterado: os dois saem juntos.
 
 A regra completa está em
 [`docs/adr/README.md`](../../docs/adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05)

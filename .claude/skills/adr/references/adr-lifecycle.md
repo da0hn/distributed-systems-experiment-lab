@@ -111,3 +111,38 @@ move só `Última atualização`, e se registra em `## Patches aplicados`.
 
 O detalhamento e a justificativa estão em `docs/adr/README.md`, seção "O rastro de
 alterações, emendado em 2026-08-04".
+
+## O que o ADR desfaz fora de si, obrigatório desde 2026-08-10
+
+O rastro da seção anterior aponta **para trás**: ele fica no ADR alterado e nomeia quem o
+alterou. Ele não resolve o caso do documento que não é ADR e não tem cabeçalho para
+receber campo nenhum — a matriz de integrações, um Feature Card, um índice, o
+`AGENTS.md`. Uma decisão que os desatualiza sem tocá-los deixa o repositório afirmando
+duas coisas contraditórias, e quem ler a versão caída não tem como saber que ela caiu.
+
+Todo ADR carrega, por isso, a seção `## O que este ADR desfaz fora de si`, logo antes de
+`## Patches aplicados`. Ela lista cada arquivo que a decisão torna desatualizado fora do
+próprio corpo, e **o commit do ADR toca esses arquivos**.
+
+- A seção é obrigatória mesmo quando não há nada a listar. Escreva
+  `Nenhum — esta decisão não desatualiza documento algum fora deste arquivo.`, para que a
+  ausência seja afirmada e não inferida do silêncio.
+- Quando a linha for um **ADR aceito**, nomeie a forma do lifecycle que o alcança —
+  emenda, subsunção, adendo ou patch — e diga onde ela foi registrada. A forma é o que
+  autoriza a edição; sem ela, a linha descreve uma alteração que ninguém permitiu.
+- Quando a linha for um documento vivo, diga **o que** muda nele, e não apenas que ele
+  muda. "A matriz fica desatualizada" não diz a quem lê o commit qual linha conferir.
+- **A seção não substitui o rastro.** Um ADR aceito listado aqui continua recebendo
+  `Última atualização` e `Alterado por` no cabeçalho, no mesmo commit.
+
+```mermaid
+flowchart TD
+    N["ADR novo"] --> S["## O que este ADR desfaz fora de si"]
+    S --> Q{"o alvo é<br/>ADR aceito?"}
+    Q -->|" sim "| F["a forma do lifecycle,<br/>e o rastro no cabeçalho do alvo"]
+    Q -->|" não "| V["o que muda no documento vivo"]
+    F --> C["um commit, tocando o ADR<br/>e todos os alvos"]
+    V --> C
+```
+
+A decisão é a `E-41` da fila, de 2026-08-10.

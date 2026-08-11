@@ -74,6 +74,25 @@ seções anteriores.]
 
 [Sinal concreto e observável que exige revisão.]
 
+## O que este ADR desfaz fora de si
+
+[Seção **obrigatória** desde 2026-08-10. Liste todo arquivo que esta decisão torna
+desatualizado **fora deste corpo**, e faça o commit deste ADR tocar esses arquivos. Uma
+decisão que invalida um texto sem corrigi-lo deixa o repositório afirmando duas coisas
+contraditórias, e quem ler a segunda não tem como saber que ela caiu.]
+
+[Escreva `Nenhum — esta decisão não desatualiza documento algum fora deste arquivo.`
+quando não houver nada a listar. A ausência é afirmada, e nunca inferida do silêncio.]
+
+[Quando a linha for um ADR aceito, a coluna direita nomeia a forma do lifecycle que o
+alcança — emenda, subsunção, adendo ou patch — e diz onde ela ficou registrada. Uma linha
+que diz apenas "fica desatualizado" não basta: a forma é o que autoriza a edição. Ver
+`references/adr-lifecycle.md`, seção "Depois de aceito".]
+
+| Documento                 | O que muda                                          |
+|---------------------------|-----------------------------------------------------|
+| [alvo](caminho.md#âncora) | [o que fica desatualizado, e a forma que o alcança] |
+
 ## Questões em aberto
 
 [Esta seção existe só enquanto o estado for `Proposto`. Num ADR que nasce `Aceito`,

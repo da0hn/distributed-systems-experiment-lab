@@ -58,6 +58,11 @@ justificar uma rodada, e não engula um para encurtá-la.
    [A revogação da imutabilidade](../../docs/adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
    O defeito é a alteração não declarada, e não a forma escolhida: a forma vem do prompt
    da pessoa, e você não a revisa.
+   **A seção `## O que este ADR desfaz fora de si` é obrigatória** desde 2026-08-10, logo
+   antes de `## Patches aplicados`. Três coisas são defeito: a seção ausente; um arquivo
+   que o ADR desatualiza e que ela não lista; e uma linha listada que o commit **não
+   tocou**. Confira o inverso também — abra a matriz, o card e o índice que a decisão
+   alcança, e veja se eles ainda afirmam o que o ADR derrubou.
    **Quando o commit trouxer patch num ADR aceito**, três coisas são defeito: o patch
    sem linha em `## Patches aplicados`; a linha sem data, seção, o que mudou e por quê;
    e o patch que toca decisão, justificativa, alternativa ou trade-off, que exigia ADR
