@@ -36,24 +36,25 @@ LIMITS_BY_PATH = {
     # continua sendo a linha aberta na fila sobre quem e' dono do orcamento de prosa.
     # A pessoa decidiu em 2026-08-11.
     Path("docs/plano-do-laboratorio.md"): 50000,
-    # O ADR-0015 e o `esquemas.md` sao um par, e o par e' a razao de nenhum dos dois
+    # O ADR-0015 e o `esquemas.md` são um par, e o par é a razão de nenhum dos dois
     # caber no teto que herdaria. O ADR roteia a FORMA das tabelas para o `esquemas.md`
-    # e continua carregando a DECISAO — chave, discriminador e colunas de tempo —, de
-    # modo que ele paga o custo de prosa das duas coisas: a decisao, e o roteamento que
-    # impede a decisao de ser copiada. Os 12.000 do `ADR_LIMIT` nao previram esse
-    # roteamento, e o `esquemas.md` nao e' Feature Card: ele cresce por tabela
-    # documentada e por ausencia sustentada com evidencia, e nao por capacidade.
+    # e continua carregando a DECISÃO — chave, discriminador e colunas de tempo —, de
+    # modo que ele paga o custo de prosa das duas coisas: a decisão, e o roteamento que
+    # impede a decisão de ser copiada. Os 12.000 do `ADR_LIMIT` não previram esse
+    # roteamento, e o `esquemas.md` não é Feature Card: ele cresce por tabela
+    # documentada e por ausência sustentada com evidência, e não por capacidade.
     #
-    # Os dois estouraram em 2026-08-11 por consequencia DIRETA de correcoes que a
-    # revisao exigiu — repor argumento, separar o que era do ADR do que era do
+    # Os dois estouraram em 2026-08-11 por consequência DIRETA de correções que a
+    # revisão exigiu — repor argumento, separar o que era do ADR do que era do
     # `esquemas.md`, nomear a linha da fila que continua bloqueando o `CREATE TABLE`.
-    # Comprimir teria desfeito a revisao, e por isso o escritor foi instruido a relatar
-    # o excesso em vez de amputar. Os numeros ficam pouco acima do tamanho medido
-    # naquele dia — 12.369 e 4.850 —, para que o vermelho do script continue
-    # significando alguma coisa, e nao viram isencao.
+    # Comprimir teria desfeito a revisão, e por isso o escritor foi instruído a relatar
+    # o excesso em vez de amputar. A folga é estreita de propósito — os dois mediam
+    # 12.369 e 4.850 quando a pessoa decidiu, e fecharam o dia em 12.453 e 4.960 —,
+    # para que o vermelho do script continue significando alguma coisa, e não virem
+    # isenção.
     #
-    # A divisao do par NAO e' a saida quando um deles estourar: separar `esquemas.md`
-    # em dois arquivos quebraria o "dono unico da forma", que e' a decisao inteira. A
+    # A divisão do par NÃO é a saída quando um deles estourar: separar `esquemas.md`
+    # em dois arquivos quebraria o "dono único da forma", que é a decisão inteira. A
     # pessoa decidiu em 2026-08-11.
     Path("docs/adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md"): 12600,
     Path("docs/architecture/esquemas.md"): 5000,
