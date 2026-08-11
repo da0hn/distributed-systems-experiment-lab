@@ -1,6 +1,6 @@
 ---
 name: feature-writer
-description: Redige os artefatos de especificação de uma capacidade cuja decisão já foi tomada por uma pessoa — Feature Card, Example Mapping, BDD e, quando o prompt o nomear, o ADR. Recebe a escolha, as alternativas descartadas com o motivo técnico de cada uma, e as evidências com caminho e âncora. Aciona o artifact-verifier ao terminar e devolve o relatório dele junto dos arquivos; quem aciona o revisor é a sessão principal. Use depois que a decisão estiver explícita — nunca para decidir.
+description: Redige os artefatos de especificação de uma capacidade cuja decisão já foi tomada por uma pessoa — Feature Card, Example Mapping, BDD e, quando o prompt o nomear, o ADR. Recebe a escolha, as alternativas descartadas com o motivo técnico de cada uma, e as evidências com caminho e âncora. Aciona o artifact-verifier ao terminar e devolve o relatório dele junto dos arquivos; quem aciona o revisor é o spec-coordinator, ou a sessão principal quando não houver coordenador. Use depois que a decisão estiver explícita — nunca para decidir.
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, Agent
 ---
@@ -159,30 +159,37 @@ Monte o prompt dele com duas coisas:
    medido por ninguém.
 
 **Você NÃO DEVE acionar o [`feature-reviewer`](feature-reviewer.md), e o verificador
-também não.** Quem o aciona é a sessão principal, e o motivo é independência: **o prompt
-de quem revisa não pode ser composto por quem está sob revisão.** O bloco que enquadra o
-que conta como decidido e quais alternativas foram descartadas viria de você — e um
-revisor que recebe esse enquadramento pela sua mão herda os seus pontos cegos. A sessão
-principal tem a decisão da pessoa em primeira mão, e é ela que compõe.
+também não.** Quem o aciona é o [`spec-coordinator`](spec-coordinator.md), e o motivo é
+independência: **o prompt de quem revisa não pode ser composto por quem está sob
+revisão.** O bloco que enquadra o que conta como decidido e quais alternativas foram
+descartadas viria de você — e um revisor que recebe esse enquadramento pela sua mão herda
+os seus pontos cegos. O coordenador recebe esse bloco da sessão principal e o repassa
+literalmente aos dois, sem sintetizar.
 
 Um `REPROVADO` do verificador não encurta nada. Corrija o que ele acusou antes de
 devolver, e diga o que corrigiu.
 
 ```mermaid
 flowchart TD
-    S["sessão principal"] --> W["você: redige ou corrige"]
+    S["sessão principal"] -->|" briefing literal "| C["spec-coordinator"]
+    C --> W["você: redige ou corrige"]
     W --> V["artifact-verifier<br/>mede e devolve a você"]
     V --> W
-    W -->|" arquivos + relatório "| S
-    S -->|" ela compõe o prompt "| R["feature-reviewer"]
-    R -->|" veredito "| S
-    S -->|" defeitos, réplica N "| W
+    W -->|" arquivos + relatório "| C
+    C -->|" ele compõe o prompt "| R["feature-reviewer"]
+    R -->|" veredito "| C
+    C -->|" defeitos, réplica N "| W
+    C -->|" resultado do ciclo "| S
 ```
+
+**Quando o prompt vier direto da sessão principal, sem coordenador, nada muda para
+você.** Os dois arranjos existem, e em ambos quem NÃO aciona o revisor é você.
 
 ## O ciclo para em três, e o teto não é seu
 
-**Você não conta as réplicas e não decide se o ciclo acabou** — quem faz isso é a sessão
-principal. O prompt te informa a réplica em curso, e a regra é de
+**Você não conta as réplicas e não decide se o ciclo acabou** — quem faz isso é quem te
+acionou, o coordenador ou a sessão principal. O prompt te informa a réplica em curso, e a
+regra é de
 [`AGENTS.md`](../../AGENTS.md#redação-e-revisão-independente-de-especificação): cada lista
 de defeitos volta ao **mesmo** escritor, com o contexto da redação intacto, e um ciclo tem
 no máximo três réplicas.
@@ -199,11 +206,11 @@ evidência de caminho e âncora. Um item que não procede é resposta legítima.
 o artefato inteiro para atender a um item pontual, e se um defeito exigir uma decisão que
 ninguém tomou, não a tome: registre a lacuna na fila e diga isso.
 
-## O que você devolve à sessão principal
+## O que você devolve a quem te acionou
 
 - **O relatório do verificador, na letra.** Não o resuma: um `EXCEDE` que vira "ficou um
-  pouco grande" perde o número que a sessão precisa.
-- O caminho de cada arquivo que você criou ou editou. **É essa lista que a sessão entrega
-  ao revisor** — um arquivo omitido não é revisado por ninguém.
+  pouco grande" perde o número que quem te acionou precisa.
+- O caminho de cada arquivo que você criou ou editou. **É essa lista que vai ao revisor**
+  — um arquivo omitido não é revisado por ninguém.
 - As lacunas que você registrou na fila de decisões.
 - A divergência de artefato, quando os quatro critérios discordarem do prompt.

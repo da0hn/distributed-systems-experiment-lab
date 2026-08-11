@@ -156,21 +156,50 @@ não porque o defeito deixe de importar. **Nenhum defeito é abandonado por esgo
 réplica.** O que continua indo à pessoa é o defeito que exige uma decisão que ninguém
 tomou: aí o ciclo novo não resolve nada, porque nenhum escritor pode decidir.
 
+**Quem aciona quem tem uma regra, e ela é uma só: quem produz PODE acionar quem mede, e
+NÃO DEVE acionar quem julga.** Decidido em 2026-08-11. O escritor aciona o verificador,
+porque medir não é julgar — ele recebe caminhos de arquivo e devolve números, e não há
+enquadramento a herdar de uma lista de caminhos. O escritor NÃO DEVE acionar o revisor:
+o prompt de quem revisa não pode ser composto por quem está sob revisão. E o revisor
+também NÃO DEVE acionar o escritor — a inversão foi considerada e descartada no mesmo
+dia, porque um revisor que especifica o que julga lê depois o reflexo do que pediu, e
+deixa de ser proxy do leitor futuro, que é de onde vem o valor dele.
+
+**O laço sai da sessão principal por um coordenador, que não escreve nem julga.** Ele
+recebe o briefing da pessoa pela sessão principal e o repassa **literalmente** aos dois.
+Não produz artefato, e por isso não tem o que defender diante do revisor; não emite
+veredito, e por isso não tem o que validar. Um coordenador que **sintetizasse** o
+briefing reintroduziria o filtro por outra porta: a versão que o revisor lê passaria a
+ser a leitura dele, e o ponto cego voltaria sem dono. Ele roda **um** ciclo e devolve —
+quem abre ciclo novo continua sendo a sessão principal.
+
+**O coordenador é opcional, e a sessão principal PODE rodar o ciclo ela mesma.** O que
+não muda em nenhum dos dois arranjos é quem aciona quem.
+
 ```mermaid
 sequenceDiagram
     participant P as Pessoa
     participant S as Sessão principal
+    participant C as Coordenador
     participant W as Escritor independente
+    participant V as Verificador mecânico
     participant R as Revisor independente
     P->>S: decisão explícita
-    S->>W: decisão, alternativas, evidências e artefatos nomeados
+    S->>C: decisão, alternativas, evidências e artefatos nomeados
+    C->>W: o mesmo briefing, na letra
     W->>W: card, example mapping, BDD e o ADR quando nomeado
-    W->>R: rascunho
+    W->>V: os arquivos que escreveu
+    V-->>W: relatório mecânico
+    W-->>C: arquivos e relatório
+    C->>R: o mesmo briefing, mais arquivos e relatório
     loop no máximo três réplicas, e só enquanto houver defeito
-        R-->>W: lista numerada de defeitos
-        W-->>R: correção item por item
+        R-->>C: lista numerada de defeitos
+        C-->>W: a lista, ao mesmo escritor
+        W-->>C: correção item por item
+        C-->>R: os arquivos corrigidos
     end
-    R-->>S: SEM DEFEITOS, ou o que sobrou na terceira réplica
+    R-->>C: SEM DEFEITOS, ou o que sobrou na terceira réplica
+    C-->>S: resultado do ciclo
     S-->>P: artefatos para revisão
 ```
 
