@@ -15,8 +15,8 @@ nada tiver alterado a decisão. Ver `references/adr-lifecycle.md`, seção "O ra
 alterações".]
 
 - **Última atualização:** [AAAA-MM-DD]
-- **Alterado por:** [ADR-NNNN — substituição | subsunção | emenda | adendo; qual regra,
-  com a seção de origem.]
+- **Alterado por:** [ADR-NNNN — substituição | subsunção | emenda | adendo | divisão;
+  qual regra, com a seção de origem.]
 
 [Um **patch** move só `Última atualização`, e nunca `Alterado por`: patch não é alteração
 por outro ADR. Ele é registrado na seção `## Patches aplicados`, no fim do arquivo.]
@@ -85,9 +85,12 @@ contraditórias, e quem ler a segunda não tem como saber que ela caiu.]
 quando não houver nada a listar. A ausência é afirmada, e nunca inferida do silêncio.]
 
 [Quando a linha for um ADR aceito, a coluna direita nomeia a forma do lifecycle que o
-alcança — emenda, subsunção, adendo ou patch — e diz onde ela ficou registrada. Uma linha
-que diz apenas "fica desatualizado" não basta: a forma é o que autoriza a edição. Ver
-`references/adr-lifecycle.md`, seção "Depois de aceito".]
+alcança e diz onde ela ficou registrada. Uma linha que diz apenas "fica desatualizado"
+não basta: a forma é o que autoriza a edição. As formas são as de
+`references/adr-lifecycle.md`, seção "Depois de aceito", e esta nota **não as enumera**,
+de propósito — a lista já se espalhou por sete arquivos e cada cópia virou um veto novo
+a manter em sincronia. O campo `Alterado por`, no cabeçalho acima, é a única exceção:
+ali a enumeração não descreve as formas, ela oferece os valores que o campo aceita.]
 
 | Documento                 | O que muda                                          |
 |---------------------------|-----------------------------------------------------|
