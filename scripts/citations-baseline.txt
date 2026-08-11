@@ -1,46 +1,46 @@
-# Defeitos de citacao conhecidos e aceitos, um por linha.
+# Defeitos de citação conhecidos e aceitos, um por linha.
 #
-# Formato: <caminho-da-origem>:<citacao>
-# A linha da origem NAO entra na chave, de proposito: ela muda a cada edicao do
-# arquivo, e uma baseline que envelhece a cada commit nao serve para nada.
+# Formato: <caminho-da-origem>:<citação>
+# A linha da origem NÃO entra na chave, de propósito: ela muda a cada edição do
+# arquivo, e uma baseline que envelhece a cada commit não serve para nada.
 #
-# Uma entrada aqui e' uma decisao, e nao um silenciamento. Cada bloco abaixo
-# nomeia a decisao que a autorizou.
+# Uma entrada aqui é uma decisão, e não um silenciamento. Cada bloco abaixo
+# nomeia a decisão que a autorizou.
 
 # ----------------------------------------------------------------------------
-# `C-6` — RESOLVIDO em 2026-08-07. As duas entradas sairam daqui.
+# `C-6` — RESOLVIDO em 2026-08-07. As duas entradas saíram daqui.
 #
-# As duas apontavam para secoes do indice `docs/adr/README.md` que foram
-# extraidas para `docs/questions/` em 2026-08-03, quando o arquivo encolheu de
-# 908 para 517 linhas. Enquanto o corpo de um ADR aceito NAO PODIA ser editado,
-# elas nao tinham conserto: nem ancora, nem outra linha.
+# As duas apontavam para seções do índice `docs/adr/README.md` que foram
+# extraídas para `docs/questions/` em 2026-08-03, quando o arquivo encolheu de
+# 908 para 517 linhas. Enquanto o corpo de um ADR aceito NÃO PODIA ser editado,
+# elas não tinham conserto: nem âncora, nem outra linha.
 #
-# A imutabilidade foi revogada em 2026-08-07. As duas citacoes foram consertadas
+# A imutabilidade foi revogada em 2026-08-07. As duas citações foram consertadas
 # por patch, e apontam agora para `docs/questions/Q-0002-2.md` e
-# `docs/questions/Q-0001-2.md`. Cada ADR registra o patch na secao
-# `## Patches aplicados`. A errata do cabecalho permanece como registro do
-# periodo em que o defeito nao tinha conserto.
+# `docs/questions/Q-0001-2.md`. Cada ADR registra o patch na seção
+# `## Patches aplicados`. A errata do cabeçalho permanece como registro do
+# período em que o defeito não tinha conserto.
 
 # ----------------------------------------------------------------------------
-# Meta-citacao — as cinco entradas de `decisoes-pendentes.md` sairam daqui.
+# Meta-citação — as cinco entradas de `decisoes-pendentes.md` saíram daqui.
 #
 # Aquele arquivo foi arquivado em `docs/adr/arquivo/proposta-2026-08-03/` pela
-# decisao `D-4`, em 2026-08-05, e o verificador passou a isentar toda citacao
+# decisão `D-4`, em 2026-08-05, e o verificador passou a isentar toda citação
 # que PARTE de `docs/adr/arquivo/**`. As cinco entradas viraram redundantes e
-# foram removidas: mante-las seria uma baseline que descreve um caminho que nao
+# foram removidas: mantê-las seria uma baseline que descreve um caminho que não
 # existe mais.
 
 # ----------------------------------------------------------------------------
-# `D-4` — dez citacoes por linha, dentro dos ADRs 0008 e 0009.
+# `D-4` — dez citações por linha, dentro dos ADRs 0008 e 0009.
 #
 # As duas citavam `docs/architecture/decisoes-pendentes.md`, e o ADR-0008 citava
-# tambem `arquitetura-alvo.md` e `modelo-de-dados.md`. Os tres arquivos foram
-# arquivados em `docs/adr/arquivo/proposta-2026-08-03/` pela decisao `D-4`, e o
-# corpo de um ADR aceito NAO DEVE ser editado.
+# também `arquitetura-alvo.md` e `modelo-de-dados.md`. Os três arquivos foram
+# arquivados em `docs/adr/arquivo/proposta-2026-08-03/` pela decisão `D-4`, e o
+# corpo de um ADR aceito NÃO DEVE ser editado.
 #
-# Cada um dos dois ADRs recebeu um **adendo** — a quarta forma de alteracao,
-# criada no mesmo dia — que incorpora a afirmacao que cada citacao sustentava.
-# O ADR se sustenta sem o documento citado; a citacao permanece quebrada no
+# Cada um dos dois ADRs recebeu um **adendo** — a quarta forma de alteração,
+# criada no mesmo dia — que incorpora a afirmação que cada citação sustentava.
+# O ADR se sustenta sem o documento citado; a citação permanece quebrada no
 # corpo, e o adendo diz o que ela dizia.
 docs/adr/0008-os-dois-planos-em-processos-separados.md:../architecture/arquitetura-alvo.md:29-34
 docs/adr/0008-os-dois-planos-em-processos-separados.md:../architecture/decisoes-pendentes.md:254-255
