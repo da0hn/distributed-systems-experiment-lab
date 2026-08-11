@@ -146,8 +146,15 @@ nenhum: ele devolve uma lista numerada de defeitos para o escritor corrigir.
 **A réplica é condicional, e não etapa do fluxo.** O revisor roda uma vez sobre o que o
 escritor entregou. Se ele responder `SEM DEFEITOS`, o ciclo termina ali, com zero
 réplicas. Cada lista de defeitos gera uma réplica ao **mesmo** escritor, com a lista
-preservada, e existem no máximo três. Se a terceira não convergir, a sessão devolve à
-pessoa os pontos em aberto; ela decide, e não o escritor ou o revisor.
+preservada, e um ciclo tem no máximo três.
+
+**O teto de três encerra o ciclo, e não o trabalho.** Decidido em 2026-08-10. Se a
+terceira réplica não convergir, a sessão principal abre um **ciclo novo**, com escritor
+novo, passando o que sobrou e o histórico do que já foi tentado. O teto existe porque um
+quarto laço no mesmo contexto costuma repetir a mesma correção com outras palavras — e
+não porque o defeito deixe de importar. **Nenhum defeito é abandonado por esgotamento de
+réplica.** O que continua indo à pessoa é o defeito que exige uma decisão que ninguém
+tomou: aí o ciclo novo não resolve nada, porque nenhum escritor pode decidir.
 
 ```mermaid
 sequenceDiagram
