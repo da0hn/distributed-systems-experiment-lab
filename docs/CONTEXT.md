@@ -800,28 +800,35 @@ para um rótulo que aparece ao lado de `protegido` e `violado`; `observação in
 por não dizer o que falhou nem por quê.
 
 **fonte incompleta** — `estabelecido` desde `E-45`, em 2026-08-10
-A fonte **alcançou** o ponto declarado e chegou **incompleta**: a sequência de LSN tem
-buraco. A execução é invalidada, e o oráculo não produz veredito.
-_Não é_: `fonte atrasada`, porque a fonte chegou; nem `fontes divergentes`, porque o
-defeito é buraco dentro de **uma** fonte, e não desacordo entre duas.
-_Evidência_: a decisão `E-45` da fila de decisões;
+A sequência de LSN da fonte tem **buraco**: a execução é invalidada, e o oráculo não
+produz veredito. A contiguidade é conferida **antes** de saber se a fonte alcança o ponto
+declarado — ordem fixada por `E-48`, em 2026-08-10 —, e por isso o rótulo sai daqui mesmo
+quando a mesma execução também estouraria o limite de espera.
+_Não é_: `fonte atrasada` — a ordem de conferência decide qual dos dois rótulos sai
+quando as duas condições ocorrem juntas, e a contiguidade vem primeiro; nem `fontes
+divergentes`, porque o defeito é buraco dentro de **uma** fonte, e não desacordo entre
+duas.
+_Evidência_: as decisões `E-45`, sobre o rótulo, e `E-48`, sobre a ordem entre as duas
+condições, ambas da fila de decisões;
 `docs/adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão`
 
 **O par original é legível, e é por isso que eram dois.** Uma fonte diverge; a outra não
 chega. Um rótulo só esconderia qual componente falhou.
 
-**O terceiro não desfaz o par, e entra por outro motivo.** O par separa duas falhas do
-mesmo momento — o commit final —, e nenhuma das duas perguntas alcança uma fonte que
-chega, e chega incompleta. Uma fonte diverge; a outra não chega; a terceira chega
-incompleta.
+**O terceiro não desfaz o par, e entra por outro motivo.** O par original nomeia duas
+falhas do commit final — divergência e atraso —, e nenhuma das duas pergunta pela
+sequência de LSN. A terceira falha é buraco na sequência, e ela é avaliada **antes** de
+qualquer pergunta sobre o commit final: uma fonte diverge; a outra não chega a tempo; a
+terceira chega com a sequência incompleta, verificado independentemente de ela alcançar o
+commit final ou não.
 
 ```mermaid
 flowchart TD
-    E["a execução termina"] --> Q{"as duas fontes<br/>alcançaram o commit final?"}
-    Q -->|" não "| A["fonte atrasada"]
-    Q -->|" sim "| C{"a sequência de LSN<br/>é contígua?"}
+    E["a execução termina"] --> C{"a sequência de LSN<br/>é contígua?"}
     C -->|" não "| I["fonte incompleta"]
-    C -->|" sim "| D{"elas concordam?"}
+    C -->|" sim "| Q{"as duas fontes<br/>alcançaram o commit final?"}
+    Q -->|" não "| A["fonte atrasada"]
+    Q -->|" sim "| D{"elas concordam?"}
     D -->|" não "| F["fontes divergentes"]
     D -->|" sim "| V["o veredito do experimento"]
 ```
