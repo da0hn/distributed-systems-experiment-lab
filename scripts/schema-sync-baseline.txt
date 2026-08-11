@@ -1,0 +1,38 @@
+# Divergências deliberadas entre o desenho e a migração, uma por linha.
+#
+# Formato: <categoria>:<schema>.<nome>, exatamente como o script imprime.
+#
+# Uma entrada aqui é uma decisão, e não um silenciamento. Cada bloco abaixo
+# nomeia a decisão que a autorizou. Uma entrada que deixou de corresponder a
+# divergência nenhuma é reportada como OBSOLETA e reprova: no dia em que a
+# tabela nascer, a linha correspondente sai daqui no mesmo commit.
+
+# ----------------------------------------------------------------------------
+# O `sut` desenha duas tabelas que nenhuma migração cria.
+#
+# `resource` e `allocation` dependem das decisões `E-8` a `E-13`, e o próprio
+# `system-under-test/src/main/resources/db/migration/V1__criar_schema_do_sut.sql`
+# diz isso na linha 4. Nenhum `CREATE TABLE` foi autorizado até agora.
+#
+# O desenho vem ANTES do DDL de propósito, e não por atraso: a forma foi
+# decidida no ADR-0015, e o `esquemas.md` é o dono único dela desde
+# 2026-08-11. Escrever a migração agora fixaria em SQL o que ainda espera
+# decisão de concorrência — inclusive a coluna `version`, que continua
+# proibida no esquema pela regra pedagógica, e que só entra junto da
+# estratégia OPTIMISTIC.
+só-no-diagrama:sut.resource
+só-no-diagrama:sut.allocation
+
+# ----------------------------------------------------------------------------
+# O `lab_plane` desenha um token que não é nome de tabela.
+#
+# `NOME_DE_TABELA_NAO_DECIDIDO` é placeholder declarado, e nada neste
+# repositório se chama assim. A EXISTÊNCIA da tabela foi decidida; nome,
+# colunas, chave e migração continuam `Pergunta em aberto`, inclusive se ela
+# carrega o discriminador de execução.
+#
+# Ele fica no diagrama, e não fora dele, porque um diagrama vazio não
+# distingue "não decidimos" de "não existe". Ele fica nesta baseline, e não
+# numa exceção dentro do script, porque uma regra de "token em caixa alta não
+# conta" tornaria invisível o dia em que o nome real chegasse.
+só-no-diagrama:lab_plane.NOME_DE_TABELA_NAO_DECIDIDO
