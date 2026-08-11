@@ -1930,6 +1930,97 @@ descartar às cegas. Numa tabela do schema do `lab-plane`, ela sobrevive — e c
 tabela daquele schema, hoje vazio. A linha decide qual das duas, e como uma execução
 abandonada deixa de ser ativa.
 
+#### `E-35` fecha em tabela no `lab_plane`, escolhida em 2026-08-10
+
+**Escolhido pela pessoa em 2026-08-10.** A lista de quais execuções estão ativas passa a
+viver numa **tabela do schema `lab_plane`**, que se torna a primeira tabela daquele
+schema — hoje vazio de propósito
+(`lab-plane/src/main/resources/db/migration/V1__criar_schema_do_lab_plane.sql:7-8`).
+
+**O gatilho já disparou, e não é hipótese.** Um `lab-plane` que reinicia apaga a resposta
+em memória: "Em memória, um reinício apaga a resposta, e a execução seguinte descarta às
+cegas"
+([ADR-0012, Negativas](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)).
+No homelab, o `Deployment` que sobe o `lab-plane` roda com `selfHeal: true`, e um
+experimento que mata o processo de propósito o reinicia hoje — modo de falha que "não tem
+solução decidida"
+([`../../AGENTS.md`](../../AGENTS.md#este-repositório-é-entregue-no-homelab)).
+
+**Distinguir higiene de invalidação exige saber quem está ativo.** A mesma decisão do
+broker manda o consumidor tratar diferente um evento de execução já concluída — higiene —
+e um evento de execução ainda ativa — que invalida o veredito —, e isso "exige saber quais
+discriminadores estão ativos"
+([ADR-0012, Decisão](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)).
+A lista é condição do veredito confiável, e não conveniência de implementação.
+
+**Nenhum ADR aceito proíbe uma tabela ali.** O schema `lab_plane` está vazio de propósito
+até aqui: a primeira migração diz que "nenhuma tabela entra aqui. As do Lab Plane dependem
+das decisoes E-8 a E-13, do grupo II do Lote E"
+(`lab-plane/src/main/resources/db/migration/V1__criar_schema_do_lab_plane.sql:7-8`), e o
+papel `lab_plane` já tem `CREATE` concedido no banco (`local/postgres-init.sql:18`).
+
+**Esta escolha não contradiz o ADR-0011, e a razão é o que a lista guarda.** Aquele ADR
+recusou pôr o **histórico do que foi medido** dentro do `lab-plane`, pelo argumento do
+ADR-0008: "o instrumento que mede guardaria o que mediu"
+([ADR-0011, Histórico de execução dentro do `lab-plane`](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#histórico-de-execução-dentro-do-lab-plane)).
+A lista de execuções ativas não é isso: ela não registra o que uma execução mediu, é
+estado operacional do consumidor — quais discriminadores o filtro que
+[`E-33`](#e-33-fecha-na-distinção-e-ela-transforma-uma-recomendação-de-e-3-em-requisito)
+exige tratar como vivos agora, e some quando a execução deixa de estar ativa. O histórico
+permanece fora do `lab-plane`; o que entra é só o estado corrente do filtro.
+
+```mermaid
+flowchart LR
+    subgraph LP["lab_plane, primeira tabela"]
+        T[("execuções ativas<br/>estado corrente do filtro")]
+    end
+    H[("histórico do que foi medido<br/>recusado pelo ADR-0011")]
+    B["evento do broker"] --> C{"discriminador consta<br/>como ativo em T?"}
+    C -->|" sim "| INV["invalida a execução"]
+    C -->|" não "| HIG["higiene, descarte silencioso"]
+    T -.->|" não é "| H
+```
+
+**A descartada, e o motivo.** Manter a lista **em memória, com gatilho de reversão
+nomeado**, seguindo o precedente de
+[ADR-0007, Onde o log vive](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#onde-o-log-vive),
+que também aceita estado em memória até um gatilho nomeado disparar. Perde aqui porque o
+gatilho **já disparou**: o `selfHeal` reinicia o processo hoje, e o custo não é perder um
+registro histórico — é a execução seguinte descartar às cegas e o veredito sair errado
+sem sintoma.
+
+**O que esta linha NÃO decide.** A forma da tabela — colunas, chave e migração — não foi
+escolhida. `Pergunta em aberto`. Como uma execução abandonada deixa de ser ativa também
+não foi decidido aqui; o motivo de abrir linha própria em vez de responder de passagem
+está registrado em
+[`E-50`](#e-50--como-uma-execução-que-nunca-termina-deixa-de-ser-ativa).
+
+#### `E-50` — como uma execução que nunca termina deixa de ser ativa
+
+Aberta em 2026-08-10, pelo fecho de
+[`E-35`](#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10). "Execução
+abandonada" não está definida em documento nenhum deste repositório, e a pergunta original
+— como o `lab-plane` sabe que pode remover uma linha da lista de execuções ativas — se
+divide em duas conforme a execução chega ou não ao fim.
+
+**O caminho óbvio já está fechado.** Um timeout de parede é proibido fora de um adaptador
+de relógio, e "o término já é um evento do próprio runtime"
+([ADR-0005, Justificativa](0005-a-forma-do-escalonador.md#justificativa)). Medir tempo de
+parede para decidir abandono repetiria o erro que aquele ADR já recusou.
+
+**Para a execução que termina, o mecanismo já existe.** O fecho de
+[`E-47`](#e-47-fecha-na-sentinela-escolhida-em-2026-08-10) criou uma marca de fim
+reconhecida no stream, com LSN e sem relógio: o sistema medido escreve a sentinela depois
+que todos os workers terminam, e o consumidor a reconhece.
+
+**O que sobra é a execução que nunca chega lá.** Um processo do sistema medido que morre
+antes de escrever a sentinela — a etapa 6 mata processos de propósito — nunca produz o
+evento que fecharia a janela. Se o `lab-plane` também não tem outro sinal, essa linha da
+lista de execuções ativas fica lá para sempre, e o que o consumidor faz diante disso não
+foi decidido.
+
+**Sem recomendação.**
+
 ### Duas linhas abertas pelo ADR-0010, ao reconciliar os cards
 
 O [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) nasceu `Aceito`
@@ -1955,6 +2046,145 @@ o registro está em
 [`decisoes-pendentes.md`](arquivo/proposta-2026-08-03/decisoes-pendentes.md#o20-fecha-o-estado-inicial-é-criado-dentro-da-janela-de-captura),
 que também descarta o snapshot inicial do Debezium por nome, porque ele lê a tabela
 inteira e devolve ao instrumento o acesso ao banco medido.
+
+#### `E-36` fecha no broker com persistência antes da emissão, escolhida em 2026-08-10
+
+**Escolhido pela pessoa em 2026-08-10.** A emissão ao vivo de `E-19` passa a atravessar
+pelo broker, com a persistência no `lab-journal` acontecendo antes do push ao vivo — e
+não em paralelo com ele.
+
+**O evento sai do passo pelo broker.** Ele atravessa pelo RabbitMQ — o broker do
+[ADR-0012, Decisão](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão),
+hoje só no caminho do veredito —, que passa a servir também ao caminho da observação.
+
+**No `lab-journal` a ordem é serial, nunca paralela.** O consumidor persiste o evento
+primeiro, e só depois de o `COMMIT` confirmar é que o push ao vivo acontece.
+
+**O push usa o pub/sub interno do Spring, disparado em `AFTER_COMMIT`.** Uma persistência
+que falha simplesmente não publica no pub/sub, e é por isso que a falta de resiliência
+desse mecanismo não é risco **neste** arranjo — ela seria fatal no arranjo em paralelo,
+que esta escolha descarta abaixo.
+
+**O SSE aceita `Last-Event-ID`.** O stream reproduz da base a partir do cursor recebido e
+emenda no fluxo ao vivo a partir daí. **Recuperar todo o histórico é o mesmo mecanismo,
+com cursor vazio** — não existe um segundo endpoint para isso.
+
+**O cursor é um campo próprio, monótono por execução.** Ele não é um timestamp — a razão
+está abaixo. **Dois instantes ficam no registro, e nenhum dos dois é ordem.** O instante
+de ocorrência é atribuído no `lab-plane`; o instante de persistência, no `lab-journal`. A
+diferença entre os dois mede o custo da travessia.
+
+```mermaid
+sequenceDiagram
+    participant P as passo (lab-plane)
+    participant B as broker (RabbitMQ)
+    participant J as lab-journal
+    participant D as base do lab-journal
+    participant S as pub/sub do Spring
+    participant C as cliente SSE
+    P->>B: observação, evento por evento
+    B->>J: entrega o evento
+    J->>D: persiste (instante de persistência)
+    D-->>J: COMMIT confirmado
+    J->>S: publica em AFTER_COMMIT
+    S->>C: push ao vivo
+    Note over C,D: reconexão com Last-Event-ID
+    C->>J: GET com Last-Event-ID = cursor
+    J->>D: lê a partir do cursor
+    D-->>C: replay da base, depois emenda no vivo
+```
+
+**As três descartadas, e o motivo de cada uma.** Ao vivo bloqueante, que é o vigente
+hoje, perde por manter as 900 a 1500 travessias do E1 dentro da janela medida, sem
+nenhuma defesa. Buffer local volátil perde porque a etapa 6 mata o processo de propósito,
+e o buffer não esvaziado desaparece: a consulta posterior devolveria uma execução com um
+buraco **sem sinalizar o buraco**. SSE e persistência em paralelo perde porque são duas
+escritas independentes sem transação comum — é o dual write, o próprio item do briefing
+que a etapa 6 existe para estudar, reproduzido dentro do instrumento que deveria só
+observá-lo.
+
+**Por que o cursor não é um timestamp.** [`Q-0004-3`](../questions/Q-0004-3.md),
+`pendente`, registra que "nenhum documento diz qual relógio o log usa, nem se ele é
+monotônico, nem qual é a resolução dele". Dois eventos dentro da mesma resolução colidem,
+e um cursor que colide pula ou repete evento no replay, em silêncio. O mesmo risco já
+apareceu para as colunas de tempo do próprio Lab Plane: o registro de
+[`E-26`](#e-26--timestamps-nas-tabelas-do-lab-plane) nota que, se um valor de tempo entra
+no papel veredito, o relógio que o produz DEVE ser o adaptador injetável — consequência
+de `E-13`, já fechada — embora a linha `E-26` em si continue sem decisão sobre se essas
+colunas existem. Um cursor de replay carrega o mesmo risco que motivou aquela nota.
+
+**Quando esta decisão deixa de valer.** Se o `lab-journal` passar a ter mais de uma
+instância, um `SseEmitter` conectado numa instância não vê o evento publicado noutra. O
+replay por cursor cobre o buraco na reconexão, com atraso — mas não substitui a garantia
+de entrega ao vivo enquanto as duas instâncias convivem.
+
+**A correção do enunciado, que este fecho registra.** O enunciado aberto de `E-36`
+atribuía ao ADR-0008 a latência da emissão de observação. Isso está incorreto: a seção
+[Negativas do ADR-0008](0008-os-dois-planos-em-processos-separados.md#negativas)
+contabiliza a latência das consultas ao **escalonador e ao injetor** em cada fronteira
+entre passos, e usa as 900 a 1500 observações do E1 como medida do **número de
+fronteiras**, não como contagem de travessias de emissão. A emissão só virou travessia de
+rede depois, por `E-19` e pelo
+[ADR-0010, Decisão](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
+O fato — a latência entra na medida — continua verdadeiro; a atribuição a esse número
+específico, não.
+
+**`E-19` nunca avaliou alternativa, e isso também fica registrado.** O fecho de
+[`E-19`](#e-19--ao-vivo-e-a-tensão-com-o-adr-0008) nomeia o buffer local como a saída "que
+existe e nunca foi escolhida" — nomeada, e não descartada por argumento. Nenhum documento
+deste repositório registra razão positiva para a emissão "ao vivo, evento por evento"
+além de a decisão ter sido tomada.
+
+**Esta decisão exige ADR, e este fecho registra isso sem escrever o ADR.** Ela toca três
+documentos aceitos, e nenhum deles é editado por este fecho:
+
+- O [ADR-0010, Decisão](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)
+  manda as observações atravessarem "ao vivo, evento por evento", e a regra `R12` do
+  [card de observação passo a passo](../features/observacao-passo-a-passo/feature-card.md#regras-de-negócio)
+  acrescenta que "o Lab Plane NÃO DEVE acumulá-las para enviar ao fim da execução".
+- O [ADR-0007, A forma de um evento](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#a-forma-de-um-evento)
+  é dono da forma do evento, e ela não tem campo de cursor nem instante de persistência.
+- O [ADR-0012, Decisão](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
+  dispensou a regra de que nenhuma tecnologia entra por estar disponível, para o broker
+  **no caminho do veredito**; usá-lo também na observação amplia o alcance daquela
+  dispensa, e o [`AGENTS.md`](../../AGENTS.md#regras-estruturais-que-valem-sempre) registra
+  que "uma dispensa registrada não é precedente: a próxima também precisa ser explícita".
+
+A redação do ADR é o próximo passo, e ela pertence à pessoa.
+
+**Duas lacunas seguem abertas, e este fecho as nomeia sem fechá-las.**
+[`E-51`](#e-51--de-onde-a-contagem-de-coincidências-do-adr-0004-lê-os-dados) pergunta de
+onde a contagem de coincidências do ADR-0004 lê os dados, e
+[`E-52`](#e-52--de-onde-vem-o-instante-de-parede-de-um-evento-e-se-ele-é-monotônico)
+pergunta de onde vem o instante de parede de um evento e se ele é monotônico. Nenhuma das
+duas tinha linha própria nesta fila antes deste fecho.
+
+#### `E-51` — de onde a contagem de coincidências do ADR-0004 lê os dados
+
+Aberta em 2026-08-10, pelo fecho de
+[`E-36`](#e-36-fecha-no-broker-com-persistência-antes-da-emissão-escolhida-em-2026-08-10).
+O [ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) conta
+coincidências para classificar o veredito zero, e nenhum documento diz se essa contagem
+lê o log de observações ou uma estrutura própria do oráculo.
+
+**Por que importa.** Se a contagem lê o log de observações, perder uma observação — por
+falha de persistência, por exemplo — derruba a contagem a zero sem derrubar o veredito: a
+ordem 3 da
+[tabela de classificação do zero](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-zero-é-classificado-e-a-classificação-tem-quatro-valores)
+produz `protegido` — um veredito verde sobre um banco que pode ter sido violado.
+
+**Sem recomendação.**
+
+#### `E-52` — de onde vem o instante de parede de um evento, e se ele é monotônico
+
+Aberta em 2026-08-10, pelo fecho de
+[`E-36`](#e-36-fecha-no-broker-com-persistência-antes-da-emissão-escolhida-em-2026-08-10),
+ligada a [`Q-0004-3`](../questions/Q-0004-3.md). Aquela questão já registra que "nenhum
+documento diz qual relógio o log usa, nem se ele é monotônico, nem qual é a resolução
+dele", e a decisão de `E-36` acrescenta um segundo instante — o de persistência — sem
+resolver a origem do primeiro.
+
+**Sem recomendação.**
 
 #### `E-37` — o que a proibição de derivar estado de stream alcança
 
