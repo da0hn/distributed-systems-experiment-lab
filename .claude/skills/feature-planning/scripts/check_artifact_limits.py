@@ -22,6 +22,20 @@ LIMITS_BY_NAME = {
 }
 LIMITS_BY_PATH = {
     Path("docs/architecture/integrations.md"): 12000,
+    # O plano nao e' inventario, e por isso nao entra no `EXEMPT_BY_PATH`: ele cresce
+    # por prosa analitica, e nao por entrada. Mas o generico de 4.000 foi calibrado
+    # para o Feature Card, onde o excesso significa "a capacidade cobre demais, divida-a"
+    # — e o plano nao se divide sem quebrar as ancoras que ADRs e cards citam nele.
+    #
+    # O teto proprio resolve o que a isencao resolveria e a pressao que ela apagaria:
+    # o `EXCEDE` permanente de 48.269 contra 4.000 treinava todo mundo a ignorar o
+    # vermelho do script, e um teto pouco acima do tamanho de hoje devolve significado
+    # ao vermelho — o plano passa agora, e reprova de novo se crescer.
+    #
+    # O numero e' deliberadamente apertado. Quem estourar precisa decidir, e a decisao
+    # continua sendo a linha aberta na fila sobre quem e' dono do orcamento de prosa.
+    # A pessoa decidiu em 2026-08-11.
+    Path("docs/plano-do-laboratorio.md"): 50000,
 }
 # Isento por nome. Sem esta linha o `example-mapping.md` cairia no MARKDOWN_LIMIT
 # generico de 4000, que e' mais apertado do que o teto que a decisao removeu.
@@ -65,6 +79,18 @@ EXEMPT_BY_PATH = {
     # 2026-08-10, depois de ele passar de 4.000 caracteres de prosa por acrescimo de
     # linha de tabela, e nao por prosa nova.
     Path("docs/features/README.md"),
+    # O inventario de contratos cresce por interface, como o indice de features cresce
+    # por capacidade: a tabela ganha uma linha quando um contrato nasce, e a prosa em
+    # volta e' a doutrina dos tres estados de interface, que nao cresce junto. Um teto
+    # ali obrigaria a escolher entre omitir contrato do inventario e apagar a doutrina
+    # que explica o inventario. A pessoa decidiu isenta-lo em 2026-08-11, depois de ele
+    # medir 6.690 caracteres de prosa contra o generico de 4.000, num ciclo em que o
+    # acrescimo foi de linha de tabela.
+    #
+    # A isencao NAO alcanca `docs/plano-do-laboratorio.md`, e a distincao e' o criterio
+    # desta lista inteira: o plano nao cresce por entrada, e sim por prosa analitica.
+    # Quem e' dono do teto que o alcanca continua sendo linha aberta na fila.
+    Path("docs/contracts/README.md"),
 }
 
 # O mesmo argumento dos dois `AGENTS.md`, uma camada acima: um `.claude/agents/*.md` e'
