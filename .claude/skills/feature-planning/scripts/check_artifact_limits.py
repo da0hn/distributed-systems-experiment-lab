@@ -58,6 +58,13 @@ EXEMPT_BY_PATH = {
     # `docs/README.md`, que cai no generico como qualquer outro Markdown.
     Path("AGENTS.md"),
     Path("docs/AGENTS.md"),
+    # O indice das capacidades cresce por capacidade aceita, como o indice de ADRs
+    # cresce por ADR. Um teto ali obrigaria a omitir capacidade do inventario, que e' o
+    # oposto do que o arquivo existe para fazer — e a omissao seria invisivel, porque
+    # ninguem sente falta do que nunca foi listado. A pessoa decidiu isenta-lo em
+    # 2026-08-10, depois de ele passar de 4.000 caracteres de prosa por acrescimo de
+    # linha de tabela, e nao por prosa nova.
+    Path("docs/features/README.md"),
 }
 
 # `docs/adr/arquivo/` e' registro congelado do que se pensou naquela data, e o
@@ -153,17 +160,63 @@ FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
 # fazer: o limite empurraria para a reescrita do argumento.
 PATCH_LEDGER = "## Patches aplicados"
 
+# O cabecalho de um ADR — titulo, `Estado`, `Data`, `Etapa`, `Relacionado`,
+# `Ultima atualizacao` e `Alterado por` — sai da contagem desde 2026-08-10. Ele e'
+# livro-razao de manutencao, como `## Patches aplicados`, e cresce por alteracao
+# sofrida, e nao por argumento escrito.
+#
+# A decisao veio de o problema acontecer duas vezes com o mesmo arquivo. Em 2026-08-07,
+# tornar `## Patches aplicados` obrigatoria empurrou os ADRs 0011 e 0012 para cima do
+# teto, e a saida foi descontar a secao. Em 2026-08-10 o ADR-0011 recebeu emenda do
+# ADR-0014 e estourou de novo, agora pelas duas linhas de cabecalho que toda emenda
+# obriga — cerca de trezentas letras, quase todas dentro de um link.
+#
+# A alternativa era encolher a prosa de um ADR aceito, e ela e' proibida: nao esta entre
+# as cinco formas de alterar um ADR aceito, e o patch NAO DEVE tocar argumento. Sem o
+# desconto, o teto empurraria para exatamente o que o lifecycle proibe.
+#
+# Vale so para ADR: num Feature Card o texto antes do primeiro `##` carrega escopo e
+# origem, que sao prosa de verdade.
+SECTION_HEADING = re.compile(r"^##\s+\S")
+
 
 def is_table_row(line: str) -> bool:
     stripped = line.strip()
     return stripped.startswith("|") and stripped.endswith("|") and len(stripped) > 1
 
 
-def prose_lines(text: str) -> list[tuple[int, str]]:
+def is_adr(relative_path: Path) -> bool:
+    """Um ADR e' `docs/adr/NNNN-titulo.md`. O indice e o arquivo morto nao sao."""
+    return (
+        relative_path.parts[:2] == ("docs", "adr")
+        and ADR_FILENAME.match(relative_path.name) is not None
+    )
+
+
+def first_section_line(text: str) -> int:
+    """A linha, base zero, do primeiro `## `. Devolve zero quando nao houver."""
+    fence: Optional[str] = None
+    for index, line in enumerate(text.split("\n")):
+        match = FENCE.match(line)
+        if fence is None:
+            if match:
+                fence = match.group(1)[0]
+                continue
+            if SECTION_HEADING.match(line):
+                return index
+        elif match and match.group(1)[0] == fence:
+            fence = None
+    return 0
+
+
+def prose_lines(text: str, skip_header: bool = False) -> list[tuple[int, str]]:
     """Devolve as linhas de prosa com o numero que elas tem no arquivo original."""
     kept: list[tuple[int, str]] = []
     fence: Optional[str] = None
+    start = first_section_line(text) if skip_header else 0
     for number, line in enumerate(text.split("\n"), start=1):
+        if number <= start:
+            continue
         match = FENCE.match(line)
         if fence is None:
             if match:
@@ -179,9 +232,9 @@ def prose_lines(text: str) -> list[tuple[int, str]]:
     return kept
 
 
-def prose_only(text: str) -> str:
+def prose_only(text: str, skip_header: bool = False) -> str:
     """Remove blocos cercados e linhas de tabela, que nao entram na contagem."""
-    return "\n".join(line for _, line in prose_lines(text))
+    return "\n".join(line for _, line in prose_lines(text, skip_header))
 
 
 def counts_prose_only(relative_path: Path) -> bool:
@@ -226,7 +279,7 @@ def default_limit(relative_path: Path) -> Optional[int]:
         return LIMITS_BY_NAME[relative_path.name]
     # So o nome numerado identifica um ADR. O que nao for cai no limite generico
     # abaixo, e nao mais num `return None` — a isencao agora e' declarada acima.
-    if relative_path.parts[:2] == ("docs", "adr") and ADR_FILENAME.match(relative_path.name):
+    if is_adr(relative_path):
         if relative_path.name[:4] in ADR_LEGACY:
             return None
         return ADR_LIMIT
@@ -305,8 +358,11 @@ def main() -> int:
                 limit = None
             total = len(raw)
             if counts_prose_only(relative_path):
-                size = len(prose_only(raw).strip())
-                detail = f" (prosa; {total} com diagrama, codigo e tabela)"
+                header = is_adr(relative_path)
+                size = len(prose_only(raw, skip_header=header).strip())
+                sem = "diagrama, codigo, tabela e cabecalho" if header else \
+                    "diagrama, codigo e tabela"
+                detail = f" (prosa; {total} com {sem})"
             else:
                 size = total
                 detail = ""
