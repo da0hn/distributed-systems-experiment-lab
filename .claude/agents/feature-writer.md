@@ -137,18 +137,22 @@ deixa o repositório afirmando duas coisas contraditórias.
 
 ## Antes de devolver
 
-Rode o verificador para todo artefato criado ou editado, e resolva toda violação:
-
-~~~powershell
-python ".claude/skills/feature-planning/scripts/check_artifact_limits.py" --root . --file <arquivo> [--file <arquivo> ...]
-~~~
+**Você não roda os verificadores mecânicos, e isso mudou de propósito.** Quem os roda é o
+[`artifact-verifier`](artifact-verifier.md), acionado pela sessão principal depois que
+você devolver. Ele mede citação, orçamento de tamanho e fim de linha, e o veredito dele é
+o oficial. Você não tem como criá-lo — não possui a ferramenta `Agent` —, e tentar rodar
+os scripts você mesmo gasta o seu contexto no que outro agente faz por menos.
 
 Atualize `docs/features/README.md` e, quando houver ADR, o índice de `docs/adr/README.md`
 — preservando a largura das colunas.
 
-Devolva o caminho de cada arquivo, a saída do verificador, a lista das lacunas que você
-registrou na fila de decisões, e a divergência de artefato quando os quatro critérios
-discordarem do prompt.
+Devolva o caminho de cada arquivo, a lista das lacunas que você registrou na fila de
+decisões, e a divergência de artefato quando os quatro critérios discordarem do prompt.
+**Liste também todo arquivo que você criou ou editou**, porque é essa lista que a sessão
+principal entrega ao verificador — um arquivo omitido não é medido por ninguém.
+
+Se um verificador reprovar depois, a reprovação volta para você como defeito, pelo mesmo
+caminho da revisão.
 
 ## Quando receber uma revisão
 

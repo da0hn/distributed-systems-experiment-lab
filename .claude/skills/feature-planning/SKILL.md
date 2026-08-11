@@ -80,18 +80,30 @@ explícita; o par de agentes recebe a escolha já feita. O dono da regra é
 - **`feature-writer`** (`.claude/agents/feature-writer.md`) redige e corrige. Ele escreve
   o Feature Card, o Example Mapping e o BDD, e escreve o ADR **só quando o prompt o
   nomear**.
+- **`artifact-verifier`** (`.claude/agents/artifact-verifier.md`) roda os verificadores
+  mecânicos sobre o que o escritor entregou e devolve a saída literal. Ele não tem Write
+  nem Edit, e roda em modelo menor: o trabalho dele é reproduzível e não exige julgamento.
 - **`feature-reviewer`** (`.claude/agents/feature-reviewer.md`) revisa e devolve uma lista
   numerada de defeitos. Ele não tem Write nem Edit, de propósito.
 
+**O verificador entra entre os dois, e não é opcional.** A sessão principal o aciona com
+a lista de arquivos que o escritor devolveu, e passa o relatório dele ao revisor. Isso
+separa o que a máquina decide — alvo inexistente, âncora sem título, prosa acima do
+orçamento, CRLF — do que exige leitura: se a citação sustenta a afirmação. **Nem o
+escritor nem o revisor rodam esses scripts**, e o escritor sequer poderia criar o
+verificador, porque não tem a ferramenta `Agent`.
+
 **A réplica é condicional, e não etapa.** O revisor roda uma vez sobre o que o escritor
 entregou. Um `SEM DEFEITOS` encerra o ciclo com zero réplicas; cada lista de defeitos
-gera uma réplica ao mesmo escritor, e existem no máximo três. Na terceira sem convergir,
-leve os pontos em aberto à pessoa.
+gera uma réplica ao mesmo escritor, e existem no máximo três. Uma reprovação do
+verificador conta como defeito e entra na mesma lista. Na terceira sem convergir, leve os
+pontos em aberto à pessoa.
 
 ```mermaid
 flowchart LR
     S["sessão principal:<br/>decisão da pessoa"] --> W["feature-writer"]
-    W --> R["feature-reviewer"]
+    W --> V["artifact-verifier<br/>citação, tamanho, LF"]
+    V --> R["feature-reviewer"]
     R -->|" SEM DEFEITOS "| P["entrega à pessoa"]
     R -->|" lista de defeitos "| C{"terceira réplica<br/>já aconteceu?"}
     C -->|" não "| W

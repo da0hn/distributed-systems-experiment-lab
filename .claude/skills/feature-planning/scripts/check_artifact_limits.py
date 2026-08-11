@@ -101,6 +101,7 @@ INSTRUCTIONS_WITHOUT_LIMITS = (
     Path(".claude/skills/adr/SKILL.md"),
     Path(".claude/agents/feature-writer.md"),
     Path(".claude/agents/feature-reviewer.md"),
+    Path(".claude/agents/artifact-verifier.md"),
 )
 
 # Duas formas de declarar limite em prosa: um numero seguido de "caracteres", ou a

@@ -72,11 +72,14 @@ justificar uma rodada, e não engula um para encurtá-la.
     junto de todo fluxo descrito em prosa, um conceito com um nome só, sem emojis e sem
     linguagem de marketing.
 12. **Tabelas.** Padding consistente por coluna, medido em caracteres e não em bytes.
-13. **Limite.** Rode o verificador para cada artefato e reporte o número:
-
-~~~powershell
-python ".claude/skills/feature-planning/scripts/check_artifact_limits.py" --root . --file <arquivo> [--file <arquivo> ...]
-~~~
+13. **O que a máquina já mediu.** Citação quebrada, orçamento de tamanho e fim de linha
+    são medidos pelo [`artifact-verifier`](artifact-verifier.md) antes de você, e o
+    relatório dele chega no seu prompt. **Não os remeça**: um `EXCEDE` ou um alvo
+    inexistente já é defeito conhecido, e repetir a medição gasta a sua rodada no que a
+    máquina resolveu. O que ela **não** faz é o seu trabalho — se a citação sustenta a
+    afirmação, se a evidência é a certa, se o texto contradiz um ADR aceito. Trate o
+    relatório como insumo, e reporte apenas o que ele deixou passar.
+    Se o relatório não vier no prompt, diga isso na resposta em vez de rodar os scripts.
 
 ## Formato da resposta
 
