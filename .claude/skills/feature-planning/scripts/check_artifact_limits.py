@@ -67,6 +67,23 @@ EXEMPT_BY_PATH = {
     Path("docs/features/README.md"),
 }
 
+# O mesmo argumento dos dois `AGENTS.md`, uma camada acima: um `.claude/agents/*.md` e'
+# o system prompt de um sub-agente, e um `.claude/skills/**/*.md` e' instrucao carregada
+# inteira quando a skill entra. Nenhum dos dois e' artefato de planejamento, e cortar
+# prosa deles apaga regra normativa, nao redundancia.
+#
+# O teto generico de 4.000 foi calibrado para o Feature Card, onde o excesso e' sinal de
+# que a capacidade cobre demais e o caminho e' dividi-la. Um arquivo de instrucao nao se
+# divide: um `feature-writer` partido em dois produz um escritor que ignora metade das
+# regras. A pessoa decidiu isenta-los em 2026-08-10, depois de tres deles — o
+# `adr-lifecycle.md`, o `feature-writer.md` e o `feature-reviewer.md` — aparecerem entre
+# 5.394 e 8.087 caracteres de prosa contra o generico, um estouro que ninguem havia
+# medido porque o workflow `docs` so mede `docs/adr/[0-9]*.md`.
+#
+# A isencao nao alcanca a guarda de `INSTRUCTIONS_WITHOUT_LIMITS`: esses arquivos
+# continuam proibidos de declarar limite proprio, e essa checagem roda a parte.
+EXEMPT_ROOTS = (Path(".claude/agents"), Path(".claude/skills"))
+
 # `docs/adr/arquivo/` e' registro congelado do que se pensou naquela data, e o
 # `AGENTS.md` proibe edita-lo. Um teto sobre o que nao pode ser editado so produz
 # vermelho permanente, que e' o mesmo argumento da isencao dos quatro ADRs legados.
@@ -270,6 +287,8 @@ def default_limit(relative_path: Path) -> Optional[int]:
     if relative_path.name in EXEMPT_BY_NAME:
         return None
     if relative_path in EXEMPT_BY_PATH:
+        return None
+    if any(root in relative_path.parents for root in EXEMPT_ROOTS):
         return None
     if ARCHIVE_ROOT in relative_path.parents:
         return None
