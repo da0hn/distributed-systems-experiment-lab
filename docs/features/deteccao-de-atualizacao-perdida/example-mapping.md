@@ -46,6 +46,20 @@ da seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 - Um pool de 5 conexões com 10 workers serializa metade; a anomalia não aparece, e o
   relatório diz "protegido" errado (**falso negativo silencioso**).
 
+**As duas regras trocaram de evidência em 2026-08-12, e uma delas encolheu.** As duas
+citavam o [plano](../../plano-do-laboratorio.md#3-taxonomia-refinada), e o plano
+[não decide nada](../../../AGENTS.md#o-que-este-projeto-é) — a citação afirmava decisão
+onde só havia análise. `R10` passou a citar o
+[ADR-0004](../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-zero-é-classificado-e-a-classificação-tem-quatro-valores),
+que é o dono dela: a ordem 1 da tabela de quatro valores diz que o controle negativo que
+não viola produz veredito `inválido`, e é exatamente isso que `R10` enuncia em prosa.
+`R11` passou a citar o
+[guardrail da raiz](../../../AGENTS.md#regras-estruturais-que-valem-sempre), e **perdeu a
+oração "e isso DEVE ser verificado, não presumido"**: nenhum documento diz quem verifica
+nem quando, e uma regra aprovada não pode carregar exigência sem dono. A oração vive
+agora só como `P5`, abaixo. Nem `R10` nem `R11` mudaram de conteúdo — mudou de onde
+elas vêm.
+
 ### E3 — A estratégia é um dado, não uma branch
 
 - **Exemplo E3.1** — A mesma carga roda quatro vezes: `NONE` perde; `ATOMIC_UPDATE`,

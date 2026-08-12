@@ -3773,6 +3773,72 @@ aprende a atribuição errada, e só descobre seguindo o link. A fila não ganha
 patch, e por isso qualquer defeito futuro em fecho datado cai neste mesmo lugar: fica
 registrado e não é consertado.
 
+### `E-86` — a regra `R18` do E1 é viva, e a única evidência dela está no arquivo congelado
+
+Aberta em 2026-08-12, na triagem das regras pendentes do card do E1.
+
+**O problema.** A regra `R18` de
+[detecção de atualização perdida](../features/deteccao-de-atualizacao-perdida/feature-card.md#regras-de-negócio)
+diz que o estado inicial **DEVE** ser inserido antes de cada execução, e não
+pressuposto, para que `value_inicial` venha do mesmo stream que `value_final`. A única
+evidência dela é o item `O20` de
+[decisões pendentes arquivadas](arquivo/proposta-2026-08-03/decisoes-pendentes.md#o20-fecha-o-estado-inicial-é-criado-dentro-da-janela-de-captura)
+, e aquele arquivo é **arquivo congelado**: ele registra o que se pensava em 2026-08-03
+e [nunca é editado](../AGENTS.md#o-que-nunca-é-editado) . Proposta arquivada não é
+decisão aceita, e `R18` é a única regra daquele card sustentada por documento que não
+decide.
+
+**Por que ela não foi aprovada com as outras.** As outras dezessete regras do card foram
+aprovadas em 2026-08-12 porque cada uma transcreve decisão que já vive em ADR aceito, ou
+em guardrail da raiz — aprová-las confirmou a fidelidade da transcrição, e não redecidiu
+o mérito. `R18` não tem esse dono a montante. Aprová-la seria **tomar a decisão pela
+primeira vez dentro de um card**, e a coluna `Aprovada por` registra que a pessoa
+confirmou a regra, nunca que a arquitetura foi decidida ali.
+
+**O que está em jogo.** O oráculo exato é `perdidas = commits − (value_final −
+value_inicial)`, do
+[ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato) . Se
+`value_inicial` vier de fora do stream — de uma migração, de um `SELECT` no schema
+medido, ou de um valor presumido —, os dois lados da subtração deixam de ter a mesma
+origem, e o veredito passa a somar a diferença entre duas fontes com a perda que ele
+quer medir. **O ADR-0002 exige `value_inicial` e não diz de onde ele vem.** Um `SELECT`
+cruzado está fora por outro motivo, que é a fronteira do
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) — o que
+sobra em aberto é o resto.
+
+```mermaid
+flowchart LR
+  subgraph fora["fora do stream — origem diferente"]
+    MIG["migração Flyway<br/>cria o estado inicial"]
+    PRES["valor presumido<br/>por convenção"]
+  end
+  subgraph dentro["dentro da janela de captura"]
+    INS["INSERT antes da execução<br/>vira evento no WAL"]
+  end
+  MIG --> V["value_inicial"]
+  PRES --> V
+  INS --> V
+  V --> O["perdidas = commits − (value_final − value_inicial)"]
+  W["WAL — replicação lógica"] --> VF["value_final"]
+  INS -.-> W
+  VF --> O
+```
+
+**Esta linha não duplica [`Q-0002-4`](../questions/Q-0002-4.md) , e o recorte é o que as
+separa.** Aquela questão pergunta **quem** escreve o estado inicial e **como o banco
+volta ao ponto de partida** entre duas execuções, e ela foi escrita a partir do
+ADR-0002, quando o oráculo ainda "lê `value_inicial` antes do primeiro worker" — por
+`SELECT`, portanto. Esta linha pergunta outra coisa: **se essa escrita precisa ser
+observável no stream**, o que só passou a fazer diferença depois que o
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) tirou o
+`SELECT` do caminho do veredito. Quem fechar `Q-0002-4` NÃO DEVE presumir que fechou
+esta, e quem fechar esta NÃO DEVE presumir que respondeu a limpeza entre execuções.
+
+**O que esta linha NÃO decide.** Ela não escolhe entre as origens acima, e não antecipa
+qual delas o experimento usa. Enquanto estiver aberta, `R18` segue `pendente` no card e
+**NÃO DEVE** virar cenário Gherkin, pela regra de
+[`docs/AGENTS.md`](../AGENTS.md#feature-card).
+
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 
 **Esta seção é um levantamento congelado em 2026-08-06, e não é recontada a cada linha
