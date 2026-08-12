@@ -774,16 +774,16 @@ fim da execução. O custo é perder o log se o processo morrer — aceitável e
 experimento derrubar o processo de propósito. Deixa de ser aceitável na etapa 6.
 
 **O parágrafo acima descreve o estado anterior ao
-[ADR-0014](adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#a-persistência-no-lab-journal-começa-na-etapa-1-e-não-mais-na-6),
-de 2026-08-10, e fica como lápide.** **A restrição caiu como este plano a justifica.** O
+[ADR-0017](adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#a-persistência-no-lab-journal-começa-na-etapa-1-e-não-mais-na-6),
+de 2026-08-12, e fica como lápide.** **A restrição caiu como este plano a justifica.** O
 motivo escrito acima é que gravar observações no mesmo PostgreSQL adiciona contenção à
 medida, e é exatamente esse I/O que as
-[negativas do ADR-0014](adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#negativas)
+[negativas do ADR-0017](adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#negativas)
 admitem: desde a etapa 1 o log é persistido no mesmo PostgreSQL do `system-under-test`.
 **O que resta em pé é a fronteira de schema, e não a de banco** — a escrita vai para o
 schema do `lab-journal`, e o
 [ADR-0010](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)
-continua proibindo que um serviço toque o schema de outro. O ADR-0014 troca contenção de
+continua proibindo que um serviço toque o schema de outro. O ADR-0017 troca contenção de
 disco por um log que sobrevive à queda proposital da etapa 6, e nomeia a troca em vez de
 escondê-la.
 
@@ -803,7 +803,7 @@ a decisão obrigatória.
 | Quantos processos, e quais                                        | o experimento `JVM_LOCK` ficar vermelho com duas instâncias (etapa 4)            |
 | Broker no domínio: exchanges, filas, roteamento                   | **transporte do veredito: gatilho disparado** — ADR-0012; domínio na etapa 5     |
 | Formato interno da injeção de falha                               | a etapa 6, quando o ponto `BEFORE_PUBLISH` precisar existir de verdade           |
-| Onde o log de observações é persistido                            | **gatilho antecipado** — ADR-0014 põe a persistência no `lab-journal` na etapa 1 |
+| Onde o log de observações é persistido                            | **gatilho antecipado** — ADR-0017 põe a persistência no `lab-journal` na etapa 1 |
 | Mecanismo de streaming para a UI (SSE ou WebSocket)               | **decidido sem esperar o gatilho** — SSE com replay por cursor, ADR-0016         |
 | Definição de experimento: arquivo versionado ou registro no banco | o Experiment Designer da UI (ver Seção 11)                                       |
 | Valkey                                                            | um experimento que prove que advisory lock do PostgreSQL não basta (etapa 11)    |
@@ -820,7 +820,7 @@ experimento não puder ser executado sem ela.
 [ADR-0012](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão),
 o broker entrou por decisão explícita de estudo, para o transporte do veredito, e a linha
 da tabela registra isso. Em 2026-08-10, pelo
-[ADR-0014](adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-evento-sai-do-passo-pelo-broker),
+[ADR-0014](adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#justificativa),
 o mesmo broker passou a servir também à travessia da observação. Uma dispensa registrada
 **não é precedente** — foi por isso que a segunda foi escrita por inteiro em vez de
 herdada, a próxima tecnologia proposta precisa da mesma justificativa explícita, e o

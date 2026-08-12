@@ -1526,7 +1526,7 @@ a chama de "buffer local com remetente próprio": o remetente próprio vive dent
 `lab-plane`, e a queda da etapa 6 leva buffer e remetente juntos; o broker é outro
 processo, e o que chegou lá sobrevive. O que **não** saiu do `lab-plane` se perde nos dois
 desenhos — o enunciado já dizia isso da alternativa, "perder o buffer quando o `lab-plane`
-cai" —, e nenhum dos dois sinaliza essa perda: o ADR-0014 a registra como consequência
+cai" —, e nenhum dos dois sinaliza essa perda: o ADR-0017 a registra como consequência
 negativa em vez de deixá-la implícita.
 
 **Por que o cursor não é um timestamp.** [`Q-0004-3`](../questions/Q-0004-3.md),
@@ -1592,15 +1592,19 @@ quatro ADRs aceitos e a matriz de integrações, e nenhum deles é editado por e
   [`AGENTS.md`](../../AGENTS.md#regras-estruturais-que-valem-sempre) registra que uma
   dispensa registrada não é precedente, e que a próxima precisa ser explícita.
 
-A redação atravessou 2026-08-10 e 2026-08-11, e a linha produziu **dois** artefatos, e não
-um: a travessia da observação no
-[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md), e
-o streaming com replay por cursor no
+A redação atravessou 2026-08-10, 2026-08-11 e 2026-08-12, e a linha produziu **três**
+artefatos, e não um: a travessia da observação no
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md), o
+streaming com replay por cursor no
 [ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md) — o número 0016, e não
-0015, porque aquele estava sendo escrito noutra frente. O que cada um desatualiza fora de
-si está na seção própria de cada um
+0015, porque aquele estava sendo escrito noutra frente —, e a persistência antecipada com
+o buffer no
+[ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md),
+que recebeu por divisão o que havia entrado no corpo do ADR-0014 sem forma que o
+autorizasse. O que cada um desatualiza fora de si está na seção própria de cada um
 ([0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-que-este-adr-desfaz-fora-de-si),
-[0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-que-este-adr-desfaz-fora-de-si)).
+[0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-que-este-adr-desfaz-fora-de-si),
+[0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#o-que-este-adr-desfaz-fora-de-si)).
 
 **"Nenhum dos cinco é editado aqui" valeu até a redação existir, e caiu com ela.** Até
 2026-08-11 este parágrafo afirmava isso, e afirmava também que o card não era tocado,
@@ -1774,8 +1778,9 @@ reprova `docs/contracts/README.md` aqui até o merge. A isenção chega com ele.
 
 #### `E-61` — que tipo o evento de bloqueio de buffer carrega
 
-Aberta em 2026-08-11, ao redigir o
-[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-runtime-publica-por-um-buffer-em-memória-numa-thread-separada).
+Aberta em 2026-08-11, ao redigir o que era então o ADR-0014. A subseção citada saiu dele
+na divisão de 2026-08-12 e vive hoje no
+[ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#o-runtime-publica-por-um-buffer-em-memória-numa-thread-separada).
 Aquela decisão manda o runtime **registrar o bloqueio do buffer como evento do log**, e
 não diz que tipo esse evento carrega. O conjunto de tipos é **fechado** em quatro valores
 pela
@@ -1867,9 +1872,10 @@ passar a alcançar o título é decisão da pessoa**, e não de quem redige.
 
 #### `E-63` — a emenda e o título citado por trecho
 
-Aberta em 2026-08-11, ao revisar o ADR-0014 e o ADR-0016.
+Aberta em 2026-08-11, ao revisar o ADR-0014 e o ADR-0016. A emenda a "Onde o log vive"
+passou do ADR-0014 para o ADR-0017 na divisão de 2026-08-12, e esta linha a acompanha.
 
-**O problema.** O ADR-0014 emenda
+**O problema.** O ADR-0017 emenda
 ["Onde o log vive"](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#onde-o-log-vive),
 e o ADR-0016 emenda
 ["A forma de um evento"](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#a-forma-de-um-evento).
@@ -1882,7 +1888,7 @@ menos em parte.
 **Os dois ADRs declaram a colisão, e é por isso que ela chega aqui.** Cada
 "Por que emenda, e não substituição" reconhece que o título nomeia a regra emendada e
 remete a esta linha, em vez de afirmar que não há tensão:
-[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#justificativa)
+[ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#justificativa)
 escreve "o título do ADR-0007 é '...forma, ordem e onde vive': a regra o nomeia", e
 [ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#justificativa) escreve
 "a palavra que nomeia a regra emendada está nele". **Nenhum dos dois decide**, e nem
@@ -1899,7 +1905,7 @@ vez de decidi-la são os ADRs 0010 e 0011 — **dois** —, com a fórmula "se a
 exclui qualquer regra sob `## Decisão`, ou só a que dá título, ninguém decidiu". O
 ADR-0009 emendou e **não** registrou a pergunta. **Os três lugares que citam este
 precedente passam a dizer a mesma coisa**: a `## Justificativa` do
-[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#justificativa),
+[ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#justificativa),
 a do [ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#justificativa) e
 esta linha.
 
@@ -2016,21 +2022,25 @@ estourou por cerca de trezentas letras de livro-razão.
 estoura o teto no mesmo ato, e a compressão que a pessoa escolheu em 2026-08-11 é pedida
 outra vez.
 
-**A aplicação retroativa ao ADR-0014 está bloqueada, e não por falta de decisão aqui.**
-Mover argumento do cabeçalho para o corpo de um ADR **aceito** altera o corpo, e nenhuma
-das seis formas do lifecycle cobre isso sem forçar: o patch conserta citação, caminho e
-erro material, e o que desceria não é nenhum dos três. É a mesma lacuna de forma que
-[`E-64`](#e-64--o-que-fazer-com-a-entrada-já-consumada-no-adr-0014) está aberta para
-resolver, e a escolha dela decide também esta aplicação. **A regra acima não depende
-disso** — ela vale para todo ADR escrito daqui em diante, e o ADR-0014 é o retroativo que
-espera.
+**A aplicação retroativa ao ADR-0014 esteve bloqueada até 2026-08-12, e não por falta de
+decisão aqui.** Mover argumento do cabeçalho para o corpo de um ADR **aceito** altera o
+corpo, e nenhuma das seis formas do lifecycle cobre isso sem forçar: o patch conserta
+citação, caminho e erro material, e o que desceria não é nenhum dos três. Era a mesma
+lacuna de forma que
+[`E-64`](#e-64--o-que-fazer-com-a-entrada-já-consumada-no-adr-0014) estava aberta para
+resolver, e o fecho dela a destravou: o bullet "Nome do arquivo" do ADR-0014 perdeu o
+argumento e ficou em livro-razão. **Para onde o argumento vai continua sem resposta**,
+porque destravar não é escolher destino — é a linha
+[`E-83`](#e-83--onde-mora-o-racional-de-não-renomear-o-arquivo-do-adr-0014). **A regra
+acima nunca dependeu disso** — ela vale para todo ADR escrito daqui em diante.
 
 ```mermaid
 flowchart TD
   R["a regra: cabeçalho é livro-razão,<br/>argumento vive no corpo"] --> N["vale para todo<br/>ADR novo, já"]
-  R --> V["o ADR-0014 carrega<br/>7.856 caracteres de<br/>argumento no cabeçalho"]
+  R --> V["o ADR-0014 carregava<br/>7.856 caracteres de<br/>argumento no cabeçalho"]
   V --> Q{"que forma do lifecycle<br/>autoriza descê-lo?"}
-  Q -->|" nenhuma cobre "| E["bloqueado por E-64"]
+  Q -->|" nenhuma cobria "| E["destravado por E-64<br/>em 2026-08-12"]
+  E --> D["para onde o argumento vai:<br/>aberto em E-83"]
 ```
 
 #### `E-67` — o transporte da emissão ao vivo foi fixado sem alternativa descartada
@@ -3597,6 +3607,93 @@ coisa.
 |-----------------------------------------------------------------------------------|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [ADR-0006, `## Contexto`](0006-a-forma-da-estrategia-de-concorrencia.md#contexto) | `0002:283-297` | não cita trecho entre aspas: afirma que o ADR-0002 atribuiu ao ADR-0006 "três pontos: colunas, calibração e retry". A seção `### O que este ADR não decide` do ADR-0002 delega colunas e calibração, e **não nomeia retry**. Repontar para ela afirmaria que a seção diz o que ela não diz |
 
+#### `E-83` — onde mora o racional de não renomear o arquivo do ADR-0014
+
+Aberta em 2026-08-12, ao corrigir a réplica 1 da divisão do ADR-0014, escolhida em
+[`E-64`](#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12).
+
+**O problema.** O cabeçalho do ADR-0014 registrava, no bullet "Nome do arquivo", o
+argumento completo de por que o arquivo não acompanha o título quando uma divisão o
+encolhe — a ordem de grandeza das citações que renomear quebraria, e os dois comandos
+para medi-las antes de confiar. A regra de
+[`E-66`](#e-66-fecha-em-o-argumento-desce-do-cabeçalho-para-o-corpo-escolhida-em-2026-08-12)
+manda esse argumento sair do cabeçalho, e a divisão de `E-64` destrava a aplicação
+retroativa a este ADR — mas só destrava, não escolhe **para onde** o argumento vai. O
+corpo de um ADR aceito só **perde** conteúdo pela divisão, e nenhuma das seis formas
+descreve um corpo aceito **ganhando** justificativa nova; e este argumento não pertence
+às duas subseções que saíram para o ADR-0017 — ele é sobre o arquivo do ADR-0014 em si,
+não sobre a persistência nem o buffer. Descer o parágrafo para o corpo do ADR-0014 é,
+portanto, uma quarta saída que a restrição acima já exclui — e não uma saída rejeitada
+por alguém.
+
+**O texto apagado é recuperável, e o ponto de recuperação fica nomeado.** O argumento
+completo — a ordem de grandeza das citações que uma renomeação quebraria, os dois
+comandos que a medem, e por que `grep -ro` e `check_citations.py --quem-cita` contam
+coisas diferentes — está no cabeçalho do ADR-0014 como ele era em `2089e78`, o commit
+anterior à divisão de 2026-08-12. Qualquer das saídas abaixo o reconstrói de lá; nenhuma
+precisa reescrevê-lo do zero.
+
+**Três saídas.**
+
+| Saída                                                      | O que ela faz                                                                                                                                                                              | Objeção                                                                                                                                                      |
+|------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| o `README.md`, na seção da divisão, ganha a regra geral    | o argumento vira regra do lifecycle — todo ADR dividido mantém o nome do arquivo, pelo custo de renomear citações —, e não decisão deste ADR; o bullet do ADR-0014 passa a apontar para lá | o `README.md` de ADR passa a decidir, e não só a registrar; hoje ele é índice e lifecycle, e uma regra nova nascendo ali não passa por debate de fila nenhum |
+| um terceiro ADR nasce só para esta regra                   | mesmo caminho que `E-62` abriu para a entrada que a divisão não cobria; o argumento vira decisão com alternativas e trade-off, no formato que o repositório usa para decisão durável       | mais um ADR na série, para uma regra sobre o processo de ADR, e não sobre o domínio do laboratório; a série passa a misturar as duas coisas sem separador    |
+| a régua de livro-razão de `E-66` ganha uma exceção nomeada | cabeçalho de ADR PODE carregar o argumento de por que o arquivo não foi renomeado, e só esse; a exceção é escrita, não presumida, e o ADR-0014 volta a hospedar o texto que já tinha       | `E-66` deixa de ser "sem exceção" no mesmo mês em que fechou, e a primeira exceção é a que o caso original pediu — o padrão que a régua existia para impedir |
+
+**Sem recomendação.** Escolher entre elas é da pessoa. Enquanto a linha estiver aberta, o
+bullet "Nome do arquivo" do ADR-0014 só registra o fato — sufixo mantido, título encolhido
+duas vezes — e aponta para cá.
+
+#### `E-84` — a dispensa do ADR-0017 é terceira, ou é a segunda realocada
+
+Aberta em 2026-08-12, ao revisar a divisão do ADR-0014 escolhida em
+[`E-64`](#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12).
+
+**O problema.** A divisão moveu para o ADR-0017 um parágrafo normativo de dispensa da
+regra de tecnologia, que havia entrado no corpo do ADR-0014 depois de `a5d5777`. O texto
+movido declara o escopo "o uso do broker no caminho da observação" — que é, palavra por
+palavra, o escopo da **segunda** dispensa, a que o ADR-0014 aceito reivindica para si em
+[`## Trade-offs`](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#trade-offs)
+("uma **segunda** dispensa da regra de tecnologia") e argumenta em
+[`## Justificativa`](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#justificativa).
+O ADR-0017, porém, escreve argumento **próprio** para ela em
+[`## Justificativa`](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#justificativa)
+e descarta a alternativa de alargar a do ADR-0012 — o que só faz sentido se a dispensa
+for nova.
+
+**Por que isso não se conserta reescrevendo.** O parágrafo chegou ao ADR-0017 **pela
+divisão**, e a divisão move o texto sem alterá-lo. Encolher o escopo dele para "o buffer
+e a thread" decidiria esta linha dentro do ADR, em silêncio — que é exatamente o que
+[`E-64`](#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12) acabou de desfazer
+naquele mesmo corpo.
+
+**Enquanto a linha estiver aberta**, o
+[`AGENTS.md`](../../AGENTS.md#regras-estruturais-que-valem-sempre) conta **duas**
+dispensas e registra a terceira como escrita e não contada, apontando para cá. A contagem
+não antecipa a resposta em documento nenhum.
+
+```mermaid
+flowchart TD
+  P["parágrafo de dispensa,<br/>movido do ADR-0014<br/>para o ADR-0017"] --> E["escopo declarado:<br/>o uso do broker no<br/>caminho da observação"]
+  E --> C{"é o mesmo escopo<br/>da segunda dispensa?"}
+  C -->|" sim, palavra por palavra "| R["então é realocação,<br/>e a conta fica em duas"]
+  C -->|" mas o ADR-0017<br/>argumenta por si "| N["então é dispensa nova,<br/>e a conta vai a três"]
+  R --> D["aberto: E-84"]
+  N --> D
+```
+
+**Três saídas.**
+
+| Saída                                                                         | O que ela faz                                                                                                                            | Objeção                                                                                                                                                              |
+|-------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| é dispensa **nova**, e o escopo do parágrafo encolhe para o buffer e a thread | o ADR-0017 recebe patch que recorta o escopo do texto movido, e o `AGENTS.md` volta a contar três                                        | patch conserta citação, caminho e erro material; recortar o escopo de um parágrafo normativo altera o argumento, e o regime de patch proíbe isso                     |
+| é a **segunda realocada**, e a subseção do ADR-0017 vira remissão             | o ADR-0017 deixa de conceder dispensa e passa a citar a do ADR-0014; a contagem fica em duas, e nenhum texto precisa ser recortado       | o ADR-0017 perde o "Por que dispensa, e não satisfação da regra" que escreveu por si, e a alternativa "Emendar o ADR-0012" passa a descartar algo que ninguém propõe |
+| as duas convivem, e o que muda é a **régua de contagem**                      | passa-se a contar ADRs que carregam subseção de dispensa, e não atos de dispensa; três ADRs, escopos sobrepostos, nenhum texto reescrito | a régua deixa de responder "quantas vezes a regra foi dispensada", que é a pergunta que o guardrail existe para responder                                            |
+
+**Sem recomendação.** Escolher entre elas é da pessoa.
+
+
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 
 **Esta seção é um levantamento congelado em 2026-08-06, e não é recontada a cada linha
@@ -4094,11 +4191,11 @@ fechar aquela linha deixa esta intacta.
 
 **Três saídas, e nenhuma escolhida.**
 
-| Saída | Objeção |
-|---|---|
-| exigir que toda evidência venha com a frase do alvo entre aspas, reduzindo esta classe à de `E-62` | multiplica exatamente o acoplamento que `E-62` ainda está decidindo se aceita |
-| declarar o **revisor independente** a única guarda, e escrever isso | ele só roda dentro do ciclo de especificação, e tem teto de três réplicas — patch de ADR e edição desta fila não passam por ele |
-| verificador heurístico que exija termo compartilhado entre a frase e o título citado | "sustenta" não é sobreposição de vocabulário; erra nos dois sentidos e treina quem escreve a driblá-lo |
+| Saída                                                                                              | Objeção                                                                                                                         |
+|----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| exigir que toda evidência venha com a frase do alvo entre aspas, reduzindo esta classe à de `E-62` | multiplica exatamente o acoplamento que `E-62` ainda está decidindo se aceita                                                   |
+| declarar o **revisor independente** a única guarda, e escrever isso                                | ele só roda dentro do ciclo de especificação, e tem teto de três réplicas — patch de ADR e edição desta fila não passam por ele |
+| verificador heurístico que exija termo compartilhado entre a frase e o título citado               | "sustenta" não é sobreposição de vocabulário; erra nos dois sentidos e treina quem escreve a driblá-lo                          |
 
 **Sem recomendação.** A primeira saída depende de `E-62`, que está aberta.
 

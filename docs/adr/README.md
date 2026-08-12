@@ -112,24 +112,25 @@ O motivo do arquivamento e o que sobreviveu estão em
 
 ## Índice
 
-| ADR                                                                                 | Título                                                                  | Estado   |
-|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------|----------|
-| [0001](0001-o-passo-como-unidade-de-execucao.md)                                    | O passo como unidade de execução, observação e injeção de falha         | `Aceito` |
-| [0002](0002-o-dominio-minimo-e-os-dois-oraculos.md)                                 | O domínio mínimo: contador com oráculo exato e predicado de capacidade  | `Aceito` |
-| [0003](0003-a-linguagem-do-agendamento.md)                                          | A linguagem do agendamento: como uma barreira é declarada               | `Aceito` |
-| [0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)            | O estatuto da barreira e o diagnóstico da não ocorrência                | `Aceito` |
-| [0005](0005-a-forma-do-escalonador.md)                                              | A forma do escalonador: estado, decisão e protocolo de desistência      | `Aceito` |
-| [0006](0006-a-forma-da-estrategia-de-concorrencia.md)                               | A forma da estratégia de concorrência: contrato plugável e calibração   | `Aceito` |
-| [0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md)                        | O log de observações: forma, ordem e onde vive                          | `Aceito` |
-| [0008](0008-os-dois-planos-em-processos-separados.md)                               | Os dois planos em processos separados, desde o dia zero                 | `Aceito` |
-| [0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)                  | A classificação do dual write e a região de pacote do sistema sob teste | `Aceito` |
-| [0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md)                | A fronteira de schema e o CDC como fonte do veredito                    | `Aceito` |
-| [0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md)      | A topologia de serviços e o caderno de laboratório fora do Git          | `Aceito` |
-| [0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md)         | O broker no caminho do veredito, e a dispensa que ele exigiu            | `Aceito` |
-| [0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md)       | A proveniência da fonte como critério da proibição do oráculo           | `Aceito` |
-| [0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md) | A travessia da observação — o broker, o buffer e o bloqueio registrado  | `Aceito` |
-| [0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md)           | A chave, o discriminador de execução e as colunas de tempo              | `Aceito` |
-| [0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md)                        | O streaming e o replay do log de observações                            | `Aceito` |
+| ADR                                                                                       | Título                                                                     | Estado   |
+|-------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|----------|
+| [0001](0001-o-passo-como-unidade-de-execucao.md)                                          | O passo como unidade de execução, observação e injeção de falha            | `Aceito` |
+| [0002](0002-o-dominio-minimo-e-os-dois-oraculos.md)                                       | O domínio mínimo: contador com oráculo exato e predicado de capacidade     | `Aceito` |
+| [0003](0003-a-linguagem-do-agendamento.md)                                                | A linguagem do agendamento: como uma barreira é declarada                  | `Aceito` |
+| [0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)                  | O estatuto da barreira e o diagnóstico da não ocorrência                   | `Aceito` |
+| [0005](0005-a-forma-do-escalonador.md)                                                    | A forma do escalonador: estado, decisão e protocolo de desistência         | `Aceito` |
+| [0006](0006-a-forma-da-estrategia-de-concorrencia.md)                                     | A forma da estratégia de concorrência: contrato plugável e calibração      | `Aceito` |
+| [0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md)                              | O log de observações: forma, ordem e onde vive                             | `Aceito` |
+| [0008](0008-os-dois-planos-em-processos-separados.md)                                     | Os dois planos em processos separados, desde o dia zero                    | `Aceito` |
+| [0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)                        | A classificação do dual write e a região de pacote do sistema sob teste    | `Aceito` |
+| [0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md)                      | A fronteira de schema e o CDC como fonte do veredito                       | `Aceito` |
+| [0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md)            | A topologia de serviços e o caderno de laboratório fora do Git             | `Aceito` |
+| [0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md)               | O broker no caminho do veredito, e a dispensa que ele exigiu               | `Aceito` |
+| [0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md)             | A proveniência da fonte como critério da proibição do oráculo              | `Aceito` |
+| [0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)       | O broker na travessia da observação                                        | `Aceito` |
+| [0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md)                 | A chave, o discriminador de execução e as colunas de tempo                 | `Aceito` |
+| [0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md)                              | O streaming e o replay do log de observações                               | `Aceito` |
+| [0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md) | A persistência antecipada do log de observações, e o buffer que a alimenta | `Aceito` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele
 **não decide nada** — é a análise que define quais decisões precisam ser tomadas e em
@@ -268,11 +269,14 @@ O teste, ao escrever: se a linha responde "o quê" e "quando", é livro-razão; 
 
 A escolha está no fecho de `E-66`, em
 [`fila-de-decisoes.md`](fila-de-decisoes.md#e-66-fecha-em-o-argumento-desce-do-cabeçalho-para-o-corpo-escolhida-em-2026-08-12).
-Ela vale para todo ADR daqui em diante. **A aplicação retroativa ao ADR-0014 está
-bloqueada** por
-[`E-64`](fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12):
-mover argumento para o corpo de um ADR aceito não cabe em nenhuma das seis formas sem
-forçar, e a escolha daquela linha — desfazer por divisão — é o que a destrava.
+Ela vale para todo ADR daqui em diante. **A aplicação retroativa ao ADR-0014 esteve
+bloqueada até 2026-08-12**, quando
+[`E-64`](fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12)
+escolheu desfazer por divisão: mover argumento para o corpo de um ADR aceito não cabe em
+nenhuma das seis formas sem forçar, e o que estava preso no cabeçalho do ADR-0014 saiu
+dele por inteiro, para o [ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md).
+O bloqueio, hoje, é fato passado: nenhum argumento retido no cabeçalho do ADR-0014
+segue à espera de destravamento.
 
 ```mermaid
 flowchart LR
@@ -578,10 +582,15 @@ Se, no mesmo commit, o ADR dividido também **ganhar** decisão que não estava 
 foi aceito, essa entrada não é descrita por esta forma nem por nenhuma das outras cinco —
 e desde 2026-08-11 ela é **proibida**, pela regra de
 [Um ADR aceito não recebe decisão nova](#um-adr-aceito-não-recebe-decisão-nova-decidido-em-2026-08-11).
-Isso resolve o caso daqui em diante e não desfaz o que já aconteceu no caso que originou a
-divisão: o cabeçalho do ADR-0014 declara o fato da entrada e não nomeia forma alguma, e o
-que fazer com ela segue aberto na linha
-[`E-64`](fila-de-decisoes.md#e-64--o-que-fazer-com-a-entrada-já-consumada-no-adr-0014).
+Isso resolve o caso daqui em diante. **O caso que originou a regra foi fechado em
+2026-08-12**, pela linha
+[`E-64`](fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12):
+o ADR-0014 foi desfeito por divisão, a segunda vez que essa forma se aplicou a ele. O
+cabeçalho dele registra hoje o rastro comum de uma divisão, junto do
+[ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md),
+que nasceu `Aceito` recebendo o que havia entrado — e **continua declarando o fato da
+entrada sem forma**, agora como história: é esse registro que prova que a entrada
+existiu e foi desfeita.
 
 **É isso que a separa de substituição e de subsunção**, e a tabela diz o resto.
 
@@ -732,11 +741,13 @@ flowchart TD
     N --> R["Relacionado no ADR novo<br/>liga os dois"]
 ```
 
-**O caso que originou a regra continua aberto, e ela não o resolve retroativamente.** O
-ADR-0014 já ganhou duas subseções de `## Decisão` que `a5d5777` não tinha, e o cabeçalho
-dele declara o fato sem nomear forma. O que fazer com essa entrada consumada — desfazê-la,
-nomear uma forma para ela, ou registrá-la como exceção datada — é decisão de pessoa, e
-segue na linha
-[`E-64`](fila-de-decisoes.md#e-64--o-que-fazer-com-a-entrada-já-consumada-no-adr-0014).
-A escolha desta regra está registrada no
+**O caso que originou a regra foi fechado em 2026-08-12, e não pela regra em si.** O
+ADR-0014 tinha ganhado duas subseções de `## Decisão`, mais um parágrafo normativo, que
+`a5d5777` não tinha. A linha
+[`E-64`](fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12)
+escolheu desfazer por divisão — a mesma forma desta seção, aplicada uma segunda vez ao
+mesmo ADR: o que havia entrado sem forma saiu do corpo do ADR-0014 e passou a viver,
+vigente, no [ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md),
+nascido `Aceito`. A escolha da regra em si — que uma entrada de decisão nova exige ADR
+próprio — está registrada no
 [fecho do `E-62`](fila-de-decisoes.md#e-62-fecha-em-adr-próprio-escolhida-em-2026-08-11).

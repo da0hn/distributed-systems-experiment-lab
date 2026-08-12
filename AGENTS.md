@@ -222,10 +222,18 @@ esquema.
   as duas para o mesmo broker**: pelo
   [ADR-0012](docs/adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
   no caminho do veredito, e pelo
-  [ADR-0014](docs/adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-evento-sai-do-passo-pelo-broker)
+  [ADR-0014](docs/adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#justificativa)
   no caminho da observação — uma dispensa registrada não é precedente, e foi por isso que
   a segunda precisou ser escrita por inteiro em vez de herdada. A próxima também precisa
   ser explícita.
+- **Uma terceira dispensa está escrita, e não está contada.** O
+  [ADR-0017](docs/adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#a-dispensa-da-regra-de-tecnologia-por-conveniência-alcança-este-uso-do-broker-também)
+  carrega subseção de dispensa própria, e o texto dela declara o **mesmo** escopo da
+  segunda — "o uso do broker no caminho da observação". Se ela é dispensa nova ou é a
+  segunda realocada pela divisão não está decidido, e a contagem acima não antecipa a
+  resposta: a lacuna é a linha
+  [`E-84`](docs/adr/fila-de-decisoes.md#e-84--a-dispensa-do-adr-0017-é-terceira-ou-é-a-segunda-realocada)
+  da fila.
 - **Nenhuma aleatoriedade não semeada.** `Math.random()`, `java.util.Random` e
   `ThreadLocalRandom` são proibidos fora do componente de aleatoriedade semeada. Uma
   chamada esquecida quebra a reprodutibilidade em silêncio, meses depois.

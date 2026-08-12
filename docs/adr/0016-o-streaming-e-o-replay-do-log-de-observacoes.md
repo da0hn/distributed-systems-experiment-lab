@@ -2,7 +2,7 @@
 
 - **Estado:** Aceito
 - **Data:** 2026-08-10
-- **Etapa do roadmap:** 1 — o log passa a ser persistido desde a etapa 1 pelo ADR-0014, e
+- **Etapa do roadmap:** 1 — o log passa a ser persistido desde a etapa 1 pelo ADR-0017, e
   a tela precisa lê-lo.
 - **Relacionado:** emenda o
   [ADR-0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md) — a seção "A forma de
@@ -19,11 +19,14 @@
   `## Alternativas consideradas` que as sustentavam. **Os dois continuam `Aceito`**, e o
   ADR-0014 recebe `Última atualização` e `Alterado por` no mesmo commit.
 
+- **Última atualização:** 2026-08-12, por patch — ver `## Patches aplicados`.
+
 ## Contexto
 
 O [ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#decisão)
-entrega a observação ao `lab-journal` pelo broker, e autoriza a persistência já na etapa
-1; ele não decide o que o `lab-journal` faz com o evento depois de recebê-lo. O
+entrega a observação pelo broker; o
+[ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#decisão)
+autoriza a persistência na etapa 1; nenhum decide o resto. O
 [ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff)
 decidiu que o frontend lê o `lab-journal` sem BFF, sem fixar o transporte, e a
 [matriz de integrações](../architecture/integrations.md#perguntas-em-aberto) registrava
@@ -221,7 +224,7 @@ regra dentro de `## Decisão` pelo mesmo critério e seguem `Aceito`; dois deles
 ### Neutras
 
 - A dispensa da regra de tecnologia pertence ao
-  [ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-evento-sai-do-passo-pelo-broker)
+  [ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#justificativa)
   e **não** é herdada aqui: nada nela alcança o transporte desta decisão.
 
 ## Trade-offs
@@ -306,8 +309,12 @@ Esta decisão desatualiza os arquivos abaixo, fora do próprio corpo.
 
 ## Patches aplicados
 
-Nenhum patch aplicado.
-
 O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
+
+| Data       | Seção do corpo                | O que mudou                                                                                                                                                           | Por quê                                                                                                                                                         |
+|------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-12 | Cabeçalho, `Etapa do roadmap` | a atribuição de quem autoriza a persistência desde a etapa 1 passou do ADR-0014 para o ADR-0017                                                                       | a divisão de `E-64` moveu a subseção "A persistência no `lab-journal` começa na etapa 1" para o ADR-0017; a citação estava apontando para quem já não a carrega |
+| 2026-08-12 | `## Contexto`                 | a frase "o ADR-0014... autoriza a persistência já na etapa 1" foi dividida em duas: o ADR-0014 entrega a observação pelo broker, e o ADR-0017 autoriza a persistência | mesmo motivo da linha acima; `## Decisão` deste ADR não mudou                                                                                                   |
+| 2026-08-12 | `### Neutras`                 | a citação da dispensa de tecnologia, que apontava só para `0014-...#o-evento-sai-do-passo-pelo-broker`, passou a citar `0014-...#justificativa`                       | a subseção `## Decisão` do ADR-0014 não carrega mais o texto da dispensa — ele vive em `## Justificativa` do ADR-0014 e em `## Decisão` do ADR-0017             |
