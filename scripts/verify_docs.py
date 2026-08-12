@@ -27,10 +27,14 @@ sustenta a afirmação que a cita. Nenhuma citação deste repositório declara 
 trecho esperado — `arquivo.md:12` é só o número —, e não há contra o que
 conferir. Verificar isso exige leitura, e leitura não é trabalho de verificador.
 
-Dois modos:
+Três modos:
 
     python scripts/verify_docs.py
         Varre a árvore inteira. É o modo da linha de comando e o do CI.
+
+    python scripts/verify_docs.py --file A.md --file B.md
+        Verifica só os arquivos indicados. É como o `artifact-verifier` recebe
+        trabalho, e por isso é o modo do ciclo de especificação.
 
     python scripts/verify_docs.py --hook
         Lê no stdin o JSON de um hook `PostToolUse`, verifica SÓ o arquivo
@@ -569,6 +573,19 @@ def main() -> int:
              "adotar o verificador, e NUNCA para calar um defeito recém-criado.",
     )
     parser.add_argument(
+        "--file",
+        action="append",
+        dest="files",
+        default=[],
+        type=Path,
+        metavar="CAMINHO",
+        help="Verifica só os arquivos indicados, em vez da árvore inteira. "
+             "Repetível. É a forma como o `artifact-verifier` recebe trabalho: "
+             "uma lista de caminhos alterados. A guarda de baseline obsoleta "
+             "NÃO roda neste modo — as outras entradas não deixaram de casar, "
+             "elas apenas não foram olhadas.",
+    )
+    parser.add_argument(
         "--hook",
         action="store_true",
         help="Lê o JSON de um hook `PostToolUse` no stdin e verifica só o "
@@ -578,6 +595,11 @@ def main() -> int:
     args = parser.parse_args()
     root = args.root.resolve()
 
+    if args.files and args.hook:
+        print("ERRO: --file e --hook são modos distintos; use um deles.",
+              file=sys.stderr)
+        return 1
+
     if args.atualizar:
         total = write_baseline(root, root / args.baseline)
         print(f"{args.baseline.as_posix()}: {total} defeito(s) congelado(s).")
@@ -586,7 +608,30 @@ def main() -> int:
     accepted = load_baseline(root / args.baseline)
 
     if not args.hook:
-        outcomes = verify(root, None, accepted)
+        scope: Optional[list[Path]] = None
+        if args.files:
+            scope = []
+            for written in args.files:
+                candidate = (root / written).resolve()
+                try:
+                    candidate.relative_to(root)
+                except ValueError:
+                    print(f"ERRO: fora da raiz: {written}", file=sys.stderr)
+                    return 1
+                if not candidate.is_file():
+                    print(f"ERRO: arquivo ausente: {written}", file=sys.stderr)
+                    return 1
+                # O arquivo congelado é pedido junto quando alguém passa o que o
+                # `git status` devolveu. Ignorá-lo em silêncio seria esconder que
+                # ele não foi medido; dizer que foi seria mentira.
+                if is_frozen(candidate, root):
+                    print(f"IGNORADO: {written} — arquivo congelado, não é medido")
+                    continue
+                scope.append(candidate)
+            if not scope:
+                print("nada a verificar.")
+                return 0
+        outcomes = verify(root, scope, accepted)
         render(outcomes, sys.stdout)
         return 1 if any(o.failed for o in outcomes) else 0
 

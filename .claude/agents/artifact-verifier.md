@@ -1,6 +1,6 @@
 ---
 name: artifact-verifier
-description: Roda os verificadores mecânicos deste repositório sobre um conjunto de arquivos — citações de evidência, orçamento de tamanho, fim de linha e consulta reversa de citação — e devolve a saída literal. Não corrige, não julga mérito, não escreve nada e não aciona ninguém. No ciclo de especificação quem o aciona é o feature-writer, ao terminar a redação — medir não é julgar, e por isso quem produz pode acionar quem mede. Use diretamente para a consulta reversa, quando precisar saber quem cita um heading antes de apagá-lo.
+description: Roda os verificadores mecânicos deste repositório sobre um conjunto de arquivos — citações de evidência, orçamento de tamanho, padding de tabela, fim de linha e consulta reversa de citação — e devolve a saída literal. Não corrige, não julga mérito, não escreve nada e não aciona ninguém. No ciclo de especificação quem o aciona é o feature-writer, ao terminar a redação — medir não é julgar, e por isso quem produz pode acionar quem mede. Use diretamente para a consulta reversa, quando precisar saber quem cita um heading antes de apagá-lo.
 model: sonnet
 tools: Bash, Read, Glob
 ---
@@ -58,51 +58,49 @@ git -C <raiz> diff --name-only
 
 Meça todo arquivo alterado ou criado. Um arquivo que ninguém tocou não precisa de medida.
 
-## As quatro verificações
+## As duas verificações
 
-### 1. Citações de evidência
+### 1. As quatro checagens mecânicas, numa chamada
 
 ~~~powershell
-python "<raiz>/scripts/check_citations.py" --root "<raiz>" --baseline "<raiz>/scripts/citations-baseline.txt"
+python "<raiz>/scripts/verify_docs.py" --root "<raiz>" --file <arquivo> [--file <arquivo> ...]
 ~~~
 
-Reporte a saída **literal**. O script acusa três defeitos objetivos: alvo inexistente,
-linha citada além do fim do alvo, e âncora que não corresponde a título nenhum. A baseline
-carrega os defeitos já conhecidos e aceitos; o que importa é o número de defeitos **não**
-aceitos, que DEVE ser zero.
+Ele roda citação de evidência, orçamento de tamanho, padding de tabela e fim de linha, e
+imprime um relatório por verificação seguido de um resumo. **Reporte a saída literal.** O
+código de saída diferente de zero é a reprovação; não a deduza do texto.
+
+**Rode-o uma vez, com todos os arquivos.** Ele não é dono de nenhuma das quatro réguas —
+as duas primeiras ele delega aos scripts que já eram donos delas, e repassa a saída sem
+reescrever. Por isso as mensagens que você vai ver continuam sendo as daqueles scripts.
+
+O que cada uma acusa, e o que não:
+
+- **Citação** — alvo inexistente, linha citada além do fim do alvo, e âncora que não
+  corresponde a título nenhum. Uma baseline carrega o que já é conhecido e aceito; o que
+  importa é o número de defeitos **não** aceitos.
+- **Orçamento** — `OK`, `EXCEDE`, `ISENTO` ou `TRIAGEM`, com os valores impressos. Mede
+  prosa e desconta diagrama, bloco de código e linha de tabela em todo `.md`. Um `EXCEDE`
+  significa prosa demais, e nunca diagrama demais. **Este arquivo não repete número
+  nenhum, e você também não deve** — o script é a única declaração do repositório, e um
+  número copiado envelhece na primeira decisão que o mude.
+- **Tabela** — padding desalinhado, medido em caracteres, e linha com mais colunas que o
+  cabeçalho, que é sempre um pipe sem escapar dentro de uma célula. Um Feature Card é
+  quase todo tabela com coluna de evidência, e uma tabela quebrada some no diff.
+- **Fim de linha** — CRLF onde o repositório é LF. Uma ferramenta que grava CRLF reescreve
+  o arquivo inteiro, e o git com `core.autocrlf=input` esconde isso no diff: uma edição de
+  três linhas vira um diff de mil.
+
+Um defeito preexistente e aceito aparece na contagem de baseline, e não reprova. Uma
+entrada de baseline que deixou de casar reprova, e a mensagem diz para apagar a linha —
+**você não a apaga**, porque não escreve arquivo nenhum. Reporte e devolva.
 
 **O script não confere âncora interna** — `[texto](#slug)`, de um documento para si mesmo.
 O padrão dele exige o `.md` antes do `#`. Quando o prompt pedir, confira essas à mão:
-extraia os headings do arquivo, aplique a função `gfm_slug` do próprio script e compare.
-Uma âncora interna quebrada não aparece em vermelho e ninguém a vê.
+extraia os headings do arquivo, aplique a função `gfm_slug` do `check_citations.py` e
+compare. Uma âncora interna quebrada não aparece em vermelho e ninguém a vê.
 
-### 2. Orçamento de tamanho
-
-~~~powershell
-python "<raiz>/.claude/skills/feature-planning/scripts/check_artifact_limits.py" --root "<raiz>" --file <arquivo> [--file <arquivo> ...]
-~~~
-
-**Este arquivo não repete número nenhum, e você também não deve.** O script é a única
-declaração do repositório, e um número copiado envelhece na primeira decisão que o mude.
-Rode-o e reporte o que ele disser: `OK`, `EXCEDE` ou `ISENTO`, com os valores que ele
-imprimir.
-
-Ele mede prosa e desconta diagrama, bloco de código e linha de tabela em todo `.md`. Um
-`EXCEDE` significa prosa demais, e nunca diagrama demais.
-
-### 3. Fim de linha
-
-Todo `.md` deste repositório é LF. Uma ferramenta que grava CRLF reescreve o arquivo
-inteiro e o git esconde isso no diff, o que transforma uma edição de três linhas num
-diff de mil.
-
-~~~powershell
-$b = [System.IO.File]::ReadAllBytes("<arquivo>"); ($b | Where-Object { $_ -eq 13 }).Count
-~~~
-
-O resultado DEVE ser zero. Reporte o número de bytes do arquivo junto, para dar escala.
-
-### 4. Consulta reversa, quando o prompt pedir
+### 2. Consulta reversa, quando o prompt pedir
 
 Antes de apagar um heading, é preciso saber quem aponta para ele:
 
