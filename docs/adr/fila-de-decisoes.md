@@ -3839,6 +3839,45 @@ qual delas o experimento usa. Enquanto estiver aberta, `R18` segue `pendente` no
 **NÃO DEVE** virar cenário Gherkin, pela regra de
 [`docs/AGENTS.md`](../AGENTS.md#feature-card).
 
+### `E-88` — o sinal de encerramento do stream, que a `R4` de streaming propõe sem ADR
+
+Aberta em 2026-08-12, na triagem das regras pendentes dos cinco cards.
+
+**O problema.** A regra `R4` de
+[streaming e replay do log de observações](../features/streaming-e-replay-do-log-de-observacoes/feature-card.md#regras-de-negócio)
+diz que abrir o stream de uma execução **encerrada** DEVE devolver o histórico completo
+e DEVE fechar o stream, sem aguardar evento ao vivo que não virá. A coluna de evidência
+dela não cita documento nenhum: ela diz, literalmente, "proposta deste card; nenhum ADR
+aceito decide o sinal de encerramento". **É a única regra de todos os seis cards cuja
+evidência declara a própria ausência de evidência**, e o risco correspondente já estava
+registrado naquele card antes desta linha existir.
+
+**O que falta decidir são duas coisas, e elas não são a mesma.** Primeiro, **como o
+`lab-journal` sabe que uma execução terminou** — o
+[ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-replay-por-cursor-é-o-único-mecanismo-com-ou-sem-histórico-completo)
+decide o mecanismo de replay e não decide isso. Segundo, **como o stream sinaliza o fim
+ao frontend** — fechar a conexão, emitir um evento terminal, ou ambos.
+
+**Há um laço com uma regra já aprovada, e ele não fecha esta linha.** A `R7` de
+[distinção entre higiene e invalidação](../features/distincao-entre-higiene-e-invalidacao/feature-card.md#regras-de-negócio)
+nomeia três caminhos de saída da lista de execuções ativas do `lab_plane`, e o primeiro
+é "a sentinela de fim, que passa a remover a linha", pelo fecho de
+[`E-50`](#e-50-fecha-em-três-caminhos-de-saída-da-lista-escolhida-em-2026-08-12) .
+**Aquilo acontece no `lab_plane`, e o stream é do `lab-journal`** — dois serviços, e a
+fronteira entre eles é a rede. Que a sentinela remova a linha num não diz como o outro
+descobre o mesmo fato, nem se descobre pelo mesmo evento.
+
+```mermaid
+flowchart LR
+  SUT["sistema medido"] -->|" sentinela de fim "| LP["lab-plane<br/>remove a linha da lista<br/>decidido em E-50"]
+  LP -->|" broker "| LJ["lab-journal<br/>como ele sabe?<br/>não decidido"]
+  LJ -->|" stream "| FE["frontend<br/>como o fim é sinalizado?<br/>não decidido"]
+```
+
+**O que esta linha NÃO decide.** Ela não escolhe entre fechar a conexão e emitir evento
+terminal, e não presume que o sinal do `lab-journal` seja o mesmo da sentinela do
+`lab_plane`. `R4` segue `pendente` e NÃO DEVE virar cenário Gherkin.
+
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 
 **Esta seção é um levantamento congelado em 2026-08-06, e não é recontada a cada linha
@@ -4975,6 +5014,35 @@ Uma pista contra o terceiro destino: o E5 não escolhe um nível, ele varre trê
 plataforma precisa é do eixo de variação, e não de um valor decidido uma vez.
 
 Registrado em 2026-07-31, no levantamento do que falta para fechar o MVP.
+
+**O título desta seção deixou de ser verdadeiro em 2026-08-12, e ele permanece.** A
+pendência ganhou o identificador abaixo, e portanto passou a ter lugar nesta fila; o
+heading fica porque o
+[índice de ADRs](README.md#o-nível-de-isolamento-não-tem-lugar-nesta-fila) o cita por
+âncora.
+
+### `E-87` — o nível de isolamento como parâmetro do experimento, e os três destinos
+
+Numerada em 2026-08-12, na triagem das regras pendentes dos cinco cards. **O enunciado é
+o desta seção, escrito em 2026-07-31, e nada nele foi reescrito** — o que muda é que ele
+passa a ter identificador, e por isso passa a ser contável pelo
+[`check_queue_ids.py`](../../scripts/check_queue_ids.py) e citável por uma regra.
+
+**O que forçou a numeração.** A regra `R7` de
+[detecção de proteção inerte](../features/deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)
+exige a comparação sob os três níveis, e citava o
+[plano](../plano-do-laboratorio.md#e5--write-skew-inert-protection) — que
+[não decide nada](../../AGENTS.md#o-que-este-projeto-é) . O dono aparente seria o
+ADR-0002, e ele **recusa o papel por escrito**: a seção
+[O que este ADR não decide](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-que-este-adr-não-decide)
+diz que "o isolamento é parâmetro da definição de experimento, e tem ADR próprio na
+fila". Enquanto a pendência não tinha número, essa promessa não apontava para lugar
+nenhum, e a `R7` ficava sem chão a montante.
+
+**Os três destinos acima seguem abertos, e esta linha não escolhe nenhum.** A pista
+contra o terceiro — que o E5 varre três níveis em vez de escolher um — também continua
+valendo como está escrita. `R7` segue `pendente` até o fecho, e NÃO DEVE virar cenário
+Gherkin.
 
 ## A anomalia por frequência: uma proposta que muda o estatuto da barreira
 

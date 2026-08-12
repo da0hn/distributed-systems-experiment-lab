@@ -2,6 +2,7 @@
 
 - **Estado:** Aceito
 - **Data:** 2026-08-12
+- **Última atualização:** 2026-08-12, por patch — ver `## Patches aplicados`
 - **Etapa do roadmap:** 1 — antecipa para a etapa 1 uma persistência que o ADR-0007 havia
   adiado para a etapa 6.
 - **Relacionado:** emenda o
@@ -270,10 +271,21 @@ Esta decisão desatualiza os arquivos abaixo, fora do próprio corpo.
 | [fila de decisões, fecho de `E-36`](fila-de-decisoes.md#e-36-fecha-no-broker-com-persistência-antes-da-emissão-escolhida-em-2026-08-10)        | a frase que atribuía ao ADR-0014 o registro da perda do buffer como consequência negativa passa a nomear este ADR; e a frase que contava "**dois** artefatos, e não um" passa a contar três, porque o conteúdo que a linha decidiu vive hoje também neste ADR                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | [`contracts/README.md`, Estado](../contracts/README.md#estado-nenhum-contrato-existe)                                                          | a linha do AsyncAPI `lab-plane` → RabbitMQ → `lab-journal` atribuía a dispensa ao ADR-0014 pela âncora de "O evento sai do passo pelo broker", que depois da restauração já não a carrega; a citação passa a `## Justificativa` daquele ADR                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | [fila de decisões, fecho de `E-66`](fila-de-decisoes.md#e-66-fecha-em-o-argumento-desce-do-cabeçalho-para-o-corpo-escolhida-em-2026-08-12)     | "A aplicação retroativa ao ADR-0014 está bloqueada" deixa de valer: o fecho de `E-64` a destravou, e o bullet "Nome do arquivo" saiu de argumento para livro-razão. O parágrafo e o nó do diagrama passam ao pretérito, e apontam para `E-83`, que é onde o destino do argumento continua aberto                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| [feature-card.md, Regras de negócio](../features/observacao-passo-a-passo/feature-card.md#regras-de-negócio)                                   | A `R12` dizia que as observações atravessam "ao vivo, evento por evento", e citava só `0014-...#o-evento-sai-do-passo-pelo-broker` — subseção que a divisão esvaziou do buffer e da thread. Corrigido em 2026-08-12: a regra passa a descrever o enfileiramento no buffer e a publicação por thread separada, e a evidência passa a citar também `#o-runtime-publica-por-um-buffer-em-memória-numa-thread-separada` deste ADR. A proibição de acumular até o fim da execução permanece, porque o buffer é drenado durante a execução, e não ao término dela.                                                                                                                                                                                                                                                                                     |
 
 ## Patches aplicados
 
-Nenhum patch aplicado.
+- **2026-08-12 — `## O que este ADR desfaz fora de si`.** A tabela nomeava o card de
+  [observação passo a passo](../features/observacao-passo-a-passo/feature-card.md#integrações-e-contratos-afetados)
+  em `## Integrações e contratos afetados` e em `## Riscos e decisões pendentes`, e
+  **omitia `## Regras de negócio`**, onde a `R12` daquele card cita a subseção que esta
+  divisão
+  esvaziou. A linha que faltava foi acrescentada. O patch **não** altera decisão nem
+  argumento: ele completa o inventário do que a divisão desatualizou, e o defeito é o
+  material de sempre — uma âncora que resolve e deixou de sustentar a afirmação, da
+  classe que
+  [`E-81`](fila-de-decisoes.md#e-81--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio)
+  registra como invisível ao `check_citations.py`.
 
 O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
