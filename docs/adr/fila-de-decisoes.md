@@ -3372,9 +3372,108 @@ fato: acrescentá-la seria editar o corpo fora das formas que o
 [lifecycle](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) autoriza. Os
 ADRs anteriores a 2026-08-10 seguem sem ela, e isso é consequência aceita, e não descuido.
 
-**Onde a regra já está escrita, e onde ainda não.** Ela vive no template e no lifecycle da
-skill de ADR. Torná-la explícita também no `README.md` desta pasta **segue pendente** — a
-skill governa quem escreve pela skill, e o `README.md` é o que um leitor consulta.
+**Onde a regra está escrita.** Ela vive no template e no lifecycle da skill de ADR, e
+desde 2026-08-11 também no
+[`README.md`](README.md#a-seção--o-que-este-adr-desfaz-fora-de-si-obrigatória-desde-2026-08-10)
+desta pasta — a skill governa quem escreve por ela, e o `README.md` é o que um leitor
+consulta. Até essa data a segunda metade seguia pendente, e este parágrafo era o registro
+da pendência.
+
+#### `E-62` fecha em ADR próprio, escolhida em 2026-08-11
+
+Fecha o `E-62` de
+[que forma cobre a entrada de decisão nova num ADR aceito](#e-62--que-forma-cobre-a-entrada-de-decisão-nova-num-adr-aceito),
+e **não** o `E-62` da
+[citação entre aspas](#e-62--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio):
+os dois identificadores colidem, e a colisão é da linha
+[`E-73`](#e-73--dois-identificadores-da-fila-foram-usados-duas-vezes).
+
+**A pessoa escolheu, na letra: proibir — decisão nova nasce em ADR próprio.** Um ADR
+aceito NÃO DEVE receber decisão que não estava nele quando foi aceito. As seis formas do
+lifecycle continuam seis, e nenhuma delas acrescenta decisão. A regra está escrita em
+[`README.md`](README.md#um-adr-aceito-não-recebe-decisão-nova-decidido-em-2026-08-11).
+
+**As duas outras alternativas caem com a escolha.**
+
+| Alternativa descartada                            | Por que não                                                                                                       |
+|---------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| alargar a **divisão** para cobrir entrada e saída | `Alterado por: divisão` passaria a significar duas coisas opostas, e o campo deixaria de dizer se o corpo cresceu |
+| criar uma **sétima forma**, só para a entrada     | sete formas é vocabulário que ninguém retém, e a fronteira contra a emenda comum continuaria por decidir          |
+
+**A objeção que a alternativa escolhida carregava foi respondida, e não ignorada.** O
+enunciado observava que as duas subseções que entraram no ADR-0014 são sobre a travessia
+da observação — tema dele, e não do ADR-0016 —, e que empurrá-las para o ADR de streaming
+produziria dois artefatos com o assunto trocado. A escolha **não** as empurra para o
+ADR-0016: ela as manda para um **terceiro** ADR, e o `Relacionado` liga os três. O custo
+disso está nomeado no `README.md` — quem consultar só o ADR antigo não encontra a decisão
+nova.
+
+**O que esta linha não fecha.** A entrada já consumada no ADR-0014 continua consumada, e a
+regra vale daqui em diante. O que fazer com ela é a linha
+[`E-64`](#e-64--o-que-fazer-com-a-entrada-já-consumada-no-adr-0014).
+
+#### `E-64` — o que fazer com a entrada já consumada no ADR-0014
+
+Aberta em 2026-08-11, ao fechar o `E-62` da entrada de decisão nova.
+
+**O problema.** A proibição vale daqui em diante, e o ADR-0014 já ganhou, depois de aceito
+em `a5d5777`, duas subseções de `## Decisão` — "A persistência no `lab-journal` começa na
+etapa 1, e não mais na 6" e "O runtime publica por um buffer em memória, numa thread
+separada" — mais um parágrafo normativo dentro de subseção que já existia, e um ganho no
+próprio título. O cabeçalho dele declara o **fato** da entrada e não nomeia forma alguma,
+porque na data em que foi escrito não havia forma a nomear. Agora há uma regra, e ela diz
+que aquilo não deveria ter acontecido — sem dizer o que fazer com o que aconteceu.
+
+**Por que importa.** Um ADR aceito que carrega decisão que ele não tinha, sob uma regra
+que proíbe exatamente isso, é uma contradição visível para quem ler os dois. E o cabeçalho
+que declara o fato sem nomear forma é hoje o **único** rastro de que o corpo cresceu:
+apagá-lo por descuido apaga a evidência do problema.
+
+**Três saídas, e nenhuma escolhida.**
+
+| Saída                                                                     | Objeção                                                                                                                     |
+|---------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| **desfazer**: as duas subseções saem para um ADR terceiro, e o 0014 volta | é a única que alinha o repositório à regra, e é também a mais cara — três ADRs para uma travessia que já está descrita      |
+| **nomear uma forma datada** para o caso, válida só até 2026-08-11         | cria uma sétima forma pela porta dos fundos, que é o que a escolha do `E-62` acabou de descartar                            |
+| **registrar como exceção**, no cabeçalho do 0014 e nesta fila             | a exceção fica sem forma que a autorize, e o próximo caso a citará como precedente, que é o risco que toda dispensa carrega |
+
+**Sem recomendação.** Qual das três vale é decisão de pessoa: as duas primeiras mexem em
+ADR aceito, e a terceira cria precedente.
+
+#### `E-73` — dois identificadores da fila foram usados duas vezes
+
+Aberta em 2026-08-11, ao redigir o fecho do `E-62`.
+
+**O problema.** `E-62` e `E-63` nomeiam **duas linhas cada um**. Os dois pares nasceram no
+mesmo dia, em worktrees que corriam em paralelo, e a mesclagem juntou os quatro sem que
+nada acusasse a colisão — nenhum verificador confere unicidade de identificador nesta
+fila.
+
+| Identificador | Uma linha                                 | E a outra                                      |
+|---------------|-------------------------------------------|------------------------------------------------|
+| `E-62`        | que forma cobre a entrada de decisão nova | a citação entre aspas não tem verificador      |
+| `E-63`        | a emenda e o título citado por trecho     | os comentários das duas `V1` ficaram defasados |
+
+**As âncoras continuam resolvendo, e é isso que torna a colisão silenciosa.** O slug GFM
+carrega o título inteiro, e não só o identificador, de modo que
+`#e-62--que-forma-cobre-a-entrada-de-decisão-nova-num-adr-aceito` e
+`#e-62--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio` são endereços
+distintos. `check_citations.py` passa nas duas. O que quebra é a **citação por
+identificador**: "a linha `E-62`" deixou de nomear uma linha, e é assim que este
+repositório cita a fila em prosa, no `AGENTS.md` e nos ADRs.
+
+**Três saídas, e nenhuma escolhida.**
+
+| Saída                                                           | Objeção                                                                                                       |
+|-----------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| **renumerar** um dos dois pares para identificadores livres     | troca o slug das linhas renumeradas, e toda citação a elas quebra no mesmo commit                             |
+| **deixar como está** e citar sempre por âncora, nunca por `E-N` | contraria a forma como a fila já é citada em prosa, e o próximo par colidido não terá nem sinal               |
+| **sufixar** o par mais novo — `E-62b`, `E-63b`                  | gramática de identificador nova, e a fila não tem dona declarada para ela, ao contrário do índice de questões |
+
+**Uma quarta coisa é independente da escolha, e não custa decisão:** um verificador que
+recuse identificador repetido nesta fila. Ele não existe, e a colisão foi achada à mão.
+
+**Sem recomendação.**
 
 ## A saída, decidida em 2026-08-06
 

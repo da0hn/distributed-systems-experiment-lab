@@ -543,11 +543,13 @@ antigo perde o que cedeu, e o título dele PODE perder a parte que nomeava o que
 
 **O que ela não cobre.** A divisão descreve a **subtração declarada**, e nada além dela.
 Se, no mesmo commit, o ADR dividido também **ganhar** decisão que não estava nele quando
-foi aceito, essa entrada não é descrita por esta forma nem por nenhuma das outras cinco.
-Qual forma a cobre está aberto na linha
-[`E-62`](fila-de-decisoes.md#e-62--que-forma-cobre-a-entrada-de-decisão-nova-num-adr-aceito),
-e foi exatamente o que aconteceu no caso que originou a divisão: o cabeçalho do ADR-0014
-declara o fato da entrada e não nomeia forma alguma, porque nomeá-la seria decidir.
+foi aceito, essa entrada não é descrita por esta forma nem por nenhuma das outras cinco —
+e desde 2026-08-11 ela é **proibida**, pela regra de
+[Um ADR aceito não recebe decisão nova](#um-adr-aceito-não-recebe-decisão-nova-decidido-em-2026-08-11).
+Isso resolve o caso daqui em diante e não desfaz o que já aconteceu no caso que originou a
+divisão: o cabeçalho do ADR-0014 declara o fato da entrada e não nomeia forma alguma, e o
+que fazer com ela segue aberto na linha
+[`E-64`](fila-de-decisoes.md#e-64--o-que-fazer-com-a-entrada-já-consumada-no-adr-0014).
 
 **É isso que a separa de substituição e de subsunção**, e a tabela diz o resto.
 
@@ -609,3 +611,100 @@ vocabulário para dividir um.
 dividido pelo [ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md) em
 2026-08-11. A linha da fila que registra a escolha é
 [a divisão como sexta forma](fila-de-decisoes.md#a-divisão-como-sexta-forma-decidida-em-2026-08-11).
+
+## A seção `## O que este ADR desfaz fora de si`, obrigatória desde 2026-08-10
+
+**Todo ADR carrega essa seção, e ela vem imediatamente antes de `## Patches
+aplicados`.** A obrigação é da linha
+[`E-41`](fila-de-decisoes.md#e-41-fecha-em-seção-obrigatória-escolhida-em-2026-08-10) da
+fila, decidida em 2026-08-10. Ela esteve até agora escrita **apenas na skill que redige
+ADR**, e uma regra que só vive na ferramenta de escrita não alcança quem lê: a skill
+governa quem escreve por ela, e este `README.md` é o que se consulta para saber o que um
+ADR deste repositório carrega.
+
+**O problema que ela resolve não é o do rastro.** O
+[rastro de alterações](#o-rastro-de-alterações-emendado-em-2026-08-04) aponta para trás,
+fica no ADR alterado e nomeia quem o alterou — e por isso só alcança quem tem cabeçalho
+de ADR. A matriz de integrações, um Feature Card, um índice e o `AGENTS.md` não têm campo
+nenhum para receber. Uma decisão que os desatualiza sem tocá-los deixa o repositório
+afirmando duas coisas contraditórias, e quem ler a versão caída não tem como saber que
+ela caiu.
+
+Quatro regras governam a seção:
+
+- **Ela é obrigatória mesmo quando não há nada a listar.** Escreva
+  `Nenhum — esta decisão não desatualiza documento algum fora deste arquivo.`, porque a
+  ausência da seção não distingue "não desatualiza nada" de "desatualiza, e ninguém
+  olhou".
+- **O commit do ADR toca os arquivos listados.** Uma linha que anuncia a desatualização e
+  a deixa para depois troca a contradição silenciosa por uma contradição anunciada, e as
+  duas continuam mentindo para quem lê o alvo.
+- **Quando a linha for um ADR aceito, nomeie a forma do lifecycle que o alcança**, e onde
+  ela foi registrada. A forma é o que autoriza a edição; sem ela, a linha descreve uma
+  alteração que ninguém permitiu.
+- **Quando a linha for um documento vivo, diga o que muda nele**, e não apenas que ele
+  muda. "A matriz fica desatualizada" não diz a quem lê o commit qual linha conferir.
+
+**A seção não substitui o rastro.** Um ADR aceito listado nela continua recebendo
+`Última atualização` e `Alterado por` no próprio cabeçalho, no mesmo commit.
+
+```mermaid
+flowchart TD
+    N["ADR novo"] --> S["## O que este ADR desfaz fora de si"]
+    S --> Q{"o alvo é<br/>ADR aceito?"}
+    Q -->|" sim "| F["a forma do lifecycle que o alcança,<br/>e o rastro no cabeçalho do alvo"]
+    Q -->|" não "| V["o que muda no documento vivo,<br/>e não só que ele muda"]
+    Q -->|" não há alvo "| Z["a frase que afirma<br/>a ausência"]
+    F --> C["um commit só, tocando<br/>o ADR e todos os alvos"]
+    V --> C
+```
+
+## Um ADR aceito não recebe decisão nova, decidido em 2026-08-11
+
+**Uma decisão que não estava num ADR quando ele foi aceito NÃO DEVE entrar no corpo
+dele.** Ela nasce em ADR próprio. O ADR antigo continua alcançável pelas seis formas, e
+**nenhuma delas acrescenta decisão** — esta regra não cria uma sétima.
+
+**O que ela proíbe, na letra.** Acrescentar subseção a `## Decisão`, ou parágrafo
+normativo dentro de subseção que já existia, num ADR cujo `Estado` seja `Aceito`. Não
+importa que o tema seja o mesmo do ADR antigo, nem que o ADR novo escrito no mesmo commit
+fosse o lugar errado para ela: o lugar dela é um terceiro ADR. **A emenda não é a saída** —
+ela ajusta uma regra acessória que já existia, e não instala uma que não existia.
+
+**Por quê.** Quem lê um ADR aceito precisa distinguir o que foi decidido na data do
+cabeçalho do que veio depois. As seis formas preservam essa distinção: cinco não tocam a
+decisão, e a divisão só subtrai, declarando o que saiu. Uma entrada de decisão nova não
+deixa rastro que a separe do que já estava lá — o corpo passa a ler-se inteiro como
+decidido na data de aceite, que é exatamente a leitura errada que a imutabilidade existia
+para impedir, e que o livro-razão de patch repôs por outra via apenas para o texto sem
+decisão.
+
+**Duas alternativas descartadas.** Alargar a **divisão** para cobrir entrada e saída no
+mesmo ato foi descartado porque `Alterado por: divisão` passaria a significar duas coisas
+opostas, e quem lesse o campo não saberia se o corpo encolheu ou cresceu. Criar uma
+**sétima forma** só para a entrada foi descartado porque sete formas é vocabulário que
+ninguém retém, e a fronteira entre "entrada durante divisão" e emenda comum continuaria
+por decidir de qualquer modo.
+
+**O custo é nomeado, e foi aceito.** Uma decisão sobre o tema do ADR antigo passa a viver
+fora dele, e quem consultar só o antigo não a encontra. É o preço de manter o corpo
+legível como o que foi aceito naquela data, e o `Relacionado` do ADR novo é o que liga os
+dois.
+
+```mermaid
+flowchart TD
+    D["uma decisão nova<br/>sobre o tema de um ADR aceito"] --> Q{"ela estava nele<br/>quando ele foi aceito?"}
+    Q -->|" sim, e o texto está errado "| P["patch, emenda, adendo,<br/>subsunção ou substituição"]
+    Q -->|" sim, e ela sai para outro ADR "| V["divisão"]
+    Q -->|" não "| N["ADR próprio<br/>o corpo do aceito não é tocado"]
+    N --> R["Relacionado no ADR novo<br/>liga os dois"]
+```
+
+**O caso que originou a regra continua aberto, e ela não o resolve retroativamente.** O
+ADR-0014 já ganhou duas subseções de `## Decisão` que `a5d5777` não tinha, e o cabeçalho
+dele declara o fato sem nomear forma. O que fazer com essa entrada consumada — desfazê-la,
+nomear uma forma para ela, ou registrá-la como exceção datada — é decisão de pessoa, e
+segue na linha
+[`E-64`](fila-de-decisoes.md#e-64--o-que-fazer-com-a-entrada-já-consumada-no-adr-0014).
+A escolha desta regra está registrada no
+[fecho do `E-62`](fila-de-decisoes.md#e-62-fecha-em-adr-próprio-escolhida-em-2026-08-11).
