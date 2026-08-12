@@ -1316,6 +1316,69 @@ diante disso não foi decidido.
 
 **Sem recomendação, nas duas metades.**
 
+#### `E-50` fecha em três caminhos de saída da lista, escolhida em 2026-08-12
+
+**Escolhido pela pessoa em 2026-08-12**, na letra: "por timeout ou cancelamento explícito
+do usuário". A escolha alcança a metade que ficara sem sinal nenhum, e por consequência
+fixa também a outra.
+
+**Uma execução sai da lista de execuções ativas do `lab_plane` por três caminhos, e por
+nenhum outro.**
+
+| Caminho                     | Quando                                                   | O que o dispara                                            |
+|-----------------------------|----------------------------------------------------------|------------------------------------------------------------|
+| a **sentinela** de fim      | a execução alcança o fim, e todos os workers terminam    | o evento da marca que [`E-47`](#e-47-fecha-na-sentinela-escolhida-em-2026-08-10) escolheu |
+| o **limite de espera**      | nenhuma marca chega dentro do limite                     | o adaptador de relógio do `lab-plane`                      |
+| o **cancelamento** explícito | a pessoa encerra a execução                              | o frontend, pelo qual ela já declara experimento           |
+
+**A sentinela passa a remover a linha, e isso deixa de ser hipótese.** O enunciado
+registrava que nenhum fecho atribuíra essa remoção a ator nenhum, e que ela continuava
+"hipótese, e não decisão". A escolha de hoje a fixa por consequência: se o abandono sai
+por limite de espera, e o limite existe justamente para o caso em que **nenhuma marca
+chega**, então a marca que chega é o que encerra o caminho normal. Ler o contrário —
+sentinela que não remove — faria toda execução bem-sucedida esperar o limite estourar, o
+que esvaziaria a distinção entre as duas metades.
+
+**O limite de espera usa o adaptador de relógio, e a divergência registrada é resolvida
+por precaução.** O enunciado registrava que os fechos de `E-47` e
+[`E-35`](#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10) apontam para lados
+opostos: aquele criou a exceção "um limite que não entra em veredito não é alcançado pela
+regra do relógio injetável", e este afirma que a lista "é condição do veredito confiável".
+**A exceção não é aplicada aqui**, e o motivo é assimetria de risco: aplicar a regra do
+[relógio injetável](../../AGENTS.md#regras-estruturais-que-valem-sempre) a um limite que
+não precisava dela custa um adaptador; **não** aplicá-la a um que precisava quebra a
+reprodutibilidade em silêncio, meses depois. A prova cabe a quem quiser a exceção, e
+ninguém a produziu.
+
+```mermaid
+flowchart TD
+    E["execução na lista<br/>de execuções ativas"] --> S{"a marca de fim<br/>chegou?"}
+    S -->|" sim "| R1["sai pela sentinela"]
+    S -->|" não "| C{"a pessoa<br/>cancelou?"}
+    C -->|" sim "| R2["sai por cancelamento"]
+    C -->|" não "| T{"o limite de espera<br/>estourou?"}
+    T -->|" sim "| R3["sai por abandono"]
+    T -->|" não "| E
+```
+
+**Três perguntas ficam abertas, e nenhuma delas bloqueia a forma da tabela.**
+
+- **Qual é o limite, e se ele é por execução ou global.** `Pergunta em aberto`. Um número
+  escrito aqui seria decisão que ninguém tomou.
+- **Se uma execução encerrada por limite produz veredito.** `Pergunta em aberto`. Ela é
+  candidata natural a um quarto valor da classificação do veredito zero, que o
+  [ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-zero-é-classificado-e-a-classificação-tem-quatro-valores)
+  já fixou com quatro — acrescentar um quinto é decisão arquitetural nova, e entra na fila
+  quando alguém a propuser.
+- **Se o cancelamento e o abandono se distinguem no registro.** `Pergunta em aberto`. Os
+  dois tiram a linha da lista; se o resultado guarda **por qual** dos dois, ninguém
+  decidiu.
+
+**O que isto desbloqueia.** A forma da tabela de execuções ativas em
+[`esquemas.md`](../architecture/esquemas.md#o-schema-do-instrumento-lab_plane) deixa de
+depender desta linha: ela precisa de coluna que sustente os três caminhos. Quais colunas,
+e o nome delas, continua com `E-35`.
+
 ### Duas linhas abertas pelo ADR-0010, ao reconciliar os cards
 
 O [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) nasceu `Aceito`
@@ -1578,6 +1641,41 @@ predicado, se ela passa a ser derivada de outra fonte, ou se o risco é aceito e
 
 **Sem recomendação.**
 
+#### `E-51` fecha em guarda de completude, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12**, pela primeira das três saídas nomeadas no
+enunciado.
+
+**A contagem de coincidências só vale sobre stream atestado como completo.** É o mesmo
+mecanismo que [`E-46`](#e-46-fecha-no-consumidor-do-broker-escolhida-em-2026-08-10) deu à
+soma do predicado, e a escolha é por reuso: o consumidor do broker já confere o buraco no
+meio e reconhece a marca de fim, e a contagem passa a depender do mesmo atestado em vez de
+ganhar guarda própria.
+
+**O motivo, e ele é o do projeto inteiro.** Uma contagem que erra por evento perdido no
+transporte produz **falso negativo silencioso** — o instrumento afirma menos coincidências
+do que houve, e nada no relatório distingue isso de um experimento sem contenção. É a
+mesma classe de defeito que a regra de conexão por worker existe para impedir, e o
+laboratório não pode cometê-la no próprio veredito.
+
+**As duas outras saídas caem por motivos distintos.** Derivar a contagem de outra fonte
+contraria o
+[ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#a-plataforma-conta-coincidências),
+que decidiu o log como fonte, e seria decisão arquitetural nova sobre ADR aceito. Aceitar o
+risco deixaria o instrumento com **três** modos conhecidos de errar em silêncio — os dois
+que as [negativas](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#negativas)
+já nomeiam, mais este — e nenhum deles com guarda.
+
+**Onde a guarda vive, e o que ela faz quando falha.** `Pergunta em aberto`, nas duas
+metades. O fecho de `E-46` pôs a conferência no consumidor do broker, e se a contagem lê o
+atestado dali ou refaz a conferência não foi decidido; o que uma contagem sobre stream
+incompleto **produz** — recusa, número com ressalva, ou o rótulo `fonte atrasada` — também
+não.
+
+**O que este fecho NÃO faz.** Ele não emenda o ADR-0004. A guarda é condição de uso da
+contagem, e não mudança do que ela conta — se alguém concluir que ela muda, isso é decisão
+arquitetural nova, e entra nesta fila.
+
 #### `E-52` — de onde vem o instante de parede de um evento, e se ele é monotônico
 
 Aberta em 2026-08-10, pelo fecho de
@@ -1588,6 +1686,46 @@ dele", e a decisão de `E-36` acrescenta um segundo instante — o de persistên
 resolver a origem do primeiro.
 
 **Sem recomendação.**
+
+#### `E-52` fecha em a ordem vem do cursor, e o instante é rótulo, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12.** O instante de parede de um evento existe para
+leitura humana e **NÃO DEVE** ordenar nada; quem ordena é o cursor monotônico.
+
+**A decisão já existia, e o que faltava era lê-la como resposta a esta linha.** O
+[ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-replay-por-cursor-é-o-único-mecanismo-com-ou-sem-histórico-completo)
+fixou o replay por cursor, e o `## Alternativas consideradas` dele **descartou ordenar
+pelo instante**. Esta linha perguntava de onde vem o instante e se ele é monotônico; com a
+ordem fora dele, a segunda metade da pergunta deixa de precisar de resposta — **um rótulo
+não precisa ser monotônico**.
+
+**O que isso resolve de [`Q-0004-3`](../questions/Q-0004-3.md), e o que não.** Aquela
+questão registra que "nenhum documento diz qual relógio o log usa, nem se ele é
+monotônico, nem qual é a resolução dele". A monotonicidade sai da lista. **Qual relógio** e
+**qual resolução** continuam abertos, e a regra que os alcança é a de sempre: o tempo é
+injetável, e `Instant.now()` só em adaptador de relógio
+([`AGENTS.md`](../../AGENTS.md#regras-estruturais-que-valem-sempre)). A questão permanece
+`pendente` no [índice](../questions/README.md#índice), com escopo reduzido.
+
+**Os dois instantes que `E-36` criou continuam ambos existindo**, e nenhum dos dois ordena.
+O do passo e o de persistência são rótulos de momentos diferentes; compará-los entre
+processos continua sendo um dos modos de erro que as
+[negativas do ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#negativas)
+já nomeiam, e este fecho não o autoriza.
+
+```mermaid
+flowchart LR
+    P["passo"] --> I1["instante do passo<br/>rótulo"]
+    P --> C["cursor monotônico<br/>ordena"]
+    P --> B["broker"] --> J["lab-journal"] --> I2["instante de persistência<br/>rótulo"]
+    C -.->|" o replay segue este,<br/>e nenhum dos dois rótulos "| J
+```
+
+**Uma consequência que vale escrever.** Um relatório ou uma tela que ordene observações
+pelo instante está errado, mesmo que o resultado pareça certo na maioria das execuções.
+Onde essa proibição é escrita como regra verificável pertence ao card de
+[streaming e replay](../features/streaming-e-replay-do-log-de-observacoes/feature-card.md),
+e não a esta fila.
 
 #### `E-59` — se o ADR-0016 tira a premissa de `Q-0022`
 
@@ -2278,6 +2416,40 @@ forma por omissão.
 
 **Sem recomendação.** A linha nasce com o registro do que a poda teria apagado, e nada
 além disso.
+
+#### `E-42` fecha em o relatório incorpora a definição usada, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12**, pela primeira das duas formas.
+
+**O relatório de execução carrega a definição completa que foi usada**, como campo do
+resultado. Reproduzir uma execução deixa de exigir que o banco ainda tenha a definição, e
+o que reproduz volta a estar num artefato único.
+
+**O motivo é o custo que o próprio ADR-0011 nomeou.** As
+[consequências negativas](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#negativas)
+dele registram que um resultado deixa de sobreviver a um banco recriado — e o
+[caderno de laboratório fora do Git](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)
+foi aceito **com** esse custo. Incorporar é o único dos dois desenhos em que ele
+desaparece: o relatório sobrevive ao banco que o produziu. Citar por identificador
+preservaria o custo inteiro, e num artefato que existe justamente para sair de lá.
+
+**O custo aceito.** O relatório duplica o que o banco guarda. A duplicação é deliberada e
+não é fonte concorrente: **a definição dentro do relatório é a que foi usada naquela
+execução**, e não a definição vigente — as duas divergirem depois de uma edição é o
+comportamento correto, e não um defeito de sincronização.
+
+**Isto fixa uma decisão antes do gatilho que a fixaria por omissão.** O JSON Schema do
+relatório de execução está listado como não decidido em
+[`../contracts/README.md`](../contracts/README.md#estado-nenhum-contrato-existe), com o
+primeiro relatório emitido como gatilho. O enunciado alertava que decidir `E-42` depois
+desse gatilho fixaria a forma por omissão; a escolha chegou antes, e o contrato nasce
+sabendo o que carrega.
+
+**O que continua aberto.** Qual é a forma da definição dentro do relatório — objeto
+aninhado, documento serializado, ou os campos achatados — não foi decidido, e pertence ao
+contrato quando ele nascer. E **o que o relatório publica** continua sendo a decisão
+maior, ainda aberta, da composição dos formatos de veredito, em
+[capacidade conhecida e não especificada](../features/README.md#capacidade-conhecida-e-não-especificada).
 
 #### `E-43` — as três pendências do ADR-0013 vivem dentro de uma linha fechada
 
