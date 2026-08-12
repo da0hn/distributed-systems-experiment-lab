@@ -8,13 +8,14 @@ O processo está em [`../specification-process.md`](../specification-process.md)
 
 ## Índice
 
-| Capacidade                                                                                           | O que ela responde                                                                          | Origem                                                                                          | Regras               | Estado                         |
-|------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|----------------------|--------------------------------|
-| [observacao-passo-a-passo](observacao-passo-a-passo/feature-card.md)                                 | como parar, falhar e observar **entre** dois passos de uma operação                         | [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md), `Aceito`                         | 12, todas `pendente` | especificado, não implementado |
-| [execucao-de-experimento](execucao-de-experimento/feature-card.md)                                   | o que um resultado zero significa, e quando ele é defeito do instrumento                    | [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md), `Aceito` | 14, todas `pendente` | especificado, não implementado |
-| [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md)                   | quantos incrementos se perderam, e sob qual proteção — E1 e E3                              | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                      | 19, todas `pendente` | especificado, não implementado |
-| [deteccao-de-protecao-inerte](deteccao-de-protecao-inerte/feature-card.md)                           | por que uma proteção pode estar presente e não proteger nada — E5                           | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                      | 11, todas `pendente` | especificado, não implementado |
-| [streaming-e-replay-do-log-de-observacoes](streaming-e-replay-do-log-de-observacoes/feature-card.md) | como a tela vê o histórico completo e o que acontece ao vivo, sem perder nem repetir evento | [`ADR-0016`](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md), `Aceito`             | 6, todas `pendente`  | especificado, não implementado |
+| Capacidade                                                                                           | O que ela responde                                                                             | Origem                                                                                             | Regras               | Estado                         |
+|------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|----------------------|--------------------------------|
+| [observacao-passo-a-passo](observacao-passo-a-passo/feature-card.md)                                 | como parar, falhar e observar **entre** dois passos de uma operação                            | [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md), `Aceito`                            | 12, todas `pendente` | especificado, não implementado |
+| [execucao-de-experimento](execucao-de-experimento/feature-card.md)                                   | o que um resultado zero significa, e quando ele é defeito do instrumento                       | [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md), `Aceito`    | 14, todas `pendente` | especificado, não implementado |
+| [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md)                   | quantos incrementos se perderam, e sob qual proteção — E1 e E3                                 | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                         | 19, todas `pendente` | especificado, não implementado |
+| [deteccao-de-protecao-inerte](deteccao-de-protecao-inerte/feature-card.md)                           | por que uma proteção pode estar presente e não proteger nada — E5                              | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                         | 11, todas `pendente` | especificado, não implementado |
+| [streaming-e-replay-do-log-de-observacoes](streaming-e-replay-do-log-de-observacoes/feature-card.md) | como a tela vê o histórico completo e o que acontece ao vivo, sem perder nem repetir evento    | [`ADR-0016`](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md), `Aceito`                | 6, todas `pendente`  | especificado, não implementado |
+| [distincao-entre-higiene-e-invalidacao](distincao-entre-higiene-e-invalidacao/feature-card.md)       | se um evento atrasado do broker invalida o veredito, ou é resíduo inofensivo de janela fechada | [`ADR-0012`](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md), `Aceito` | 6, todas `pendente`  | especificado, não implementado |
 
 **Nenhuma capacidade está implementada, e isso não quer dizer que não haja código.** Há
 um esqueleto executável: ele compila, empacota e sobe contra PostgreSQL, e **não tem
@@ -38,8 +39,9 @@ migrado nem apagado.
 
 ## Os cards não são um por experimento
 
-O MVP tem quatro experimentos, e a tabela acima tem cinco cards. **Dois** deles cobrem um
-**oráculo**, porque é o oráculo que define o comportamento observável, e os dois nascem do
+O MVP tem quatro experimentos, e a tabela acima tem mais cards do que isso — quantos, quem
+diz é a tabela, e este parágrafo não a reconta. **Dois** deles cobrem um **oráculo**,
+porque é o oráculo que define o comportamento observável, e os dois nascem do
 [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md):
 
 - E1 e E3 compartilham o oráculo exato do contador. O E3 varia a estratégia sobre a mesma
@@ -48,7 +50,7 @@ O MVP tem quatro experimentos, e a tabela acima tem cinco cards. **Dois** deles 
 - E5 tem um oráculo diferente — um predicado sobre um conjunto, não uma contagem. Card
   próprio, [deteccao-de-protecao-inerte](deteccao-de-protecao-inerte/feature-card.md).
 
-**Os outros três não cobrem oráculo nenhum**, e cada um tem outra origem, como a coluna
+**Os demais não cobrem oráculo nenhum**, e cada um tem outra origem, como a coluna
 `Origem` da tabela mostra.
 [observacao-passo-a-passo](observacao-passo-a-passo/feature-card.md) cobre o mecanismo de
 parar, falhar e observar entre dois passos, pelo
