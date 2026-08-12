@@ -1850,6 +1850,51 @@ medição sobre os arquivos fora do glob do workflow, continuam na linha
 Esta linha é sobre uma região **descontada de propósito** que passou a carregar
 argumento, e ela não fecha aquela.
 
+#### `E-66` fecha em o argumento desce do cabeçalho para o corpo, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12**, pela segunda das três saídas.
+
+**O desconto permanece, e é isso que a escolha preserva.** `skip_header` continua valendo,
+porque a justificativa de 2026-08-10 continua correta para o que ela descrevia: duas linhas
+de livro-razão não são argumento, e cobrá-las empurraria para encolher a prosa de um ADR
+aceito, que é o que o
+[lifecycle](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) proíbe. O que
+muda não é a régua — é o que pode morar embaixo dela.
+
+**A regra que nasce.** O cabeçalho de um ADR é **livro-razão**, e NÃO DEVE carregar
+argumento. Ele registra alteração sofrida — título, `Estado`, `Data`, `Etapa`,
+`Relacionado`, `Última atualização`, `Alterado por`. Todo texto que **sustenta** uma
+escolha, descarta uma alternativa ou explica por que uma medição não bate vive no corpo, e
+é medido. Vale daqui em diante, para todo ADR.
+
+**A terceira saída foi descartada por nomear o problema em vez de resolvê-lo**: aceitar a
+divergência deixaria a régua descrevendo mal o artefato, e nada impediria o próximo
+argumento de migrar para o mesmo lugar não medido. A primeira — medir o cabeçalho —
+derrubaria a decisão de 2026-08-10 justamente para o caso que a originou, a emenda que
+estourou por cerca de trezentas letras de livro-razão.
+
+**O custo foi aceito na letra da saída, e ele é imediato.** O corpo do ADR-0014 mede
+**11.997 contra 12.000** — três caracteres de folga. Descer o argumento do cabeçalho
+estoura o teto no mesmo ato, e a compressão que a pessoa escolheu em 2026-08-11 é pedida
+outra vez.
+
+**A aplicação retroativa ao ADR-0014 está bloqueada, e não por falta de decisão aqui.**
+Mover argumento do cabeçalho para o corpo de um ADR **aceito** altera o corpo, e nenhuma
+das seis formas do lifecycle cobre isso sem forçar: o patch conserta citação, caminho e
+erro material, e o que desceria não é nenhum dos três. É a mesma lacuna de forma que
+[`E-64`](#e-64--o-que-fazer-com-a-entrada-já-consumada-no-adr-0014) está aberta para
+resolver, e a escolha dela decide também esta aplicação. **A regra acima não depende
+disso** — ela vale para todo ADR escrito daqui em diante, e o ADR-0014 é o retroativo que
+espera.
+
+```mermaid
+flowchart TD
+  R["a regra: cabeçalho é livro-razão,<br/>argumento vive no corpo"] --> N["vale para todo<br/>ADR novo, já"]
+  R --> V["o ADR-0014 carrega<br/>7.856 caracteres de<br/>argumento no cabeçalho"]
+  V --> Q{"que forma do lifecycle<br/>autoriza descê-lo?"}
+  Q -->|" nenhuma cobre "| E["bloqueado por E-64"]
+```
+
 #### `E-67` — o transporte da emissão ao vivo foi fixado sem alternativa descartada
 
 Aberta em 2026-08-11, ao revisar o ADR-0016.
@@ -3677,6 +3722,79 @@ fechar aquela linha deixa esta intacta.
 **Nada fica bloqueado por ela.** Ela nomeia uma lacuna de verificação, e não impede
 edição nenhuma.
 
+#### `E-78` — o `esquemas.md` vira pasta, com um arquivo por serviço
+
+Aberta e escolhida pela pessoa em 2026-08-12, ao decidir o teto que ele estourou.
+
+**O problema.** [`esquemas.md`](../architecture/esquemas.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam)
+mede **5.302 caracteres de prosa contra o teto próprio de 5.000** que ele ganhou em
+`b7deb0c`, medido por
+[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py).
+Três saídas foram oferecidas — subir o teto, comprimir os 302, dividir em dois arquivos —,
+e a pessoa escolheu uma quarta: **uma pasta, com um arquivo de schema por serviço**,
+referenciado onde for necessário e indexado.
+
+**Esta escolha reverte uma decisão da própria pessoa, de 2026-08-11.** O comentário das
+linhas 56 a 58 de
+[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py)
+— citado por linha porque o alvo é comentário de código, e não tem título que o alcance —
+registra o contrário: "A divisão do par NÃO é a saída quando um deles estourar: separar
+`esquemas.md` em dois arquivos quebraria o 'dono único da forma', que é a decisão
+inteira." A reversão é deliberada, e o comentário é reescrito no mesmo commit deste fecho.
+**Sem isso o repositório afirmaria as duas coisas.**
+
+**Por que a objeção de 2026-08-11 deixa de valer no desenho novo.** Ela era contra dividir
+em **dois arquivos irmãos**, e nesse desenho ela está certa: a fronteira entre os dois
+schemas — a ausência de linha, que é a decisão do
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) —
+não pertence a nenhum dos dois lados, e ficaria sem dono ou duplicada. O desenho escolhido
+tem um terceiro lugar: **o dono único deixa de ser o arquivo e passa a ser a pasta**, e o
+`README.md` dela é o único ponto de onde a fronteira pode ser afirmada sem pertencer a um
+dos lados. O que `E-55` decidiu — que existe um dono único da forma das tabelas — continua
+valendo, e muda de granularidade.
+
+```mermaid
+flowchart TD
+  P["docs/architecture/schemas/"] --> R["README.md<br/>índice, fronteira e o<br/>porquê da forma viver aqui"]
+  P --> S["sut.md<br/>o schema do sistema medido"]
+  P --> L["lab-plane.md<br/>o schema do instrumento"]
+  R -.->|" a ausência de linha<br/>entre os dois "| S
+  R -.-> L
+  J["lab_journal"] -.->|" sem arquivo enquanto<br/>E-57 não fechar "| P
+```
+
+**O `lab_journal` não ganha arquivo agora.** A forma dele não tem dono enquanto
+[`E-57`](#e-57--a-definição-de-experimento-tem-dois-donos-declarados) não fechar, e criar
+um arquivo vazio afirmaria que existe forma decidida a documentar — que é o erro que o
+repositório já pagou uma vez com diretório de contrato vazio.
+
+**O custo é medido, e não estimado: 28 citações em 5 headings.** A
+[consulta reversa](../AGENTS.md#antes-de-reduzir-um-documento) rodada em 2026-08-12
+devolveu:
+
+| Heading                                       | Citações | Onde estão as que exigem cerimônia          |
+|-----------------------------------------------|----------|----------------------------------------------|
+| `#o-schema-do-sistema-medido-sut`             | 16       | ADR-0002 (1) e ADR-0015 (2), ambos aceitos  |
+| `#o-que-o-diagrama-do-sut-não-desenha`        | 7        | ADR-0015 (4), aceito                        |
+| `#o-schema-do-instrumento-lab_plane`          | 2        | nenhuma                                     |
+| `#os-dois-esquemas-e-a-fronteira-...`         | 2        | nenhuma                                     |
+| `#por-que-a-forma-vive-aqui-...`              | 1        | nenhuma                                     |
+
+**Sete delas vivem em dois ADRs aceitos**, e saem por **patch**, com a linha em
+`## Patches aplicados` de cada arquivo no mesmo commit — é a mesma cerimônia que `c6c44d9`
+já aplicou a nove citações ao ADR-0002. As vinte e uma restantes estão em arquivos
+livremente editáveis. **Nenhuma lápide é deixada**: o arquivo não sobrevive como
+redirecionador, porque um dono único que aponta para o dono real é o segundo lugar onde a
+forma vive, que é o defeito que `E-55` fechou.
+
+**O teto deixa de ser a pergunta.** Cada arquivo da pasta cai na classe que o fecho do
+[orçamento de prosa](#o-orçamento-fecha-em-teto-por-classe-alcance-em-docs-e-triagem-caso-a-caso-escolhida-em-2026-08-12)
+governa, e nenhum deles herda os 5.000 de um arquivo que deixou de existir.
+
+**Uma consequência mecânica, e ela não custa decisão:**
+[`check_schema_sync.py`](../../scripts/check_schema_sync.py) lê os `erDiagram` de
+`esquemas.md` por caminho fixo, e passa a ler os da pasta. A baseline dele acompanha.
+
 ## A saída, decidida em 2026-08-06
 
 **A dívida de ADR que enunciou esta linha saiu da fila em 2026-08-10**, por não ser
@@ -3836,7 +3954,8 @@ decide qual rito vale e, se for a terceira, o que exatamente o script consegue a
 
 ## O orçamento de prosa: quem é dono do teto, e o que ele alcança
 
-**Aberta.** Ela é a segunda das quatro perguntas do plano de navegação documental, que
+**Fechada em 2026-08-12**, no [fecho abaixo](#o-orçamento-fecha-em-teto-por-classe-alcance-em-docs-e-triagem-caso-a-caso-escolhida-em-2026-08-12).
+Ela é a segunda das quatro perguntas do plano de navegação documental, que
 nasceu em `4d15bd6` e foi removido da árvore em `4f04246` — o texto original é recuperável
 por `git show 4d15bd6:docs/audits/2026-08-07-navegacao-documental-para-agentes.md`. A
 primeira daquelas perguntas fechou no [`AGENTS.md`](../../AGENTS.md#como-o-planejamento-funciona-aqui),
@@ -3928,7 +4047,8 @@ descartado aqui, pelo mesmo argumento.
 
 **A escolha alcança só o ADR-0014, e não a linha inteira.** O regime geral — quem é dono
 do teto no caso geral, e o alcance da medição sobre os sete arquivos registrados acima —
-segue sem decisão, e por isso esta seção continua **Aberta**.
+seguia sem decisão quando este parágrafo foi escrito, e fechou em 2026-08-12, no
+[fecho abaixo](#o-orçamento-fecha-em-teto-por-classe-alcance-em-docs-e-triagem-caso-a-caso-escolhida-em-2026-08-12).
 
 **Duas coisas distintas estão fundidas.** Um teto que descreve mal o artefato é defeito de
 regra; um teto que ninguém executa é defeito de alcance. A isenção de `AGENTS.md` e
@@ -3964,6 +4084,65 @@ flowchart TD
 no script e o [processo](../specification-process.md#feature-card--o-padrão) o cita —,
 quais caminhos a medição alcança no CI, e como uma isenção nasce. Decidir só a primeira
 deixa os seis arquivos acima exatamente como estão.
+
+### O orçamento fecha em teto por classe, alcance em `docs/` e triagem caso a caso, escolhida em 2026-08-12
+
+**Escolhido pela pessoa em 2026-08-12.** A seção acima registrava que a linha decide
+**três coisas, e não uma**; as três foram decididas no mesmo ato, e é por isso que este
+fecho não é de uma alternativa só.
+
+| O que a linha perguntava        | O que foi escolhido                                                             |
+|---------------------------------|---------------------------------------------------------------------------------|
+| quem é dono do número           | o script continua dono, e passa a declarar **classe de artefato**, e não caminho |
+| o que a medição alcança no CI   | todo `.md` sob `docs/`, e não todo Markdown versionado                          |
+| como uma isenção nasce          | pela classe, e nunca mais uma a uma                                             |
+
+**A classe substitui a isenção avulsa.** A terceira alternativa da tabela acima — "medir
+tudo sem falhar" — foi descartada pelo custo que ela mesma declarava, e a primeira —
+"isenção declarada, uma a uma" — foi descartada porque é exatamente o regime cujo defeito
+esta linha nomeia: o critério fica implícito na soma das justificativas. O que decidiu a
+escolha foi um fato do próprio script, e não um argumento novo: ele **já classifica por
+caminho** desde 2026-08-07, entre `LIMITS_BY_PATH` e `EXEMPT_BY_PATH`, e cada entrada
+carrega a justificativa de uma classe que nunca foi nomeada. Nomear as classes torna
+explícito o critério que já estava sendo aplicado caso a caso.
+
+**O alcance para em `docs/`, e o custo disso está nomeado.** A pessoa escolheu `docs/`
+contra "todo Markdown versionado", e a consequência é que
+[`.claude/skills/adr/references/adr-lifecycle.md`](../../.claude/skills/adr/references/adr-lifecycle.md)
+— 5.887 caracteres contra o genérico de 4.000, registrado acima — **continua sem
+medição**. Ele é instrução de skill, não artefato de planejamento, e o repositório já
+declara que a lista de skills é recurso efêmero do ambiente, em
+[`AGENTS.md`](../../AGENTS.md#como-o-planejamento-funciona-aqui). O custo aceito é que um
+arquivo que guia a escrita de ADR cresce sem teto; ele não é snapshot, e por isso fica
+escrito aqui.
+
+**Estender o glob NÃO reprova ninguém por consequência automática.** Foi a condição que a
+pessoa pôs, na letra: os `.md` que já ultrapassaram o teto "devem ser avaliados caso a
+caso". Um arquivo que hoje excede entra numa **triagem**, e a triagem decide a classe
+dele — teto próprio, isenção nomeada ou compressão. Enquanto a triagem não passar por um
+arquivo, ele não reprova o job. Isso é o oposto de conceder isenção em massa: a extensão
+do alcance é o que **produz** a lista a triar, e nenhum arquivo sai dela sem decisão
+escrita.
+
+```mermaid
+flowchart TD
+  G["o glob passa a alcançar<br/>todo .md sob docs/"] --> L["a lista dos que excedem"]
+  L --> T{"triagem, um a um"}
+  T -->|" a classe tem teto "| A["teto da classe"]
+  T -->|" a classe é isenta "| B["isenção da classe,<br/>com o motivo escrito"]
+  T -->|" nenhuma das duas "| C["comprimir, ou<br/>decidir a classe nova"]
+  T -.->|" enquanto não passar "| D["não reprova o job"]
+```
+
+**O que este fecho NÃO decide: a classe de cada arquivo.** Os sete registrados acima
+continuam sem classificação, e a triagem de cada um é trabalho, não decisão tomada. O que
+está decidido é o regime que a governa.
+
+**Duas linhas abertas continuam abertas, e este fecho não as alcança.**
+[`E-66`](#e-66--o-cabeçalho-descontado-do-adr-virou-o-lugar-do-argumento) é sobre uma
+região descontada **de propósito** dentro de um artefato já medido, e não sobre alcance.
+[`E-78`](#e-78--o-esquemasmd-vira-pasta-com-um-arquivo-por-serviço) é o caso concreto de
+um arquivo cujo teto próprio estourou, e a saída escolhida ali não foi teto nenhum.
 
 ## O que apura a âncora citada antes de uma redução
 
