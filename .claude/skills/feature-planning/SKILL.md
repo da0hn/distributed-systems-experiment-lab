@@ -209,7 +209,7 @@ Não repita em Markdown o que o contrato formal já define.
 
 ### Esquema de banco
 
-Documente a forma das tabelas em docs/architecture/esquemas.md. Não a documente
+Documente a forma das tabelas em docs/architecture/schemas/. Não a documente
 no feature card, que descreve comportamento externo, nem no ADR, cujo corpo só
 muda por emenda, adendo ou patch — o esquema muda antes disso.
 

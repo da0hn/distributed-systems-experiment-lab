@@ -1386,7 +1386,7 @@ flowchart TD
   decidiu.
 
 **O que isto desbloqueia.** A forma da tabela de execuções ativas em
-[`esquemas.md`](../architecture/esquemas.md#o-schema-do-instrumento-lab_plane) deixa de
+[`schemas/lab-plane.md`](../architecture/schemas/lab-plane.md#o-schema-do-instrumento-lab_plane) deixa de
 depender desta linha: ela precisa de coluna que sustente os três caminhos. Quais colunas,
 e o nome delas, continua com `E-35`.
 
@@ -3286,9 +3286,9 @@ ADR-0015 carrega o mesmo registro no cabeçalho, no campo `Divergência de artef
 dois artefatos, e **o esquema deixa de ser documentado por DDL**: ele vira **diagrama ER**,
 e nenhum documento vigente carrega bloco SQL. A exceção é o diretório
 `docs/adr/arquivo/` inteiro, que não é vigente, e ela está nomeada em
-[`esquemas.md`](../architecture/esquemas.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam).
+[`schemas/`](../architecture/schemas/README.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam).
 
-| Fica no [ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão) | Vai para [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut) |
+| Fica no [ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão) | Vai para [`schemas/sut.md`](../architecture/schemas/sut.md#o-schema-do-sistema-medido-sut) |
 |-----------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
 | a ausência de chave estrangeira, com a `Pergunta em aberto` de `E-9`                          | a chave primária composta e a ordem das colunas                                      |
 | a proibição de uma estratégia ler `updated_at`                                                | o índice aditivo `(partition_id, resource_id)`                                       |
@@ -3345,7 +3345,7 @@ continua aberta, e não é tocada por este fecho.
 #### `E-56` — o tipo SQL de `value`, `capacity` e `amount` nunca foi decidido
 
 Aberta em 2026-08-11, achada ao redigir
-[`esquemas.md`](../architecture/esquemas.md#o-que-o-diagrama-do-sut-não-desenha).
+[`schemas/sut.md`](../architecture/schemas/sut.md#o-que-o-diagrama-do-sut-não-desenha).
 
 **O problema.** O rascunho do ADR-0015 trazia um bloco DDL que declarava `bigint` nas três
 colunas, e **linha nenhuma desta fila decidiu isso**.
@@ -3486,12 +3486,12 @@ decisoes E-8 a E-13"
 duas frases deixaram de descrever o estado:
 
 - **do lado medido**, a forma passou a ter dono em
-  [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut), e o que
+  [`schemas/sut.md`](../architecture/schemas/sut.md#o-schema-do-sistema-medido-sut), e o que
   falta é a migração, não a decisão. O mesmo texto, em prosa, foi corrigido neste commit
   em [`contracts/README.md`](../contracts/README.md#o-ddl-de-um-serviço-não-é-contrato) —
   o comentário ficou para trás;
 - **do lado do instrumento**, `E-35` decidiu que uma tabela entra ali, e
-  [`esquemas.md`](../architecture/esquemas.md#o-schema-do-instrumento-lab_plane) a desenha
+  [`schemas/lab-plane.md`](../architecture/schemas/lab-plane.md#o-schema-do-instrumento-lab_plane) a desenha
   com evidência em `E-35` e `E-50`, e não em `E-8` a `E-13`. Como aquele arquivo nasce
   dono único da forma, o repositório passa a afirmar as duas coisas.
 
@@ -3520,7 +3520,7 @@ alternativa abaixo nomeia os citantes que ela quebra.
   alvo apaga a história que ele existe para guardar. E o custo não para nele: as duas
   reproduções do parágrafo acima quebram junto, e entram no mesmo commit. **E há um
   citante a mais, criado por este próprio commit:**
-  [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut) cita aquele
+  [`schemas/sut.md`](../architecture/schemas/sut.md#o-schema-do-sistema-medido-sut) cita aquele
   comentário **por linha** — `V1__criar_schema_do_sut.sql:5-7` —, e reescrevê-lo desloca
   ou apaga as linhas citadas sem que verificador nenhum acuse.
 - **B — reescrever só o comentário do lado medido**, deixando o do instrumento intacto.
@@ -3531,7 +3531,7 @@ alternativa abaixo nomeia os citantes que ela quebra.
   registra. E deixa os dois lados divergentes: quem ler o outro não terá como saber se a
   frase está viva ou defasada. **O citante novo pesa mais nesta alternativa que na A**,
   porque é exatamente o lado medido que
-  [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut) cita por
+  [`schemas/sut.md`](../architecture/schemas/sut.md#o-schema-do-sistema-medido-sut) cita por
   linha, em `V1__criar_schema_do_sut.sql:5-7`: B reescreve o único comentário que ganhou
   citante neste commit.
 - **C — esperar `E-62` fechar** e tratar os dois pela forma que ela escolher. **Objeção:**
@@ -3565,7 +3565,7 @@ divergência deliberada, no mesmo padrão de `citations-baseline.txt`.
 **O que falta.** O script não existe ainda, e nenhum `V2__*.sql` existe para comparar
 contra `esquemas.md`. O mecanismo comparado é só **nome de tabela** — nada aqui autoriza
 estender o escopo para coluna, tipo ou índice sem decisão nova.
-[`esquemas.md`](../architecture/esquemas.md#por-que-a-forma-vive-aqui-e-não-dentro-do-adr-0015)
+[`schemas/`](../architecture/schemas/README.md#por-que-a-forma-vive-aqui-e-não-dentro-do-adr-0015)
 aponta para este fecho.
 
 #### `E-68` — duas citações por linha ao ADR-0002 são editáveis, e ninguém decidiu o alvo
@@ -4345,75 +4345,45 @@ que uma skill cite deve conferir `.claude/**` à mão.
 #### `E-78` — o `esquemas.md` vira pasta, com um arquivo por serviço
 
 Aberta e escolhida pela pessoa em 2026-08-12, ao decidir o teto que ele estourou.
+**Executada em 2026-08-12**, no commit que criou
+[`docs/architecture/schemas/`](../architecture/schemas/README.md).
 
-**O problema.** [`esquemas.md`](../architecture/esquemas.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam)
-mede **5.302 caracteres de prosa contra o teto próprio de 5.000** que ele ganhou em
-`b7deb0c`, medido por
-[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py).
-Três saídas foram oferecidas — subir o teto, comprimir os 302, dividir em dois arquivos —,
-e a pessoa escolheu uma quarta: **uma pasta, com um arquivo de schema por serviço**,
-referenciado onde for necessário e indexado.
+**A escolha.** `esquemas.md` media 5.302 caracteres de prosa contra o teto próprio de
+5.000 que ele ganhou em `b7deb0c`. Três saídas foram oferecidas — subir o teto, comprimir
+os 302, dividir em dois arquivos —, e a pessoa escolheu uma quarta: **uma pasta, com um
+arquivo de schema por serviço**, referenciado onde for necessário e indexado. O desenho
+executado, e de que cada arquivo é dono, vivem no
+[`README.md` da pasta](../architecture/schemas/README.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam),
+que é quem os hospeda hoje — inclusive a razão de o `lab_journal` não ganhar arquivo
+enquanto [`E-57`](#e-57--a-definição-de-experimento-tem-dois-donos-declarados) não fechar.
 
-**Esta escolha reverte uma decisão da própria pessoa, de 2026-08-11.** O comentário das
-linhas 56 a 58 de
-[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py)
-— citado por linha porque o alvo é comentário de código, e não tem título que o alcance —
-registra o contrário: "A divisão do par NÃO é a saída quando um deles estourar: separar
-`esquemas.md` em dois arquivos quebraria o 'dono único da forma', que é a decisão
-inteira." A reversão é deliberada, e o comentário é reescrito no mesmo commit deste fecho.
-**Sem isso o repositório afirmaria as duas coisas.**
-
-**Por que a objeção de 2026-08-11 deixa de valer no desenho novo.** Ela era contra dividir
-em **dois arquivos irmãos**, e nesse desenho ela está certa: a fronteira entre os dois
-schemas — a ausência de linha, que é a decisão do
-[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) —
-não pertence a nenhum dos dois lados, e ficaria sem dono ou duplicada. O desenho escolhido
-tem um terceiro lugar: **o dono único deixa de ser o arquivo e passa a ser a pasta**, e o
+**Esta escolha reverte uma decisão da própria pessoa, de 2026-08-11, e a reversão é
+deliberada.** Aquela era contra dividir em **dois arquivos irmãos**, e nesse desenho ela
+está certa: a fronteira entre os dois schemas — a ausência de linha, que é a decisão do
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) — não
+pertence a nenhum dos dois lados, e ficaria sem dono ou duplicada. O desenho escolhido tem
+um terceiro lugar: **o dono único deixa de ser o arquivo e passa a ser a pasta**, e o
 `README.md` dela é o único ponto de onde a fronteira pode ser afirmada sem pertencer a um
-dos lados. O que `E-55` decidiu — que existe um dono único da forma das tabelas — continua
-valendo, e muda de granularidade.
+dos lados. O que `E-55` decidiu — que existe um dono único da forma das tabelas —
+continua valendo, e muda de granularidade.
 
-```mermaid
-flowchart TD
-  P["docs/architecture/schemas/"] --> R["README.md<br/>índice, fronteira e o<br/>porquê da forma viver aqui"]
-  P --> S["sut.md<br/>o schema do sistema medido"]
-  P --> L["lab-plane.md<br/>o schema do instrumento"]
-  R -.->|" a ausência de linha<br/>entre os dois "| S
-  R -.-> L
-  J["lab_journal"] -.->|" sem arquivo enquanto<br/>E-57 não fechar "| P
-```
-
-**O `lab_journal` não ganha arquivo agora.** A forma dele não tem dono enquanto
-[`E-57`](#e-57--a-definição-de-experimento-tem-dois-donos-declarados) não fechar, e criar
-um arquivo vazio afirmaria que existe forma decidida a documentar — que é o erro que o
-repositório já pagou uma vez com diretório de contrato vazio.
-
-**O custo é medido, e não estimado: 28 citações em 5 headings.** A
-[consulta reversa](../AGENTS.md#antes-de-reduzir-um-documento) rodada em 2026-08-12
-devolveu:
-
-| Heading                                       | Citações | Onde estão as que exigem cerimônia          |
-|-----------------------------------------------|----------|----------------------------------------------|
-| `#o-schema-do-sistema-medido-sut`             | 16       | ADR-0002 (1) e ADR-0015 (2), ambos aceitos  |
-| `#o-que-o-diagrama-do-sut-não-desenha`        | 7        | ADR-0015 (4), aceito                        |
-| `#o-schema-do-instrumento-lab_plane`          | 2        | nenhuma                                     |
-| `#os-dois-esquemas-e-a-fronteira-...`         | 2        | nenhuma                                     |
-| `#por-que-a-forma-vive-aqui-...`              | 1        | nenhuma                                     |
-
-**Sete delas vivem em dois ADRs aceitos**, e saem por **patch**, com a linha em
-`## Patches aplicados` de cada arquivo no mesmo commit — é a mesma cerimônia que `c6c44d9`
-já aplicou a nove citações ao ADR-0002. As vinte e uma restantes estão em arquivos
-livremente editáveis. **Nenhuma lápide é deixada**: o arquivo não sobrevive como
-redirecionador, porque um dono único que aponta para o dono real é o segundo lugar onde a
-forma vive, que é o defeito que `E-55` fechou.
-
-**O teto deixa de ser a pergunta.** Cada arquivo da pasta cai na classe que o fecho do
+**O comentário que afirmava o contrário já não existia na hora da execução.** Ele vivia em
+`check_artifact_limits.py` e dizia que separar `esquemas.md` em dois arquivos quebraria o
+dono único da forma; o fecho do
 [orçamento de prosa](#o-orçamento-fecha-em-teto-por-classe-alcance-em-docs-e-triagem-caso-a-caso-escolhida-em-2026-08-12)
-governa, e nenhum deles herda os 5.000 de um arquivo que deixou de existir.
+já o havia removido junto do teto por caminho, e nada precisou ser reescrito lá. **O teto
+deixou de ser a pergunta pelo mesmo motivo**: cada arquivo da pasta caiu na classe que
+aquele fecho governa, e nenhum herdou os 5.000 de um arquivo que deixou de existir.
 
-**Uma consequência mecânica, e ela não custa decisão:**
-[`check_schema_sync.py`](../../scripts/check_schema_sync.py) lê os `erDiagram` de
-`esquemas.md` por caminho fixo, e passa a ler os da pasta. A baseline dele acompanha.
+**Nenhuma lápide foi deixada**, e essa parte é regra e não relato: o arquivo não sobrevive
+como redirecionador, porque um dono único que aponta para o dono real é o segundo lugar
+onde a forma vive, que é o defeito que `E-55` fechou. As **30** citações que a consulta
+reversa mediu foram reapontadas na execução, e as **sete** que viviam em ADRs aceitos
+saíram por **patch**, com a linha em `## Patches aplicados` do
+[ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md#patches-aplicados) e do
+[ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#patches-aplicados).
+As menções em prosa dentro de fechos datados **não** foram reescritas: elas narram o que
+se fez quando o arquivo existia com aquele nome.
 
 ## A saída, decidida em 2026-08-06
 

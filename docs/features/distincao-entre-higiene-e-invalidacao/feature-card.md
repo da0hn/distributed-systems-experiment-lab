@@ -91,7 +91,7 @@ O transporte do
 serviço, e DDL NÃO É contrato
 ([specification-process.md, Contratos](../../specification-process.md#contratos--só-o-que-existe)):
 a forma dela vai para
-[`esquemas.md`](../../architecture/esquemas.md#o-schema-do-instrumento-lab_plane) quando a
+[`schemas/lab-plane.md`](../../architecture/schemas/lab-plane.md#o-schema-do-instrumento-lab_plane) quando a
 pendência fechar, nunca neste card. Nenhum contrato OpenAPI ou AsyncAPI nasce daqui.
 
 ## Riscos e decisões pendentes

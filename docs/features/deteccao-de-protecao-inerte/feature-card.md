@@ -62,7 +62,7 @@ O diagrama de por que travar a linha do recurso não ajudaria está no
 `allocate` emite `SELECT sum` e `INSERT` contra `allocation` — domínio do sistema medido,
 sem mudança. **O oráculo não emite `SELECT`**: o schema do `system-under-test` é
 inacessível ao Lab Plane, sem `GRANT` cruzado; quem o substitui é o WAL, por `R3`. A forma
-vive em [`esquemas.md`](../../architecture/esquemas.md#o-schema-do-sistema-medido-sut), e
+vive em [`schemas/sut.md`](../../architecture/schemas/sut.md#o-schema-do-sistema-medido-sut), e
 `Q-INT-5` ([`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto))
 deixa aberto só onde a órfã é verificada.
 

@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Compara nome de tabela entre os `erDiagram` e as migrações Flyway.
 
-`docs/architecture/esquemas.md` é o dono único da forma das tabelas, por
-decisão de 2026-08-11 registrada no ADR-0015. Ser dono da forma cria uma
-divergência possível: o desenho e o `CREATE TABLE` são dois lugares, e nada
-impede que um mude sem o outro. Este verificador fecha isso pelo único eixo
-que uma máquina consegue conferir sem interpretar — o **nome da tabela**.
+A pasta `docs/architecture/schemas/` é a dona única da forma das tabelas,
+por decisão de 2026-08-11 registrada no ADR-0015, com a granularidade que
+o fecho de `E-78` mudou em 2026-08-12 — de um arquivo para um diretório.
+
+Ser dono da forma cria uma divergência possível: o desenho e o `CREATE TABLE`
+são dois lugares, e nada impede que um mude sem o outro. Este verificador
+fecha isso pelo único eixo que uma máquina consegue conferir sem interpretar
+— o **nome da tabela**.
 
 Ele NÃO compara coluna, tipo, chave nem índice. `erDiagram` não expressa
 índice, e o diagrama anota por comentário o que não tem sintaxe para dizer;
@@ -15,8 +18,10 @@ A associação entre um diagrama e o serviço dele é descoberta, e não
 declarada: o heading que abre cada diagrama nomeia o schema entre crases, e o
 schema aparece nas migrações em `SCHEMA <nome>` ou em `CREATE TABLE
 <schema>.<tabela>`. Uma tabela de-para neste arquivo seria um terceiro lugar
-onde a topologia vive, que é exatamente o defeito que o `esquemas.md` existe
-para não ter.
+onde a topologia vive, que é exatamente o defeito que a pasta existe para não
+ter. Por isso o nome do arquivo dentro dela também não é declarado aqui: todo
+`.md` da pasta é lido, e quem não tiver `erDiagram` sob heading com schema
+simplesmente não contribui.
 
 A baseline carrega divergência **deliberada**, e cada bloco dela nomeia a
 decisão que a autorizou. Uma entrada que deixou de corresponder a divergência
@@ -32,9 +37,11 @@ import sys
 from pathlib import Path
 from typing import NamedTuple
 
-# `## O schema do sistema medido, `sut`` — o nome do schema vem entre crases,
-# e é o último do heading porque o texto antes dele é prosa.
-HEADING_WITH_SCHEMA = re.compile(r"^##\s+.*`([a-z_][a-z0-9_]*)`\s*$")
+# `# O schema do sistema medido, `sut`` — o nome do schema vem entre crases,
+# e é o último do heading porque o texto antes dele é prosa. O nível varia:
+# era `##` quando os dois schemas dividiam um arquivo, e virou `#` quando cada
+# um ganhou o seu, pelo fecho de `E-78`.
+HEADING_WITH_SCHEMA = re.compile(r"^#{1,3}\s+.*`([a-z_][a-z0-9_]*)`\s*$")
 FENCE_OPEN = re.compile(r"^\s*(```|~~~)\s*mermaid\s*$")
 FENCE_CLOSE = re.compile(r"^\s*(```|~~~)\s*$")
 ER_DIAGRAM = re.compile(r"^\s*erDiagram\s*$")
@@ -59,13 +66,28 @@ class Divergence(NamedTuple):
     reason: str
 
 
+def sources(source: Path) -> list[Path]:
+    """Os arquivos a ler: os `.md` da pasta, ou o próprio arquivo dado."""
+    if source.is_dir():
+        return sorted(source.glob("*.md"))
+    return [source]
+
+
 def diagrams(source: Path) -> dict[str, set[str]]:
     """Devolve, por schema, o conjunto de entidades desenhadas.
 
-    O schema vem do heading `##` mais recente; um bloco mermaid que não tenha
-    heading com crase acima dele é ignorado, porque não há a quem compará-lo.
+    O schema vem do heading mais recente que termine em nome entre crases; um
+    bloco mermaid sem heading assim acima dele é ignorado, porque não há a quem
+    compará-lo. Um mesmo schema desenhado em dois arquivos da pasta soma as
+    entidades dos dois, e não reclama: a pasta é a dona, e não cada arquivo.
     """
     found: dict[str, set[str]] = {}
+    for arquivo in sources(source):
+        _le(arquivo, found)
+    return found
+
+
+def _le(source: Path, found: dict[str, set[str]]) -> None:
     schema: str | None = None
     inside = is_er = False
     depth = 0
@@ -103,7 +125,6 @@ def diagrams(source: Path) -> dict[str, set[str]]:
         bare = ENTITY_BARE.match(raw)
         if bare:
             found[schema].add(bare.group(1))
-    return found
 
 
 def migrations(root: Path) -> tuple[dict[str, set[str]], dict[str, set[Path]]]:
@@ -169,7 +190,7 @@ def compare(
             out.append(Divergence(
                 f"só-na-migração:{schema}.{table}",
                 f"criada pela migração, e o schema `{schema}` não tem diagrama "
-                f"em `esquemas.md`",
+                f"em `docs/architecture/schemas/`",
             ))
     return out
 
@@ -177,14 +198,14 @@ def compare(
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Compara nome de tabela entre os `erDiagram` de "
-                    "`esquemas.md` e as migrações Flyway.",
+                    "`docs/architecture/schemas/` e as migrações Flyway.",
     )
     parser.add_argument("--root", default=".", type=Path)
     parser.add_argument(
         "--source",
         type=Path,
-        help="o dono da forma. Por omissão, `docs/architecture/esquemas.md` "
-             "sob a raiz.",
+        help="o dono da forma: a pasta, ou um arquivo dela. Por omissão, "
+             "`docs/architecture/schemas/` sob a raiz.",
     )
     parser.add_argument(
         "--baseline",
@@ -195,8 +216,8 @@ def main() -> int:
     args = parser.parse_args()
 
     root = args.root.resolve()
-    source = args.source or root / "docs" / "architecture" / "esquemas.md"
-    if not source.is_file():
+    source = args.source or root / "docs" / "architecture" / "schemas"
+    if not (source.is_dir() or source.is_file()):
         print(f"fonte inexistente: {source}", file=sys.stderr)
         return 2
 

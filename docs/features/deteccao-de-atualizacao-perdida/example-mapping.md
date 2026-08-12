@@ -111,7 +111,7 @@ commit separado da sessão principal.
 aplicação pelo adaptador de relógio, e **a escrita que esquecer uma delas falha alto** em
 vez de gravar um instante plausível e errado. A **forma** das duas colunas não é descrita
 aqui — ela vive em
-[`esquemas.md`](../../architecture/esquemas.md#o-que-o-diagrama-do-sut-não-desenha).
+[`schemas/sut.md`](../../architecture/schemas/sut.md#o-que-o-diagrama-do-sut-não-desenha).
 
 **A transcrição abaixo é fiel ao corpo de `E-25`**, e não uma paráfrase — é o texto que
 sustenta R19, aprovado por pessoa em 2026-08-06:

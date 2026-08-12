@@ -75,7 +75,7 @@ dela é o próprio teste. A entrega (`E-1` a `E-7`, `E-21`, `E-31`) fica de fora
 o cita, e o corpo de um ADR aceito só muda por patch.
 
 A subseção `### A decisão` era retrato de 2026-08-06 e já apontava para
-[`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut), dono único da
+[`schemas/sut.md`](../architecture/schemas/sut.md#o-schema-do-sistema-medido-sut), dono único da
 forma das tabelas desde o fecho de
 [`E-55`](fila-de-decisoes.md#e-55-fecha-na-divisão-entre-o-adr-e-um-documento-de-arquitetura-escolhida-em-2026-08-11);
 `### O DDL que a decisão produz` já fora apagada pelo commit do próprio ADR-0015. O que o

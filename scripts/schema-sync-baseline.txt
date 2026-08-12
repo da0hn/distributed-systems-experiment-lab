@@ -15,7 +15,7 @@
 # diz isso na linha 4. Nenhum `CREATE TABLE` foi autorizado até agora.
 #
 # O desenho vem ANTES do DDL de propósito, e não por atraso: a forma foi
-# decidida no ADR-0015, e o `esquemas.md` é o dono único dela desde
+# decidida no ADR-0015, e a pasta `schemas/` é a dona única dela desde
 # 2026-08-11. Escrever a migração agora fixaria em SQL o que ainda espera
 # decisão de concorrência — inclusive a coluna `version`, que continua
 # proibida no esquema pela regra pedagógica, e que só entra junto da

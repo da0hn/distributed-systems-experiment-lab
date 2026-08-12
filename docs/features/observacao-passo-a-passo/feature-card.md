@@ -81,9 +81,9 @@ O critério de igualdade entre dois traços foi fixado depois, pelo
 ## Integrações e contratos afetados
 
 Um passo emite SQL real contra o PostgreSQL, numa transação real. **Não há contrato
-formalizado**, e `esquemas.md` não é um — ele é dono da forma, e diz isso de si mesmo. A
+formalizado**, e `schemas/` não é um — ela é dona da forma, e diz isso de si mesma. A
 forma de `resource` e `allocation` vive
-[lá](../../architecture/esquemas.md#o-schema-do-sistema-medido-sut), e a migração que a
+[lá](../../architecture/schemas/sut.md#o-schema-do-sistema-medido-sut), e a migração que a
 aplica ainda não foi escrita — ver `Q-INT-5` em
 [`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto).
 

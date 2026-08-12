@@ -99,7 +99,7 @@ tem donos, e nenhum deles é este diretório:
   [0002](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão) e
   [0015](../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão):
   duas entidades sem `version`, mais o discriminador e as colunas de tempo. A **forma** é
-  de [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut), em
+  de [`schemas/sut.md`](../architecture/schemas/sut.md#o-schema-do-sistema-medido-sut), em
   diagrama ER, e **nenhum documento vigente carrega DDL**.
 - **O esquema executável** são as migrações Flyway de cada serviço. Hoje existe uma por
   serviço, e **nenhuma cria tabela**: `V1__criar_schema_do_lab_plane.sql`,

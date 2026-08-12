@@ -20,24 +20,24 @@ pasta estão no [`AGENTS.md` daqui](AGENTS.md).
 Uma consulta alcança o documento dono em no máximo dois saltos: esta tabela, e o índice
 que ela nomeia. A terceira coluna diz o que aquele documento **não** prova.
 
-| Você procura por                      | Documento dono                                                                                  | Limite da inferência                                           |
-|---------------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
-| o que existe e executa                | a árvore versionada, `pom.xml`, `compose.yaml`, `frontend/package.json` e os testes             | configuração prova presença, e não funcionamento               |
-| o estado de uma fronteira de processo | [matriz de integrações](architecture/integrations.md#matriz)                                    | abra a evidência primária citada antes de concluir             |
-| a forma de tabela dos dois schemas    | [esquemas.md](architecture/esquemas.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam)  | não cobre `lab_journal`; forma decidida não é migração escrita |
-| a decisão arquitetural vigente        | [índice de ADRs](adr/README.md#índice)                                                          | plano e auditoria não substituem decisão aceita                |
-| a decisão ainda aberta                | [fila de decisões](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira)                           | não feche a lacuna por inferência                              |
-| o comportamento de uma capacidade     | [índice de capacidades](features/README.md#índice)                                              | regra `pendente` não é comportamento aprovado                  |
-| se algo merece ADR                    | [critérios do índice](adr/README.md#uma-decisão-merece-adr-quando)                              | o artefato é escolhido depois da decisão, nunca antes          |
-| como alterar um ADR aceito            | [revogação da imutabilidade](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) | nenhuma forma além das listadas lá é permitida                 |
-| como citar a série antiga             | [duas séries](adr/README.md#duas-séries-e-como-citá-las)                                        | sem o prefixo `arquivo/` a referência é ambígua                |
-| processo, artefato e aprovação        | [processo de especificação](specification-process.md#a-decisão-vem-antes-do-artefato)           | skill não altera o lifecycle                                   |
-| o vocabulário vigente                 | [glossário de domínio](CONTEXT.md#linguagem)                                                    | termo em disputa não é vocabulário vigente                     |
-| uma questão encaminhada               | [índice de questões](questions/README.md#índice)                                                | `Q-INT-*` tem outro dono, e é a matriz                         |
-| uma pergunta de integração            | [perguntas da matriz](architecture/integrations.md#perguntas-em-aberto)                         | ela **NÃO DEVE** entrar no índice de questões                  |
-| um contrato formal entre processos    | [contratos](contracts/README.md#estado-nenhum-contrato-existe)                                  | um contrato nasce com a interface, nunca antes dela            |
-| taxonomia, pedagogia e roadmap        | [plano do laboratório](plano-do-laboratorio.md#3-taxonomia-refinada)                            | o plano não decide nada; ele define o que precisa ser decidido |
-| o limite de tamanho de um artefato    | `.claude/skills/feature-planning/scripts/check_artifact_limits.py`                              | nenhum número citado de memória vale; rode o script            |
+| Você procura por                      | Documento dono                                                                                    | Limite da inferência                                           |
+|---------------------------------------|---------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
+| o que existe e executa                | a árvore versionada, `pom.xml`, `compose.yaml`, `frontend/package.json` e os testes               | configuração prova presença, e não funcionamento               |
+| o estado de uma fronteira de processo | [matriz de integrações](architecture/integrations.md#matriz)                                      | abra a evidência primária citada antes de concluir             |
+| a forma de tabela dos dois schemas    | [schemas/](architecture/schemas/README.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam) | não cobre `lab_journal`; forma decidida não é migração escrita |
+| a decisão arquitetural vigente        | [índice de ADRs](adr/README.md#índice)                                                            | plano e auditoria não substituem decisão aceita                |
+| a decisão ainda aberta                | [fila de decisões](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira)                             | não feche a lacuna por inferência                              |
+| o comportamento de uma capacidade     | [índice de capacidades](features/README.md#índice)                                                | regra `pendente` não é comportamento aprovado                  |
+| se algo merece ADR                    | [critérios do índice](adr/README.md#uma-decisão-merece-adr-quando)                                | o artefato é escolhido depois da decisão, nunca antes          |
+| como alterar um ADR aceito            | [revogação da imutabilidade](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07)   | nenhuma forma além das listadas lá é permitida                 |
+| como citar a série antiga             | [duas séries](adr/README.md#duas-séries-e-como-citá-las)                                          | sem o prefixo `arquivo/` a referência é ambígua                |
+| processo, artefato e aprovação        | [processo de especificação](specification-process.md#a-decisão-vem-antes-do-artefato)             | skill não altera o lifecycle                                   |
+| o vocabulário vigente                 | [glossário de domínio](CONTEXT.md#linguagem)                                                      | termo em disputa não é vocabulário vigente                     |
+| uma questão encaminhada               | [índice de questões](questions/README.md#índice)                                                  | `Q-INT-*` tem outro dono, e é a matriz                         |
+| uma pergunta de integração            | [perguntas da matriz](architecture/integrations.md#perguntas-em-aberto)                           | ela **NÃO DEVE** entrar no índice de questões                  |
+| um contrato formal entre processos    | [contratos](contracts/README.md#estado-nenhum-contrato-existe)                                    | um contrato nasce com a interface, nunca antes dela            |
+| taxonomia, pedagogia e roadmap        | [plano do laboratório](plano-do-laboratorio.md#3-taxonomia-refinada)                              | o plano não decide nada; ele define o que precisa ser decidido |
+| o limite de tamanho de um artefato    | `.claude/skills/feature-planning/scripts/check_artifact_limits.py`                                | nenhum número citado de memória vale; rode o script            |
 
 ```mermaid
 flowchart TD
