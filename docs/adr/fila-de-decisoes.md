@@ -1930,6 +1930,34 @@ história e transformaria todas essas citações em ponteiro para nada. **O merg
 NÃO DEVE ser squash**, e essa exigência vale independentemente de qual saída acima for
 escolhida.
 
+#### `E-70` — o glob do CI é mais estreito que a régua de tamanho
+
+Aberta em 2026-08-11, ao mesclar o ramo do ADR-0016.
+
+**O problema.** O passo de limites do workflow `docs` monta a lista de arquivos com
+`for f in docs/adr/[0-9]*.md`, em `.github/workflows/docs.yml:45`, e por isso mede **só
+ADR**. O `check_artifact_limits.py` conhece teto para muito mais que isso: os Feature
+Card, a [matriz](../architecture/integrations.md#matriz), e todo `.md` sem isenção. Esses
+arquivos são medidos quando alguém roda o script à mão, e por ninguém no CI. **Uma
+convenção de nome de arquivo virou, em silêncio, o critério de cobertura de uma guarda
+executável** — e quem escreveu o glob não escolheu isso, apenas nomeou os arquivos que
+existiam quando ele foi escrito.
+
+**Por que não é conserto mecânico.** Alargar o glob reprova o build no mesmo commit em
+que for feito, porque há estouro vivo fora dos ADRs — o `docs/CONTEXT.md` mede muitas
+vezes o teto de 4.000, e há outros. Cada um deles é dívida aceita ou defeito a corrigir,
+e essa classificação é da pessoa, não do glob. **Esta linha não pergunta o teto de
+arquivo nenhum**: ela pergunta o **alcance da guarda**, e continua de pé qualquer que
+seja a resposta sobre cada teto individual.
+
+| Saída                                                    | O que ela faz                                                                                                         |
+|----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| alargar o glob, e isentar por caminho o que hoje estoura | o CI passa a cobrir todo artefato com teto, e cada isenção vira linha escrita e visível em vez de ausência silenciosa |
+| alargar o glob sem isentar nada                          | o build reprova até cada estouro vivo ser resolvido, e a régua passa a valer na letra desde já                        |
+| manter o glob, e declarar que a guarda do CI é só de ADR | o script continua sendo a régua completa, e o CI passa a ser assumidamente uma amostra dela, com isso escrito         |
+
+**Sem recomendação.** Escolher entre elas é da pessoa.
+
 #### `E-37` — o que a proibição de derivar estado de stream alcança
 
 **Estado:** `fechada`, em 2026-08-09. Os três desdobramentos que esta linha deixou

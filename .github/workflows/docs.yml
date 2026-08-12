@@ -1,10 +1,10 @@
-# Verificacao da documentacao. Decisao `C-5`, em
+# Verificação da documentação. Decisão `C-5`, em
 # `docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md`.
 #
-# Este workflow NAO constroi, NAO empacota e NAO entrega nada. Ele verifica os
-# documentos, e so isso. Desde 2026-08-06 o build e o empacotamento existem, e
-# vivem em `build.yml` — os dois sao separados de proposito: um defeito de
-# citacao nao deve impedir a publicacao da imagem, nem o contrario.
+# Este workflow NÃO constrói, NÃO empacota e NÃO entrega nada. Ele verifica os
+# documentos, e só isso. Desde 2026-08-06 o build e o empacotamento existem, e
+# vivem em `build.yml` — os dois são separados de propósito: um defeito de
+# citação não deve impedir a publicação da imagem, nem o contrário.
 name: docs
 
 on:
@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   verificar:
-    name: Citacoes e limites de caracteres
+    name: Citações e limites de caracteres
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -27,17 +27,26 @@ jobs:
         with:
           python-version: '3.13'
 
-      # Alvo inexistente, linha citada alem do fim do alvo, e ancora que nao
-      # corresponde a titulo nenhum. A baseline carrega os defeitos conhecidos,
-      # cada um com a decisao que o autorizou.
-      - name: Verificar as citacoes
+      # Alvo inexistente, linha citada além do fim do alvo, e âncora que não
+      # corresponde a título nenhum. A baseline carrega os defeitos conhecidos,
+      # cada um com a decisão que o autorizou.
+      - name: Verificar as citações
         run: >
           python scripts/check_citations.py
           --root .
           --baseline scripts/citations-baseline.txt
 
-      # `ADR_LIMIT` e' 12000 desde a decisao `C-7`. Os ADRs 0001 a 0004 sao
-      # legado isento, e o indice e `docs/adr/arquivo/**` estao fora da regra.
+      # `ADR_LIMIT` é 12000 desde a decisão `C-7`. Os ADRs 0001 a 0004 são
+      # legado isento, e o índice e `docs/adr/arquivo/**` estão fora da regra.
+      #
+      # **O glob abaixo é mais estreito que a régua, e isso não é descuido
+      # decidido — é lacuna registrada.** Ele alcança só `docs/adr/[0-9]*.md`,
+      # e por isso todo artefato com teto próprio fora dessa pasta — os
+      # Feature Card, `integrations.md`, `esquemas.md` — é medido pelo script
+      # em edição e por ninguém no CI. Alargar o glob reprova o build no
+      # mesmo commit, porque há estouro vivo fora dele; qual deles é dívida
+      # aceita e qual é defeito é decisão de pessoa, e está aberta na linha
+      # `E-70` de `docs/adr/fila-de-decisoes.md`.
       - name: Verificar os limites de caracteres dos ADRs
         run: |
           set -euo pipefail
