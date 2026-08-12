@@ -719,6 +719,13 @@ A terceira saída é a única sem obstáculo declarado, e ela troca verificaçã
 confiança no código da semeadura. **Nenhuma das três foi escolhida.** A pendência fica
 vizinha da fonte do oráculo de capacidade, e as duas provavelmente fecham juntas.
 
+**Esta pendência ganhou identificador em 2026-08-11, e vive daqui em diante em
+[`E-74`](#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu).** Ela nasceu
+dentro deste fecho e por isso não podia ser citada por nome. O obstáculo que o parágrafo
+acima nomeia — a vizinhança com a fonte do oráculo de capacidade — **caiu** com o fecho
+de `E-37` e o ADR-0013, e é a linha nova que registra o que isso muda e o que continua sem
+decisão.
+
 **`E-10` — o índice entra, e ele depende de `E-22`.** A obrigação que vem junto é a de
 `D-DAT-03`: o plano de execução efetivo vai no relatório do braço `SERIALIZABLE`, sob
 pena de o número não ser interpretável. O custo é escrita de índice a cada `INSERT` do
@@ -2531,6 +2538,12 @@ bloco Mermaid que o enunciado cita em `docs/CONTEXT.md:818-827` era o texto **an
 desta correção. A troca de ordem deslocou o texto ao redor dele, e hoje o mesmo bloco —
 já com a contiguidade perguntada primeiro — vive em `docs/CONTEXT.md:825-834`.
 
+**Esta segunda medição envelheceu por sua vez, e o padrão virou linha própria.** Em
+2026-08-11 o mesmo bloco vivia em `docs/CONTEXT.md:829-839`. Duas edições do alvo, duas
+citações por linha defasadas, e nenhum verificador acusou. O que fazer com isso é
+[`E-75`](#e-75--a-citação-por-linha-a-bloco-mermaid-envelhece-a-cada-edição-do-alvo);
+este parágrafo só nomeia o fato, e o corpo acima permanece como fechou.
+
 **A frase do enunciado sobre os dois diagramas também ficou para trás.** Ele diz que
 "nenhum dos dois diagramas foi alterado para resolvê-la", e isso descrevia o estado no
 momento em que a linha foi aberta. O diagrama de `CONTEXT.md` foi alterado por este
@@ -3474,6 +3487,81 @@ repositório cita a fila em prosa, no `AGENTS.md` e nos ADRs.
 recuse identificador repetido nesta fila. Ele não existe, e a colisão foi achada à mão.
 
 **Sem recomendação.**
+
+#### `E-74` — quem verifica a órfã de `allocation`, e o obstáculo que caiu
+
+Aberta em 2026-08-11, ao numerar a pendência que o
+[fecho de `E-9`](#e-9-fecha-a-escolha-e-abre-uma-pendência-que-e-18-criou) deixou sem
+identificador. **A pendência não é nova; o que é novo é ela poder ser citada.** Enquanto
+morou dentro de um fecho, ninguém podia apontar para ela por nome, e a fila cita por
+identificador em prosa.
+
+**O problema.** `E-9` escolheu **sem chave estrangeira**, porque um `INSERT` em
+`allocation` com FK adquire `FOR KEY SHARE` na linha de `resource` e conflita com o
+`FOR UPDATE` da estratégia `PESSIMISTIC` — o bloqueio viria da restrição e seria atribuído
+à estratégia. A integridade passa a ser do código, e **quem verifica a órfã ficou sem
+lugar**: a recomendação original punha a verificação "no mesmo lugar em que o oráculo já lê
+o banco", e esse lugar deixou de existir com a proibição de o Lab Plane fazer `SELECT` no
+schema do sistema medido.
+
+**O obstáculo declarado contra a terceira saída caiu, e é por isso que a linha vale a pena
+ser reaberta agora.** O fecho de `E-9` descartou reconstruir o conjunto de `resource.id`
+pelo stream chamando isso de "derivar estado a partir de eventos", e apontava o oráculo de
+capacidade como quem já esbarrava no mesmo obstáculo. Esse obstáculo era o `E-37`, que
+**fechou** em 2026-08-09 e foi absorvido pelo
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão):
+a proibição alcança fonte **produzida pelo instrumento**, e o WAL não é uma delas. Somar
+`INSERT` do WAL deixou de ser proibido para o oráculo do predicado.
+
+**O que isso não decide.** Somar eventos e **reconstruir um conjunto** para cruzá-lo com
+outro não são a mesma operação, e nenhum documento deste repositório diz que a segunda está
+igualmente liberada. A guarda de contiguidade de LSN, que o ADR-0013 tornou obrigatória
+antes da soma, valeria aqui na mesma forma ou em outra — também não decidido.
+`Pergunta em aberto`.
+
+**Três saídas, e nenhuma escolhida.**
+
+| Saída                                                     | Objeção                                                                                  |
+|-----------------------------------------------------------|------------------------------------------------------------------------------------------|
+| `SELECT` do Lab Plane no schema medido                    | proibido pelo ADR-0010, e nenhuma dispensa foi pedida                                    |
+| reconstruir o conjunto pelo stream                        | o obstáculo caiu para a soma, e não está declarado caído para a reconstrução             |
+| semeadura correta por construção, sem verificação nenhuma | troca verificação por confiança no código da semeadura, e um defeito ali não tem sintoma |
+
+**Sem recomendação.** A terceira continua sendo a única sem obstáculo declarado, e continua
+sendo a que não verifica nada.
+
+#### `E-75` — a citação por linha a bloco Mermaid envelhece a cada edição do alvo
+
+Aberta em 2026-08-11, ao conferir a correção que o fecho de `E-48` registrou.
+
+**O problema, e ele já se repetiu uma vez.** A política de citação manda citar por caminho
+e âncora, e admite número de linha **só** quando o alvo não tiver título que a alcance —
+dentro de um bloco Mermaid, por exemplo
+([`../../AGENTS.md`](../../AGENTS.md#ao-trabalhar-aqui)). O enunciado de `E-48` usou essa
+permissão e citou `docs/CONTEXT.md:818-827`. O
+[fecho de `E-48`](#e-48-fecha-em-contiguidade-primeiro-escolhida-em-2026-08-10) registrou
+que a citação envelhecera e disse que o mesmo bloco passara a viver em
+`docs/CONTEXT.md:825-834`. **Essa segunda medição também já envelheceu**: o bloco vive hoje
+em `docs/CONTEXT.md:829-839`. Duas edições do `CONTEXT.md`, duas citações defasadas, e
+nenhum verificador acusou — `check_citations.py` só reprova linha **além do fim** do alvo,
+e um deslocamento de quatro linhas dentro do arquivo passa verde.
+
+**Por que importa.** Uma citação por linha defasada não aponta para nada errado de forma
+visível: ela aponta para outro texto, e quem a segue lê o parágrafo vizinho achando que leu
+a evidência. É exatamente o dano que a decisão `C-1` nomeou ao trocar linha por âncora, e a
+exceção do Mermaid o reintroduz onde a exceção vale.
+
+**Quatro saídas, e nenhuma escolhida.**
+
+| Saída                                                                     | Objeção                                                                                               |
+|---------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| citar o **heading que contém** o bloco, e descrever o bloco em prosa      | perde a precisão de apontar o bloco, que é o que a exceção existe para permitir                       |
+| manter a linha e **patchar quando envelhecer**                            | é o que já se fez duas vezes, e nas duas o conserto envelheceu depois; ninguém confere periodicamente |
+| **âncora sintética** — um comentário HTML nomeado logo antes do bloco     | inventa gramática de citação nova, e o verificador não a conhece                                      |
+| ensinar o verificador a **casar o conteúdo** citado, e não só o intervalo | é a única que fecha o buraco, e é a mais cara: exige guardar o texto citado, ou um resumo dele        |
+
+**Sem recomendação.** As duas primeiras são baratas e não fecham o buraco; as duas últimas
+o fecham e criam trabalho novo.
 
 ## A saída, decidida em 2026-08-06
 
