@@ -237,8 +237,15 @@ PATCH_LEDGER = "## Patches aplicados"
 # obriga — cerca de trezentas letras, quase todas dentro de um link.
 #
 # A alternativa era encolher a prosa de um ADR aceito, e ela é proibida: não está entre
-# as cinco formas de alterar um ADR aceito, e o patch NÃO DEVE tocar argumento. Sem o
+# as formas de alterar um ADR aceito, e o patch NÃO DEVE tocar argumento. Sem o
 # desconto, o teto empurraria para exatamente o que o lifecycle proíbe.
+#
+# As formas são as de `docs/adr/README.md` e de `.claude/skills/adr/references/
+# adr-lifecycle.md`, seção "Depois de aceito", e este comentário NÃO as conta de
+# propósito. Até 2026-08-11 ele dizia "as cinco formas", e a lista já era outra: o
+# campo `Alterado por` do template passara a aceitar um valor a mais. Um número de
+# formas escrito fora do dono da lista envelhece na primeira forma nova, e envelhece
+# em silêncio — não há verificador que confira contagem em comentário de código.
 #
 # Vale só para ADR: num Feature Card o texto antes do primeiro `##` carrega escopo e
 # origem, que são prosa de verdade.
