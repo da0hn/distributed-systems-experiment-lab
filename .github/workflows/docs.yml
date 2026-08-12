@@ -36,24 +36,29 @@ jobs:
           --root .
           --baseline scripts/citations-baseline.txt
 
-      # `ADR_LIMIT` é 12000 desde a decisão `C-7`. Os ADRs 0001 a 0004 são
-      # legado isento, e o índice e `docs/adr/arquivo/**` estão fora da regra.
+      # O glob alcança TODO `.md` sob `docs/`, e não mais só os ADRs numerados.
+      # A pessoa decidiu em 2026-08-12, no fecho do orçamento de prosa: o teto
+      # passou a ser propriedade da CLASSE de artefato, e a medição passou a
+      # alcançar a pasta inteira. Antes disso, tudo com teto próprio fora de
+      # `docs/adr/` — os Feature Card, `integrations.md` — era medido em edição
+      # e por ninguém no CI.
       #
-      # **O glob abaixo é mais estreito que a régua, e isso não é descuido
-      # decidido — é lacuna registrada.** Ele alcança só `docs/adr/[0-9]*.md`,
-      # e por isso todo artefato com teto próprio fora dessa pasta — os
-      # Feature Card, `integrations.md`, `esquemas.md` — é medido pelo script
-      # em edição e por ninguém no CI. Alargar o glob reprova o build no
-      # mesmo commit, porque há estouro vivo fora dele; qual deles é dívida
-      # aceita e qual é defeito é decisão de pessoa, e está aberta na linha
-      # `E-70` de `docs/adr/fila-de-decisoes.md`.
-      - name: Verificar os limites de caracteres dos ADRs
+      # **Alargar o glob não reprova ninguém por consequência automática**, e
+      # essa foi a condição da escolha. Quem já excedia quando o alcance mudou
+      # está em `TRIAGE_PENDING`, dentro do script, e é reportado como `TRIAGEM`
+      # sem reprovar até a classe dele ser decidida. Cada entrada de lá some
+      # quando a decisão for escrita, e a lista vazia é o estado final.
+      #
+      # `.claude/**` continua fora, de propósito e com custo nomeado: a pessoa
+      # escolheu `docs/` contra "todo Markdown versionado". Instrução de skill é
+      # classe isenta de qualquer forma, mas nada a mede.
+      - name: Verificar os limites de caracteres sob docs/
         run: |
           set -euo pipefail
           args=()
-          for f in docs/adr/[0-9]*.md; do
+          while IFS= read -r f; do
             args+=(--file "$f")
-          done
+          done < <(find docs -type f -name '*.md' | sort)
           python .claude/skills/feature-planning/scripts/check_artifact_limits.py \
             --root . "${args[@]}"
 

@@ -10,132 +10,161 @@ from pathlib import Path
 from typing import Optional
 
 
-# O `example-mapping.md` NÃO tem limite, por decisão de 2026-08-06. Ele cresce por
-# exemplo acrescentado, e acrescentar exemplo é o trabalho dele — um teto ali
-# transforma "achei mais um contraexemplo" em "preciso apagar um dos antigos", que é
-# o oposto do que o artefato existe para fazer. O texto de `docs/AGENTS.md` já dizia
-# isso; quem estava fora de sincronia era este script.
-LIMITS_BY_NAME = {
-    "feature-card.md": 5500,
-    "behavior.feature": 3500,
-    "implementation-plan.md": 7000,
-}
-LIMITS_BY_PATH = {
-    Path("docs/architecture/integrations.md"): 12000,
-    # O plano não é inventário, e por isso não entra no `EXEMPT_BY_PATH`: ele cresce
-    # por prosa analítica, e não por entrada. Mas o genérico de 4.000 foi calibrado
-    # para o Feature Card, onde o excesso significa "a capacidade cobre demais, divida-a"
-    # — e o plano não se divide sem quebrar as âncoras que ADRs e cards citam nele.
+# As CLASSES de artefato, e o teto de cada uma. A pessoa decidiu em 2026-08-12,
+# no fecho do orçamento de prosa: o teto passa a ser propriedade da CLASSE, e não
+# do caminho. A diferença é o que acontece com um arquivo novo — antes ele caía no
+# genérico de 4.000 até alguém escrever uma entrada para ele, e agora ele cai na
+# classe que o padrão de caminho o alcança.
+#
+# `None` significa isento, e cada isenção carrega o motivo dela abaixo. O que a
+# decisão substituiu foi o regime de isenção uma a uma, cujo defeito era o critério
+# ficar implícito na soma das justificativas: cada entrada dizia por que aquele
+# arquivo escapava, e nenhuma dizia contra o que a próxima seria conferida.
+CLASS_LIMITS = {
+    # Instrução: os dois `AGENTS.md`, os `.claude/agents/*.md` e os
+    # `.claude/skills/**/*.md`. O harness os carrega inteiros antes de existir
+    # qualquer consulta, e o que eles carregam é guardrail — a regra que o agente
+    # precisa ANTES de saber o que procurar. Cortar prosa deles apaga guardrail, e
+    # não redundância.
     #
-    # O teto próprio resolve o que a isenção resolveria e a pressão que ela apagaria:
-    # o `EXCEDE` permanente de 48.269 contra 4.000 treinava todo mundo a ignorar o
-    # vermelho do script, e um teto pouco acima do tamanho de hoje devolve significado
-    # ao vermelho — o plano passa agora, e reprova de novo se crescer.
+    # O teto genérico foi calibrado para o Feature Card, onde o excesso é sinal de
+    # que a capacidade cobre demais e o caminho é dividi-la. Um arquivo de instrução
+    # não se divide: um `feature-writer` partido em dois produz um escritor que
+    # ignora metade das regras. A pessoa decidiu isentá-los em 2026-08-10, depois de
+    # medi-los entre 5.394 e 21.322 caracteres contra o genérico de 4.000.
     #
-    # O número é deliberadamente apertado. Quem estourar precisa decidir, e a decisão
-    # continua sendo a linha aberta na fila sobre quem é dono do orçamento de prosa.
-    # A pessoa decidiu em 2026-08-11.
-    Path("docs/plano-do-laboratorio.md"): 50000,
-    # O ADR-0015 e o `esquemas.md` são um par, e o par é a razão de nenhum dos dois
-    # caber no teto que herdaria. O ADR roteia a FORMA das tabelas para o `esquemas.md`
-    # e continua carregando a DECISÃO — chave, discriminador e colunas de tempo —, de
-    # modo que ele paga o custo de prosa das duas coisas: a decisão, e o roteamento que
-    # impede a decisão de ser copiada. Os 12.000 do `ADR_LIMIT` não previram esse
-    # roteamento, e o `esquemas.md` não é Feature Card: ele cresce por tabela
-    # documentada e por ausência sustentada com evidência, e não por capacidade.
+    # A isenção NÃO alcança a guarda de `INSTRUCTIONS_WITHOUT_LIMITS`: esses
+    # arquivos continuam proibidos de declarar limite próprio, e essa checagem roda
+    # à parte.
+    "instrução": None,
+    # Índice e inventário: `docs/*/README.md`. Eles crescem por ENTRADA — um ADR
+    # aceito, uma capacidade especificada, um contrato nascido, uma questão
+    # encaminhada —, e a prosa em volta não cresce junto. Um teto ali obrigaria a
+    # omitir do inventário, que é o oposto do que o arquivo existe para fazer, e a
+    # omissão seria invisível: ninguém sente falta do que nunca foi listado.
     #
-    # Os dois estouraram em 2026-08-11 por consequência DIRETA de correções que a
-    # revisão exigiu — repor argumento, separar o que era do ADR do que era do
-    # `esquemas.md`, nomear a linha da fila que continua bloqueando o `CREATE TABLE`.
-    # Comprimir teria desfeito a revisão, e por isso o escritor foi instruído a relatar
-    # o excesso em vez de amputar. A folga é estreita de propósito — os dois mediam
-    # 12.369 e 4.850 quando a pessoa decidiu, e fecharam o dia em 12.453 e 4.960 —,
-    # para que o vermelho do script continue significando alguma coisa, e não virem
-    # isenção.
+    # A pessoa isentou `docs/adr/README.md` em 2026-08-07, `docs/features/README.md`
+    # em 2026-08-10 e `docs/contracts/README.md` em 2026-08-11, cada um depois de
+    # estourar por acréscimo de LINHA DE TABELA, e não por prosa nova. A classe
+    # generaliza os três, e alcança o índice de questões e o próximo que nascer.
     #
-    # A divisão do par NÃO é a saída quando um deles estourar: separar `esquemas.md`
-    # em dois arquivos quebraria o "dono único da forma", que é a decisão inteira. A
-    # pessoa decidiu em 2026-08-11.
-    Path("docs/adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md"): 12600,
-    Path("docs/architecture/esquemas.md"): 5000,
-}
-# Isento por nome. Sem esta linha o `example-mapping.md` cairia no MARKDOWN_LIMIT
-# genérico de 4000, que é mais apertado do que o teto que a decisão removeu.
-EXEMPT_BY_NAME = {"example-mapping.md"}
-
-# Isento por caminho, e cada entrada diz por que. Até 2026-08-07 estes arquivos
-# eram isentos por acidente: o ramo de `docs/adr/` respondia "isto é um ADR?", e o
-# caso negativo caia num `return None` que ninguém decidiu — a fila, com 119 mil
-# caracteres de prosa, e o índice, com 22 mil, nunca foram medidos por causa dele.
-# A pessoa decidiu em 2026-08-07 que a isenção passa a ser declarada, com o motivo
-# escrito, e que o ramo deixa de isentar por omissão.
-EXEMPT_BY_PATH = {
+    # `docs/README.md` NÃO é desta classe: ele é roteador, tem dono único do
+    # roteamento documental e cai no genérico como qualquer outro Markdown.
+    "índice": None,
     # A fila existe só para rastrear pendência, e por isso é a única exceção ao
     # princípio de fonte única: ela fala do que outros documentos vão possuir. Ela
-    # cresce por decisão enfileirada e encolhe por lápide, e um teto ali obrigaria
-    # a apagar pendência viva para caber.
-    Path("docs/adr/fila-de-decisoes.md"),
-    # O índice cresce por ADR aceito, como o `example-mapping.md` cresce por
-    # exemplo. Um teto ali obrigaria a omitir ADR do inventário, que é o oposto do
-    # que o arquivo existe para fazer.
-    Path("docs/adr/README.md"),
-    # Os dois `AGENTS.md` são instrução, e não artefato de planejamento: o harness os
-    # carrega inteiros antes de existir qualquer consulta, e o que eles carregam é
-    # guardrail — a regra que o agente precisa ANTES de saber o que procurar. Cortar
-    # prosa deles para caber num teto apaga guardrail, e não redundância.
-    #
-    # A isenção é declarada, e não herdada. Até ela existir, esses arquivos só
-    # escapavam porque o workflow `docs` media apenas `docs/adr/[0-9]*.md`, e ninguém
-    # havia medido os dois. Medidos, deram 21.322 caracteres de prosa na raiz e 11.665
-    # em `docs/`, ambos contra o genérico de 4.000 — a distância mostra que o teto
-    # genérico nunca descreveu este tipo de arquivo.
-    #
-    # O que NÃO está isento é a duplicação: o roteamento documental tem um dono único,
-    # `docs/README.md`, que cai no genérico como qualquer outro Markdown.
-    Path("AGENTS.md"),
-    Path("docs/AGENTS.md"),
-    # O índice das capacidades cresce por capacidade aceita, como o índice de ADRs
-    # cresce por ADR. Um teto ali obrigaria a omitir capacidade do inventário, que é o
-    # oposto do que o arquivo existe para fazer — e a omissão seria invisível, porque
-    # ninguém sente falta do que nunca foi listado. A pessoa decidiu isentá-lo em
-    # 2026-08-10, depois de ele passar de 4.000 caracteres de prosa por acréscimo de
-    # linha de tabela, e não por prosa nova.
-    Path("docs/features/README.md"),
-    # O inventário de contratos cresce por interface, como o índice de features cresce
-    # por capacidade: a tabela ganha uma linha quando um contrato nasce, e a prosa em
-    # volta é a doutrina dos três estados de interface, que não cresce junto. Um teto
-    # ali obrigaria a escolher entre omitir contrato do inventário e apagar a doutrina
-    # que explica o inventário. A pessoa decidiu isentá-lo em 2026-08-11, depois de ele
-    # medir 6.690 caracteres de prosa contra o genérico de 4.000, num ciclo em que o
-    # acréscimo foi de linha de tabela.
-    #
-    # A isenção NÃO alcança `docs/plano-do-laboratorio.md`, e a distinção é o critério
-    # desta lista inteira: o plano não cresce por entrada, e sim por prosa analítica.
-    # Quem é dono do teto que o alcança continua sendo linha aberta na fila.
-    Path("docs/contracts/README.md"),
+    # cresce por decisão enfileirada e encolhe por lápide, e um teto ali obrigaria a
+    # apagar pendência viva para caber. A pessoa isentou em 2026-08-07.
+    "fila": None,
+    # `docs/adr/arquivo/**` é registro congelado do que se pensou naquela data, e o
+    # `AGENTS.md` proíbe editá-lo. Um teto sobre o que não pode ser editado só produz
+    # vermelho permanente, que deixa de ser lido.
+    "arquivo congelado": None,
+    # O `example-mapping.md` cresce por exemplo acrescentado, e acrescentar exemplo é
+    # o trabalho dele — um teto ali transforma "achei mais um contraexemplo" em
+    # "preciso apagar um dos antigos". Decisão de 2026-08-06.
+    "example mapping": None,
+    # Os quatro primeiros ADRs foram escritos sob outra prática, têm cerca de 35 mil
+    # caracteres, e nunca caberão em limite nenhum. A imutabilidade do corpo foi
+    # revogada em 2026-08-07 e a isenção continua: o que a revogação autoriza é o
+    # PATCH, e encolher a prosa desses quatro seria reescrever o argumento, que o
+    # patch NÃO DEVE tocar. Decisão `C-7`.
+    "adr legado": None,
+    # Um ADR carrega uma decisão, o argumento dela e as alternativas descartadas.
+    # Estourar é sinal de que ele cobre mais de uma decisão, e a saída é a DIVISÃO —
+    # sexta forma do lifecycle desde 2026-08-11 —, e não afrouxar a régua. Foi
+    # exatamente esse argumento que descartou "teto próprio para o ADR-0014" em
+    # 2026-08-11, e ele vale para a classe inteira.
+    "adr": 12000,
+    # O ADR-0015 é o único com teto próprio dentro da classe, e o motivo é o par que
+    # ele forma com o dono da forma das tabelas: ele roteia a FORMA para lá e
+    # continua carregando a DECISÃO — chave, discriminador e colunas de tempo —, de
+    # modo que paga o custo de prosa das duas coisas. Os 12.000 não previram esse
+    # roteamento. A pessoa decidiu em 2026-08-11, e a folga é estreita de propósito.
+    "adr com roteamento de forma": 12600,
+    # Contrato formal. O número entra na classe pelo formato, e não pelo caminho.
+    "contrato": 16000,
+    # O plano não é inventário: ele cresce por prosa analítica, e não por entrada.
+    # Mas ele também não se divide sem quebrar as âncoras que ADRs e cards citam
+    # nele. O teto próprio devolve significado ao vermelho — o `EXCEDE` permanente de
+    # 48.269 contra 4.000 treinava todo mundo a ignorá-lo. O número é deliberadamente
+    # apertado: o plano passa agora, e reprova de novo se crescer. Decidido em
+    # 2026-08-11.
+    "plano analítico": 50000,
+    # `docs/architecture/**`. Esta classe cresce por FRONTEIRA documentada e por
+    # ausência sustentada com evidência, e não por capacidade — a régua do Feature
+    # Card não a descreve. O número herda o teto que a pessoa deu a `integrations.md`
+    # em decisão anterior, e vale agora para a pasta inteira.
+    "arquitetura": 12000,
+    # Um card acima do limite cobre mais de uma capacidade, e o caminho é dividi-la.
+    # O corte sai da prosa, NUNCA da evidência.
+    "feature card": 5500,
+    "bdd": 3500,
+    "plano de implementação": 7000,
+    # Tudo o que nenhuma classe acima alcança. Calibrado para o Feature Card.
+    "genérico": 4000,
 }
 
-# O mesmo argumento dos dois `AGENTS.md`, uma camada acima: um `.claude/agents/*.md` é
-# o system prompt de um sub-agente, e um `.claude/skills/**/*.md` é instrução carregada
-# inteira quando a skill entra. Nenhum dos dois é artefato de planejamento, e cortar
-# prosa deles apaga regra normativa, não redundância.
+# TRIAGEM. A pessoa pôs uma condição ao estender a medição a todo `.md` sob `docs/`,
+# em 2026-08-12, na letra: os arquivos que JÁ ultrapassavam "devem ser avaliados caso
+# a caso". Estes são os que excedem a classe que os alcança e cuja classe própria
+# ainda não foi decidida. Enquanto estiverem aqui o script os reporta como `TRIAGEM`
+# e NÃO reprova — estender o alcance é o que PRODUZ esta lista, e nenhum arquivo sai
+# dela sem decisão escrita.
 #
-# O teto genérico de 4.000 foi calibrado para o Feature Card, onde o excesso é sinal de
-# que a capacidade cobre demais e o caminho é dividi-la. Um arquivo de instrução não se
-# divide: um `feature-writer` partido em dois produz um escritor que ignora metade das
-# regras. A pessoa decidiu isentá-los em 2026-08-10, depois de três deles — o
-# `adr-lifecycle.md`, o `feature-writer.md` e o `feature-reviewer.md` — aparecerem entre
-# 5.394 e 8.087 caracteres de prosa contra o genérico, um estouro que ninguém havia
-# medido porque o workflow `docs` só mede `docs/adr/[0-9]*.md`.
+# Isto NÃO é isenção em massa, e a diferença é que uma isenção não tem fim previsto
+# e esta lista tem: cada entrada some quando a classe dela for decidida, e a lista
+# vazia é o estado final.
 #
-# A isenção não alcança a guarda de `INSTRUCTIONS_WITHOUT_LIMITS`: esses arquivos
-# continuam proibidos de declarar limite próprio, e essa checagem roda a parte.
-EXEMPT_ROOTS = (Path(".claude/agents"), Path(".claude/skills"))
+# Um eixo que a triagem precisa, medido em 2026-08-12: um arquivo pode ter crescido
+# porque alguém ESCREVEU, ou porque alguém MOVEU um bloco de um arquivo isento para
+# um medido. O `specification-process.md` foi de 18.493 para 22.510 sem que uma frase
+# fosse escrita — os 4.017 são a seção de redação e revisão independente, realocada
+# do `AGENTS.md`. Punir esse salto como inchaço puniria exatamente o movimento certo.
+TRIAGE_PENDING = {
+    # Glossário de domínio. Mede mais de nove vezes o genérico, e a classe dele não
+    # foi decidida: ele cresce por termo resolvido, o que o aproxima de inventário,
+    # e carrega doutrina de vocabulário, o que o aproxima de instrução.
+    Path("docs/CONTEXT.md"),
+    # Processo de especificação. Cresce por regra de processo decidida, e recebeu em
+    # 2026-08-12 um bloco inteiro vindo do `AGENTS.md`, que era isento.
+    Path("docs/specification-process.md"),
+    # Excede a classe `arquitetura` por 314 caracteres. Ele é a matriz de fronteiras,
+    # e cresce por fronteira; se a classe descreve mal a matriz, ou se a matriz é que
+    # precisa encolher, não foi decidido.
+    Path("docs/architecture/integrations.md"),
+    # Auditoria. Ela é registro DATADO de um exame, e não prosa viva: cada achado
+    # carrega a data em que foi verdade. Encolhê-la apaga evidência, que é o mesmo
+    # argumento de `docs/adr/arquivo/**` — se é a mesma classe daquele, ou uma classe
+    # própria com teto, ninguém decidiu.
+    Path("docs/audits/2026-08-06-coerencia-e-limites-documentais.md"),
+    # Uma questão encaminhada cresce por objeção registrada, e o índice de questões
+    # já é isento como inventário. Se a questão individual é da mesma classe que o
+    # índice dela, ou do genérico que a alcança hoje, não foi decidido. Esta é a
+    # única das trinta e tantas que excede, e por 282 caracteres.
+    Path("docs/questions/Q-0001-1.md"),
+}
 
-# `docs/adr/arquivo/` é registro congelado do que se pensou naquela data, e o
-# `AGENTS.md` proíbe editá-lo. Um teto sobre o que não pode ser editado só produz
-# vermelho permanente, que é o mesmo argumento da isenção dos quatro ADRs legados.
+# Classificadores, em ordem de precedência: o PRIMEIRO que casar decide a classe.
+# A ordem importa — `docs/adr/arquivo/**` precisa vir antes de `docs/adr/[0-9]*.md`,
+# e o nome de arquivo precisa vir antes do padrão de pasta.
+INSTRUCTION_NAMES = {"AGENTS.md", "CLAUDE.md"}
+INSTRUCTION_ROOTS = (Path(".claude/agents"), Path(".claude/skills"))
 ARCHIVE_ROOT = Path("docs/adr/arquivo")
+QUEUE_PATH = Path("docs/adr/fila-de-decisoes.md")
+PLAN_PATH = Path("docs/plano-do-laboratorio.md")
+ADR_ROUTING_FORM = Path(
+    "docs/adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md"
+)
+ARCHITECTURE_ROOT = Path("docs/architecture")
+ROUTER_PATH = Path("docs/README.md")
+
+CLASS_BY_NAME = {
+    "feature-card.md": "feature card",
+    "behavior.feature": "bdd",
+    "implementation-plan.md": "plano de implementação",
+    "example-mapping.md": "example mapping",
+}
 
 # Um arquivo marcado como inativo não guia ninguém, e o limite existe para manter
 # prosa viva focada. A pessoa decidiu em 2026-08-07 isentá-lo enquanto a marca
@@ -150,9 +179,6 @@ ARCHIVE_ROOT = Path("docs/adr/arquivo")
 # de um cenário, de uma tabela ou de um parágrafo não isente nada.
 INACTIVE_MARKER = "ARQUIVO INATIVO"
 INACTIVE_SCAN = 600
-MARKDOWN_LIMIT = 4000
-ADR_LIMIT = 12000
-CONTRACT_LIMIT = 16000
 
 # Este script é a ÚNICA declaração de limite do repositório. As skills que dependem
 # dele NÃO DEVEM repetir número nenhum: um número copiado para uma skill envelhece na
@@ -337,31 +363,47 @@ def resolve_inside(root: Path, relative_path: Path) -> Path:
     return candidate
 
 
-def default_limit(relative_path: Path) -> Optional[int]:
-    """Devolve o limite do arquivo, ou None quando ele é isento."""
-    if relative_path.name in EXEMPT_BY_NAME:
-        return None
-    if relative_path in EXEMPT_BY_PATH:
-        return None
-    if any(root in relative_path.parents for root in EXEMPT_ROOTS):
-        return None
+def classify(relative_path: Path) -> str:
+    """Devolve a CLASSE do artefato. O primeiro classificador que casar decide."""
+    if relative_path.name in INSTRUCTION_NAMES:
+        return "instrução"
+    if any(root in relative_path.parents for root in INSTRUCTION_ROOTS):
+        return "instrução"
     if ARCHIVE_ROOT in relative_path.parents:
-        return None
-    if relative_path in LIMITS_BY_PATH:
-        return LIMITS_BY_PATH[relative_path]
-    if relative_path.name in LIMITS_BY_NAME:
-        return LIMITS_BY_NAME[relative_path.name]
-    # Só o nome numerado identifica um ADR. O que não for cai no limite genérico
-    # abaixo, e não mais num `return None` — a isenção agora é declarada acima.
+        return "arquivo congelado"
+    if relative_path == QUEUE_PATH:
+        return "fila"
+    if relative_path == PLAN_PATH:
+        return "plano analítico"
+    if relative_path == ADR_ROUTING_FORM:
+        return "adr com roteamento de forma"
+    if relative_path.name in CLASS_BY_NAME:
+        return CLASS_BY_NAME[relative_path.name]
+    # O índice é `docs/<pasta>/README.md`. O roteador `docs/README.md` fica fora de
+    # propósito: ele NÃO DEVE carregar inventário, e por isso cai no genérico.
+    if (
+        relative_path.name == "README.md"
+        and relative_path != ROUTER_PATH
+        and Path("docs") in relative_path.parents
+    ):
+        return "índice"
+    if ARCHITECTURE_ROOT in relative_path.parents:
+        return "arquitetura"
     if is_adr(relative_path):
         if relative_path.name[:4] in ADR_LEGACY:
-            return None
-        return ADR_LIMIT
+            return "adr legado"
+        return "adr"
     if relative_path.suffix in {".yaml", ".yml", ".json"}:
-        return CONTRACT_LIMIT
-    if relative_path.suffix == ".md":
-        return MARKDOWN_LIMIT
-    raise ValueError(f"Sem limite definido para: {relative_path}")
+        return "contrato"
+    return "genérico"
+
+
+def default_limit(relative_path: Path) -> Optional[int]:
+    """Devolve o teto da classe do arquivo, ou None quando a classe é isenta."""
+    artifact_class = classify(relative_path)
+    if artifact_class not in CLASS_LIMITS:
+        raise ValueError(f"Classe sem teto declarado: {artifact_class}")
+    return CLASS_LIMITS[artifact_class]
 
 
 def audit_skill_declarations(root: Path) -> list[str]:
@@ -440,15 +482,28 @@ def main() -> int:
             else:
                 size = total
                 detail = ""
+            artifact_class = classify(relative_path)
             if limit is None:
                 motivo = " (inativo)" if inactive else ""
                 print(
                     f"ISENTO: {relative_path} — {size} caracteres, "
-                    f"sem limite{motivo}{detail}"
+                    f"classe {artifact_class}{motivo}{detail}"
+                )
+                continue
+            if size > limit and relative_path in TRIAGE_PENDING:
+                # A condição que a pessoa pôs em 2026-08-12: quem já excedia quando
+                # o alcance foi estendido é avaliado caso a caso, e não reprova até
+                # a classe dele ser decidida.
+                print(
+                    f"TRIAGEM: {relative_path} — {size}/{limit} caracteres, "
+                    f"classe {artifact_class} a decidir{detail}"
                 )
                 continue
             state = "OK" if size <= limit else "EXCEDE"
-            print(f"{state}: {relative_path} — {size}/{limit} caracteres{detail}")
+            print(
+                f"{state}: {relative_path} — {size}/{limit} caracteres, "
+                f"classe {artifact_class}{detail}"
+            )
             failed = failed or size > limit
         except (OSError, ValueError) as error:
             print(f"ERRO: {error}", file=sys.stderr)

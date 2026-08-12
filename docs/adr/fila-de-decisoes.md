@@ -2138,6 +2138,69 @@ seja a resposta sobre cada teto individual.
 
 **Sem recomendação.** Escolher entre elas é da pessoa.
 
+#### `E-70` fecha junto com o orçamento de prosa, em 2026-08-12
+
+**Fechada pela mesma escolha que fechou o
+[orçamento de prosa](#o-orçamento-fecha-em-teto-por-classe-alcance-em-docs-e-triagem-caso-a-caso-escolhida-em-2026-08-12).**
+Esta linha perguntava por que o glob do CI era mais estreito que a régua; a resposta é
+que ele deixou de ser.
+
+**O que mudou em [`docs.yml`](../../.github/workflows/docs.yml).** O passo de limites
+alcançava `docs/adr/[0-9]*.md` e passa a alcançar **todo `.md` sob `docs/`**. Medido
+depois da mudança, em 2026-08-12: **103 arquivos**, e o job passa.
+
+**A objeção que a linha carregava era verdadeira, e foi resolvida por desenho e não por
+argumento.** Ela dizia que "alargar o glob reprova o build no mesmo commit, porque há
+estouro vivo fora dele". Havia mesmo — cinco. Eles não reprovam porque a condição que a
+pessoa pôs criou um estado que não existia: `TRIAGEM`, que reporta o estouro sem falhar,
+enquanto a classe daquele arquivo não for decidida.
+
+**`.claude/**` continua fora**, e o custo está nomeado no fecho do orçamento.
+
+#### `E-80` — a triagem que a extensão do glob produziu, e ela é a lista inteira
+
+Aberta em 2026-08-12, ao executar o fecho do orçamento de prosa. **Ela não é linha de
+narrativa: é a lista de trabalho que a escolha da pessoa criou**, e ela some quando
+esvaziar.
+
+**Cinco arquivos excedem a classe que os alcança, e a classe própria de cada um não foi
+decidida.** Medidos em 2026-08-12 por
+[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py),
+com o glob já estendido:
+
+| Arquivo                                             | Medido        | Classe que o alcança hoje | O que está em dúvida                                              |
+|-----------------------------------------------------|---------------|---------------------------|-------------------------------------------------------------------|
+| `docs/CONTEXT.md`                                   | 37.974/4.000  | genérico                  | cresce por termo resolvido (inventário) e carrega doutrina (instrução) |
+| `docs/specification-process.md`                     | 22.510/4.000  | genérico                  | cresce por regra de processo decidida                            |
+| `docs/architecture/integrations.md`                 | 12.314/12.000 | arquitetura               | excede a própria classe por 314; a matriz cresce por fronteira    |
+| `docs/audits/2026-08-06-coerencia-e-limites-...`    | 8.062/4.000   | genérico                  | é registro datado, como `docs/adr/arquivo/**`                     |
+| `docs/questions/Q-0001-1.md`                        | 4.282/4.000   | genérico                  | o índice de questões é isento; a questão individual não é          |
+
+**Um eixo que a triagem precisa, e ele não é meu — foi medido por quem fez o
+movimento.** Um arquivo pode ter crescido porque alguém **escreveu**, ou porque alguém
+**moveu** um bloco de um arquivo isento para um medido. O `specification-process.md` foi
+de 18.493 para 22.510 em 2026-08-12 **sem que uma frase fosse escrita**: os 4.017 são a
+seção de redação e revisão independente, realocada do `AGENTS.md`, que é classe isenta.
+Tratar esse salto como inchaço puniria exatamente o movimento certo — tirar processo de
+um arquivo de instrução e pôr no documento que é dono dele.
+
+```mermaid
+flowchart TD
+  A["um arquivo excede"] --> Q{"por que ele cresceu?"}
+  Q -->|" alguém escreveu "| E["o número mede prosa nova,<br/>e a régua fez o trabalho dela"]
+  Q -->|" alguém moveu de um<br/>arquivo isento "| M["o número saltou sem<br/>uma frase nova"]
+  M --> C["a classe de destino é<br/>que precisa ser decidida"]
+```
+
+**Sem recomendação, e são cinco decisões e não uma.** Cada arquivo pode receber classe
+nova, entrar numa que já existe, ou ser comprimido. **Nada está bloqueado por esta
+linha** — o job passa, e os cinco continuam medidos e visíveis a cada execução.
+
+**Esta linha é de segunda espécie**, pela
+[diretriz de prioridade](#a-prioridade-do-trabalho-declarada-em-2026-08-12). Ela não
+bloqueia nenhuma linha da primeira, e o desfecho padrão dela é lacuna aceita — o que
+significa que a lista pode ficar como está indefinidamente sem que nada quebre.
+
 #### `E-71` — uma decisão sem ADR falsificou prosa de um ADR aceito
 
 Aberta em 2026-08-11, ao conferir o que o fecho de `E-5` alterou fora de si.
