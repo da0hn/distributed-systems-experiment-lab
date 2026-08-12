@@ -3340,15 +3340,15 @@ cita esta âncora para nomear o tema de que ele nasceu, e a regra da poda manda 
 permanecer onde houver citação. O que saiu foi a narrativa de 2026-08-06 — por que cada
 tema foi triado assim; a tabela fica, porque é o que a citação alcança.
 
-| Tema candidato                                       | Linhas fechadas                                | Estado                          |
-|------------------------------------------------------|------------------------------------------------|---------------------------------|
-| a fronteira de schema e o CDC como fonte do veredito | `E-18`, `E-19`                                 | **contradiz o ADR-0002**        |
-| os quatro serviços e o caderno fora do Git           | `E-14` a `E-17`, `E-20`                        | **emenda o ADR-0008**           |
-| o transporte do veredito até o oráculo               | `E-12`, `E-28`, `E-29`, `E-33`                 | maduro                          |
-| o alcance das regras estruturais por papel do valor  | `E-13`                                         | maduro; já mudou o `AGENTS.md`  |
-| a identidade derivada da semente                     | `E-8`, `E-11`, `E-24`                          | maduro                          |
-| a chave, o discriminador e as colunas de tempo       | `E-9`, `E-10`, `E-22`, `E-23`, `E-25` a `E-27` | ADR-0015 escrito; poda pendente |
-| a entrega: build, imagem, banco e configuração       | `E-1` a `E-7`, `E-21`, `E-31`                  | **incompleto**: `E-3` aberta    |
+| Tema candidato                                       | Linhas fechadas                                | Estado                                      |
+|------------------------------------------------------|------------------------------------------------|---------------------------------------------|
+| a fronteira de schema e o CDC como fonte do veredito | `E-18`, `E-19`                                 | **contradiz o ADR-0002**                    |
+| os quatro serviços e o caderno fora do Git           | `E-14` a `E-17`, `E-20`                        | **emenda o ADR-0008**                       |
+| o transporte do veredito até o oráculo               | `E-12`, `E-28`, `E-29`, `E-33`                 | maduro                                      |
+| o alcance das regras estruturais por papel do valor  | `E-13`                                         | maduro; já mudou o `AGENTS.md`              |
+| a identidade derivada da semente                     | `E-8`, `E-11`, `E-24`                          | maduro                                      |
+| a chave, o discriminador e as colunas de tempo       | `E-9`, `E-10`, `E-22`, `E-23`, `E-25` a `E-27` | ADR-0015 escrito; poda bloqueada por `E-76` |
+| a entrega: build, imagem, banco e configuração       | `E-1` a `E-7`, `E-21`, `E-31`                  | **incompleto**: `E-3` aberta                |
 
 **A coluna da direita não é recontada a cada linha nova.** Quem é dono do inventário de
 ADR é o [`README.md`](README.md#índice); esta tabela registra o estado de cada tema na
@@ -3586,6 +3586,57 @@ exceção do Mermaid o reintroduz onde a exceção vale.
 
 **Sem recomendação.** As duas primeiras são baratas e não fecham o buraco; as duas últimas
 o fecham e criam trabalho novo.
+
+#### `E-76` — a poda do tema do ADR-0015 apagaria regra que o próprio ADR delega à fila
+
+Aberta em 2026-08-11, ao executar a poda das sete linhas que o
+[ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md) nasceu de,
+e parar antes de remover a primeira.
+
+**O que já estava previsto.** O `## O que este ADR desfaz fora de si` do ADR-0015 declara
+que quem executar a poda "não pode remover duas delas por inteiro": `E-9` deixa em aberto
+onde vive a verificação de órfãs, e `E-26` fecha só a metade CRUD. Isso continua valendo, e
+a metade aberta de `E-9` ganhou linha própria em
+[`E-74`](#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu).
+
+**O que não estava, e é o que abre esta linha.** O ADR-0015 **não absorveu** a regra de
+`E-25`: ele a **cita como sendo de lá**, na letra — "essa regra é de
+[`E-25`], não do fecho de `E-27`" na seção
+[As colunas de tempo](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#as-colunas-de-tempo-e-a-fonte-do-relógio-por-papel-do-valor),
+e "`E-25`, que é dona da proibição e do argumento pedagógico" na tabela de
+`## Justificativa`. A regra em questão é normativa: **uma estratégia de concorrência NÃO
+DEVE ler `updated_at`**. Podar o corpo de `E-25` apagaria do repositório a única redação
+dela e o argumento que a sustenta, deixando duas citações de um ADR aceito apontando para
+uma lápide.
+
+**Por que isso não se resolve movendo a regra para dentro do ADR.** O ADR-0015 é `Aceito`,
+e desde 2026-08-11 um ADR aceito NÃO DEVE receber decisão que não estava nele quando foi
+aceito, pela regra de
+[Um ADR aceito não recebe decisão nova](README.md#um-adr-aceito-não-recebe-decisão-nova-decidido-em-2026-08-11).
+Escrever ali a regra que ele hoje delega é exatamente a entrada que aquela regra proíbe.
+
+**O problema é maior que o tema deste ADR.** Uma linha de fila que um ADR aceito cita como
+**dona** de uma regra deixa de ser rastro de deliberação e passa a ser documento normativo,
+sem que ninguém tenha decidido que a fila pode sê-lo. Esta linha pergunta o que fazer com
+essa classe, e não só com `E-25`.
+
+**Quatro saídas, e nenhuma escolhida.**
+
+| Saída                                                                     | Objeção                                                                                                                 |
+|---------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| **não podar** as linhas que um ADR aceito cita como donas de regra        | a fila cresce sem teto, e ela é o arquivo que este repositório mais manda sanitizar                                     |
+| **ADR novo** que recolha as regras órfãs, e só então podar                | um ADR para hospedar regra que já foi decidida, sem alternativa nem trade-off próprios — não passa nos quatro critérios |
+| mover a regra para o **Feature Card** da capacidade que ela restringe     | nenhum card cobre `updated_at` hoje, e criar um só para hospedar a regra é o mesmo problema com outro artefato          |
+| declarar que **a fila PODE ser dona de regra**, e parar de tentar podá-la | inverte a decisão de 2026-08-04, que trata a fila como fila e não como destino                                          |
+
+**Sem recomendação.** A escolha decide o que a fila é, e não só o que se apaga dela.
+
+**O que fica bloqueado até ela fechar.** A poda do tema "a chave, o discriminador e as
+colunas de tempo" na
+[triagem](#a-triagem-contra-os-quatro-critérios). As partes fechadas de `E-22`, `E-23` e
+`E-27` são podáveis hoje; `E-9`, `E-25` e `E-26` não são, cada uma por um motivo diferente,
+e podar metade do tema deixaria a tabela dizendo "podado" sobre um tema que continua na
+fila.
 
 ## A saída, decidida em 2026-08-06
 
