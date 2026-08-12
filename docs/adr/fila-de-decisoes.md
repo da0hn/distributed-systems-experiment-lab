@@ -1063,7 +1063,7 @@ Dois achados sobre `E-31`, verificados na documentação do Debezium Server e na
 segundo achado foi apagado em 2026-08-10, por não ser citado de lugar nenhum, e o
 enunciado de `E-34` continua adiante.
 
-#### `E-31` — a variável de ambiente sobrepõe tudo, e isso dissolve a tensão do Secret
+#### Achado sobre `E-31` — a variável de ambiente sobrepõe tudo, e isso dissolve a tensão do Secret
 
 O Debezium Server é uma aplicação Quarkus. A configuração vive em
 `config/application.properties`, com os prefixos `debezium.source.*` para o conector e
@@ -2680,7 +2680,7 @@ num lugar e a espera noutro, e nenhum dos dois poderia afirmar que o stream est�
 **As duas descartadas.** O conector é o Debezium Server, pelo
 [ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão), e
 o que se versiona dele é configuração declarativa, como a apuração de
-[`E-31`](#e-31--a-variável-de-ambiente-sobrepõe-tudo-e-isso-dissolve-a-tensão-do-secret)
+[`E-31`](#achado-sobre-e-31--a-variável-de-ambiente-sobrepõe-tudo-e-isso-dissolve-a-tensão-do-secret)
 levantou: pôr a guarda ali exigiria transformação própria ou fork, e nenhuma das duas é
 configuração. O oráculo protegeria apenas a si: qualquer outro leitor do mesmo stream —
 uma projeção, um exportador — ficaria sem guarda, ainda que dentro do `lab-plane`. Um
@@ -3401,7 +3401,7 @@ mesmo commit.
 **Sem recomendação.** Enquanto esta linha estiver aberta, o rastro no ADR-0002 diz
 `emenda`, e trocá-lo exige a escolha da pessoa.
 
-#### `E-62` — a citação entre aspas não tem verificador, e ela quebra em silêncio
+#### `E-81` — a citação entre aspas não tem verificador, e ela quebra em silêncio
 
 Aberta em 2026-08-11, achada na revisão do ADR-0015.
 
@@ -3452,7 +3452,7 @@ Comparar as outras quatro exige normalizar espaço, comentário e caixa antes.
 **Sem recomendação, e sem conduta provisória.** Escrever aqui o que fazer até a linha
 fechar seria decidir por `D`, que é uma das alternativas em jogo.
 
-#### `E-63` — os comentários das duas `V1` ficaram defasados, e reescrevê-los esbarra em `E-62`
+#### `E-82` — os comentários das duas `V1` ficaram defasados, e reescrevê-los esbarra em `E-81`
 
 Aberta em 2026-08-11, ao redigir o ADR-0015.
 
@@ -3478,7 +3478,7 @@ duas frases deixaram de descrever o estado:
 **entre aspas** pelo fecho de
 [`E-35`](#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10), e reescrevê-la a
 quebra em silêncio — é o que
-[`E-62`](#e-62--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio)
+[`E-81`](#e-81--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio)
 enfileira. A reescrita foi tentada neste ciclo, produziu a quebra, e foi revertida.
 
 **Quem reproduz cada frase, depois deste commit.** A do lado do instrumento tem dois
@@ -3506,7 +3506,7 @@ alternativa abaixo nomeia os citantes que ela quebra.
   **Objeção:** o lado medido passou a ter citante neste commit — o parágrafo acima o
   reproduz entre aspas —, e reescrevê-lo sem corrigir esta linha produz aqui o mesmo modo
   de falha que
-  [`E-62`](#e-62--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio)
+  [`E-81`](#e-81--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio)
   registra. E deixa os dois lados divergentes: quem ler o outro não terá como saber se a
   frase está viva ou defasada. **O citante novo pesa mais nesta alternativa que na A**,
   porque é exatamente o lado medido que
@@ -3701,7 +3701,7 @@ da pendência.
 Fecha o `E-62` de
 [que forma cobre a entrada de decisão nova num ADR aceito](#e-62--que-forma-cobre-a-entrada-de-decisão-nova-num-adr-aceito),
 e **não** o `E-62` da
-[citação entre aspas](#e-62--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio):
+[citação entre aspas](#e-81--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio):
 os dois identificadores colidem, e a colisão é da linha
 [`E-73`](#e-73--dois-identificadores-da-fila-foram-usados-duas-vezes).
 
@@ -3854,6 +3854,54 @@ nada acusa qual.
 junto:** um verificador que recuse identificador repetido nesta fila. Ele não custa
 decisão, e sem ele o próximo par colidido nasce do mesmo jeito — em worktrees paralelas,
 sem que a mesclagem acuse nada.
+
+#### A execução do fecho de `E-73`, em 2026-08-12
+
+**O par renumerado foi o de baixo**, e quem decidiu foi a contagem de citantes — o
+motivo declarado no fecho, e não a posição no arquivo. Medida pela
+[consulta reversa](../AGENTS.md#antes-de-reduzir-um-documento) antes de qualquer edição:
+
+| Linha                                              | Citantes | Em ADR aceito | Destino          |
+|----------------------------------------------------|----------|---------------|-------------------|
+| `E-62` — que forma cobre a entrada de decisão nova | 6        | 3             | fica `E-62`      |
+| `E-62` — a citação entre aspas                     | 4        | **0**         | vira **`E-81`**  |
+| `E-63` — a emenda e o título citado por trecho     | 3        | 3             | fica `E-63`      |
+| `E-63` — os comentários das duas `V1`              | 1        | **1**         | vira **`E-82`**  |
+
+**O par escolhido custou um patch; o outro custaria três, em dois ADRs aceitos.** O
+patch está registrado em
+[`## Patches aplicados`](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#patches-aplicados)
+do ADR-0015, e alcança duas coisas na mesma célula: a citação a `E-63`, que passa a
+`E-82`, e uma menção em prosa a `E-62`, que passa a `E-81`. As outras quatro citações
+eram internas a esta fila.
+
+**O enunciado de `E-73` NÃO foi reescrito, e isso é deliberado.** Ele reproduz os dois
+slugs colididos entre crases, e é o registro datado do problema — reescrevê-lo apagaria
+a descrição da colisão que ele existe para guardar. A tabela de lá descreve
+2026-08-11, e não hoje.
+
+**O verificador que o fecho declarou independente da escolha existe**, em
+[`check_queue_ids.py`](../../scripts/check_queue_ids.py), e ele achou duas coisas que
+ninguém havia visto.
+
+**A primeira: `E-31` parecia nomear duas linhas, e não nomeia.** A de baixo vive sob
+[O que a quinta rodada apurou](#o-que-a-quinta-rodada-apurou-antes-de-perguntar-em-2026-08-06),
+cujo parágrafo de abertura diz "Dois achados sobre `E-31`". Ela é **achado** da mesma
+linha, e ganhou formato de enunciado por descuido de rotulagem. A correção foi o título,
+e não o identificador: ele passa a declarar que é achado, e o único citante interno
+acompanhou. **Nenhum identificador mudou**, e nada além do rótulo.
+
+**A segunda: a regra que o verificador nasceu com estava errada.** A primeira versão
+acusava **fecho sem enunciado**, e acusou doze — os doze eram poda executada
+corretamente, porque esta fila apaga a narrativa quando a linha fecha e deixa só o fecho.
+Uma regra que não distingue poda de renumeração esquecida produz doze vermelhos falsos e
+treina quem lê a ignorar o verdadeiro, que é o mesmo argumento com que o plano do
+laboratório ganhou teto próprio em 2026-08-11. Fecho órfão passou a ser **contado e
+mostrado**, e não reprova.
+
+**Medido depois de tudo:** 56 enunciados, 44 fechos, 11 de linha podada, e nenhum
+identificador repetido. O enunciado a menos é o achado de `E-31`, que deixou de ser
+contado como linha ao ser rotulado como o que sempre foi.
 
 #### `E-74` — quem verifica a órfã de `allocation`, e o obstáculo que caiu
 
@@ -4038,7 +4086,7 @@ coisa: que estado em memória se perde, e não quantas réplicas sobem. **Os tr�
 verificadores mecânicos passaram**, e quem pegou foi o revisor independente.
 
 **Por que esta linha não é
-[`E-62`](#e-62--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio).**
+[`E-81`](#e-81--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio).**
 Aquela trata da frase reproduzida **entre aspas**, cujo acoplamento com o alvo é literal e
 verificável por busca. Aqui não há frase a procurar: a citação apenas **descreve** o alvo,
 e a descrição está errada. Nenhuma das quatro alternativas de `E-62` alcança este caso —

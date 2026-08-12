@@ -62,6 +62,19 @@ jobs:
           python .claude/skills/feature-planning/scripts/check_artifact_limits.py \
             --root . "${args[@]}"
 
+      # Recusa identificador repetido na fila. Nasceu do fecho de `E-73`, em
+      # 2026-08-12: `E-62` e `E-63` nomearam duas linhas cada um, os pares
+      # nasceram no mesmo dia em worktrees paralelas, e a mesclagem juntou os
+      # quatro sem que nada acusasse. A colisão é silenciosa porque o slug GFM
+      # carrega o título inteiro, e não só o identificador — as duas âncoras
+      # resolvem, e o `check_citations.py` passa nas duas. O que quebra é a
+      # citação por identificador em prosa, que é como o `AGENTS.md` e os ADRs
+      # citam a fila.
+      - name: Verificar a unicidade dos identificadores da fila
+        run: >
+          python scripts/check_queue_ids.py
+          --root .
+
       # Compara o nome de tabela de cada `erDiagram` de
       # `docs/architecture/esquemas.md` com as migrações Flyway do serviço
       # correspondente. A baseline carrega a divergência deliberada, e uma
