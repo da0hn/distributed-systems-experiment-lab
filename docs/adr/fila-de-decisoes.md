@@ -3644,17 +3644,26 @@ coisas diferentes — está no cabeçalho do ADR-0014 como ele era em `2089e78`,
 anterior à divisão de 2026-08-12. Qualquer das saídas abaixo o reconstrói de lá; nenhuma
 precisa reescrevê-lo do zero.
 
-**Três saídas.**
 
-| Saída                                                      | O que ela faz                                                                                                                                                                              | Objeção                                                                                                                                                      |
-|------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| o `README.md`, na seção da divisão, ganha a regra geral    | o argumento vira regra do lifecycle — todo ADR dividido mantém o nome do arquivo, pelo custo de renomear citações —, e não decisão deste ADR; o bullet do ADR-0014 passa a apontar para lá | o `README.md` de ADR passa a decidir, e não só a registrar; hoje ele é índice e lifecycle, e uma regra nova nascendo ali não passa por debate de fila nenhum |
-| um terceiro ADR nasce só para esta regra                   | mesmo caminho que `E-62` abriu para a entrada que a divisão não cobria; o argumento vira decisão com alternativas e trade-off, no formato que o repositório usa para decisão durável       | mais um ADR na série, para uma regra sobre o processo de ADR, e não sobre o domínio do laboratório; a série passa a misturar as duas coisas sem separador    |
-| a régua de livro-razão de `E-66` ganha uma exceção nomeada | cabeçalho de ADR PODE carregar o argumento de por que o arquivo não foi renomeado, e só esse; a exceção é escrita, não presumida, e o ADR-0014 volta a hospedar o texto que já tinha       | `E-66` deixa de ser "sem exceção" no mesmo mês em que fechou, e a primeira exceção é a que o caso original pediu — o padrão que a régua existia para impedir |
+#### `E-83` fecha em lacuna aceita, escolhida em 2026-08-12
 
-**Sem recomendação.** Escolher entre elas é da pessoa. Enquanto a linha estiver aberta, o
-bullet "Nome do arquivo" do ADR-0014 só registra o fato — sufixo mantido, título encolhido
-duas vezes — e aponta para cá.
+**Escolhida pela pessoa em 2026-08-12**, e nenhuma das três saídas foi tomada — pelo mesmo
+motivo de [`E-77`](#e-77-fecha-em-lacuna-aceita-escolhida-em-2026-08-12), na
+[diretriz de prioridade](#a-prioridade-do-trabalho-declarada-em-2026-08-12). As saídas
+saíram do texto neste mesmo turno, porque ninguém vai escolher entre elas.
+
+**O que fica decidido.** O argumento de por que o arquivo de um ADR dividido não é
+renomeado **não ganha lugar**: nem regra geral no `README.md`, nem ADR próprio, nem
+exceção nomeada em `E-66`. O bullet "Nome do arquivo" do
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)
+segue registrando só o fato — sufixo mantido, título encolhido duas vezes — e apontando
+para cá.
+
+**O custo aceito, escrito para quem dividir o próximo ADR.** A pergunta vai reaparecer
+inteira, sem regra que a responda, e quem a enfrentar não terá o argumento à mão: ele está
+no cabeçalho do ADR-0014 como ele era em `2089e78`, e só o histórico do Git o devolve. A
+ordem de grandeza das citações que uma renomeação quebraria, e os dois comandos que a
+medem, deixam de estar em qualquer arquivo da árvore.
 
 #### `E-84` — a dispensa do ADR-0017 é terceira, ou é a segunda realocada
 
@@ -3694,16 +3703,26 @@ flowchart TD
   N --> D
 ```
 
-**Três saídas.**
 
-| Saída                                                                         | O que ela faz                                                                                                                            | Objeção                                                                                                                                                              |
-|-------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| é dispensa **nova**, e o escopo do parágrafo encolhe para o buffer e a thread | o ADR-0017 recebe patch que recorta o escopo do texto movido, e o `AGENTS.md` volta a contar três                                        | patch conserta citação, caminho e erro material; recortar o escopo de um parágrafo normativo altera o argumento, e o regime de patch proíbe isso                     |
-| é a **segunda realocada**, e a subseção do ADR-0017 vira remissão             | o ADR-0017 deixa de conceder dispensa e passa a citar a do ADR-0014; a contagem fica em duas, e nenhum texto precisa ser recortado       | o ADR-0017 perde o "Por que dispensa, e não satisfação da regra" que escreveu por si, e a alternativa "Emendar o ADR-0012" passa a descartar algo que ninguém propõe |
-| as duas convivem, e o que muda é a **régua de contagem**                      | passa-se a contar ADRs que carregam subseção de dispensa, e não atos de dispensa; três ADRs, escopos sobrepostos, nenhum texto reescrito | a régua deixa de responder "quantas vezes a regra foi dispensada", que é a pergunta que o guardrail existe para responder                                            |
 
-**Sem recomendação.** Escolher entre elas é da pessoa.
+#### `E-84` fecha em lacuna aceita, escolhida em 2026-08-12
 
+**Escolhida pela pessoa em 2026-08-12**, e nenhuma das três saídas foi tomada, pelo motivo
+da [diretriz de prioridade](#a-prioridade-do-trabalho-declarada-em-2026-08-12). As saídas
+saíram do texto neste mesmo turno.
+
+**O que fica decidido.** Se a dispensa do ADR-0017 é uma terceira ou é a segunda realocada
+pela divisão **continua sem resposta, e ninguém está encarregado de respondê-la**. O
+parágrafo movido não é recortado, o ADR-0017 mantém o argumento próprio que escreveu, e o
+[`AGENTS.md`](../../AGENTS.md#regras-estruturais-que-valem-sempre) segue contando **duas**
+dispensas e registrando a terceira como escrita e não contada.
+
+**O custo aceito, escrito para quem propuser a próxima tecnologia.** O guardrail existe
+para responder "quantas vezes esta regra já foi dispensada", e a partir daqui ele responde
+com um número e uma ressalva. Quem contar subseções de dispensa acha três; quem ler o
+guardrail lê duas; e os dois estão certos. A regra que importa — **uma dispensa registrada
+não é precedente, e a próxima precisa ser escrita por inteiro** — não depende da contagem,
+e é ela que continua valendo.
 
 #### `E-85` — a moldura em prosa do fecho de `E-35` atribui a frase ao ADR errado
 
@@ -3731,20 +3750,28 @@ que a alternativa `A` de
 [`E-63`](#e-63--a-emenda-e-o-título-citado-por-trecho) objeta: o fecho registra o que se
 sabia naquela data, e corrigi-lo em silêncio apaga que o erro existiu.
 
-**Três saídas.**
-
-| Saída                                    | O que ela faz                                                                                              | Objeção                                                                                                      |
-|------------------------------------------|------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| vira patch, com a nota do rastro ao lado | a moldura passa a nomear o ADR-0011, e uma nota datada registra a correção; quem lê vê o erro e o conserto | esta fila não tem regime de patch — ele é do lifecycle de ADR, e estendê-lo aqui é decisão que ninguém tomou |
-| entra no censo da classe, e o texto fica | o defeito é registrado como instância medida, e o fecho permanece byte a byte                              | o fecho continua ensinando errado a quem o lê pela primeira vez, e ninguém lê o censo ao consultar um fecho  |
-| o fecho é corrigido sem rastro           | o texto passa a estar certo, e nada mais                                                                   | apaga que o erro existiu, que é o oposto do que a data de um fecho serve para preservar                      |
-
-**Sem recomendação.** Escolher entre elas é da pessoa.
 
 **Nada fica bloqueado por ela.** O fato que o fecho sustenta — que a lista de execuções
 ativas não é o histórico que o ADR-0011 recusou — continua verdadeiro, e é o link que o
 prova.
 
+
+#### `E-85` fecha em lacuna aceita, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12**, e nenhuma das três saídas foi tomada, pelo motivo
+da [diretriz de prioridade](#a-prioridade-do-trabalho-declarada-em-2026-08-12). As saídas
+saíram do texto neste mesmo turno.
+
+**O que fica decidido.** O fecho de
+[`E-35`](#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10) **não é corrigido, e
+não vira patch**: ele permanece byte a byte como foi escrito em 2026-08-10, atribuindo ao
+ADR-0008 a frase que é do ADR-0011. Esta linha é o registro de que o defeito é conhecido, e
+o link ao lado da frase continua apontando para o alvo certo.
+
+**O custo aceito, escrito para quem ler aquele fecho.** Quem o ler pela primeira vez
+aprende a atribuição errada, e só descobre seguindo o link. A fila não ganha regime de
+patch, e por isso qualquer defeito futuro em fecho datado cai neste mesmo lugar: fica
+registrado e não é consertado.
 
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 

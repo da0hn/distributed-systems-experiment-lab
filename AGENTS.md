@@ -230,10 +230,12 @@ esquema.
   [ADR-0017](docs/adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#a-dispensa-da-regra-de-tecnologia-por-conveniência-alcança-este-uso-do-broker-também)
   carrega subseção de dispensa própria, e o texto dela declara o **mesmo** escopo da
   segunda — "o uso do broker no caminho da observação". Se ela é dispensa nova ou é a
-  segunda realocada pela divisão não está decidido, e a contagem acima não antecipa a
-  resposta: a lacuna é a linha
-  [`E-84`](docs/adr/fila-de-decisoes.md#e-84--a-dispensa-do-adr-0017-é-terceira-ou-é-a-segunda-realocada)
-  da fila.
+  segunda realocada pela divisão **não está decidido, e a lacuna foi aceita** em
+  2026-08-12, no fecho de
+  [`E-84`](docs/adr/fila-de-decisoes.md#e-84-fecha-em-lacuna-aceita-escolhida-em-2026-08-12):
+  ninguém está encarregado de responder, e a contagem acima não antecipa a resposta. **A
+  regra que importa não depende do número** — uma dispensa registrada não é precedente, e
+  a próxima precisa ser escrita por inteiro.
 - **Nenhuma aleatoriedade não semeada.** `Math.random()`, `java.util.Random` e
   `ThreadLocalRandom` são proibidos fora do componente de aleatoriedade semeada. Uma
   chamada esquecida quebra a reprodutibilidade em silêncio, meses depois.
