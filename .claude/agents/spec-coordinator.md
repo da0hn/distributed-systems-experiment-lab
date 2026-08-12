@@ -97,7 +97,7 @@ principal dizendo o que falta. Completar briefing é decidir, e você não decid
 **Você roda UM ciclo, e não abre o seguinte.** Se a terceira réplica não convergir,
 devolva à sessão principal o que sobrou e o histórico do que já foi tentado. Quem abre
 ciclo novo, com escritor novo, é a sessão principal — é a regra de
-[`AGENTS.md`](../../AGENTS.md#redação-e-revisão-independente-de-especificação), e ela não
+[`specification-process.md`](../../docs/specification-process.md#redação-e-revisão-independente-de-especificação), e ela não
 mudou por você existir. **Nenhum defeito é abandonado por esgotamento de réplica**, e a
 sua devolução é o que garante isso: descreva cada defeito que ficou de forma acionável
 por quem não viveu o ciclo.

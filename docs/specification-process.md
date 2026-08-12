@@ -437,6 +437,93 @@ dela emenda, substitui ou ratifica o antigo, e o card é alinhado ao que o ADR d
 não existe: se ele fica marcado, sai, ou permanece como está. A regra do registro no
 mesmo turno obriga a escrever a contradição; ela não diz isso.
 
+## Redação e revisão independente de especificação
+
+Esta seção morava no [`AGENTS.md` da raiz](../AGENTS.md) e veio para cá em 2026-08-12,
+porque ela é processo e justificativa — o que este documento é dono de manter. O que
+ficou lá é lápide: a regra de quem aciona quem, que um agente precisa antes de saber o
+que procurar. Nenhuma decisão mudou na mudança de arquivo.
+
+Depois que a pessoa decidir, a sessão principal continua dona da decisão e delega a
+redação a um agente escritor. Um agente revisor independente confere os artefatos antes
+de eles voltarem para a pessoa. A regra é agnóstica de ferramenta, modelo e provedor.
+
+**O par escreve especificação, e o ADR é um dos artefatos que ela PODE gerar.** Até
+2026-08-10 o par era específico de ADR, e isso invertia a ordem do processo: o artefato
+padrão é o Feature Card, e o ADR nasce só quando a escolha atende aos
+[quatro critérios](adr/README.md#uma-decisão-merece-adr-quando). O escritor escreve
+os artefatos que o prompt nomeia; ele NÃO DEVE criar um ADR que o prompt não nomeou, nem
+omitir um que ele nomeou. Quando os quatro critérios discordarem do que o prompt pediu,
+ele entrega o que foi pedido e **relata a divergência** — quem a resolve é a pessoa.
+
+O escritor recebe a decisão tomada, alternativas descartadas e seus motivos, evidências
+com caminho e âncora GFM, e o estado inicial exigido pelo processo. Ele NÃO DEVE escolher
+alternativa, inventar evidência ou fechar lacuna. O revisor NÃO DEVE editar artefato
+nenhum: ele devolve uma lista numerada de defeitos para o escritor corrigir.
+
+**A réplica é condicional, e não etapa do fluxo.** O revisor roda uma vez sobre o que o
+escritor entregou. Se ele responder `SEM DEFEITOS`, o ciclo termina ali, com zero
+réplicas. Cada lista de defeitos gera uma réplica ao **mesmo** escritor, com a lista
+preservada, e um ciclo tem no máximo três.
+
+**O teto de três encerra o ciclo, e não o trabalho.** Decidido em 2026-08-10. Se a
+terceira réplica não convergir, a sessão principal abre um **ciclo novo**, com escritor
+novo, passando o que sobrou e o histórico do que já foi tentado. O teto existe porque um
+quarto laço no mesmo contexto costuma repetir a mesma correção com outras palavras — e
+não porque o defeito deixe de importar. **Nenhum defeito é abandonado por esgotamento de
+réplica.** O que continua indo à pessoa é o defeito que exige uma decisão que ninguém
+tomou: aí o ciclo novo não resolve nada, porque nenhum escritor pode decidir.
+
+**Quem aciona quem tem uma regra, e ela é uma só: quem produz PODE acionar quem mede, e
+NÃO DEVE acionar quem julga.** Decidido em 2026-08-11. O escritor aciona o verificador,
+porque medir não é julgar — ele recebe caminhos de arquivo e devolve números, e não há
+enquadramento a herdar de uma lista de caminhos. O escritor NÃO DEVE acionar o revisor:
+o prompt de quem revisa não pode ser composto por quem está sob revisão. E o revisor
+também NÃO DEVE acionar o escritor — a inversão foi considerada e descartada no mesmo
+dia, porque um revisor que especifica o que julga lê depois o reflexo do que pediu, e
+deixa de ser proxy do leitor futuro, que é de onde vem o valor dele.
+
+**O laço sai da sessão principal por um coordenador, que não escreve nem julga.** Ele
+recebe o briefing da pessoa pela sessão principal e o repassa **literalmente** aos dois.
+Não produz artefato, e por isso não tem o que defender diante do revisor; não emite
+veredito, e por isso não tem o que validar. Um coordenador que **sintetizasse** o
+briefing reintroduziria o filtro por outra porta: a versão que o revisor lê passaria a
+ser a leitura dele, e o ponto cego voltaria sem dono. Ele roda **um** ciclo e devolve —
+quem abre ciclo novo continua sendo a sessão principal.
+
+**O coordenador é opcional, e a sessão principal PODE rodar o ciclo ela mesma.** O que
+não muda em nenhum dos dois arranjos é quem aciona quem.
+
+```mermaid
+sequenceDiagram
+    participant P as Pessoa
+    participant S as Sessão principal
+    participant C as Coordenador
+    participant W as Escritor independente
+    participant V as Verificador mecânico
+    participant R as Revisor independente
+    P->>S: decisão explícita
+    S->>C: decisão, alternativas, evidências e artefatos nomeados
+    C->>W: o mesmo briefing, na letra
+    W->>W: card, example mapping, BDD e o ADR quando nomeado
+    W->>V: os arquivos que escreveu
+    V-->>W: relatório mecânico
+    W-->>C: arquivos e relatório
+    C->>R: o mesmo briefing, mais arquivos e relatório
+    loop no máximo três réplicas, e só enquanto houver defeito
+        R-->>C: lista numerada de defeitos
+        C-->>W: a lista, ao mesmo escritor
+        W-->>C: correção item por item
+        C-->>R: os arquivos corrigidos
+    end
+    R-->>C: SEM DEFEITOS, ou o que sobrou na terceira réplica
+    C-->>S: resultado do ciclo
+    S-->>P: artefatos para revisão
+```
+
+O ciclo de vida de ADR aceito, incluindo emenda, subsunção e adendo, continua no
+[`adr/README.md`](adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05).
+
 ## O que este processo não decide
 
 **Quais linhas da fila são comportamento disfarçado de arquitetura.** A pergunta foi

@@ -194,7 +194,7 @@ você.** Os dois arranjos existem, e em ambos quem NÃO aciona o revisor é voc�
 **Você não conta as réplicas e não decide se o ciclo acabou** — quem faz isso é quem te
 acionou, o coordenador ou a sessão principal. O prompt te informa a réplica em curso, e a
 regra é de
-[`AGENTS.md`](../../AGENTS.md#redação-e-revisão-independente-de-especificação): cada lista
+[`specification-process.md`](../../docs/specification-process.md#redação-e-revisão-independente-de-especificação): cada lista
 de defeitos volta ao **mesmo** escritor, com o contexto da redação intacto, e um ciclo tem
 no máximo três réplicas.
 

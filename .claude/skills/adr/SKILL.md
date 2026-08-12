@@ -44,7 +44,7 @@ comportamento, e vai para o Feature Card. O teste completo dessa fronteira está
 
 **Delegue a redação do arquivo a um sub-agente, em background.** Regra adotada em
 2026-08-04, e o dono dela é
-[`AGENTS.md`](../../../AGENTS.md#redação-e-revisão-independente-de-especificação). A
+[`specification-process.md`](../../../docs/specification-process.md#redação-e-revisão-independente-de-especificação). A
 sessão principal conduz a decisão e obtém a escolha explícita; o sub-agente recebe a
 escolha já feita e escreve o ADR.
 
@@ -63,7 +63,7 @@ condicional:** um `SEM DEFEITOS` encerra o ciclo sem réplica nenhuma. Enquanto 
 for uma lista, mande-a de volta ao escritor com `SendMessage`, que preserva o contexto
 dele. Pare na terceira réplica e leve o que sobrou ao usuário. O contrato do loop — o que
 o escritor recebe, o que ele NÃO DEVE fazer, e quem decide quando não converge — está em
-[`AGENTS.md`](../../../AGENTS.md#redação-e-revisão-independente-de-especificação).
+[`specification-process.md`](../../../docs/specification-process.md#redação-e-revisão-independente-de-especificação).
 
 O sub-agente NÃO DEVE escolher entre alternativas nem fechar lacuna sozinho. Uma lacuna
 encontrada durante a redação vira linha em

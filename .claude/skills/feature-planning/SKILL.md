@@ -77,7 +77,7 @@ patchar uma decisão.
 **Delegue a redação dos artefatos a um sub-agente, e não os escreva na sessão
 principal.** A sessão principal conduz a decisão com a pessoa e obtém a escolha
 explícita; o par de agentes recebe a escolha já feita. O dono da regra é
-[`AGENTS.md`](../../../AGENTS.md#redação-e-revisão-independente-de-especificação).
+[`specification-process.md`](../../../docs/specification-process.md#redação-e-revisão-independente-de-especificação).
 
 - **`feature-writer`** (`.claude/agents/feature-writer.md`) redige e corrige. Ele escreve
   o Feature Card, o Example Mapping e o BDD, e escreve o ADR **só quando o prompt o
