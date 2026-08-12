@@ -237,6 +237,20 @@ def main() -> int:
              "por # são comentário.",
     )
     parser.add_argument(
+        "--file",
+        action="append",
+        dest="files",
+        default=[],
+        type=Path,
+        metavar="CAMINHO",
+        help="Restringe a varredura às ORIGENS indicadas, em vez de varrer a "
+             "árvore inteira. Repetível. Serve ao hook de edição, que precisa "
+             "de resposta em milissegundos e só pode ter estragado a citação "
+             "que PARTE do arquivo recém-tocado. Não substitui a varredura "
+             "completa: uma citação que APONTA para o arquivo tocado parte de "
+             "outro lugar, e só a árvore inteira a alcança.",
+    )
+    parser.add_argument(
         "--quem-cita",
         dest="quem_cita",
         metavar="ALVO",
@@ -278,6 +292,14 @@ def main() -> int:
     morto = root / "docs" / "adr" / "arquivo"
     sources = sorted(root.glob("docs/**/*.md")) + sorted(root.glob("*.md"))
     vivos = [s for s in sources if morto not in s.parents]
+    if args.files:
+        # O escopo RESTRINGE a varredura, e não a amplia: um caminho fora do
+        # corpus, ou dentro do arquivo congelado, não passa a ser verificado por
+        # ter sido pedido. Sem isso, o hook de edição verificaria
+        # `docs/adr/arquivo/**` toda vez que alguém o abrisse, contra a decisão
+        # que o isentou.
+        pedidos = {(root / f).resolve() for f in args.files}
+        vivos = [s for s in vivos if s.resolve() in pedidos]
     defects = [d for source in vivos for d in inspect(source, root)]
 
     remaining, waived = [], []
