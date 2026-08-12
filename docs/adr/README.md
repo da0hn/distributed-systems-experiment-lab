@@ -242,6 +242,38 @@ Quatro regras governam o rastro:
 Na substituição, o campo `Estado` continua recebendo `Substituído por ADR-NNNN`, como
 antes. Os dois campos novos entram junto, e não no lugar dele.
 
+### O cabeçalho é livro-razão, decidido em 2026-08-12
+
+**O cabeçalho de um ADR NÃO DEVE carregar argumento.** Ele registra alteração
+**sofrida**, e cresce por evento de manutenção. Todo texto que sustenta uma escolha,
+descarta uma alternativa ou explica por que duas medições não batem vive no **corpo**, e
+é medido.
+
+**A regra nasceu de a exceção ter mudado de tamanho.** O cabeçalho é descontado da
+contagem de prosa desde 2026-08-10, e o caso que originou o desconto era uma emenda que
+estourou o teto por "cerca de trezentas letras, quase todas dentro de um link". Para
+aquele caso a decisão continua correta — cobrar duas linhas de livro-razão empurraria
+para encolher a prosa de um ADR aceito, que é o que o
+[lifecycle](#a-revogação-da-imutabilidade-decidida-em-2026-08-07) proíbe.
+
+**O que mudou não foi a régua, foi o que passou a caber embaixo dela.** O cabeçalho do
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)
+foi de 693 a 7.856 caracteres, e o corpo dele estava em 11.997 contra 12.000 — comprimido
+deliberadamente, com teto próprio recusado no mesmo dia para não afrouxar a régua. Medido
+**sem** o desconto, o mesmo arquivo dava 19.594 contra 12.000. O argumento migrou para
+onde a régua não olha, sem que ninguém tivesse decidido que ele podia.
+
+O teste, ao escrever: se a linha responde "o quê" e "quando", é livro-razão; se responde
+"por quê", pertence ao corpo.
+
+A escolha está no fecho de `E-66`, em
+[`fila-de-decisoes.md`](fila-de-decisoes.md#e-66-fecha-em-o-argumento-desce-do-cabeçalho-para-o-corpo-escolhida-em-2026-08-12).
+Ela vale para todo ADR daqui em diante. **A aplicação retroativa ao ADR-0014 está
+bloqueada** por
+[`E-64`](fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12):
+mover argumento para o corpo de um ADR aceito não cabe em nenhuma das seis formas sem
+forçar, e a escolha daquela linha — desfazer por divisão — é o que a destrava.
+
 ```mermaid
 flowchart LR
     N["ADR novo, já Aceito"] --> T{"contradiz a<br/>decisão antiga?"}

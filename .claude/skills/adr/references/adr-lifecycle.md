@@ -122,6 +122,33 @@ aqui:** ele move só `Última atualização`, e se registra em `## Patches aplic
 O detalhamento e a justificativa estão em `docs/adr/README.md`, seção "O rastro de
 alterações, emendado em 2026-08-04".
 
+### O cabeçalho é livro-razão, e decidido em 2026-08-12
+
+**O cabeçalho de um ADR NÃO DEVE carregar argumento.** Ele registra alteração
+**sofrida** — título, `Estado`, `Data`, `Etapa`, `Relacionado`, `Última atualização`,
+`Alterado por` —, e cresce por evento de manutenção, nunca por raciocínio escrito.
+
+Todo texto que **sustenta** uma escolha, **descarta** uma alternativa, ou **explica** por
+que duas medições não batem vive no **corpo**, e é medido pelo teto de prosa.
+
+**Por que a regra existe.** O cabeçalho é descontado da contagem desde 2026-08-10, e o
+motivo escrito era que ele é livro-razão, como `## Patches aplicados`. A justificativa
+continua correta; o que mudou foi o que passou a caber embaixo dela. O cabeçalho do
+ADR-0014 foi de **693 para 7.856 caracteres** — mais de vinte vezes as "trezentas letras"
+que sustentavam o desconto —, e o que entrou ali argumentava: qual forma do lifecycle
+cobria uma entrada, por que o alvo de uma emenda trocou em vez de somar, e por que dois
+comandos de medição não batem. **A régua mede o corpo, não vê o cabeçalho, e o argumento
+migrou para onde ela não olha.**
+
+Ao escrever ou alterar um ADR, o teste é este: se a linha do cabeçalho pode ser
+respondida com "o quê" e "quando", ela é livro-razão; se ela responde "por quê", ela
+pertence ao corpo.
+
+A escolha está em `docs/adr/fila-de-decisoes.md`, no fecho de `E-66`. Ela vale para todo
+ADR daqui em diante; a aplicação retroativa ao ADR-0014 depende de `E-64`, porque mover
+argumento para o corpo de um ADR **aceito** não cabe em nenhuma das seis formas sem
+forçar.
+
 ## O que o ADR desfaz fora de si, obrigatório desde 2026-08-10
 
 O rastro da seção anterior aponta **para trás**: ele fica no ADR alterado e nomeia quem o
