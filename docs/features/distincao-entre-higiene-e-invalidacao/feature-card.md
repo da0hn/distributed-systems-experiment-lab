@@ -4,7 +4,8 @@ Estado: `especificado, não implementado` · Origem:
 [`ADR-0012`](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md),
 `Aceito`
 
-Cobre o consumidor do broker do `lab-plane`, comum aos dois oráculos já especificados.
+Cobre o consumidor do broker do `lab-plane`, comum aos dois oráculos já especificados
+([ADR-0013, Decisão](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)).
 
 ## Problema e resultado esperado
 
@@ -48,7 +49,9 @@ Gatilho: o consumidor descarta um evento cujo discriminador de execução não c
   invalidação (execução ativa e não reconhecida).
 - A consulta à tabela de execuções ativas que sustenta a classificação.
 - A contagem de todo evento descartado, qualquer que seja o caso.
-- A distinção vale para os dois oráculos já especificados.
+- A distinção vale para os dois oráculos já especificados — o WAL é fonte legítima para
+  os dois
+  ([ADR-0013, Decisão](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)).
 
 ## Fora de escopo
 
@@ -70,14 +73,14 @@ Gatilho: o consumidor descarta um evento cujo discriminador de execução não c
 
 ## Regras de negócio
 
-| #  | Regra                                                                                                                                                                                       | Evidência                                                                                                                                                                                                                                                                       | Aprovada por |
-|----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| R1 | Um evento cujo discriminador de execução pertence a uma execução **ativa** e não reconhecida DEVE invalidar essa execução.                                                                | [ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)                                                                                                                                                                    | pendente     |
-| R2 | Um evento cujo discriminador de execução pertence a uma execução **encerrada** DEVE ser descartado em silêncio — higiene, sem invalidar veredito nenhum.                                  | [ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)                                                                                                                                                                    | pendente     |
-| R3 | O consumidor DEVE contar todo evento que descarta, tanto por higiene quanto por invalidação.                                                                                               | [ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)                                                                                                                                                                    | pendente     |
-| R4 | A lista de quais execuções estão ativas DEVE viver numa tabela do schema `lab_plane` — a primeira tabela daquele schema, hoje vazio de propósito.                                          | [E-35, fecho](../../adr/fila-de-decisoes.md#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10)                                                                                                                                                                        | pendente     |
-| R5 | O `lab-plane` DEVE rodar em réplica única. É condição do veredito confiável: com duas réplicas, uma delas não sabe quais execuções estão ativas.                                           | [ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão) e [E-33, fecho](../../adr/fila-de-decisoes.md#e-33-fecha-na-distinção-e-ela-transforma-uma-recomendação-de-e-3-em-requisito) | pendente     |
-| R6 | A tabela de execuções ativas NÃO DEVE registrar o que uma execução mediu. Ela guarda só o estado corrente do filtro, e não é o histórico de execução que o ADR-0011 recusou manter aqui.   | [E-35, fecho](../../adr/fila-de-decisoes.md#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10) e [ADR-0011, Histórico de execução dentro do `lab-plane`](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#histórico-de-execução-dentro-do-lab-plane) | pendente     |
+| #  | Regra                                                                                                                                                                                                                                                                                     | Evidência                                                                                                                                                                                                                                                                                                                           | Aprovada por |
+|----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| R1 | Um evento cujo discriminador de execução pertence a uma execução **ativa** e não reconhecida DEVE invalidar essa execução.                                                                                                                                                                | [ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão) e [E-33, fecho](../../adr/fila-de-decisoes.md#e-33-fecha-na-distinção-e-ela-transforma-uma-recomendação-de-e-3-em-requisito)                                                                                             | pendente     |
+| R2 | Um evento cujo discriminador de execução pertence a uma execução **encerrada** DEVE ser descartado em silêncio — higiene, sem invalidar veredito nenhum.                                                                                                                                  | [ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão) e [E-33, fecho](../../adr/fila-de-decisoes.md#e-33-fecha-na-distinção-e-ela-transforma-uma-recomendação-de-e-3-em-requisito)                                                                                             | pendente     |
+| R3 | O consumidor DEVE contar todo evento que descarta, tanto por higiene quanto por invalidação.                                                                                                                                                                                              | [ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)                                                                                                                                                                                                                          | pendente     |
+| R4 | A lista de quais execuções estão ativas DEVE viver numa tabela do schema `lab_plane` — a primeira tabela daquele schema, hoje vazio de propósito.                                                                                                                                         | [E-35, fecho](../../adr/fila-de-decisoes.md#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10)                                                                                                                                                                                                                              | pendente     |
+| R5 | O `lab-plane` DEVE rodar em réplica única, condição do veredito confiável: com duas réplicas, cada uma vê o backlog da outra, e nenhuma sabe dizer qual das duas causas produziu o descarte. O mecanismo exato continua `Pergunta em aberto`, dependente de `E-34` (Example Mapping, P6). | [ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão), [ADR-0012, Consequências](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#consequências) e [E-34](../../adr/fila-de-decisoes.md#e-34--qual-dos-dois-sinks-de-rabbitmq-e-o-que-ele-amarra) | pendente     |
+| R6 | A tabela de execuções ativas NÃO DEVE registrar o que uma execução mediu. Ela guarda só o estado corrente do filtro, e não é o histórico de execução que o ADR-0011 recusou manter aqui.                                                                                                  | [E-35, fecho](../../adr/fila-de-decisoes.md#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10) e [ADR-0011, Histórico de execução dentro do `lab-plane`](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#histórico-de-execução-dentro-do-lab-plane)                                        | pendente     |
 
 ## Integrações e contratos afetados
 
@@ -94,8 +97,7 @@ pendência fechar, nunca neste card. Nenhum contrato OpenAPI ou AsyncAPI nasce d
 
 - `Pergunta em aberto`: a forma da tabela, e como uma execução ativa deixa de ser ativa —
   seguem no [Example Mapping](example-mapping.md#perguntas-em-aberto).
-- A réplica única é hoje ausência de reinício automático, não garantia formal — `E-3`
-  continua aberta
+- A réplica única não tem garantia formal na entrega — `E-3` continua aberta
   ([As decisões do grupo I](../../adr/fila-de-decisoes.md#as-decisões-do-grupo-i-em-2026-08-06)).
 
 ## Critérios de pronto
@@ -107,19 +109,15 @@ pendência fechar, nunca neste card. Nenhum contrato OpenAPI ou AsyncAPI nasce d
   fechado permanece intacto.
 - **R3 pela contagem**: todo descarte aparece no relatório, com o motivo — higiene ou
   invalidação.
-- **R5 pela ausência de segunda réplica**: nenhuma configuração sobe duas réplicas do
-  `lab-plane` ao mesmo tempo.
+- **R5 pela ausência de segunda réplica, condicionada ao fecho de `E-3`**: até lá,
+  nenhuma configuração conhecida sobe duas réplicas do `lab-plane` ao mesmo tempo, e a
+  garantia formal de entrega permanece `Pergunta em aberto`
+  ([As decisões do grupo I](../../adr/fila-de-decisoes.md#as-decisões-do-grupo-i-em-2026-08-06)).
 
 ## Links
 
 - [Example Mapping](example-mapping.md)
 - [ADR-0012](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md),
   `Aceito` — a distinção nasce na `## Decisão` dele
-- [E-33, fecho](../../adr/fila-de-decisoes.md#e-33-fecha-na-distinção-e-ela-transforma-uma-recomendação-de-e-3-em-requisito)
-- [E-35, fecho](../../adr/fila-de-decisoes.md#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10)
-- [E-50](../../adr/fila-de-decisoes.md#e-50--como-uma-execução-ativa-deixa-de-ser-ativa-chegue-ou-não-ao-fim) —
-  pendência aberta
-- [ADR-0011](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md),
-  `Aceito` — por que a tabela não é histórico de execução
 - [`deteccao-de-protecao-inerte`](../deteccao-de-protecao-inerte/feature-card.md) —
   mesmo consumidor

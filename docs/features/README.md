@@ -62,12 +62,21 @@ o E2 vive dentro dele, porque aquele mesmo ADR
 [o rebaixou](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-e2-deixa-de-ser-um-experimento-do-mvp)
 a execução de controle positivo, e ele deixou de ser experimento.
 
-**O terceiro deles é o card mais novo.**
-[streaming-e-replay-do-log-de-observacoes](streaming-e-replay-do-log-de-observacoes/feature-card.md)
-especifica o mecanismo pelo qual o `lab-journal` entrega o log de observações ao
+O terceiro deles é
+[streaming-e-replay-do-log-de-observacoes](streaming-e-replay-do-log-de-observacoes/feature-card.md),
+que especifica o mecanismo pelo qual o `lab-journal` entrega o log de observações ao
 frontend — histórico completo e apêndice ao vivo pelo mesmo `GET /stream` —, decidido
-pelo [`ADR-0016`](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md).
-É comportamento do próprio instrumento, e não do sistema medido nem de um oráculo.
+pelo [`ADR-0016`](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md). É
+comportamento do próprio instrumento, e não do sistema medido nem de um oráculo.
+
+O quarto é
+[distincao-entre-higiene-e-invalidacao](distincao-entre-higiene-e-invalidacao/feature-card.md),
+que especifica como o consumidor do broker do `lab-plane` classifica um evento
+descartado — higiene de janela fechada, ou invalidação de execução ainda ativa —,
+decidido pelo
+[`ADR-0012`](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md).
+Também é comportamento do instrumento, comum aos dois oráculos já especificados
+([`ADR-0013`](../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)).
 
 ## Capacidade conhecida e não especificada
 
