@@ -1958,6 +1958,42 @@ seja a resposta sobre cada teto individual.
 
 **Sem recomendação.** Escolher entre elas é da pessoa.
 
+#### `E-71` — uma decisão sem ADR falsificou prosa de um ADR aceito
+
+Aberta em 2026-08-11, ao conferir o que o fecho de `E-5` alterou fora de si.
+
+**O problema.** O `### Neutras` do
+[ADR-0008](0008-os-dois-planos-em-processos-separados.md#neutras) afirma que a escolha
+entre schema separado e dois bancos na mesma instância "**não foi feita**" e que ela "é
+pergunta em aberto". O
+[fecho de `E-5`](#e-5-decidida-contra-a-recomendação-e-o-que-ela-arrasta) fez a escolha —
+schemas separados na mesma instância — e diz, com todas as letras, que "ela fecha uma
+pergunta em aberto do ADR-0008". **O ADR-0008 nunca foi tocado.** Ele segue afirmando que
+a pergunta está aberta, e quem ler só ele não tem como saber que caiu.
+
+**Por que nenhuma forma do lifecycle alcança este caso.** As formas que alteram um ADR
+aceito por outro ADR exigem **um ADR novo que as carregue**, e `E-5` fechou sem gerar ADR
+— o que é regular desde 2026-08-04, quando o que passou a se enfileirar foi decisão, e
+não ADR. Sobra o **patch**, que conserta citação, caminho ou erro material e NÃO DEVE
+alterar a decisão nem o argumento. Trocar "não foi feita" por "foi feita" não é conserto
+de citação nem de caminho; e se é erro material, é o único tipo que nasce **depois** do
+texto, por ato de terceiro, e não por descuido de quem escreveu. **A lacuna não é do
+ADR-0008 — é da regra.**
+
+**Quantos casos existem não está medido, e esta linha não inventa o número.** O
+levantamento dos fechos sem artefato achou `E-5` com esta natureza; se há outros, medi-los
+faz parte da saída que for escolhida.
+
+| Saída                                                             | O que ela faz                                                                                                                        |
+|-------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| o patch ganha um motivo a mais, escrito                           | consertar afirmação que uma decisão posterior falsificou passa a ser patch legítimo, com a linha de `## Patches aplicados` de sempre |
+| decisão de fila que alcance ADR aceito passa a exigir ADR         | `E-5` teria gerado ADR, e o regime de 2026-08-04 ganha uma exceção nomeada em vez de um vazio                                        |
+| nasce uma forma nova, para decisão de fila que alcança ADR aceito | o lifecycle passa a ter uma forma cujo portador não é ADR, e o rastro no cabeçalho aponta para a linha da fila                       |
+
+**Sem recomendação.** Escolher entre elas é da pessoa. Enquanto a linha estiver aberta, o
+`### Neutras` do ADR-0008 permanece **byte a byte**, porque nenhuma forma autoriza tocá-lo
+— e é exatamente esse impasse que a linha existe para resolver.
+
 #### `E-37` — o que a proibição de derivar estado de stream alcança
 
 **Estado:** `fechada`, em 2026-08-09. Os três desdobramentos que esta linha deixou
