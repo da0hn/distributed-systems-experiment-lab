@@ -7,7 +7,7 @@
   substitui nem subsume nenhum ADR aceito.
 - **Fecha:** [`Q-0001-2`](../questions/Q-0001-2.md), [`Q-0005-1`](../questions/Q-0005-1.md).
 
-- **Última atualização:** 2026-08-07
+- **Última atualização:** 2026-08-11
 - **Errata:** a citação `README.md`, linhas 515-539, na seção `## Contexto`, quebrou em
   2026-08-03, quando o índice encolheu de 908 para 517 linhas. A seção citada era
   `### Q-0001-2`, extraída para
@@ -19,7 +19,8 @@
 ## Contexto
 
 O ADR-0002 fixou o domínio e parou antes da estratégia: "quem a acrescenta é o ADR de
-estratégias de concorrência" (`0002-o-dominio-minimo-e-os-dois-oraculos.md:94-95`),
+estratégias de concorrência"
+([ADR-0002, `## Decisão`](0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão)),
 atribuindo a esta decisão três pontos: colunas, calibração e retry (linhas 283-297).
 
 O ADR-0005 definiu **término** como o instante em que um worker para de tentar, "por
@@ -92,12 +93,13 @@ ler e escrever, pois não há leitura.
 ## Justificativa
 
 **Rótulo opaco** — a separação Control Plane / Lab Plane existe para que um bug do
-instrumento não vire resultado de consistência (ADR-0002:344-349); um Lab Plane que
-ramifique por estratégia vira quatro instrumentos com o mesmo nome. **Coluna só quando o
-código existir** — migração sem tabela para alterar não tem efeito verificável, o mesmo
-adiamento que o ADR-0002 aceitou para o domínio inteiro. **Retry é da estratégia** — o
-ADR-0005 já delega "há outra tentativa?" a ela; centralizar a lista de exceções no
-runtime obrigaria toda estratégia nova a editar o Lab Plane.
+instrumento não vire resultado de consistência
+([ADR-0002, `## Justificativa`](0002-o-dominio-minimo-e-os-dois-oraculos.md#justificativa));
+um Lab Plane que ramifique por estratégia vira quatro instrumentos com o mesmo nome.
+**Coluna só quando o código existir** — migração sem tabela para alterar não tem efeito
+verificável, o mesmo adiamento que o ADR-0002 aceitou para o domínio inteiro.
+**Retry é da estratégia** — o ADR-0005 já delega "há outra tentativa?" a ela; centralizar
+a lista de exceções no runtime obrigaria toda estratégia nova a editar o Lab Plane.
 
 **`PESSIMISTIC` controle positivo** — só ele impede a *janela*, não só o *resultado*
 errado; as outras três podem ter janela aberta e resultado certo, o que a execução de
@@ -180,9 +182,11 @@ O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidad
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
 
-| Data       | Seção do corpo | O que mudou                                                                             | Por quê                                                                                                                                                        |
-|------------|----------------|-----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 2026-08-07 | `## Contexto`  | a citação `README.md`, linhas 515-539, passou a apontar para `../questions/Q-0001-2.md` | a seção `### Q-0001-2` foi extraída do índice em 2026-08-03 e a citação apontava além do fim do arquivo; a errata do cabeçalho a nomeava sem poder consertá-la |
+| Data       | Seção do corpo     | O que mudou                                                                             | Por quê                                                                                                                                                                                                                                                                                                                                     |
+|------------|--------------------|-----------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-07 | `## Contexto`      | a citação `README.md`, linhas 515-539, passou a apontar para `../questions/Q-0001-2.md` | a seção `### Q-0001-2` foi extraída do índice em 2026-08-03 e a citação apontava além do fim do arquivo; a errata do cabeçalho a nomeava sem poder consertá-la                                                                                                                                                                              |
+| 2026-08-11 | `## Contexto`      | `0002-o-dominio-minimo-e-os-dois-oraculos.md:94-95` virou âncora `#decisão`             | a frase citada entre aspas — "quem a acrescenta é o ADR de estratégias de concorrência" — vive em `## Decisão` do ADR-0002. O intervalo caía nas forças em conflito de `## Problema`, e caía lá **antes** do deslocamento de dez linhas que o commit do ADR-0015 somou: a deriva é cumulativa, e o número nunca voltaria a alcançar a frase |
+| 2026-08-11 | `## Justificativa` | `ADR-0002:344-349` virou âncora `#justificativa`                                        | o argumento citado — a separação existe para que um bug do instrumento não vire resultado de consistência — vive em `## Justificativa` do ADR-0002, hoje em `:375`. O intervalo caía no parágrafo do `sucessos` no denominador, que é outro argumento                                                                                       |
 
 A entrada correspondente saiu de
 [`citations-baseline.txt`](../../scripts/citations-baseline.txt) no mesmo commit.

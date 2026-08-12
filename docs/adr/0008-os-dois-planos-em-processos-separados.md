@@ -9,7 +9,7 @@
   [`decisoes-pendentes.md`](arquivo/proposta-2026-08-03/decisoes-pendentes.md), e
   `D-ARQ-01` por consequência.
 
-- **Última atualização:** 2026-08-06
+- **Última atualização:** 2026-08-11
 - **Alterado por:** [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)
   — emenda; a região de pacote `dev.da0hn.lab.controlplane` (seção "Decisão", tabela de
   pacotes, `:70`) passa a `dev.da0hn.lab.sut`.
@@ -108,8 +108,9 @@ registrada na questão 1 do `arquivo/0006`
 (`arquivo/0006-hexagonal-com-archunit.md:98-111`).
 
 **Por que inglês em todo identificador.** `Resource`, `Allocation`, `value` e `capacity`
-já estão fixados em inglês pelo ADR-0002 (`:87-99`). Um código que misturasse `Passo`
-com `Resource` daria dois idiomas ao mesmo arquivo.
+já estão fixados em inglês pelo
+[ADR-0002, `## Decisão`](0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão). Um código
+que misturasse `Passo` com `Resource` daria dois idiomas ao mesmo arquivo.
 
 ## Consequências
 
@@ -233,8 +234,10 @@ ela afirmava continua verdadeiro.
 
 ## Patches aplicados
 
-Nenhum patch aplicado.
-
 O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
+
+| Data       | Seção do corpo     | O que mudou                                 | Por quê                                                                                                                                                                                                                                                              |
+|------------|--------------------|---------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-11 | `## Justificativa` | `ADR-0002 (:87-99)` virou âncora `#decisão` | `Resource`, `Allocation`, `value` e `capacity` são fixados em `## Decisão` do ADR-0002, e não em `## Vocabulário`, que cria quatro termos em português. O intervalo caía em `## Problema`, e a deriva é anterior ao deslocamento de dez linhas do commit do ADR-0015 |

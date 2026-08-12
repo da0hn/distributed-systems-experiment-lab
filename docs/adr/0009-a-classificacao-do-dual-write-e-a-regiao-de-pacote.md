@@ -8,7 +8,7 @@
   decidido em `docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md`, seção `A1`
   (linhas 1769-1802).
 
-- **Última atualização:** 2026-08-07, pelo patch registrado no fim deste arquivo. O
+- **Última atualização:** 2026-08-11, pelos patches registrados no fim deste arquivo. O
   adendo de 2026-08-05 continua onde estava.
 
 ## Contexto
@@ -16,8 +16,9 @@
 O plano do laboratório classifica o dual write no grupo C, escrita parcial, ao lado de
 producer failure, Outbox e Inbox (`docs/plano-do-laboratorio.md:200-207`). O ADR-0002,
 `Aceito` desde 2026-07-29, chama o mesmo fenômeno de "o fenômeno do grupo B que a
-etapa 6 estuda" (`docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:175`). A
-divergência está registrada como `C4` em
+etapa 6 estuda"
+([ADR-0002, `### O oráculo exato`](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)).
+A divergência está registrada como `C4` em
 `docs/architecture/decisoes-pendentes.md:109-112`, e nenhum documento a resolveu até
 aqui.
 
@@ -48,7 +49,9 @@ a carrega, e removê-la não invalida essa decisão
 ## Decisão
 
 **O dual write pertence ao grupo C, escrita parcial.** A classificação do ADR-0002
-como grupo B (`0002-...md:175`) deixa de valer. O texto do ADR-0002 permanece
+como grupo B
+([`### O oráculo exato`](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato))
+deixa de valer. O texto do ADR-0002 permanece
 intocado — o cabeçalho dele passa a registrar a mudança, conforme
 `## Consequências` abaixo.
 
@@ -76,7 +79,7 @@ O teste que decide entre emenda e substituição, aplicado às duas regras:
 
 ```mermaid
 flowchart TD
-    R1["ADR-0002:175<br/>classificação do dual write"]
+    R1["ADR-0002, O oráculo exato<br/>classificação do dual write"]
     R2["ADR-0008:70<br/>região de pacote controlplane"]
     T{"remover a regra invalida a decisão<br/>que o título do ADR anuncia?"}
     R1 --> T
@@ -250,14 +253,17 @@ O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidad
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
 
-| Data       | Seção do corpo                 | O que mudou                                                                                                            | Por quê                                                                                    |
-|------------|--------------------------------|------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
-| 2026-08-07 | `## Contexto`                  | `README.md:153` e `:174` viraram âncora para `#processo-de-debate` e `#substituição-e-subsunção-são-coisas-diferentes` | citação por linha para documento editável envelhece em silêncio na primeira edição do alvo |
-| 2026-08-07 | `## Justificativa`             | `README.md:169-172` virou âncora para `#substituição-e-subsunção-são-coisas-diferentes`                                | o mesmo motivo                                                                             |
-| 2026-08-07 | `### Negativas`                | `README.md:13-18` virou âncora para `#uma-decisão-merece-adr-quando`                                                   | o mesmo motivo                                                                             |
-| 2026-08-07 | `### Neutras`                  | `README.md:226-231` virou âncora para `#o-rastro-de-alterações-emendado-em-2026-08-04`                                 | o mesmo motivo                                                                             |
-| 2026-08-07 | `## Alternativas consideradas` | `README.md:32` virou âncora para `#convenções`                                                                         | o mesmo motivo                                                                             |
-| 2026-08-07 | `## Alternativas consideradas` | `README.md:171-172` virou âncora para `#substituição-e-subsunção-são-coisas-diferentes`                                | o mesmo motivo                                                                             |
+| Data       | Seção do corpo                                   | O que mudou                                                                                                            | Por quê                                                                                                                                                                                                                                              |
+|------------|--------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-07 | `## Contexto`                                    | `README.md:153` e `:174` viraram âncora para `#processo-de-debate` e `#substituição-e-subsunção-são-coisas-diferentes` | citação por linha para documento editável envelhece em silêncio na primeira edição do alvo                                                                                                                                                           |
+| 2026-08-07 | `## Justificativa`                               | `README.md:169-172` virou âncora para `#substituição-e-subsunção-são-coisas-diferentes`                                | o mesmo motivo                                                                                                                                                                                                                                       |
+| 2026-08-07 | `### Negativas`                                  | `README.md:13-18` virou âncora para `#uma-decisão-merece-adr-quando`                                                   | o mesmo motivo                                                                                                                                                                                                                                       |
+| 2026-08-07 | `### Neutras`                                    | `README.md:226-231` virou âncora para `#o-rastro-de-alterações-emendado-em-2026-08-04`                                 | o mesmo motivo                                                                                                                                                                                                                                       |
+| 2026-08-07 | `## Alternativas consideradas`                   | `README.md:32` virou âncora para `#convenções`                                                                         | o mesmo motivo                                                                                                                                                                                                                                       |
+| 2026-08-07 | `## Alternativas consideradas`                   | `README.md:171-172` virou âncora para `#substituição-e-subsunção-são-coisas-diferentes`                                | o mesmo motivo                                                                                                                                                                                                                                       |
+| 2026-08-11 | `## Contexto`                                    | `docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:175` virou âncora `#o-oráculo-exato`                             | a frase citada entre aspas — "o fenômeno do grupo B que a etapa 6 estuda" — vive em `### O oráculo exato`, hoje em `:202`. `:175` é uma linha `participant` do `sequenceDiagram`, e já era antes do deslocamento de dez linhas do commit do ADR-0015 |
+| 2026-08-11 | `## Decisão`                                     | `0002-...md:175` virou âncora `#o-oráculo-exato`                                                                       | a mesma citação, ao mesmo alvo, no mesmo defeito                                                                                                                                                                                                     |
+| 2026-08-11 | `## Decisão`, rótulo do nó `R1` do bloco Mermaid | `ADR-0002:175` passou a nomear a seção, sem link                                                                       | dentro de um rótulo de nó não cabe link Markdown, e o nome da seção alcança o alvo que o número deixou de alcançar                                                                                                                                   |
 
 As seis citações eram o motivo do teto de 514 linhas do índice, revogado no mesmo dia. O
 texto do corpo continua afirmando que o corpo de um ADR aceito NÃO DEVE ser editado —

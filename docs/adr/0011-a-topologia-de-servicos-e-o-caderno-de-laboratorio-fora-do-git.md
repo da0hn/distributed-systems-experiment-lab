@@ -44,10 +44,10 @@ declarou sem valor
 e nenhuma das duas pastas existe.
 
 O ADR-0002 decide quem deriva o identificador: ele DEVE ser "gerado no código do sistema
-sob teste, a partir da semente do experimento"
-(`0002-o-dominio-minimo-e-os-dois-oraculos.md:138-139`), sob o título "atribuída pela
-aplicação" — `## Justificativa` explica por que o componente de identidade não
-contradiz essa regra.
+sob teste, a partir da semente do experimento", sob o título "atribuída pela aplicação"
+([ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md#a-identidade-das-entidades-é-atribuída-pela-aplicação))
+— `## Justificativa` explica por que o componente de identidade não contradiz essa
+regra.
 
 ## Problema
 
@@ -180,12 +180,12 @@ exclui toda regra em `## Decisão`, ou só a que dá título, ninguém decidiu: 
 aberto`.
 
 **O componente de identidade não contradiz o ADR-0002.** O `DEVE` de "gerado no código
-do sistema sob teste" vive sob o título "atribuída pela **aplicação**"
-(`0002-o-dominio-minimo-e-os-dois-oraculos.md:136`), e as duas frases seguintes vedam só
-`SERIAL`, `IDENTITY`, `nextval` e valor padrão do banco
-(`0002-o-dominio-minimo-e-os-dois-oraculos.md:139-140`): a regra protege a aplicação
-decidir a identidade, não o banco. O componente continua aplicação, derivando de forma
-determinística da semente — o que o ADR-0002 proíbe é o banco atribuir o número.
+do sistema sob teste" vive sob o título "atribuída pela **aplicação**", e as duas frases
+seguintes da mesma seção vedam só `SERIAL`, `IDENTITY`, `nextval` e valor padrão do banco
+([ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md#a-identidade-das-entidades-é-atribuída-pela-aplicação)):
+a regra protege a aplicação decidir a identidade, não o banco. O componente continua
+aplicação, derivando de forma determinística da semente — o que o ADR-0002 proíbe é o
+banco atribuir o número.
 
 **O histórico sai do Git.** Entre o arquivo versionado, revisável em PR, e o Experiment
 Designer no frontend, que dispensa editar Markdown, o segundo venceu; o custo — perda de
@@ -285,8 +285,11 @@ identificador novo durante os passos — a latência de rede volta a entrar na m
 
 ## Patches aplicados
 
-Nenhum patch aplicado.
-
 O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
+
+| Data       | Seção do corpo     | O que mudou                                                                                                                 | Por quê                                                                                                                                                                                                                               |
+|------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-11 | `## Contexto`      | `0002-o-dominio-minimo-e-os-dois-oraculos.md:138-139` virou âncora `#a-identidade-das-entidades-é-atribuída-pela-aplicação` | a frase citada entre aspas — "gerado no código do sistema sob teste, a partir da semente do experimento" — vive em `:152-153`, sob o título que o próprio parágrafo nomeia. O intervalo caía na descrição de `allocate`, noutra seção |
+| 2026-08-11 | `## Justificativa` | `0002-...md:136` e `0002-...md:139-140` viraram uma âncora só, `#a-identidade-das-entidades-é-atribuída-pela-aplicação`     | as duas citações apontavam para o título e para as duas frases seguintes **da mesma seção**; nenhuma delas alcançava mais o alvo, e a seção inteira responde pelas duas                                                               |

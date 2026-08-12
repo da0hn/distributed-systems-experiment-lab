@@ -3293,6 +3293,30 @@ ADR aceito, e nenhuma é alcançada pela dívida de `E-44`:
 alvo de uma citação é decidir o que a afirmação se apoia. As duas ficam como estão até a
 pessoa dizer.
 
+**As sete de corpo de ADR aceito foram patchadas em 2026-08-11, e a medição desmentiu a
+premissa desta linha em dois pontos.** Primeiro, **eram nove**, e não sete: o inventário
+não alcançou `0008:111` nem a segunda ocorrência de `:175` dentro do `## Decisão` do
+ADR-0009, e uma delas — o rótulo do nó `R1` do bloco Mermaid — não é citação em prosa e
+por isso escapou da varredura. Segundo, e mais importante, **o deslocamento não era de dez
+linhas: era cumulativo, e maior**. As nove foram conferidas contra o texto que cada uma
+cita entre aspas, e nenhuma voltaria ao alvo somando dez — `:175` do ADR-0009 aponta para
+uma linha `participant` do `sequenceDiagram` e a frase citada vive em `:202`; `:94-95` do
+ADR-0006 cai nas forças em conflito e a frase vive em `:122-123`. Somar dez a cada uma
+teria produzido nove citações continuando erradas, com aparência de consertadas.
+
+**O conserto foi para âncora, e isso não escolheu alvo nenhum.** Cada uma das nove cita um
+trecho **entre aspas**, e esse trecho existe, na letra, dentro de uma seção alcançável por
+título — que é a condição em que `C-1` manda citar por âncora. O alvo foi **achado** pelo
+texto citado, e não escolhido por quem patchou. É exatamente o que separa as nove da
+segunda linha da tabela acima, em que a frase e o intervalo nunca descreveram a mesma
+coisa.
+
+**Uma décima ficou de fora, e ela pertence a esta linha.**
+
+| Onde vive                                                                         | O que ela cita | Por que o conserto exige decisão                                                                                                                                                                                                                                                           |
+|-----------------------------------------------------------------------------------|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [ADR-0006, `## Contexto`](0006-a-forma-da-estrategia-de-concorrencia.md#contexto) | `0002:283-297` | não cita trecho entre aspas: afirma que o ADR-0002 atribuiu ao ADR-0006 "três pontos: colunas, calibração e retry". A seção `### O que este ADR não decide` do ADR-0002 delega colunas e calibração, e **não nomeia retry**. Repontar para ela afirmaria que a seção diz o que ela não diz |
+
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 
 **Esta seção é um levantamento congelado em 2026-08-06, e não é recontada a cada linha
