@@ -249,10 +249,14 @@ esquema.
 - **Nenhuma tecnologia entra por estar
   disponível.** Cada uma entra quando um experimento
   não puder ser executado sem ela. Antes de propor Valkey ou OpenTelemetry, diga qual
-  limitação concreta da stack atual ela resolve. **A regra foi dispensada uma vez**, para
-  o broker, pelo
+  limitação concreta da stack atual ela resolve. **A regra já foi dispensada duas vezes,
+  as duas para o mesmo broker**: pelo
   [ADR-0012](docs/adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
-  — uma dispensa registrada não é precedente: a próxima também precisa ser explícita.
+  no caminho do veredito, e pelo
+  [ADR-0014](docs/adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-evento-sai-do-passo-pelo-broker)
+  no caminho da observação — uma dispensa registrada não é precedente, e foi por isso que
+  a segunda precisou ser escrita por inteiro em vez de herdada. A próxima também precisa
+  ser explícita.
 - **Nenhuma aleatoriedade não semeada.** `Math.random()`, `java.util.Random` e
   `ThreadLocalRandom` são proibidos fora do componente de aleatoriedade semeada. Uma
   chamada esquecida quebra a reprodutibilidade em silêncio, meses depois.

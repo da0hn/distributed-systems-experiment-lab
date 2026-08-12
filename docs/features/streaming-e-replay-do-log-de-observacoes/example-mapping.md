@@ -1,7 +1,7 @@
 # Example Mapping — Streaming e replay do log de observações
 
 Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
-[`ADR-0014`](../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md),
+[`ADR-0016`](../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md),
 `Aceito`.
 
 ## História
@@ -57,19 +57,19 @@ Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
 
 ## Perguntas em aberto
 
-| #  | Pergunta                                                                                                                                                                                          | Origem                                                                                                                 |
-|----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
-| P1 | O que acontece quando `Last-Event-ID` aponta para um cursor que nunca existiu — maior que o último persistido, ou de outra execução? Devolver tudo, recusar ou um erro dedicado não foi decidido. | nova, 2026-08-10                                                                                                       |
-| P2 | Como o `lab-journal` sabe que uma execução terminou, para `R4` fechar o stream? Nenhum ADR aceito decide o critério de encerramento.                                                              | nova, 2026-08-10                                                                                                       |
-| P3 | Qual é o formato JSON de cada evento no stream — nomes de campo, tipo do cursor, os dois instantes?                                                                                               | [ADR-0014, negativas](../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#negativas) |
-| P4 | Existe limite para o replay do histórico completo de uma execução muito longa, ou o `lab-journal` sempre lê a tabela inteira de uma vez?                                                          | nova, 2026-08-10                                                                                                       |
+| #  | Pergunta                                                                                                                                                                                          | Origem                                                                                          |
+|----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| P1 | O que acontece quando `Last-Event-ID` aponta para um cursor que nunca existiu — maior que o último persistido, ou de outra execução? Devolver tudo, recusar ou um erro dedicado não foi decidido. | nova, 2026-08-10                                                                                |
+| P2 | Como o `lab-journal` sabe que uma execução terminou, para `R4` fechar o stream? Nenhum ADR aceito decide o critério de encerramento.                                                              | nova, 2026-08-10                                                                                |
+| P3 | Qual é o formato JSON de cada evento no stream — nomes de campo, tipo do cursor, os dois instantes?                                                                                               | [ADR-0016, negativas](../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#negativas) |
+| P4 | Existe limite para o replay do histórico completo de uma execução muito longa, ou o `lab-journal` sempre lê a tabela inteira de uma vez?                                                          | nova, 2026-08-10                                                                                |
 
 ## Adiado de propósito
 
-| Item                                                   | Gatilho que o retoma                                                      |
-|--------------------------------------------------------|---------------------------------------------------------------------------|
-| O contrato formal do endpoint (OpenAPI ou AsyncAPI)    | quando a interface existir, pela regra do `specification-process.md`      |
-| O formato JSON do evento no stream                     | a decisão da forma concreta do registro, no próprio ADR-0014              |
+| Item                                                | Gatilho que o retoma                                                 |
+|-----------------------------------------------------|----------------------------------------------------------------------|
+| O contrato formal do endpoint (OpenAPI ou AsyncAPI) | quando a interface existir, pela regra do `specification-process.md` |
+| O formato JSON do evento no stream                  | a decisão da forma concreta do registro, no próprio ADR-0016         |
 
 ## O que não virou cenário, e por quê
 

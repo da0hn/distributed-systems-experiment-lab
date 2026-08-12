@@ -773,6 +773,20 @@ PostgreSQL adiciona contenção à medida. No MVP, o log vive em memória e é p
 fim da execução. O custo é perder o log se o processo morrer — aceitável enquanto nenhum
 experimento derrubar o processo de propósito. Deixa de ser aceitável na etapa 6.
 
+**O parágrafo acima descreve o estado anterior ao
+[ADR-0014](adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#a-persistência-no-lab-journal-começa-na-etapa-1-e-não-mais-na-6),
+de 2026-08-10, e fica como lápide.** **A restrição caiu como este plano a justifica.** O
+motivo escrito acima é que gravar observações no mesmo PostgreSQL adiciona contenção à
+medida, e é exatamente esse I/O que as
+[negativas do ADR-0014](adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#negativas)
+admitem: desde a etapa 1 o log é persistido no mesmo PostgreSQL do `system-under-test`.
+**O que resta em pé é a fronteira de schema, e não a de banco** — a escrita vai para o
+schema do `lab-journal`, e o
+[ADR-0010](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)
+continua proibindo que um serviço toque o schema de outro. O ADR-0014 troca contenção de
+disco por um log que sobrevive à queda proposital da etapa 6, e nomeia a troca em vez de
+escondê-la.
+
 **Toda aleatoriedade vem da semente, e todo relógio é injetado.** As regras 7 e 8 do
 arquivo/0006 valem sem alteração. Elas custam quase nada agora e são impossíveis de
 aplicar depois.
@@ -784,29 +798,33 @@ aplicar depois.
 Adiar é diferente de esquecer. Cada item abaixo tem um gatilho: o experimento que torna
 a decisão obrigatória.
 
-| Decisão adiada                                                    | Gatilho que a torna obrigatória                                                |
-|-------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| Quantos processos, e quais                                        | o experimento `JVM_LOCK` ficar vermelho com duas instâncias (etapa 4)          |
-| Broker no domínio: exchanges, filas, roteamento                   | **transporte do veredito: gatilho disparado** — ADR-0012; domínio na etapa 5   |
-| Formato interno da injeção de falha                               | a etapa 6, quando o ponto `BEFORE_PUBLISH` precisar existir de verdade         |
-| Onde o log de observações é persistido                            | um experimento que derrube o processo (etapa 6)                                |
-| Mecanismo de streaming para a UI (SSE ou WebSocket)               | a primeira execução longa o suficiente para não caber num polling              |
-| Definição de experimento: arquivo versionado ou registro no banco | o Experiment Designer da UI (ver Seção 11)                                     |
-| Valkey                                                            | um experimento que prove que advisory lock do PostgreSQL não basta (etapa 11)  |
-| Build, pacote raiz e número de módulos                            | **deixou de ser adiável** — o pipeline do dia zero precisa deles (seção 12)    |
-| OpenTelemetry, Prometheus, Grafana, Tempo                         | um fenômeno que a timeline própria não consiga explicar                        |
-| Kafka, Helm, service mesh                                         | nenhum gatilho previsto no roadmap atual                                       |
-| Kubernetes                                                        | **gatilho já disparado** — é o destino de entrega desde o dia zero (seção 12)  |
-| Event Sourcing e CQRS completos                                   | nenhum. A etapa 9 precisa de uma projeção, não de Event Sourcing               |
+| Decisão adiada                                                    | Gatilho que a torna obrigatória                                                  |
+|-------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| Quantos processos, e quais                                        | o experimento `JVM_LOCK` ficar vermelho com duas instâncias (etapa 4)            |
+| Broker no domínio: exchanges, filas, roteamento                   | **transporte do veredito: gatilho disparado** — ADR-0012; domínio na etapa 5     |
+| Formato interno da injeção de falha                               | a etapa 6, quando o ponto `BEFORE_PUBLISH` precisar existir de verdade           |
+| Onde o log de observações é persistido                            | **gatilho antecipado** — ADR-0014 põe a persistência no `lab-journal` na etapa 1 |
+| Mecanismo de streaming para a UI (SSE ou WebSocket)               | **decidido sem esperar o gatilho** — SSE com replay por cursor, ADR-0016         |
+| Definição de experimento: arquivo versionado ou registro no banco | o Experiment Designer da UI (ver Seção 11)                                       |
+| Valkey                                                            | um experimento que prove que advisory lock do PostgreSQL não basta (etapa 11)    |
+| Build, pacote raiz e número de módulos                            | **deixou de ser adiável** — o pipeline do dia zero precisa deles (seção 12)      |
+| OpenTelemetry, Prometheus, Grafana, Tempo                         | um fenômeno que a timeline própria não consiga explicar                          |
+| Kafka, Helm, service mesh                                         | nenhum gatilho previsto no roadmap atual                                         |
+| Kubernetes                                                        | **gatilho já disparado** — é o destino de entrega desde o dia zero (seção 12)    |
+| Event Sourcing e CQRS completos                                   | nenhum. A etapa 9 precisa de uma projeção, não de Event Sourcing                 |
 
 O padrão comum: nenhuma tecnologia entra por estar disponível. Cada uma entra quando um
 experimento não puder ser executado sem ela.
 
-**A regra foi dispensada uma vez**, em 2026-08-06, pelo
-[ADR-0012](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão):
-o broker entrou por decisão explícita de estudo, e a linha da tabela registra isso. Uma
-dispensa registrada **não é precedente** — a próxima tecnologia proposta precisa da
-mesma justificativa explícita, e o gatilho do domínio continua na etapa 5.
+**A regra foi dispensada duas vezes, as duas para o mesmo broker.** Em 2026-08-06, pelo
+[ADR-0012](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão),
+o broker entrou por decisão explícita de estudo, para o transporte do veredito, e a linha
+da tabela registra isso. Em 2026-08-10, pelo
+[ADR-0014](adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-evento-sai-do-passo-pelo-broker),
+o mesmo broker passou a servir também à travessia da observação. Uma dispensa registrada
+**não é precedente** — foi por isso que a segunda foi escrita por inteiro em vez de
+herdada, a próxima tecnologia proposta precisa da mesma justificativa explícita, e o
+gatilho do domínio continua na etapa 5.
 
 As duas últimas linhas alteradas merecem nota. O Kubernetes entrou, mas **como destino
 de entrega, não como objeto de estudo** — nenhum experimento o usa, e a distinção é o

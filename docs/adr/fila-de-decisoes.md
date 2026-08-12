@@ -2094,6 +2094,11 @@ sequenceDiagram
     D-->>C: replay da base, depois emenda no vivo
 ```
 
+**O diagrama acima é o da primeira escolha, e é anterior à segunda.** Nele o passo
+publica direto no broker — `P->>B` —, que é exatamente o trecho que a segunda escolha,
+mais abaixo, desfez ao interpor o buffer e a thread. Ele fica porque registra o que se
+decidiu primeiro; o desenho vigente é o do segundo diagrama.
+
 **As três descartadas, e o motivo de cada uma.** Ao vivo bloqueante, que é o vigente
 hoje, perde por manter as 900 a 1500 travessias do E1 dentro da janela medida, sem
 nenhuma defesa. Buffer local volátil perde porque a etapa 6 mata o processo de propósito,
@@ -2102,6 +2107,52 @@ buraco **sem sinalizar o buraco**. SSE e persistência em paralelo perde porque 
 escritas independentes sem transação comum — é o dual write, o próprio item do briefing
 que a etapa 6 existe para estudar, reproduzido dentro do instrumento que deveria só
 observá-lo.
+
+**A segunda escolha da pessoa, no mesmo dia: buffer em memória com thread própria, e o
+bloqueio registrado.** O runtime enfileira a observação num buffer em memória, sem esperar
+a rede, e uma thread separada publica cada item no broker; só o enfileiramento fica na
+janela medida. Quando o buffer enche, o runtime **bloqueia** até haver espaço e **registra
+o bloqueio como evento do log** — a observação não se perde em silêncio, e um veredito sob
+bloqueio pode ser descartado por quem lê o relatório.
+
+```mermaid
+sequenceDiagram
+    participant P as passo (lab-plane)
+    participant M as buffer em memória
+    participant T as thread de publicação
+    participant B as broker (RabbitMQ)
+    participant J as lab-journal
+    P->>M: enfileira a observação
+    alt buffer cheio
+        P->>P: bloqueia até haver espaço
+        P->>M: registra o bloqueio como evento do log
+    end
+    P->>P: segue para a próxima fronteira
+    Note over P,M: só o enfileiramento fica na janela medida
+    par publicação assíncrona, fora da janela medida
+        T->>M: retira o próximo item
+        T->>B: publica
+        B->>J: entrega o evento
+    end
+```
+
+**A alternativa descartada nessa segunda escolha é o descarte silencioso da observação
+quando o buffer enche.** A favor dela: o worker nunca bloqueia, e a janela medida não sofre
+perturbação alguma sob pressão. Perde porque uma perda silenciosa envenena o veredito sem
+deixar rastro — um log com buraco é indistinguível de um log correto, e o laboratório
+inteiro existe para produzir veredito confiável. Bloquear e registrar troca perturbação
+invisível por perturbação declarada.
+
+**O "buffer local" descartado acima não é este buffer, e o que os separa é onde o evento
+para.** O enunciado desta linha descreve a alternativa como "o passo enfileira num buffer
+local e um remetente próprio esvazia", e o
+[ADR-0010, Negativas](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#negativas)
+a chama de "buffer local com remetente próprio": o remetente próprio vive dentro do
+`lab-plane`, e a queda da etapa 6 leva buffer e remetente juntos; o broker é outro
+processo, e o que chegou lá sobrevive. O que **não** saiu do `lab-plane` se perde nos dois
+desenhos — o enunciado já dizia isso da alternativa, "perder o buffer quando o `lab-plane`
+cai" —, e nenhum dos dois sinaliza essa perda: o ADR-0014 a registra como consequência
+negativa em vez de deixá-la implícita.
 
 **Por que o cursor não é um timestamp.** [`Q-0004-3`](../questions/Q-0004-3.md),
 `pendente`, registra que "nenhum documento diz qual relógio o log usa, nem se ele é
@@ -2146,11 +2197,22 @@ documentos aceitos, e nenhum deles é editado por este fecho:
   é dono da forma do evento, e ela não tem campo de cursor nem instante de persistência.
 - O [ADR-0012, Decisão](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
   dispensou a regra de que nenhuma tecnologia entra por estar disponível, para o broker
-  **no caminho do veredito**; usá-lo também na observação amplia o alcance daquela
-  dispensa, e o [`AGENTS.md`](../../AGENTS.md#regras-estruturais-que-valem-sempre) registra
-  que "uma dispensa registrada não é precedente: a próxima também precisa ser explícita".
+  **no caminho do veredito**. O enunciado deste fecho supunha que usá-lo também na
+  observação ampliaria o alcance daquela dispensa; **a redação decidiu o oposto**, e a
+  pessoa o confirmou: o ADR-0014 concede dispensa própria e não toca o ADR-0012, porque
+  herdar seria tratar a primeira como precedente — e o
+  [`AGENTS.md`](../../AGENTS.md#regras-estruturais-que-valem-sempre) registra que uma
+  dispensa registrada não é precedente, e que a próxima precisa ser explícita.
 
-A redação do ADR é o próximo passo, e ela pertence à pessoa.
+A redação atravessou 2026-08-10 e 2026-08-11, e a linha produziu **dois** artefatos, e não
+um: a travessia da observação no
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md), e
+o streaming com replay por cursor no
+[ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md) — o número 0016, e não
+0015, porque aquele estava sendo escrito noutra frente. O que cada um desatualiza fora de
+si está na seção própria de cada um
+([0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-que-este-adr-desfaz-fora-de-si),
+[0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-que-este-adr-desfaz-fora-de-si)).
 
 **Duas lacunas seguem abertas, e este fecho as nomeia sem fechá-las.**
 [`E-51`](#e-51--de-onde-a-contagem-de-coincidências-do-adr-0004-lê-os-dados) pergunta de
@@ -2185,6 +2247,344 @@ dele", e a decisão de `E-36` acrescenta um segundo instante — o de persistên
 resolver a origem do primeiro.
 
 **Sem recomendação.**
+
+#### `E-59` — se o ADR-0016 tira a premissa de `Q-0022`
+
+Aberta em 2026-08-11, ao redigir o
+[ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-replay-por-cursor-é-o-único-mecanismo-com-ou-sem-histórico-completo).
+[`Q-0022`](../questions/Q-0022.md) objeta que os dois limiares propostos para trocar
+polling por SSE nunca foram medidos. O ADR fixa SSE **sem limiar nenhum**, e por isso os
+dois números deixam de governar escolha alguma — mas ele não nomeia a questão, e
+ninguém a adjudicou. Ela segue `pendente`, no próprio arquivo e no
+[índice de questões](../questions/README.md#índice).
+
+**Por que importa.** Declarar a premissa caída fora do arquivo da questão deixaria a
+[matriz de integrações](../architecture/integrations.md#perguntas-em-aberto) anunciando o
+fim de uma pendência que o índice ainda lista como viva — duas páginas afirmando coisas
+diferentes sobre a mesma questão. A redação de 2026-08-11 tirou a frase da matriz por
+isso, e não fechou a questão: fechá-la é ato de pessoa.
+
+**Sem recomendação.**
+
+#### `E-60` — o inventário de contratos, isento por caminho em 2026-08-11
+
+**Fechada em 2026-08-11, por escolha da pessoa, e a linha nasce aqui já fechada.** A
+pendência apareceu neste ciclo, ao acrescentar a fronteira `lab-plane` → RabbitMQ →
+`lab-journal` à tabela de
+[`../contracts/README.md`](../contracts/README.md#estado-nenhum-contrato-existe): o
+acréscimo foi só de linha de tabela, e o
+[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py)
+desconta tabela — o número medido era o mesmo de antes do ciclo, e já reprovava contra o
+teto genérico de 4.000. A reprovação é anterior à decisão do ADR-0014.
+
+**As duas saídas eram isentar o arquivo por caminho ou encolher a prosa**, dando a outro
+dono a doutrina dos três estados de interface. **A pessoa escolheu a primeira.** O arquivo
+entrou em `EXEMPT_BY_PATH` no `check_artifact_limits.py`, e o motivo está escrito no
+próprio script: o inventário de contratos **cresce por interface**, como o índice de
+capacidades cresce por capacidade, e um teto ali obrigaria a escolher entre omitir
+contrato do inventário e apagar a doutrina que explica o inventário. A medida que motivou
+a escolha está registrada lá — 6.690 caracteres de prosa contra o genérico de 4.000, num
+ciclo cujo acréscimo foi de linha de tabela.
+
+**O que a isenção NÃO alcança**, e o script o diz na própria entrada:
+`docs/plano-do-laboratorio.md`. O critério que separa os dois é o mesmo desta lista
+inteira — o inventário cresce por entrada, e o plano cresce por prosa analítica.
+
+**Esta worktree ainda carrega o script anterior à escolha**, e por isso o verificador
+reprova `docs/contracts/README.md` aqui até o merge. A isenção chega com ele.
+
+#### `E-61` — que tipo o evento de bloqueio de buffer carrega
+
+Aberta em 2026-08-11, ao redigir o
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-runtime-publica-por-um-buffer-em-memória-numa-thread-separada).
+Aquela decisão manda o runtime **registrar o bloqueio do buffer como evento do log**, e
+não diz que tipo esse evento carrega. O conjunto de tipos é **fechado** em quatro valores
+pela
+[forma de um evento](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#a-forma-de-um-evento)
+do ADR-0007 — `RESULTADO_DE_PASSO`, `BLOQUEIO`, `LIBERACAO` e `FALHA_INJETADA` —, e o
+`BLOQUEIO` de lá designa **outra coisa**: o bloqueio pelo escalonador, que carrega o campo
+`restrito`, verdadeiro quando havia restrição pendente para aquela fronteira.
+
+**Por que importa.** Reusar `BLOQUEIO` faz um nome designar dois conceitos, e quem lê o log
+deixa de distinguir bloqueio de escalonador de bloqueio de buffer. É essa distinção que
+sustenta a consequência que o ADR-0014 declara — "um veredito sob bloqueio PODE ser
+descartado por quem lê o relatório". Sem ela, o descarte alcança execução que só foi
+ordenada por barreira, e o `restrito` de um evento de buffer não tem significado.
+
+**Duas saídas, e nenhuma é de quem redige.** Uma é **emendar** o conjunto de tipos do
+ADR-0007 com um quinto valor, o que exige nomeá-lo e dizer o que ele faz com `restrito` e
+com o
+[critério de igualdade entre execuções de controle](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#o-critério-de-igualdade-entre-execuções-de-controle),
+que hoje compara a subsequência de eventos com `restrito = verdadeiro`. A outra é registrar
+o bloqueio fora do log de observações, o que tira o problema do conjunto fechado e cria
+outro: uma segunda sequência que a timeline precisa alinhar com a primeira.
+
+**Sem recomendação.**
+
+#### `E-62` — que forma cobre a entrada de decisão nova num ADR aceito
+
+Aberta em 2026-08-11, ao reconciliar o ADR-0014 com o commit `a5d5777`, que o aceitou.
+
+**O problema.** A **divisão**, sexta forma, foi criada para a **subtração declarada**: um
+ADR aceito cede subseções a um ADR novo, e o rastro diz quais saíram
+([`README.md`](README.md#a-divisão-de-um-adr-aceito-decidida-em-2026-08-11)). O que
+aconteceu com o
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)
+não foi só isso. Medido contra `a5d5777`, o `## Decisão` dele perdeu cinco subseções e
+**ganhou duas** — "A persistência no `lab-journal` começa na etapa 1, e não mais na 6" e
+"O runtime publica por um buffer em memória, numa thread separada", esta com três
+requisitos normativos —, e ganhou também um parágrafo normativo dentro de uma subseção
+que já existia, "fica **dispensada, e não satisfeita**", que em `a5d5777` só era
+argumento de `## Justificativa`. Fora de `## Decisão`, o mesmo commit fundiu as duas
+primeiras subseções de `## Alternativas consideradas` numa só e deu a ela um parágrafo de
+`Pergunta em aberto` novo, e acrescentou três subseções inteiras — "Descartar a
+observação quando o buffer enche", "Publish sem confirmação..." e "Emendar o
+ADR-0012...". Em `## Justificativa`, dois parágrafos são inteiramente novos e dois
+sobreviventes foram reescritos. Em `### Negativas`, três bullets entraram — a perda do
+buffer não esvaziado, o I/O que a persistência soma ao PostgreSQL único, e o tipo do
+evento de bloqueio
+([`E-61`](#e-61--que-tipo-o-evento-de-bloqueio-de-buffer-carrega)) —, e o **sexto**, o de
+`Perguntas em aberto`, foi reescrito: ele funde num bullet só as perguntas que `a5d5777`
+trazia soltas, perde as duas que a divisão levou ao ADR-0016 e **ganha uma lacuna que o
+ADR aceito não registrava, a capacidade do buffer** — a origem declarada de `P9` no
+[example mapping](../features/observacao-passo-a-passo/example-mapping.md#perguntas-em-aberto)
+e da linha do
+[card](../features/observacao-passo-a-passo/feature-card.md#riscos-e-decisões-pendentes).
+Com as duas subseções de `## Decisão` entrou um alvo de emenda que o ADR aceito não tinha,
+["Onde o log vive"](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#onde-o-log-vive),
+do ADR-0007 — e ele **troca** o alvo daquele commit, em vez de somar-se a ele: lá o
+`Alterado por` do ADR-0007 nomeava só "A forma de um evento", que a divisão passou ao
+ADR-0016. **Nenhuma das seis formas descreve entrada de decisão nova num ADR aceito.**
+
+**Por que importa.** As cinco formas anteriores à divisão preservam o corpo, ou consertam
+texto que não carrega decisão; a sexta o reduz e declara o que saiu. Nenhuma obriga a
+declarar o que **entrou**. Sem essa obrigação, quem lê um ADR aceito não distingue o que
+foi decidido na data do cabeçalho do que foi acrescentado depois — a leitura errada que a
+imutabilidade existia para impedir, e que o livro-razão de patch repôs por outra via
+apenas para o texto sem decisão. O cabeçalho do ADR-0014 declara hoje o **fato** da
+entrada e não nomeia forma alguma, porque a resposta é desta linha.
+
+**Três alternativas, e a objeção de cada uma.**
+
+| Alternativa                                                                        | Objeção                                                                                                                                                                                                                                           |
+|------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| alargar a **divisão** para cobrir entrada e saída no mesmo ato                     | o nome deixa de descrever o ato, e `Alterado por: divisão` passa a poder significar duas coisas opostas — quem lê o campo não sabe se o corpo encolheu ou cresceu                                                                                 |
+| criar uma **sétima forma**, só para a entrada                                      | sete formas para alterar um ADR aceito é vocabulário que ninguém retém, e a fronteira entre "entrada durante divisão" e emenda comum continua por decidir de qualquer modo                                                                        |
+| **recusar a entrada**: o ADR novo carrega toda decisão nova, e o dividido só perde | as duas subseções que entraram são sobre a travessia da observação, que é o tema do ADR-0014; empurrá-las para o ADR-0016 poria decisão de travessia dentro do ADR de streaming, e a divisão teria produzido dois artefatos com o assunto trocado |
+
+**O título também entrou, e a regra da divisão só fala de perda.** A seção
+[A divisão de um ADR aceito](README.md#a-divisão-de-um-adr-aceito-decidida-em-2026-08-11)
+autoriza a subtração e nada além dela: "o título dele PODE **perder** a parte que
+nomeava o que saiu". No primeiro caso da regra o título fez as duas coisas — em
+`a5d5777` ele era "O broker na travessia da observação, e o cursor monotônico do
+replay", e hoje é "A travessia da observação — o broker, o buffer e o bloqueio
+registrado": perdeu o cursor, que saiu, e **ganhou** "o buffer e o bloqueio registrado",
+que nomeia as duas subseções que entraram. Qualquer das três alternativas acima precisa
+alcançar o título, e não só o corpo — o cabeçalho do ADR-0014 declara hoje o ganho **e
+não nomeia forma para ele**, como faz para o corpo. **Alterar a seção do lifecycle para
+passar a alcançar o título é decisão da pessoa**, e não de quem redige.
+
+**Sem recomendação.**
+
+#### `E-63` — a emenda e o título citado por trecho
+
+Aberta em 2026-08-11, ao revisar o ADR-0014 e o ADR-0016.
+
+**O problema.** O ADR-0014 emenda
+["Onde o log vive"](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#onde-o-log-vive),
+e o ADR-0016 emenda
+["A forma de um evento"](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#a-forma-de-um-evento).
+O título do ADR-0007 é "O log de observações — forma, ordem e onde vive": as duas
+expressões — "forma" e "onde vive" — aparecem nele, na letra. A fronteira de
+[`README.md`](README.md#a-emenda-terceira-forma-ao-lado-da-substituição-e-da-subsunção)
+diz que a regra emendada NÃO DEVE ser a que dá título ao ADR — e aqui as duas dão, ao
+menos em parte.
+
+**Os dois ADRs declaram a colisão, e é por isso que ela chega aqui.** Cada
+"Por que emenda, e não substituição" reconhece que o título nomeia a regra emendada e
+remete a esta linha, em vez de afirmar que não há tensão:
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#justificativa)
+escreve "o título do ADR-0007 é '...forma, ordem e onde vive': a regra o nomeia", e
+[ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#justificativa) escreve
+"a palavra que nomeia a regra emendada está nele". **Nenhum dos dois decide**, e nem
+poderia: escolher entre emenda e substituição é da pessoa.
+
+**O precedente são dois conjuntos, e confundi-los é o que produziu três listas
+diferentes do mesmo fato.** Quem **emendou regra dentro de `## Decisão` e segue
+`Aceito`** são os ADRs
+[0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md#justificativa),
+[0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#justificativa) e
+[0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#justificativa)
+— **três**. Quem, além de emendar, **registrou a tensão como `Pergunta em aberto`** em
+vez de decidi-la são os ADRs 0010 e 0011 — **dois** —, com a fórmula "se a cláusula
+exclui qualquer regra sob `## Decisão`, ou só a que dá título, ninguém decidiu". O
+ADR-0009 emendou e **não** registrou a pergunta. **Os três lugares que citam este
+precedente passam a dizer a mesma coisa**: a `## Justificativa` do
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#justificativa),
+a do [ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#justificativa) e
+esta linha.
+
+Aqui a tensão é **mais forte** que naquele precedente, porque a regra não está só em
+`## Decisão`: uma expressão dela está no título. Se o precedente se estende a este
+caso é justamente o que esta linha decide.
+
+**Duas leituras, e nenhuma escolhida.**
+
+| Leitura                                             | Consequência                                                                                  |
+|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| um trecho literal do título conta como "dar título" | as duas emendas violam a fronteira, e a saída é substituição ou uma forma nova para este caso |
+| só o título inteiro, por igualdade, conta           | as duas emendas continuam válidas, e o precedente dos ADRs 0010 e 0011 se estende a este caso |
+
+**Sem recomendação.** Escolher entre emenda e substituição é da pessoa, e não de quem
+revisa ou redige.
+
+#### `E-66` — o cabeçalho descontado do ADR virou o lugar do argumento
+
+Aberta em 2026-08-11, ao corrigir o ADR-0014 e o ADR-0016.
+
+**O que o script decidiu, e onde.** O cabeçalho de um ADR — título, `Estado`, `Data`,
+`Etapa`, `Relacionado`, `Última atualização` e `Alterado por` — sai da contagem de prosa
+desde 2026-08-10, e quem o desconta é
+[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py).
+O comentário das linhas 228 a 241 declara a decisão e o motivo dela — "Ele é
+livro-razão de manutenção, como `## Patches aplicados`, e cresce por alteração
+sofrida, e não por argumento escrito" —; `prose_lines` e `prose_only` a implementam
+pelo parâmetro `skip_header`, nas linhas 277 a 302; e as linhas 428 a 431 a ligam para
+todo ADR, com `skip_header=is_adr(relative_path)`. Os números são os da cópia em
+`master`; a cópia desta árvore de trabalho é anterior, e nela o mesmo comentário está
+nas linhas 163 a 179 — o texto é o mesmo, e os identificadores também.
+
+**A justificativa escrita ali é a que a realidade desmentiu.** A linha 237 registra o
+caso que originou a decisão: em 2026-08-10 o ADR-0011 recebeu emenda do ADR-0014 e
+estourou o teto "pelas duas linhas de cabeçalho que toda emenda obriga — **cerca de
+trezentas letras, quase todas dentro de um link**". **Para aquele caso a decisão
+continua correta**, e esta linha não a contesta: duas linhas de livro-razão não são
+argumento, e cobrá-las empurraria para encolher a prosa de um ADR aceito, que é
+exatamente o que o lifecycle proíbe.
+
+**O que mudou não foi a régua, foi o que passou a caber embaixo dela.** O cabeçalho do
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)
+tinha **693 caracteres** em `a5d5777`, foi a **5.837** ao ser reconciliado com a
+divisão, e está em **7.856** depois das correções desta revisão — **mais de vinte vezes**
+as "trezentas letras" que sustentam o desconto. Os três valores são medição **desta
+árvore, nesta revisão**, e cada edição do cabeçalho os move; o que a linha afirma é a
+ordem de grandeza, e não o dígito. E o que entrou ali não é livro-razão: dois bullets do
+cabeçalho **argumentam** — qual forma do lifecycle cobre a entrada de decisão nova
+([`E-62`](#e-62--que-forma-cobre-a-entrada-de-decisão-nova-num-adr-aceito)), que o alvo
+de emenda no ADR-0007 trocou em vez de somar, e por que o nome do arquivo não é
+renomeado, com dois comandos de medição e a explicação de por que eles não batem.
+
+**O contraste é o que dá peso à linha.** No mesmo arquivo, o corpo medido está em
+**11.997 contra 12.000**, e chegou a essa margem por **compressão deliberada** — a
+pessoa escolheu comprimir em 2026-08-11, na linha
+[`## O orçamento de prosa`](#o-orçamento-de-prosa-quem-é-dono-do-teto-e-o-que-ele-alcança),
+recusando teto próprio justamente para não afrouxar a régua. Medido **sem** o desconto,
+o mesmo arquivo dá **19.594 caracteres de prosa contra 12.000**. A régua mede o corpo,
+não vê o cabeçalho, e o argumento migrou para onde ela não olha — sem que ninguém tenha
+decidido que ele podia.
+
+```mermaid
+flowchart TD
+  A["ADR-0014"] --> C["cabeçalho:<br/>693 → 5.837 → 7.856"]
+  A --> B["corpo:<br/>11.997 contra 12.000"]
+  C -->|" descontado desde<br/>2026-08-10 "| N["não medido"]
+  B -->|" dentro do glob<br/>do workflow "| M["medido, e comprimido<br/>para caber"]
+  N -.->|" o argumento migra<br/>para o lado não medido "| M
+```
+
+**Três saídas, e nenhuma recomendada.**
+
+| Saída                                       | O que ela faz                                                                                    | O que ela custa                                                                                                                                        |
+|---------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| o script passa a medir o cabeçalho do ADR   | `skip_header` deixa de valer, e o cabeçalho volta para dentro da contagem                        | o ADR-0014 estoura de novo, e por muito: **19.594 contra 12.000**, medido nesta árvore; e a decisão de 2026-08-10 cai junto para o caso que a originou |
+| o argumento desce do cabeçalho para o corpo | o cabeçalho volta a ser livro-razão, e o que argumenta vira seção medida                         | o corpo tem **3 caracteres** de folga; o que descer estoura o teto no mesmo ato, e a compressão de 2026-08-11 é pedida outra vez                       |
+| a divergência é aceita e registrada         | o cabeçalho segue fora da contagem, e esta linha fica sendo o registro de que ele mudou de papel | a régua passa a descrever mal o artefato, e nada impede que o próximo argumento também migre para o cabeçalho — sem ninguém medir                      |
+
+**Sem recomendação.** Escolher entre afrouxar a régua, estourá-la ou aceitar que ela
+deixou de alcançar o argumento é da pessoa, e não de quem redige o ADR que a expôs.
+
+**O que esta linha NÃO decide.** Quem é dono do teto no caso geral, e o alcance da
+medição sobre os arquivos fora do glob do workflow, continuam na linha
+[`## O orçamento de prosa`](#o-orçamento-de-prosa-quem-é-dono-do-teto-e-o-que-ele-alcança).
+Esta linha é sobre uma região **descontada de propósito** que passou a carregar
+argumento, e ela não fecha aquela.
+
+#### `E-67` — o transporte da emissão ao vivo foi fixado sem alternativa descartada
+
+Aberta em 2026-08-11, ao revisar o ADR-0016.
+
+**O problema.** O
+[ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-replay-por-cursor-é-o-único-mecanismo-com-ou-sem-histórico-completo)
+fixa o **SSE** como transporte da emissão ao vivo — é ali que a regra o nomeia, em "o
+stream **SSE** DEVE aceitar `Last-Event-ID`". A subseção
+[do push ao vivo](0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-push-ao-vivo-é-o-pubsub-interno-do-spring-em-after_commit)
+decide o gatilho da emissão, e não o transporte dela. O `## Alternativas consideradas`
+dele não registra **WebSocket** — as três alternativas que ele examina
+tratam de outra coisa: persistir em paralelo, replay em endpoint próprio, e ordenar pelo
+instante. A linha do plano que a decisão fecha oferecia dois nomes, na letra —
+"Mecanismo de streaming para a UI (**SSE ou WebSocket**)", em
+[9. Decisões deliberadamente adiadas](../plano-do-laboratorio.md#9-decisões-deliberadamente-adiadas)
+—, e um deles saiu escolhido sem que o outro fosse descartado com motivo escrito.
+
+**Por que importa.** O único apoio que o ADR oferece para o SSE é o
+`frontend/nginx.conf:18-28` já desligar buffer e cache de resposta, pressupondo SSE — e o
+próprio `## Contexto` dele reconhece que isso foi feito "sem que nenhum ADR o tivesse
+decidido". **Isso é disponibilidade**, e disponibilidade é exatamente o argumento que a
+regra estrutural do [`AGENTS.md`](../../AGENTS.md#regras-estruturais-que-valem-sempre)
+recusa: uma tecnologia entra quando um experimento não puder ser executado sem ela. Uma
+escolha de transporte que se apoia na configuração que a antecipou inverte a ordem — a
+configuração passa a decidir, e o ADR a registra.
+
+**O que esta linha NÃO afirma.** Ela **não** diz que o SSE é a escolha errada, nem
+conhece o motivo pelo qual o WebSocket foi preterido: **ninguém o escreveu em documento
+nenhum deste repositório**, e inventá-lo aqui seria fabricar justificativa para uma
+decisão já tomada. O que falta é o descarte com motivo, e é só isso que a linha pede.
+
+| Saída                                                | O que ela faz                                                                                  |
+|------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| escrever o descarte do WebSocket                     | o ADR-0016 ganha a alternativa em `## Alternativas consideradas`, com o motivo do descarte     |
+| reabrir o transporte, e decidi-lo contra alternativa | a escolha do SSE deixa de valer até o confronto acontecer, e a linha do plano volta ao adiado  |
+| aceitar o SSE como está, e registrar o débito        | a decisão fica de pé, e esta linha vira o registro de que ela não enfrentou alternativa alguma |
+
+**Sem recomendação.** Escolher entre elas é da pessoa. Enquanto a linha estiver aberta, a
+`### Negativas` do ADR-0016 carrega a `Pergunta em aberto` que remete a ela.
+
+#### `E-69` — a linha de `Alterado por` cujo alvo a divisão mudou
+
+Aberta em 2026-08-11, ao revisar o ADR-0016.
+
+**O problema.** A regra do rastro manda acumular: "a linha antiga NÃO DEVE ser removida
+quando a nova entra", em
+[o rastro de alterações](README.md#o-rastro-de-alterações-emendado-em-2026-08-04). Ela foi
+escrita para o caso em que **dois ADRs diferentes** alteram o mesmo alvo, e cada um ganha
+a sua linha. A divisão, sexta forma, cria um caso que ela não previu: a linha existente
+continua nomeando **o mesmo ADR**, e o que mudou foi o alcance dele. No `Alterado por` do
+ADR-0007, a linha do ADR-0014 nomeava a seção "A forma de um evento"; a divisão passou
+aquela seção ao ADR-0016, e manter a linha na letra faria o cabeçalho afirmar hoje uma
+coisa que a divisão desfez.
+
+**Por que ela existe, e por que não é conserto de redação.** Um revisor independente leu a
+regra na letra, viu a linha reescrita e classificou o ato como apagamento de rastro. A
+leitura é defensável — o texto da regra não distingue os dois atos —, e por isso o próximo
+revisor a repetirá. O que separa os casos hoje é conhecimento fora do texto: se o commit
+que gravou a linha antiga é ancestral da `master`, ela é fato publicado; se vive só no
+ramo, é estado intermediário do próprio trabalho. **Nada na regra diz isso.**
+
+| Saída                                                         | O que ela faz                                                                                                                                           |
+|---------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| a regra ganha a exceção da divisão, escrita                   | a reescrita passa a ser autorizada quando a forma que a motiva é a divisão, e o rastro do que a linha dizia antes fica em `git show` do commit anterior |
+| a regra passa a exigir acúmulo sempre, sem exceção            | o `Alterado por` do ADR-0007 volta a ter as duas linhas do ADR-0014, e a primeira ganha marca explícita de revogada pela divisão                        |
+| a regra passa a valer só sobre linha já publicada na `master` | o critério vira a alcançabilidade do commit, e o que vive só num ramo deixa de ser rastro protegido                                                     |
+
+**Sem recomendação.** Escolher entre elas é da pessoa. Enquanto a linha estiver aberta, o
+cabeçalho do ADR-0007 carrega a redação de hoje — a que descreve o que cada ADR alcança
+**agora** —, e o que a linha dizia em `a5d5777` continua consultável por `git show`.
+
+**Uma condição de merge nasce daqui.** Mais de vinte trechos deste ramo citam `a5d5777`
+como "o commit que aceitou o ADR-0014". Um merge com `--squash` apagaria aquele commit da
+história e transformaria todas essas citações em ponteiro para nada. **O merge deste ramo
+NÃO DEVE ser squash**, e essa exigência vale independentemente de qual saída acima for
+escolhida.
 
 #### `E-37` — o que a proibição de derivar estado de stream alcança
 
@@ -3057,6 +3457,55 @@ obrigatórias.** A regra de
 citado porque `scripts/check_citations.py` precisa que a âncora exista — e isso independe
 de o corpo do ADR ser editável. A premissa mudou; a conclusão não.
 
+## A divisão como sexta forma, decidida em 2026-08-11
+
+**Fechada em 2026-08-11, por decisão explícita da pessoa.** A linha nasce aqui já fechada,
+como a da [imutabilidade revogada](#a-imutabilidade-do-corpo-de-um-adr-aceito-revogada-em-2026-08-07):
+a escolha foi feita durante a redação do par ADR-0014/ADR-0016, e a fila é onde uma decisão
+de processo desse alcance precisa estar registrada. Não inaugura lote novo.
+
+**O problema.** A pessoa dividiu uma decisão já aceita em dois artefatos: o
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)
+ficou com a travessia da observação, e o
+[ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md) nasceu com o streaming e o
+replay. Cinco subseções de `## Decisão` saíram do corpo do ADR-0014, junto dos trechos de
+`## Justificativa`, `## Trade-offs` e `## Alternativas consideradas` que as sustentavam, e
+o título mudou. **Nenhuma das cinco formas do
+[lifecycle](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) cobria isso.**
+Patch NÃO DEVE tocar decisão, justificativa, alternativa nem trade-off; as outras quatro
+exigem rastro no cabeçalho, e o ADR-0014 tinha o corpo reescrito sem `Última atualização` e
+sem `Alterado por`.
+
+**Três alternativas, e o motivo do descarte de cada uma.**
+
+| Alternativa                              | Por que foi descartada                                                                                                                           |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| chamar de **emenda**, forma já existente | emenda ajusta uma regra acessória; chamar de emenda a amputação de cinco subseções e a troca de título estica a palavra para o próximo leitor    |
+| **substituir** o ADR-0014 pelo par       | reusar o número apaga a distinção entre o velho e o novo, e as citações vivas passariam a apontar para um documento que não é o que elas citaram |
+| **isentar** o ADR-0014 do teto de prosa  | o estouro era sintoma de o ADR cobrir mais de uma decisão; isentar tratava o sintoma e deixava a causa — duas decisões num corpo só — intacta    |
+
+**A escolha: a divisão, sexta forma do lifecycle.** O motivo positivo é o que sobra —
+**é a única das quatro que descreve o que aconteceu.** O repositório tinha vocabulário
+para modificar um ADR aceito e não tinha vocabulário para dividir um. Um ADR aceito cede
+parte do corpo a um ADR novo, **os dois continuam vigentes**, e a divisão PODE tocar
+decisão, justificativa, alternativa e trade-off, que é exatamente o que o patch NÃO PODE.
+
+**O que esta escolha NÃO resolve, e a linha que sobrou.** A divisão cobre a **subtração**.
+No mesmo commit, o `## Decisão` do ADR-0014 também **ganhou** conteúdo que não estava
+nele em `a5d5777` — a extensão completa, e não só um resumo, está na linha
+[`E-62`](#e-62--que-forma-cobre-a-entrada-de-decisão-nova-num-adr-aceito), para não haver
+duas contagens do mesmo fato neste arquivo. Nenhuma das seis formas descreve essa
+**entrada**. O cabeçalho do ADR-0014 declara o fato sem nomear forma: nomeá-la seria
+decidir por quem decide.
+
+**O conteúdo é do
+[`README.md`](README.md#a-divisão-de-um-adr-aceito-decidida-em-2026-08-11)**, e não desta
+fila: a comparação com as outras cinco formas, o rastro exigido de cada lado e a proibição
+de registrá-la como patch estão lá, e não são reproduzidos aqui. A tabela de formas da
+skill,
+[`adr-lifecycle.md`](../../.claude/skills/adr/references/adr-lifecycle.md), ganha a sexta
+linha no mesmo commit — uma lista de cinco ali contradiria a de seis no `README.md`.
+
 ## O rito que reconcilia a matriz com a árvore
 
 **Aberta, e nasce sem recomendação.** Ela veio da reestruturação do roteamento
@@ -3132,6 +3581,68 @@ passou de 35.633 para 38.079 caracteres em 2026-08-10, medidos por
 porque ele segue fora do glob do workflow. A tabela **não** é atualizada: ela é a
 medição daquela data. O que este parágrafo registra é que a linha aberta tem custo
 crescente, e não que a foto esteja errada.
+
+**Um sétimo arquivo entrou na conta em 2026-08-11, e ele nem sequer está sob `docs/`.**
+[`.claude/skills/adr/references/adr-lifecycle.md`](../../.claude/skills/adr/references/adr-lifecycle.md)
+media 5.394 caracteres de prosa contra o genérico de 4.000 **antes** de qualquer edição
+deste ciclo, e passou a 5.887 ao ganhar a sexta forma do lifecycle, a divisão. Ele está
+fora do glob do workflow pelo mesmo defeito de alcance, e a distância entre os dois números
+mostra o que a linha aberta custa: uma decisão de processo obrigatória de registrar empurra
+para cima um arquivo que ninguém mede, e o crescimento não tem onde ser recusado. A tabela
+acima continua sendo a foto de 2026-08-08 e **não** é atualizada.
+
+**Em 2026-08-11 o defeito deixou de ser silencioso por uma hora, e foi comprimido no
+mesmo dia.** O
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)
+media **12.053 caracteres de prosa contra o teto de 12.000** — 53 acima —, medidos nesta
+árvore de trabalho por
+[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py).
+Era o **único** `EXCEDE` entre os ADRs numerados. A compressão escolhida logo abaixo o
+trouxe a **11.985 contra 12.000**, remedido pelo mesmo script depois do corte.
+
+**A diferença para tudo o que está registrado acima era o alcance da medição, e não o
+tamanho.** Os arquivos da tabela e do parágrafo anteriores estouram em silêncio porque
+estão **fora** do glob do workflow; o ADR-0014 está **dentro** dele. O workflow
+[`docs`](../../.github/workflows/docs.yml) monta os argumentos com
+`for f in docs/adr/[0-9]*.md`, e esse glob alcança exatamente este arquivo: um estouro
+ali **reprova o job no merge**, diferente dos sete acima. Enquanto o ADR-0014 esteve em
+12.053, o job ficava vermelho; comprimido para 11.985, ele volta a `OK`, e é esse o
+estado desta árvore de trabalho. Este parágrafo registra o fato e a correção; a escolha
+entre as três saídas está no quadro logo adiante.
+
+```mermaid
+flowchart TD
+  G["glob do workflow docs:<br/>os ADRs numerados"]
+  D["ADR-0014<br/>era 12.053 contra 12.000"]
+  F["os arquivos registrados acima:<br/>fora do glob"]
+  G --> D
+  D --> V["EXCEDE, e o job docs<br/>reprovava no merge"]
+  V --> C["comprimido para<br/>11.985 contra 12.000: OK"]
+  F --> S["EXCEDE, e nada falha"]
+  V -.->|" a diferença era o alcance,<br/>e não o tamanho "| S
+```
+
+**Três saídas para este caso, e a pessoa escolheu a compressão, em 2026-08-11.** Elas são
+do caso, e não do regime — o regime geral continua sendo o que a tabela mais abaixo deixa
+em aberto, e esta escolha não o fecha.
+
+| Saída                                           | O que ela faz                                                                   | Motivo do descarte, ou o custo aceito                                                  |
+|-------------------------------------------------|---------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| teto próprio para o ADR-0014                    | o script ganha limite ou isenção nomeada para este arquivo, e o job passa       | contradiz o argumento da divisão: trata o sintoma do estouro e deixa a causa intacta   |
+| **comprimir a prosa do ADR-0014 — escolhida**   | o excesso sai do corpo, e o arquivo volta para dentro do teto vigente           | o que sai é escolhido pelo espaço que falta, e não pelo que o trecho vale              |
+| mesclar com o job vermelho                      | o estouro fica declarado aqui, e o `docs` segue reprovando até a linha fechar   | um guardrail que reprova e é ignorado deixa de distinguir este estouro do próximo      |
+
+**O motivo da escolha.** Dar teto ao ADR-0014 contradiria o argumento com que a divisão
+foi decidida: se estourar era sintoma de o ADR cobrir mais de uma decisão, afrouxar a
+régua trata o sintoma e deixa a causa. É o mesmo argumento que já descartara "isentar o
+ADR-0014 do teto de prosa" na
+[decisão da divisão](#a-divisão-como-sexta-forma-decidida-em-2026-08-11), agora aplicado
+ao resíduo que sobrou depois dela — e é por isso que "teto próprio" também sai
+descartado aqui, pelo mesmo argumento.
+
+**A escolha alcança só o ADR-0014, e não a linha inteira.** O regime geral — quem é dono
+do teto no caso geral, e o alcance da medição sobre os sete arquivos registrados acima —
+segue sem decisão, e por isso esta seção continua **Aberta**.
 
 **Duas coisas distintas estão fundidas.** Um teto que descreve mal o artefato é defeito de
 regra; um teto que ninguém executa é defeito de alcance. A isenção de `AGENTS.md` e

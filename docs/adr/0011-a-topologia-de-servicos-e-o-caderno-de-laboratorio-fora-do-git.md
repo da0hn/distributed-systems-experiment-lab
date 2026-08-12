@@ -11,11 +11,13 @@
   [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) (schema por
   serviço, já aplicável aos três com estado).
 
-- **Última atualização:** 2026-08-10
+- **Última atualização:** 2026-08-11
 - **Alterado por:**
   [ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)
   — emenda; a aresta `LP -->|" observações "| LJ` do diagrama "Comando no `lab-plane`,
-  leitura no `lab-journal`, sem BFF", em ## Decisão, passa pelo broker.
+  leitura no `lab-journal`, sem BFF", em ## Decisão, passa pelo broker. A `Pergunta em
+  aberto` das `### Negativas` sobre o que o "resultado" do `lab-journal` inclui fica
+  resolvida: inclui o log de observações evento a evento, persistido desde a etapa 1.
 
 ## Contexto
 

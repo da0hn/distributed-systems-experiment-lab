@@ -11,11 +11,27 @@
 - **Reencaminha:** [`Q-0001-1`](../questions/Q-0001-1.md) para Experiment, e a metade
   medida de `Q-0003-3` para os dois formatos de veredito.
 
-- **Última atualização:** 2026-08-10
+- **Última atualização:** 2026-08-11
 - **Alterado por:**
   [ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md)
-  — emenda; a seção "A forma de um evento" ganha o cursor monotônico por execução e os
-  dois instantes (ocorrência e persistência) como campos do evento, em ## Decisão.
+  — emenda, em ## Decisão. A seção "Onde o log vive" passa a valer só para o log do
+  **runtime**, em memória; a persistência no `lab-journal` fica autorizada já na etapa 1,
+  e não mais adiada à etapa 6. **Quatro seções fora de `## Decisão` caem com ela**, e o
+  corpo de todas permanece byte a byte: (a) `### Positivas`, "Nenhuma tecnologia de
+  persistência é comprometida antes da etapa 6"; (b) `## Trade-offs`, "o log é perdível
+  até a etapa 6" — que passa a valer só para o log do runtime; (c)
+  `### Persistir o log agora, em vez de adiar`, cuja alternativa descartada volta a valer
+  em forma emendada, com o consumidor do broker persistindo fora da transação medida e a
+  contenção no banco virando disputa de I/O; e (d)
+  `## Quando esta decisão deixa de valer`, cujo gatilho — a etapa 6 derrubar o processo —
+  disparou antes, na etapa 1, e por outro motivo.
+- **Alterado por:**
+  [ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md) — emenda, em
+  ## Decisão. O **registro persistido no `lab-journal`** ganha dois campos que o evento
+  não tinha — o cursor monotônico por execução e o instante de persistência —, e mantém,
+  sem mudança, o instante de ocorrência que já era o "instante de parede" da seção
+  "A forma de um evento". Os seis campos do evento não mudam. As duas emendas saíram da
+  mesma escolha da pessoa, de 2026-08-10, dividida em dois artefatos em 2026-08-11.
 
 ## Contexto
 

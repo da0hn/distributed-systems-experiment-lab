@@ -45,10 +45,11 @@ primeira seção `##` — PODE receber **patch**, que conserta citação, caminh
 material e NÃO DEVE alterar a decisão nem o argumento que a sustentava. Nenhum patch
 existe sem a linha dele em `## Patches aplicados`, no mesmo commit.
 
-Cinco formas alteram um ADR aceito — substituição, subsunção, emenda, adendo e patch —,
-cada uma com gatilho e limite próprios, e nenhuma outra é permitida. A regra completa
-está em
-[`adr/README.md`](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+Seis formas alteram um ADR aceito — substituição, subsunção, emenda, adendo, divisão e
+patch —, cada uma com gatilho e limite próprios, e nenhuma outra é permitida. A regra
+completa está em
+[`adr/README.md`](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) e em
+[A divisão de um ADR aceito](adr/README.md#a-divisão-de-um-adr-aceito-decidida-em-2026-08-11).
 Não a reproduza aqui nem em outro documento: aplique-a a partir de lá.
 
 Um ADR `Proposto` **pode** ser editado livremente; o estado de cada um está no
