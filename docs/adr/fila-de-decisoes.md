@@ -886,11 +886,22 @@ argumentos disjuntos**, e por isso viram duas linhas. `E-25` volta a bloquear o
 
 #### `E-25` — timestamps nas tabelas medidas
 
-**A objeção mais forte não é técnica, é pedagógica.** `updated_at` é um token de versão
-clássico — `UPDATE resource SET value = ? WHERE id = ? AND updated_at = ?` é optimistic
-locking escrito sem a palavra. A regra do [`AGENTS.md`](../../AGENTS.md) manda introduzir
-o problema antes da solução, e é exatamente por isso que `version` não está no esquema. A
-coluna entrega de graça metade do que o E1 deve construir do zero.
+**A objeção pedagógica saiu daqui em 2026-08-12**, pelo fecho de
+[`E-76`](#e-76-fecha-em-a-regra-desce-para-o-feature-card-escolhida-em-2026-08-12). A
+regra — uma estratégia de concorrência **NÃO DEVE** ler `updated_at` — e o argumento que a
+sustenta vivem hoje em
+[`deteccao-de-atualizacao-perdida`](../features/deteccao-de-atualizacao-perdida/example-mapping.md#updated_at-existe-no-esquema-e-nenhuma-estratégia-pode-lê-la),
+que **hospeda a redação de referência dos dois** e transcreve na íntegra o parágrafo que
+estava aqui. O heading permanece porque o
+[ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md) o cita duas
+vezes, e porque esta linha continua sendo **onde a decisão foi tomada**, em 2026-08-06: o
+que mudou de casa foi a redação, e não a autoria. O texto podado está nesta linha como ela
+era em `0837ac3`.
+
+**O resto do corpo fica, e o motivo é que nada o hospeda.** O fecho de `E-76` desceu a
+regra e o argumento pedagógico, e só eles; o custo das três formas de nascer o valor, o
+alcance da regra do relógio e a comparação com o LSN não foram transportados a documento
+nenhum, e apagá-los aqui os perderia.
 
 ```mermaid
 flowchart LR
@@ -1366,7 +1377,7 @@ flowchart TD
 - **Qual é o limite, e se ele é por execução ou global.** `Pergunta em aberto`. Um número
   escrito aqui seria decisão que ninguém tomou.
 - **Se uma execução encerrada por limite produz veredito.** `Pergunta em aberto`. Ela é
-  candidata natural a um quarto valor da classificação do veredito zero, que o
+  candidata natural a um **quinto** valor da classificação do veredito zero, que o
   [ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-zero-é-classificado-e-a-classificação-tem-quatro-valores)
   já fixou com quatro — acrescentar um quinto é decisão arquitetural nova, e entra na fila
   quando alguém a propuser.
@@ -3692,6 +3703,47 @@ flowchart TD
 | as duas convivem, e o que muda é a **régua de contagem**                      | passa-se a contar ADRs que carregam subseção de dispensa, e não atos de dispensa; três ADRs, escopos sobrepostos, nenhum texto reescrito | a régua deixa de responder "quantas vezes a regra foi dispensada", que é a pergunta que o guardrail existe para responder                                            |
 
 **Sem recomendação.** Escolher entre elas é da pessoa.
+
+
+#### `E-85` — a moldura em prosa do fecho de `E-35` atribui a frase ao ADR errado
+
+Aberta em 2026-08-12, ao retomar as pendências que a fila destravou.
+
+**O problema.** O fecho de
+[`E-35`](#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10), datado de
+2026-08-10, escreve que o ADR-0011 "recusou pôr o **histórico do que foi medido** dentro
+do `lab-plane`, pelo argumento do ADR-0008: 'o instrumento que mede guardaria o que
+mediu'" — e o link ao lado aponta para o
+[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#histórico-de-execução-dentro-do-lab-plane).
+**O link está certo, e a prosa engana.** A frase é do ADR-0011, e
+[`E-81`](#e-81--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio) já a
+mediu ali — "a quinta casa literalmente, numa linha só, sem normalizar nada". Ela não
+existe em lugar nenhum do ADR-0008.
+
+**Por que nenhum verificador pega.** [`check_citations.py`](../../scripts/check_citations.py)
+confere caminho e âncora, nunca o texto citado nem a moldura que o apresenta. É a mesma
+lacuna de [`E-77`](#e-77-fecha-em-lacuna-aceita-escolhida-em-2026-08-12), fechada em
+lacuna aceita — com uma diferença que importa: lá o alvo não sustentava a afirmação; aqui
+o alvo sustenta, e quem erra é o nome do ADR na frase que introduz a citação.
+
+**Por que não foi consertado no turno em que foi visto.** Editar um fecho **datado** é o
+que a alternativa `A` de
+[`E-63`](#e-63--a-emenda-e-o-título-citado-por-trecho) objeta: o fecho registra o que se
+sabia naquela data, e corrigi-lo em silêncio apaga que o erro existiu.
+
+**Três saídas.**
+
+| Saída                                    | O que ela faz                                                                                              | Objeção                                                                                                      |
+|------------------------------------------|------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| vira patch, com a nota do rastro ao lado | a moldura passa a nomear o ADR-0011, e uma nota datada registra a correção; quem lê vê o erro e o conserto | esta fila não tem regime de patch — ele é do lifecycle de ADR, e estendê-lo aqui é decisão que ninguém tomou |
+| entra no censo da classe, e o texto fica | o defeito é registrado como instância medida, e o fecho permanece byte a byte                              | o fecho continua ensinando errado a quem o lê pela primeira vez, e ninguém lê o censo ao consultar um fecho  |
+| o fecho é corrigido sem rastro           | o texto passa a estar certo, e nada mais                                                                   | apaga que o erro existiu, que é o oposto do que a data de um fecho serve para preservar                      |
+
+**Sem recomendação.** Escolher entre elas é da pessoa.
+
+**Nada fica bloqueado por ela.** O fato que o fecho sustenta — que a lista de execuções
+ativas não é o histórico que o ADR-0011 recusou — continua verdadeiro, e é o link que o
+prova.
 
 
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
