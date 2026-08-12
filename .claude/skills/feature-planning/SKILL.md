@@ -60,10 +60,12 @@ skill adr.
 4. Trate mudança local e reversível como tarefa, sem ADR.
 
 Não escreva um ADR por reflexo. **Não repita aqui a regra de alteração de ADR
-aceito, e não a enuncie como proibição absoluta:** cinco formas o alteram, e o dono
+aceito, e não a enuncie como proibição absoluta:** seis formas o alteram, e o dono
 delas é
 [`docs/adr/README.md`](../../../docs/adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07),
-com o roteador em [`adr-lifecycle.md`](../adr/references/adr-lifecycle.md). Quando
+com a sexta em
+[A divisão de um ADR aceito](../../../docs/adr/README.md#a-divisão-de-um-adr-aceito-decidida-em-2026-08-11)
+e o roteador em [`adr-lifecycle.md`](../adr/references/adr-lifecycle.md). Quando
 uma decisão bloquear o escopo, registre a pergunta e use AskUserQuestion antes de
 escolher por conta própria.
 

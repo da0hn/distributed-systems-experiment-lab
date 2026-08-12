@@ -89,12 +89,14 @@ no fim: ele não se perde.
    original. Quando o ADR novo alterar um aceito, o ADR alterado recebe
    `Última atualização` e `Alterado por` no mesmo commit — a ausência é defeito. Um patch
    move só `Última atualização`.
-   **Não cobre substituição como se fosse a única saída:** cinco formas alteram um ADR
-   aceito — substituição, subsunção, emenda, adendo e patch —, e a regra de cada uma está
+   **Não cobre substituição como se fosse a única saída:** seis formas alteram um ADR
+   aceito — substituição, subsunção, emenda, adendo, divisão e patch —, e a regra de cada
+   uma está em
+   [`docs/adr/README.md`](../../docs/adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05),
    em
-   [`docs/adr/README.md`](../../docs/adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05)
+   [A revogação da imutabilidade](../../docs/adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07)
    e em
-   [A revogação da imutabilidade](../../docs/adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+   [A divisão de um ADR aceito](../../docs/adr/README.md#a-divisão-de-um-adr-aceito-decidida-em-2026-08-11).
    O defeito é a alteração não declarada, e não a forma escolhida: a forma vem do prompt
    da pessoa, e você não a revisa.
    **A seção `## O que este ADR desfaz fora de si` é obrigatória** desde 2026-08-10, logo

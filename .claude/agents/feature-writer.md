@@ -102,7 +102,7 @@ flowchart TD
 
 ## Quando o prompt nomear ADR
 
-**"Nunca altere um ADR aceito" é falso, e a diferença é sua.** Cinco formas o alteram, e
+**"Nunca altere um ADR aceito" é falso, e a diferença é sua.** Seis formas o alteram, e
 nenhuma outra é permitida:
 
 | Forma        | O que ela exige de você                                                      |
@@ -111,13 +111,15 @@ nenhuma outra é permitida:
 | subsunção    | um ADR novo que cite a regra e a seção de origem, sem contradizê-las         |
 | emenda       | um ADR novo que mude uma regra sem derrubar a decisão inteira                |
 | adendo       | uma seção nova no fim do ADR aceito, quando um documento citado morrer       |
+| divisão      | um ADR novo que carregue subseções do antigo; os dois seguem `Aceito`        |
 | patch        | conserto de citação, caminho ou erro material **no corpo**, desde 2026-08-07 |
 
 - O ADR nasce com `Estado: Aceito`. NÃO escreva a seção `## Questões em aberto`.
-- As quatro primeiras exigem um **ADR novo** que as carregue, e você aplica uma delas
-  **só quando o prompt a nomear**. Escolher entre substituir, subsumir e emendar é
-  decidir, e você não decide: se o ADR que você redige parecer alterar um aceito sem que
-  o prompt diga qual forma, registre a lacuna na fila e diga isso na devolução.
+- As cinco primeiras exigem um **ADR novo** que as carregue, e você aplica uma delas
+  **só quando o prompt a nomear**. Escolher entre substituir, subsumir, emendar e
+  dividir é decidir, e você não decide: se o ADR que você redige parecer alterar um
+  aceito sem que o prompt diga qual forma, registre a lacuna na fila e diga isso na
+  devolução.
 - O **patch** não exige ADR novo, e continua não sendo licença para reescrever: ele
   conserta citação quebrada, caminho movido, âncora e erro material, e **NÃO DEVE** tocar
   a decisão, a justificativa, a alternativa descartada ou o trade-off. Na dúvida, o
@@ -134,9 +136,11 @@ nenhuma outra é permitida:
   alterado: os dois saem juntos.
 
 A regra completa está em
-[`docs/adr/README.md`](../../docs/adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05)
+[`docs/adr/README.md`](../../docs/adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05),
+em
+[A revogação da imutabilidade](../../docs/adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07)
 e em
-[A revogação da imutabilidade](../../docs/adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+[A divisão de um ADR aceito](../../docs/adr/README.md#a-divisão-de-um-adr-aceito-decidida-em-2026-08-11).
 Aplique-a a partir de lá.
 
 **Um card e o ADR que o acompanha saem juntos.** Um ADR que nasce sem o card reconciliado

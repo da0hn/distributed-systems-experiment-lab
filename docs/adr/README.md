@@ -112,21 +112,23 @@ O motivo do arquivamento e o que sobreviveu estão em
 
 ## Índice
 
-| ADR                                                                            | Título                                                                  | Estado   |
-|--------------------------------------------------------------------------------|-------------------------------------------------------------------------|----------|
-| [0001](0001-o-passo-como-unidade-de-execucao.md)                               | O passo como unidade de execução, observação e injeção de falha         | `Aceito` |
-| [0002](0002-o-dominio-minimo-e-os-dois-oraculos.md)                            | O domínio mínimo: contador com oráculo exato e predicado de capacidade  | `Aceito` |
-| [0003](0003-a-linguagem-do-agendamento.md)                                     | A linguagem do agendamento: como uma barreira é declarada               | `Aceito` |
-| [0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)       | O estatuto da barreira e o diagnóstico da não ocorrência                | `Aceito` |
-| [0005](0005-a-forma-do-escalonador.md)                                         | A forma do escalonador: estado, decisão e protocolo de desistência      | `Aceito` |
-| [0006](0006-a-forma-da-estrategia-de-concorrencia.md)                          | A forma da estratégia de concorrência: contrato plugável e calibração   | `Aceito` |
-| [0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md)                   | O log de observações: forma, ordem e onde vive                          | `Aceito` |
-| [0008](0008-os-dois-planos-em-processos-separados.md)                          | Os dois planos em processos separados, desde o dia zero                 | `Aceito` |
-| [0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)             | A classificação do dual write e a região de pacote do sistema sob teste | `Aceito` |
-| [0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md)           | A fronteira de schema e o CDC como fonte do veredito                    | `Aceito` |
-| [0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md) | A topologia de serviços e o caderno de laboratório fora do Git          | `Aceito` |
-| [0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md)    | O broker no caminho do veredito, e a dispensa que ele exigiu            | `Aceito` |
-| [0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md)  | A proveniência da fonte como critério da proibição do oráculo           | `Aceito` |
+| ADR                                                                                 | Título                                                                  | Estado   |
+|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------|----------|
+| [0001](0001-o-passo-como-unidade-de-execucao.md)                                    | O passo como unidade de execução, observação e injeção de falha         | `Aceito` |
+| [0002](0002-o-dominio-minimo-e-os-dois-oraculos.md)                                 | O domínio mínimo: contador com oráculo exato e predicado de capacidade  | `Aceito` |
+| [0003](0003-a-linguagem-do-agendamento.md)                                          | A linguagem do agendamento: como uma barreira é declarada               | `Aceito` |
+| [0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md)            | O estatuto da barreira e o diagnóstico da não ocorrência                | `Aceito` |
+| [0005](0005-a-forma-do-escalonador.md)                                              | A forma do escalonador: estado, decisão e protocolo de desistência      | `Aceito` |
+| [0006](0006-a-forma-da-estrategia-de-concorrencia.md)                               | A forma da estratégia de concorrência: contrato plugável e calibração   | `Aceito` |
+| [0007](0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md)                        | O log de observações: forma, ordem e onde vive                          | `Aceito` |
+| [0008](0008-os-dois-planos-em-processos-separados.md)                               | Os dois planos em processos separados, desde o dia zero                 | `Aceito` |
+| [0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)                  | A classificação do dual write e a região de pacote do sistema sob teste | `Aceito` |
+| [0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md)                | A fronteira de schema e o CDC como fonte do veredito                    | `Aceito` |
+| [0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md)      | A topologia de serviços e o caderno de laboratório fora do Git          | `Aceito` |
+| [0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md)         | O broker no caminho do veredito, e a dispensa que ele exigiu            | `Aceito` |
+| [0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md)       | A proveniência da fonte como critério da proibição do oráculo           | `Aceito` |
+| [0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md) | A travessia da observação — o broker, o buffer e o bloqueio registrado  | `Aceito` |
+| [0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md)                        | O streaming e o replay do log de observações                            | `Aceito` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele
 **não decide nada** — é a análise que define quais decisões precisam ser tomadas e em
@@ -327,8 +329,12 @@ intocável.
 [`fila-de-decisoes.md`](fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira).
 Este título permanece porque o cabeçalho do
 [ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) o cita por
-âncora, e o cabeçalho de um ADR aceito só admite emenda, substituição, subsunção ou
-errata.
+âncora, e apagar o título antes de consertar essa citação é a ordem errada — o mesmo
+motivo dado [acima](#fila-de-decisões), e não porque o cabeçalho de um ADR aceito seja
+intocável. Ele muda pelas formas que o
+[lifecycle](#a-revogação-da-imutabilidade-decidida-em-2026-08-07) permite, patch
+inclusive, e esta frase **não** as enumera — a lista é de lá, e uma segunda cópia dela
+envelheceria na primeira forma nova.
 
 
 ## Questões encaminhadas
@@ -499,9 +505,10 @@ Quatro regras governam o registro:
 
 ```mermaid
 flowchart TD
-    D["um ADR aceito está errado"] --> Q{"o erro está na<br/>escolha ou no texto?"}
-    Q -->|" escolha "| A["ADR novo:<br/>substituição, subsunção<br/>ou emenda"]
-    Q -->|" texto: citação, caminho,<br/>erro material "| P["patch no corpo"]
+    D["um ADR aceito<br/>precisa mudar"] --> Q{"por quê?"}
+    Q -->|" está errado:<br/>a escolha "| A["ADR novo:<br/>substituição, subsunção,<br/>emenda ou adendo"]
+    Q -->|" está errado:<br/>citação, caminho,<br/>erro material "| P["patch no corpo"]
+    Q -->|" carregava mais de<br/>uma decisão, e nenhuma<br/>estava errada "| V["ADR novo:<br/>divisão"]
     P --> R["linha em ## Patches aplicados<br/>data, seção, o quê, por quê"]
     R --> H["cabeçalho:<br/>Última atualização"]
     P -.->|" sem registro "| X["edição silenciosa<br/>proibida"]
@@ -509,7 +516,95 @@ flowchart TD
 
 ### As quatro formas antigas continuam valendo
 
-Substituição, subsunção, emenda e adendo tratam de **decisão e alcance**. O patch trata de
-**texto**. Nenhuma substitui a outra, e um ADR PODE receber as duas coisas em datas
-diferentes. O que mudou é que a correção de texto deixou de exigir uma dessas quatro
-formas para ser possível.
+**O título continua fato, e a divisão não o altera.** Ele conta as formas anteriores ao
+patch de 2026-08-07 — substituição, subsunção, emenda e adendo —, e essa contagem não muda
+com a **divisão**, decidida em 2026-08-11 na
+[seção seguinte](#a-divisão-de-um-adr-aceito-decidida-em-2026-08-11): ela entra como sexta
+forma ao lado das cinco já existentes, e nenhuma das quatro antigas deixa de ser antiga. O
+que muda é só a lista do parágrafo abaixo, para incluir a forma nova.
+
+Substituição, subsunção, emenda, adendo e divisão tratam de **decisão e alcance**. O patch
+trata de **texto**. Nenhuma substitui a outra, e um ADR PODE receber mais de uma delas em
+datas diferentes. O que mudou em 2026-08-07 é que a correção de texto deixou de exigir uma
+das formas de decisão para ser possível.
+
+## A divisão de um ADR aceito, decidida em 2026-08-11
+
+**Um ADR aceito PODE ceder parte do corpo a um ADR novo, e os dois continuam vigentes.** É
+a **divisão**, sexta forma ao lado de substituição, subsunção, emenda, adendo e patch. A
+pessoa a decidiu nesta data.
+
+**O que ela é.** Um ADR aceito carregava mais de uma decisão. Um ADR novo nasce com parte
+do corpo dele — subseções inteiras de `## Decisão`, e os trechos de `## Justificativa`,
+`## Trade-offs` e `## Alternativas consideradas` que as sustentavam. O que saiu **não sai
+de vigor**: passa a valer a partir do ADR novo, com o mesmo conteúdo normativo. O ADR
+antigo perde o que cedeu, e o título dele PODE perder a parte que nomeava o que saiu.
+
+**O que ela não cobre.** A divisão descreve a **subtração declarada**, e nada além dela.
+Se, no mesmo commit, o ADR dividido também **ganhar** decisão que não estava nele quando
+foi aceito, essa entrada não é descrita por esta forma nem por nenhuma das outras cinco.
+Qual forma a cobre está aberto na linha
+[`E-62`](fila-de-decisoes.md#e-62--que-forma-cobre-a-entrada-de-decisão-nova-num-adr-aceito),
+e foi exatamente o que aconteceu no caso que originou a divisão: o cabeçalho do ADR-0014
+declara o fato da entrada e não nomeia forma alguma, porque nomeá-la seria decidir.
+
+**É isso que a separa de substituição e de subsunção**, e a tabela diz o resto.
+
+| Forma        | O que acontece com o ADR antigo                    |
+|--------------|----------------------------------------------------|
+| substituição | a decisão dele sai de vigor, e o `Estado` muda     |
+| subsunção    | o corpo fica intacto, e a regra ganha alcance novo |
+| emenda       | o corpo fica intacto, e uma regra acessória muda   |
+| adendo       | o corpo fica intacto, e uma seção entra no fim     |
+| patch        | o corpo muda em texto que não carrega decisão      |
+| divisão      | o corpo **perde** o que cedeu, e nada sai de vigor |
+
+**Ela PODE tocar o que o patch NÃO PODE.** Decisão, justificativa, alternativa descartada
+e trade-off saem do corpo antigo pela divisão, e é por isso que ela não é patch: a
+fronteira do patch é o texto que **não** carrega decisão, e aqui a decisão é o que se move.
+Um corpo reescrito assim **sem** a declaração de divisão continua sendo edição silenciosa,
+e continua proibido.
+
+**O rastro é dos dois lados.**
+
+- O ADR **dividido** recebe `Última atualização` e
+  `Alterado por: [ADR-NNNN](NNNN-titulo.md) — divisão`, pela mecânica de
+  [O rastro de alterações](#o-rastro-de-alterações-emendado-em-2026-08-04). O campo DEVE
+  nomear **cada subseção** que saiu, e não só o ADR de destino: quem lê o antigo precisa
+  saber onde o que falta foi parar.
+- O ADR **novo** declara no cabeçalho, em `Relacionado`, que divide o antigo e o que
+  trouxe de lá.
+- Os dois DEVEM ser escritos **no mesmo commit** em que o ADR novo nasce.
+- A divisão NÃO DEVE gerar linha em `## Patches aplicados`: ela não é patch, e um ADR
+  dividido que não recebeu patch nenhum continua carregando `Nenhum patch aplicado.`
+
+```mermaid
+flowchart TD
+    A["ADR aceito com<br/>mais de uma decisão"] --> D["divisão"]
+    D --> N["ADR novo carrega<br/>as subseções cedidas"]
+    D --> V["ADR antigo perde o que cedeu,<br/>e segue Aceito"]
+    N --> R["cabeçalho do novo:<br/>Relacionado, divide o antigo"]
+    V --> T["cabeçalho do antigo:<br/>Última atualização + Alterado por"]
+    R --> C["mesmo commit"]
+    T --> C
+```
+
+**Três alternativas descartadas, e o motivo de cada uma.** Chamar a operação de **emenda**
+foi descartado porque emenda ajusta uma regra acessória, e o que aconteceu foi a amputação
+de cinco subseções de `## Decisão` mais a troca do título — chamar isso de emenda estica a
+palavra para o próximo leitor, e o campo `Alterado por` deixa de dizer o que houve.
+**Substituir** o ADR antigo pelo par foi descartado porque reusar o número apaga a
+distinção entre o velho e o novo, e as citações vivas passariam a apontar para um
+documento que não é o que elas citaram. **Isentar** o ADR-0014 do teto de prosa foi
+descartado porque o estouro era sintoma de o ADR cobrir mais de uma decisão — isentar
+tratava o sintoma e deixava a causa intacta.
+
+**O motivo positivo é o que sobra: é a única das quatro que descreve o que
+aconteceu.** O repositório tinha vocabulário para modificar um ADR aceito, e não tinha
+vocabulário para dividir um.
+
+**O caso que a originou** é o
+[ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md),
+dividido pelo [ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md) em
+2026-08-11. A linha da fila que registra a escolha é
+[a divisão como sexta forma](fila-de-decisoes.md#a-divisão-como-sexta-forma-decidida-em-2026-08-11).

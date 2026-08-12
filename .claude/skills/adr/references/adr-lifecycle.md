@@ -51,6 +51,8 @@ Use-o somente quando a pessoa pedir um ADR em debate, e não um registro de esco
 **patch** — a quinta forma. Corpo continua sendo tudo a partir da primeira seção `##`, e
 um ADR aceito continua não sendo **apagado**.
 
+**A divisão é a sexta forma, decidida em 2026-08-11.**
+
 | Forma        | Quando ela se aplica                                                          |
 |--------------|-------------------------------------------------------------------------------|
 | substituição | uma decisão nova contradiz a antiga; a antiga vira `Substituído por ADR-NNNN` |
@@ -58,19 +60,27 @@ um ADR aceito continua não sendo **apagado**.
 | emenda       | uma regra do ADR aceito muda sem que a decisão inteira caia                   |
 | adendo       | o ADR cita um documento que vai deixar de existir; a seção nova entra no fim  |
 | patch        | o corpo tem citação quebrada, caminho errado ou erro material a consertar     |
+| divisão      | o ADR aceito carregava mais de uma decisão, e cede parte do corpo a um novo   |
 
-- As quatro primeiras exigem um **ADR novo** que as carregue. O patch não: ele é
-  manutenção do próprio arquivo, e não decisão nova.
+- Substituição, subsunção, emenda, adendo e divisão exigem um **ADR novo** que as
+  carregue. O patch não: ele é manutenção do próprio arquivo, e não decisão nova.
 - **Patch NÃO DEVE alterar a decisão nem o argumento que a sustentava.** Se o texto novo
-  muda o que foi decidido, não é patch — é emenda ou substituição, e exige ADR novo.
+  muda o que foi decidido, não é patch — é emenda, substituição ou divisão, e exige ADR
+  novo.
 - **Nenhum patch sem a linha dele** em `## Patches aplicados`, no mesmo commit. Um corpo
   editado sem registro é exatamente o que a imutabilidade existia para impedir.
 - Uma citação por número de linha para documento editável é **defeito a patchar**, e não
   motivo para congelar o alvo. Converta-a em âncora GFM e registre o patch.
 - A regra completa de cada uma está em `docs/adr/README.md`, seções "A emenda e o adendo,
-  decididos em 2026-08-05" e "A revogação da imutabilidade, decidida em 2026-08-07".
-  Aplique-a a partir de lá; esta tabela é roteador, e não a norma.
-- O ADR substituído ou subsumido permanece com o corpo intocado pelo ADR que o alterou.
+  decididos em 2026-08-05", "A revogação da imutabilidade, decidida em 2026-08-07" e
+  "A divisão de um ADR aceito, decidida em 2026-08-11". Aplique-a a partir de lá; esta
+  tabela é roteador, e não a norma.
+- O ADR substituído ou subsumido permanece com o corpo intocado pelo ADR que o alterou. O
+  **dividido** é a exceção: ele perde as subseções que cedeu, e nada do que saiu deixa de
+  vigorar — passa a valer a partir do ADR novo. A divisão NÃO DEVE gerar linha em
+  `## Patches aplicados`, e DEVE gerar `Última atualização` e
+  `Alterado por: [ADR-NNNN](NNNN-titulo.md) — divisão`, nomeando **cada subseção** que
+  saiu.
 
 ### A seção `## Patches aplicados`, obrigatória desde 2026-08-07
 
@@ -91,14 +101,14 @@ O formato está em `references/adr.md`, no fim do template.
 
 ### O rastro de alterações, obrigatório desde 2026-08-04
 
-Todo ADR alterado por outro ADR — substituição, subsunção, emenda ou adendo — recebe
-dois campos no **cabeçalho**, logo depois de `Aceito em:`. **Patch não entra aqui:** ele
-move só `Última atualização`, e se registra em `## Patches aplicados`.
+Todo ADR alterado por outro ADR — substituição, subsunção, emenda, adendo ou divisão —
+recebe dois campos no **cabeçalho**, logo depois de `Aceito em:`. **Patch não entra
+aqui:** ele move só `Última atualização`, e se registra em `## Patches aplicados`.
 
 ```markdown
 - **Última atualização:** AAAA-MM-DD
 - **Alterado por:** [ADR-NNNN](NNNN-titulo.md) — substituição | subsunção | emenda |
-  adendo; qual regra, com a seção de origem.
+  adendo | divisão; qual regra, com a seção de origem.
 ```
 
 - Escreva os dois campos **no mesmo commit** em que o ADR novo nasce.

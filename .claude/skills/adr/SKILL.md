@@ -88,13 +88,14 @@ patchar uma decisão.
 - Registre toda objeção, alternativa descartada ou pendência em "## Questões em aberto" no
   mesmo turno em que surgir.
 - Nenhum ADR é aceito por omissão. Exija aprovação explícita da pessoa responsável.
-- **A imutabilidade do corpo de um ADR aceito foi revogada em 2026-08-07.** Cinco formas
-  o alteram — substituição, subsunção, emenda, adendo e **patch** —, cada uma com gatilho
-  e limite próprios, e nenhuma outra é permitida. As quatro primeiras exigem um ADR novo;
-  o patch não, mas ele NÃO DEVE alterar a decisão nem o argumento que a sustentava, e
+- **A imutabilidade do corpo de um ADR aceito foi revogada em 2026-08-07.** Seis formas
+  o alteram — substituição, subsunção, emenda, adendo, divisão e **patch** —, cada uma com
+  gatilho e limite próprios, e nenhuma outra é permitida. As cinco primeiras exigem um ADR
+  novo; o patch não, mas ele NÃO DEVE alterar a decisão nem o argumento que a sustentava, e
   NÃO DEVE existir sem a linha dele em `## Patches aplicados`, no mesmo commit. A regra
   completa está em `docs/adr/README.md`, seção "A revogação da imutabilidade, decidida em
-  2026-08-07". Aplique-a a partir de lá.
+  2026-08-07", e em "A divisão de um ADR aceito, decidida em 2026-08-11". Aplique-a a
+  partir de lá.
 - Um ADR aceito continua não sendo **apagado**, e continua não mudando de decisão sem
   ADR novo.
 
