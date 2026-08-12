@@ -3522,6 +3522,47 @@ apagá-lo por descuido apaga a evidência do problema.
 **Sem recomendação.** Qual das três vale é decisão de pessoa: as duas primeiras mexem em
 ADR aceito, e a terceira cria precedente.
 
+#### `E-64` fecha em desfazer por divisão, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12**, pela primeira das três saídas.
+
+**A objeção que sustentava as outras duas caiu, e não por argumento novo.** O enunciado
+descartava "nomear uma forma datada" por ela criar uma sétima forma pela porta dos fundos.
+Isso continua verdadeiro — e deixou de ser necessário: a
+[divisão](README.md#a-divisão-de-um-adr-aceito-decidida-em-2026-08-11) nasceu como **sexta
+forma** em 2026-08-11, e nasceu para este mesmo arquivo. Desfazer a entrada indevida não
+inventa cerimônia: aplica a sexta forma uma segunda vez ao ADR-0014.
+
+**O que sai, e para onde.** As duas subseções de `## Decisão` que entraram depois de
+`a5d5777` — "A persistência no `lab-journal` começa na etapa 1, e não mais na 6" e "O
+runtime publica por um buffer em memória, numa thread separada" — mais o parágrafo
+normativo acrescentado a subseção preexistente saem para um **ADR terceiro**, que nasce
+`Aceito` com elas. O ADR-0014 volta ao que era quando foi aceito, e o ganho no título dele
+acompanha.
+
+**O custo continua o que a linha declarava**: três ADRs para uma travessia que já está
+descrita. Ele foi aceito, e não refutado.
+
+**Esta escolha destrava
+[`E-66`](#e-66-fecha-em-o-argumento-desce-do-cabeçalho-para-o-corpo-escolhida-em-2026-08-12),
+e é o segundo motivo dela.** O cabeçalho do ADR-0014 carrega 7.856 caracteres de argumento
+que o fecho de `E-66` manda descer para o corpo, e o corpo tem três caracteres de folga. O
+argumento que pertence às subseções que saem **desce junto com elas**, para o corpo de um
+ADR que nasce sem teto estourado — e o que sobrar no cabeçalho do 0014 volta a ser
+livro-razão sem compressão nenhuma.
+
+```mermaid
+flowchart LR
+  A["ADR-0014 hoje:<br/>corpo com duas subseções<br/>que entraram depois,<br/>cabeçalho com 7.856"] --> D["divisão"]
+  D --> B["ADR-0014 restaurado:<br/>o que ele era ao ser aceito"]
+  D --> C["ADR novo, Aceito:<br/>as subseções e o<br/>argumento que as sustenta"]
+```
+
+**O que este fecho NÃO decide.** O número e o título do ADR terceiro, e se o cabeçalho do
+ADR-0014 declara a divisão pela seção `## O que este ADR desfaz fora de si` ou por
+`## Patches aplicados` — as duas são cerimônia da divisão, e a skill `adr` é dona da
+forma.
+
 #### `E-73` — dois identificadores da fila foram usados duas vezes
 
 Aberta em 2026-08-11, ao redigir o fecho do `E-62`.
@@ -3556,6 +3597,28 @@ repositório cita a fila em prosa, no `AGENTS.md` e nos ADRs.
 recuse identificador repetido nesta fila. Ele não existe, e a colisão foi achada à mão.
 
 **Sem recomendação.**
+
+#### `E-73` fecha em renumerar o par mais novo, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12**, pela primeira das três saídas.
+
+**As duas linhas mais recentes recebem identificadores livres**, e as mais antigas
+mantêm `E-62` e `E-63`. A antiguidade decide porque o dano da renumeração é proporcional
+ao número de citantes, e o par mais novo tem menos.
+
+**O custo é real, e a escolha é por ele ser mensurável.** Renumerar troca o slug, e toda
+citação às linhas renumeradas quebra no mesmo commit. O que torna esse dano preferível ao
+outro é que ele é **descobrível antes** — a
+[consulta reversa](../AGENTS.md#antes-de-reduzir-um-documento) lista quem cita cada
+heading, e [`check_citations.py`](../../scripts/check_citations.py) acusa o que ficar para
+trás na execução seguinte. O dano de "deixar como está" não tem nenhuma das duas coisas:
+uma citação em prosa a "a linha `E-62`" continua legível, aponta para uma das duas, e
+nada acusa qual.
+
+**A quarta coisa, que o enunciado já declarava independente da escolha, é executada
+junto:** um verificador que recuse identificador repetido nesta fila. Ele não custa
+decisão, e sem ele o próximo par colidido nasce do mesmo jeito — em worktrees paralelas,
+sem que a mesclagem acuse nada.
 
 #### `E-74` — quem verifica a órfã de `allocation`, e o obstáculo que caiu
 
@@ -3683,6 +3746,43 @@ colunas de tempo" na
 e podar metade do tema deixaria a tabela dizendo "podado" sobre um tema que continua na
 fila.
 
+#### `E-76` fecha em a regra desce para o Feature Card, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12**, pela terceira das quatro saídas — a que leva a
+regra para `docs/features/`.
+
+**A objeção registrada contra ela estava mal formulada, e é por isso que a saída
+sobrevive.** O enunciado a descartava dizendo que "nenhum card cobre `updated_at` hoje, e
+criar um só para hospedar a regra é o mesmo problema com outro artefato". Mas a regra não
+é sobre a coluna: ela é sobre **estratégia de concorrência** — "uma estratégia de
+concorrência NÃO DEVE ler `updated_at`" —, e a estratégia é exatamente a proteção que
+[detecção de atualização perdida](../features/deteccao-de-atualizacao-perdida/feature-card.md)
+mede, em E1 e E3. **Nenhum card novo nasce**: a regra entra num que já existe e já cobre
+o assunto dela.
+
+**A regra não nasce `pendente`.** Ela foi decidida por pessoa em `E-25`, e a coluna
+`Aprovada por` registra aquela decisão e a data dela. O que o
+[processo](../specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05) proíbe é
+uma regra virar cenário sem aprovação — e esta tem aprovação anterior ao card.
+
+**O que isso desbloqueia.** A poda do tema "a chave, o discriminador e as colunas de
+tempo" deixa de estar travada por `E-25`: com a regra e o argumento pedagógico dela vivos
+no card, o corpo de `E-25` pode ser reduzido a lápide, e as duas citações do ADR-0015
+passam a apontar para o card — por **patch**, com a linha em `## Patches aplicados`.
+`E-9` e `E-26` continuam não podáveis, cada uma pelo motivo próprio já registrado.
+
+**O que este fecho NÃO decide, e é o que a linha perguntava de maior.** Se a fila **pode**
+ser dona de regra normativa continua sem resposta geral: esta escolha resolve o caso de
+`E-25` tirando a regra de lá, e não declarando o que a fila é. A próxima linha que um ADR
+aceito citar como dona de regra reabre a mesma pergunta.
+
+```mermaid
+flowchart TD
+  E["E-25, na fila:<br/>dona da regra hoje"] --> C["feature card de<br/>detecção de atualização perdida"]
+  A["ADR-0015 cita E-25<br/>como dona, duas vezes"] -->|" patch "| C
+  E -.->|" depois disso "| L["lápide, e o tema<br/>fica podável"]
+```
+
 #### `E-77` — a âncora resolve, e o alvo não sustenta a afirmação
 
 Aberta em 2026-08-11, achada pelo revisor independente do ciclo do card de
@@ -3721,6 +3821,94 @@ fechar aquela linha deixa esta intacta.
 
 **Nada fica bloqueado por ela.** Ela nomeia uma lacuna de verificação, e não impede
 edição nenhuma.
+
+#### `E-77` fecha em lacuna aceita, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12**, e nenhuma das três saídas foi tomada. A pessoa
+recusou a linha inteira, e a razão dela vale muito além deste caso — ela está na
+[diretriz abaixo](#a-prioridade-do-trabalho-declarada-em-2026-08-12).
+
+**O que fica decidido.** A classe que `E-77` nomeia — a citação cuja âncora resolve e cujo
+alvo não sustenta a afirmação — **não recebe guarda**. Nenhum verificador é escrito para
+ela, nenhuma gramática de citação muda, e o revisor independente continua alcançando só o
+ciclo de especificação. **O enunciado permanece** porque ele descreve um defeito real e
+medido; o que foi recusado é gastar decisão nele.
+
+**O custo aceito, escrito para quem encontrar o próximo caso.** Uma citação dessa classe
+não quebra nunca: ela nasce apontando para outro texto, e continua apontando para ele por
+edição nenhuma. Quem a seguir lê o parágrafo vizinho achando que leu a evidência. Isso
+continua verdadeiro, e ninguém está encarregado de encontrá-lo.
+
+## A prioridade do trabalho, declarada em 2026-08-12
+
+**Declarada pela pessoa em 2026-08-12**, ao recusar
+[`E-77`](#e-77-fecha-em-lacuna-aceita-escolhida-em-2026-08-12). Na letra dela:
+
+> Estamos perdendo tempo com decisões menos prioritárias que o objetivo final: criar um
+> laboratório com cenários reprodutíveis de ambientes distribuídos. Prefiro deixar essas
+> lacunas e focar em resolver os problemas de definição de regras do projeto.
+
+**O que isso governa.** Esta fila enfileira decisão, e passa a distinguir duas espécies
+delas. Uma decide **o que o laboratório faz** — o que um oráculo mede, quando uma execução
+deixa de ser ativa, de onde vem o instante de um evento, o que um relatório publica. A
+outra decide **como o repositório documenta a si mesmo** — a gramática de citação, o
+alcance de um verificador de Markdown, o teto de prosa de um arquivo.
+
+**A segunda espécie deixa de disputar a atenção da pessoa em pé de igualdade.** Ela
+continua sendo registrada quando alguém a encontra, porque uma lacuna vista e não escrita
+desaparece no próximo contexto limpo. O que muda é o desfecho padrão: **uma linha da
+segunda espécie fecha em lacuna aceita**, e não em decisão, salvo quando ela estiver
+bloqueando uma linha da primeira.
+
+**A evidência que a motivou.** Entre 2026-08-11 e 2026-08-12 o repositório recebeu vinte e
+seis commits, e nenhum deles tocou um fenômeno distribuído. Enquanto isso,
+[`E-50`](#e-50--como-uma-execução-ativa-deixa-de-ser-ativa-chegue-ou-não-ao-fim),
+[`E-51`](#e-51--o-que-protege-a-contagem-de-coincidências-de-um-transporte-falível) e
+[`E-52`](#e-52--de-onde-vem-o-instante-de-parede-de-um-evento-e-se-ele-é-monotônico)
+seguem abertas — e as duas primeiras bloqueiam a forma de uma tabela que precisa existir.
+
+```mermaid
+flowchart TD
+  L["uma linha entra na fila"] --> Q{"ela decide o que o<br/>laboratório faz?"}
+  Q -->|" sim "| P["primeira espécie:<br/>vai à pessoa para decisão"]
+  Q -->|" não, decide como o<br/>repositório se documenta "| S{"ela bloqueia<br/>uma da primeira?"}
+  S -->|" sim "| P
+  S -->|" não "| A["lacuna aceita,<br/>registrada e fechada"]
+```
+
+**Esta diretriz não revoga nenhuma decisão já tomada**, e não apaga linha nenhuma. Ela
+decide o que fazer com as que ainda não foram decididas.
+
+#### `E-79` — o verificador de citações não alcança `.claude/`, e fecha em lacuna aceita
+
+Aberta e fechada em 2026-08-12. Achada por um agente em worktree paralela, ao migrar a
+seção de redação e revisão independente do `AGENTS.md` para o
+[processo](../specification-process.md).
+
+**O problema, medido.** [`check_citations.py`](../../scripts/check_citations.py) varre
+`docs/**` e a raiz, e **não** varre `.claude/**`. As citações que vivem em agente e em
+skill não são verificadas, nem aparecem na
+[consulta reversa](../AGENTS.md#antes-de-reduzir-um-documento). A medição que revelou
+isso: **cinco** citações a um heading do `AGENTS.md` viviam em `.claude/agents/` e
+`.claude/skills/`, e `--quem-cita AGENTS.md` devolveu **nenhuma**. Quem confiasse na
+consulta antes de reduzir aquele heading quebraria as cinco sem nenhum sinal.
+
+**Por que isso é pior que uma citação quebrada comum.** A consulta reversa existe para ser
+consultada **antes** da poda, e o verificador é a rede embaixo dela. Aqui as duas falham
+juntas e no mesmo sentido: a consulta responde "ninguém cita", e o verificador nunca
+contradiz, porque também não olha. O silêncio parece confirmação.
+
+**Fecha em lacuna aceita, pela
+[diretriz de prioridade](#a-prioridade-do-trabalho-declarada-em-2026-08-12) declarada no
+mesmo dia.** Esta linha decide como o repositório se documenta, e não o que o laboratório
+faz; ela não bloqueia nenhuma linha da primeira espécie. O desfecho padrão se aplica, e
+nenhuma decisão foi pedida à pessoa. **O enunciado permanece** porque o defeito é real e
+medido — quem quiser reabrir tem o número e o caso.
+
+**O custo aceito.** Estender o varredor a `.claude/**` é barato e não foi feito. Até que
+seja, **a consulta reversa é incompleta por construção**, e quem reduzir um heading citado
+de lá o quebra em silêncio. Quem podar `AGENTS.md`, `docs/AGENTS.md` ou qualquer arquivo
+que uma skill cite deve conferir `.claude/**` à mão.
 
 #### `E-78` — o `esquemas.md` vira pasta, com um arquivo por serviço
 
