@@ -131,7 +131,7 @@ constrói o oráculo com `SELECT` cruzado, que os ADRs 0010 e 0012 proíbem.
 | `lab-plane`         | `system-under-test`              | chamada de passo, por rede; sentido inverso proibido | executar cada passo da operação medida                | `decidido/não implementado` — os dois processos sobem; nenhuma chamada existe                                        | nenhum                            | [ADR-0008](../adr/0008-os-dois-planos-em-processos-separados.md#decisão); `system-under-test/pom.xml` não declara dependência do `lab-plane`                                                                                                                                        |
 | `lab-plane`         | RabbitMQ                         | AMQP; mensagem de negócio, sem LSN                   | levar a observação até o `lab-journal`                | `decidido/não implementado`                                                                                          | nenhum                            | [ADR-0014](../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-evento-sai-do-passo-pelo-broker)                                                                                                                                                    |
 | RabbitMQ            | `lab-journal`                    | AMQP; persiste, depois emite                         | alimentar o caderno durante a execução                | `decidido/não implementado`                                                                                          | nenhum                            | [ADR-0016](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#no-lab-journal-a-ordem-é-serial-persiste-depois-emite)                                                                                                                                                       |
-| `system-under-test` | PostgreSQL, schema `sut`         | JDBC, uma conexão por worker                         | executar as operações do sistema medido               | `implementado` — conexão e schema existem; `resource` e `allocation` não                                             | esquema ainda em prosa; `Q-INT-5` | `system-under-test/src/main/resources/application.yml:12-23`; `system-under-test/src/main/resources/db/migration/V1__criar_schema_do_sut.sql`                                                                                                                                       |
+| `system-under-test` | PostgreSQL, schema `sut`         | JDBC, uma conexão por worker                         | executar as operações do sistema medido               | `implementado` — conexão e schema existem; `resource` e `allocation` não                                             | a órfã de `E-9` e o tipo SQL de `E-56`, os dois em `Q-INT-5` | `system-under-test/src/main/resources/application.yml:12-23`; `system-under-test/src/main/resources/db/migration/V1__criar_schema_do_sut.sql`; [`esquemas.md`](esquemas.md#o-schema-do-sistema-medido-sut)                                                                          |
 | `lab-plane`         | PostgreSQL, schema `lab_plane`   | JDBC                                                 | schema próprio do instrumento, hoje sem tabela        | `implementado` — schema vazio; a primeira tabela depende de decisão em aberto                                        | —                                 | `lab-plane/src/main/resources/application.yml:12-18`; `lab-plane/src/test/java/dev/da0hn/lab/application/labplane/LabPlaneApplicationTests.java:36-43`; [ADR-0012, negativas](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)                 |
 | `lab-journal`       | PostgreSQL, schema `lab_journal` | JDBC                                                 | guardar a definição e o resultado de cada experimento | `implementado` — schema vazio                                                                                        | —                                 | `lab-journal/src/main/resources/application.yml:11-17`; [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)                                                                                               |
 | Debezium Server     | PostgreSQL, WAL do `sut`         | replicação lógica, plugin `pgoutput`, slot próprio   | traduzir o WAL em evento que carrega o LSN            | `decidido/não implementado` — o papel e o `wal_level` existem; o conector não                                        | —                                 | [ADR-0012](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão); `local/postgres-init.sql:12-24`; `compose.yaml:13-20`                                                                                                                               |
@@ -281,12 +281,18 @@ diferentes.
 `pom.xml` na raiz e `mvn -B verify` no workflow. **O
 Toxiproxy, nomeado pela mesma ADR 0017, continua sem debate e sem uso aqui.**
 
-**`Q-INT-5` — permanece aberta, com a premissa trocada.** As três migrações `V1` existem e
-criam **apenas o schema** de cada serviço; `resource` e `allocation` continuam prosa no
-ADR-0002, e as decisões de modelo de dados que criariam as duas tabelas não fecharam. O
-que mudou é o motivo de o esquema ser um contrato: ele deixou de ser "duas partes leem as
-mesmas tabelas" — o ADR-0010 proibiu o `SELECT` cruzado — e passou a ser a forma que o
-evento de CDC carrega até o oráculo. A concessão de `USAGE` e `SELECT` ao papel
+**`Q-INT-5` — parcialmente resolvida.** As `V1` criam **apenas o schema**, e `resource` e
+`allocation` deixaram de ser prosa no ADR-0002: a **forma** delas
+vive em [`esquemas.md`](esquemas.md#o-schema-do-sistema-medido-sut), e o que restringe a
+medição no [ADR-0015](../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão).
+Onde a órfã é verificada segue
+[aberto](../adr/fila-de-decisoes.md#e-9-fecha-a-escolha-e-abre-uma-pendência-que-e-18-criou),
+e o tipo SQL de `value`, `capacity` e `amount` — dono de `E-56` — também: sem ele nenhum
+`CREATE TABLE` é escrito.
+O motivo de o esquema ser um contrato mudou com o ADR-0010, e não neste commit: ele
+deixou de ser "duas partes leem as mesmas tabelas" — o `SELECT` cruzado foi proibido —
+e passou a ser a forma que o evento de CDC carrega até o oráculo. A concessão de
+`USAGE` e `SELECT` ao papel
 `lab_plane`, cogitada antes como saída, **não** é mais a resposta: o ADR-0010 a
 [descartou por escrito](../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#grant-de-leitura-ao-lab_plane).
 

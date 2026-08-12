@@ -40,28 +40,31 @@ A semântica das estratégias de concorrência pertence à decisão ainda não t
 
 ## Regras de negócio
 
-| #  | Regra                                                                                                                                                                                                 | Evidência                                                                                                                                                                                                                | Aprovada por |
-|----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| R1 | `Σ amount` das linhas de `Allocation` de um recurso é a **verdade derivada**. `capacity` é o limite dela. A verdade não é um contador na linha do recurso.                                            | [ADR-0002, Decisão](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão)                                                                                                                                       | pendente     |
-| R2 | `allocate(resourceId, amount)` lê a soma das alocações, compara com `capacity` e insere quando couber.                                                                                                | [ADR-0002, Decisão](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão)                                                                                                                                       | pendente     |
-| R3 | O oráculo avalia `Σ amount ≤ capacity` para cada recurso depois do fim da execução, e **NÃO DEVE** emitir `SELECT` no schema do sistema medido. `Σ amount` vem dos `INSERT` no WAL.                   | [ADR-0010, Decisão](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) e [ADR-0013, Decisão](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)       | pendente     |
-| R4 | O veredito é booleano, e a violação **DEVE** carregar os dois números: a soma obtida e a capacidade declarada.                                                                                        | [ADR-0002, O oráculo do predicado](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-do-predicado)                                                                                                         | pendente     |
-| R5 | O oráculo **NÃO DEVE** derivar o estado final do log de observações do Lab Plane. A proibição alcança fonte produzida pelo instrumento, e o WAL não é uma delas.                                      | [ADR-0002, O oráculo lê o banco](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações)                                                                         | pendente     |
-| R6 | O conjunto de entradas amostradas para `allocate` **DEVE** conter os três ramos do predicado: a alocação cabe, atinge a capacidade exata, e excede.                                                   | [ADR-0002, O critério de igualdade entre traços](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-critério-de-igualdade-entre-dois-traços-de-sql)                                                                 | pendente     |
-| R7 | O mesmo experimento **DEVE** ser comparado sob `READ COMMITTED`, `REPEATABLE READ` e `SERIALIZABLE`. Só o terceiro aborta uma das transações, com SQLSTATE `40001`.                                   | [plano, E5](../../plano-do-laboratorio.md#e5--write-skew-inert-protection)                                                                                                                                               | pendente     |
-| R8 | A contiguidade da sequência de LSN **DEVE** ser conferida antes da soma, no consumidor do broker. Um buraco **DEVE** invalidar a execução com o rótulo `fonte incompleta`, e nenhum veredito sai.     | [`E-46`, fecho](../../adr/fila-de-decisoes.md#e-46-fecha-no-consumidor-do-broker-escolhida-em-2026-08-10) e [ADR-0013, Decisão](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão) | pendente     |
-| R9 | O oráculo **DEVE** somar até reconhecer no stream o evento da marca de fim, escrita pelo sistema medido fora da janela medida. O estouro do limite de espera produz `fonte atrasada`, e não veredito. | [`E-47`, fecho](../../adr/fila-de-decisoes.md#e-47-fecha-na-sentinela-escolhida-em-2026-08-10)                                                                                                                           | pendente     |
+| #   | Regra                                                                                                                                                                                                 | Evidência                                                                                                                                                                                                                | Aprovada por |
+|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| R1  | `Σ amount` das linhas de `Allocation` de um recurso é a **verdade derivada**. `capacity` é o limite dela. A verdade não é um contador na linha do recurso.                                            | [ADR-0002, Decisão](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão)                                                                                                                                       | pendente     |
+| R2  | `allocate(resourceId, amount)` lê a soma das alocações, compara com `capacity` e insere quando couber.                                                                                                | [ADR-0002, Decisão](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão)                                                                                                                                       | pendente     |
+| R3  | O oráculo avalia `Σ amount ≤ capacity` para cada recurso depois do fim da execução, e **NÃO DEVE** emitir `SELECT` no schema do sistema medido. `Σ amount` vem dos `INSERT` no WAL.                   | [ADR-0010, Decisão](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) e [ADR-0013, Decisão](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)       | pendente     |
+| R4  | O veredito é booleano, e a violação **DEVE** carregar os dois números: a soma obtida e a capacidade declarada.                                                                                        | [ADR-0002, O oráculo do predicado](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-do-predicado)                                                                                                         | pendente     |
+| R5  | O oráculo **NÃO DEVE** derivar o estado final do log de observações do Lab Plane. A proibição alcança fonte produzida pelo instrumento, e o WAL não é uma delas.                                      | [ADR-0002, O oráculo lê o banco](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações)                                                                         | pendente     |
+| R6  | O conjunto de entradas amostradas para `allocate` **DEVE** conter os três ramos do predicado: a alocação cabe, atinge a capacidade exata, e excede.                                                   | [ADR-0002, O critério de igualdade entre traços](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-critério-de-igualdade-entre-dois-traços-de-sql)                                                                 | pendente     |
+| R7  | O mesmo experimento **DEVE** ser comparado sob `READ COMMITTED`, `REPEATABLE READ` e `SERIALIZABLE`. Só o terceiro aborta uma das transações, com SQLSTATE `40001`.                                   | [plano, E5](../../plano-do-laboratorio.md#e5--write-skew-inert-protection)                                                                                                                                               | pendente     |
+| R8  | A contiguidade da sequência de LSN **DEVE** ser conferida antes da soma, no consumidor do broker. Um buraco **DEVE** invalidar a execução com o rótulo `fonte incompleta`, e nenhum veredito sai.     | [`E-46`, fecho](../../adr/fila-de-decisoes.md#e-46-fecha-no-consumidor-do-broker-escolhida-em-2026-08-10) e [ADR-0013, Decisão](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão) | pendente     |
+| R9  | O oráculo **DEVE** somar até reconhecer no stream o evento da marca de fim, escrita pelo sistema medido fora da janela medida. O estouro do limite de espera produz `fonte atrasada`, e não veredito. | [`E-47`, fecho](../../adr/fila-de-decisoes.md#e-47-fecha-na-sentinela-escolhida-em-2026-08-10)                                                                                                                           | pendente     |
+| R10 | `allocation.resource_id` **NÃO DEVE** ter chave estrangeira.                                                                                                                                          | [ADR-0015, Sem chave estrangeira](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id)                                                            | pendente     |
+| R11 | O plano de execução efetivo do braço `SERIALIZABLE` **DEVE** ser registrado no relatório da execução, sem o que o `40001` não é atribuível.                                                           | [ADR-0015, Sem chave estrangeira](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id)                                                            | pendente     |
 
 O diagrama de por que travar a linha do recurso não ajudaria está no
 [Example Mapping](example-mapping.md).
 
 ## Integrações e contratos afetados
 
-`allocate` emite um `SELECT sum` e um `INSERT` contra `allocation` — isso é o domínio do
-sistema medido, e não mudou. **O oráculo não emite `SELECT`**: o schema do
-`system-under-test` é inacessível ao Lab Plane, sem `GRANT` cruzado. Quem o substitui é o
-WAL, por `R3`. **Não existe DDL nem contrato de esquema** — `Q-INT-5` em
-[`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto).
+`allocate` emite `SELECT sum` e `INSERT` contra `allocation` — domínio do sistema medido,
+sem mudança. **O oráculo não emite `SELECT`**: o schema do `system-under-test` é
+inacessível ao Lab Plane, sem `GRANT` cruzado; quem o substitui é o WAL, por `R3`. A forma
+vive em [`esquemas.md`](../../architecture/esquemas.md#o-schema-do-sistema-medido-sut), e
+`Q-INT-5` ([`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto))
+deixa aberto só onde a órfã é verificada.
 
 O transporte do
 [ADR-0012](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
@@ -115,13 +118,15 @@ que pôs o WAL onde o ADR-0010 deixara vazio. **As três pendências dele fechar
 2026-08-10**, e `R8` e `R9` as carregam: a guarda vive no consumidor do broker, o buraco
 produz `fonte incompleta`, e a soma termina numa marca de fim.
 
+**`R10` herda do ADR-0015** a pergunta aberta sobre onde a órfã é verificada.
+
 **`R8` herda a pergunta mais séria do ADR-0012**, nas
 [consequências negativas](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas):
 que o LSN sobreviva ao transporte inteiro, sem teste que o prove.
 
 ## Critérios de pronto
 
-R1 a R9 verificadas por teste. **R8 pela injeção**: retirado um evento de `INSERT` do
+R1 a R11 verificadas por teste. **R8 pela injeção**: retirado um evento de `INSERT` do
 stream, a execução **DEVE** terminar como `fonte incompleta`, sem veredito. **R9 pela
 retenção**: retida a marca de fim, a execução **DEVE** terminar como `fonte atrasada`. O
 E5 produz `Σ = 12 > capacity = 10` sem exceção, com `OPTIMISTIC` ativo. Só
@@ -136,4 +141,5 @@ pela negativa: o `lab_plane` não tem `GRANT` no schema do `system-under-test`, 
   [`plano-do-laboratorio.md`, seção 6, E5](../../plano-do-laboratorio.md#e5--write-skew-inert-protection)
 - [`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md), `Aceito` — retirou o `SELECT sum` deste oráculo
 - [`ADR-0013`](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md), `Aceito` — pôs o WAL no lugar, com a guarda
+- [`ADR-0015`](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md), `Aceito` — evidência de `R10` e `R11`
 - [`execucao-de-experimento`](../execucao-de-experimento/feature-card.md) — o ciclo que consome este oráculo

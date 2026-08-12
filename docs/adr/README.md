@@ -128,6 +128,7 @@ O motivo do arquivamento e o que sobreviveu estão em
 | [0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md)         | O broker no caminho do veredito, e a dispensa que ele exigiu            | `Aceito` |
 | [0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md)       | A proveniência da fonte como critério da proibição do oráculo           | `Aceito` |
 | [0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md) | A travessia da observação — o broker, o buffer e o bloqueio registrado  | `Aceito` |
+| [0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md)           | A chave, o discriminador de execução e as colunas de tempo              | `Aceito` |
 | [0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md)                        | O streaming e o replay do log de observações                            | `Aceito` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele

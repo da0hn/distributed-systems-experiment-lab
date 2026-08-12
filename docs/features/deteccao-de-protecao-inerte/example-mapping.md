@@ -1,8 +1,12 @@
 # Example Mapping — Detecção de proteção presente e inerte
 
 Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
-[`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`, e da
-seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
+[`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), do
+[`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md), do
+[`ADR-0013`](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md)
+e do [`ADR-0015`](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md),
+todos `Aceito`, e da seção 6 do
+[`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 
 ## História
 
@@ -56,8 +60,23 @@ sequenceDiagram
 [`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) o
 oráculo emitia `SELECT sum` contra o banco do sistema medido; a fronteira de schema
 proibiu isso. O que o diagrama mostra continua idêntico — as duas leituras enxergam zero,
-as duas inserções cabem, nenhuma exceção aparece. **Como o oráculo obtém aquele 12 não
-tem resposta hoje**, e é o que impede o E5 de rodar.
+as duas inserções cabem, nenhuma exceção aparece. **Como o oráculo obtém aquele 12 tem
+resposta desde o
+[`ADR-0013`](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão):**
+ele soma `Σ amount` a partir dos eventos de `INSERT` do WAL, por proveniência, sob a
+guarda de contiguidade de LSN.
+
+**O `ADR-0015` não participa disso, e o que ele muda para o E5 são duas exigências
+independentes.** `allocation.resource_id` não tem chave estrangeira porque o `FOR KEY
+SHARE` que o `INSERT` com FK adquire colidiria com o `FOR UPDATE` de `PESSIMISTIC`
+([`ADR-0015`, Sem chave estrangeira](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id)).
+E o plano de execução efetivo do braço `SERIALIZABLE` vai ao relatório porque, **sem o
+índice aditivo**, o `40001` viria da varredura sequencial e do lock de relação, e ninguém
+distinguiria uma causa da outra
+([`ADR-0015`, Justificativa](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#justificativa)).
+**Uma não decorre da outra**: acrescentar a chave estrangeira não dispensaria publicar o
+plano. Por isso cada uma tem regra própria no card: a ausência de FK é `R10`, e a
+publicação do plano efetivo é `R11`.
 
 ### A parte contraintuitiva — a proteção presente e inerte
 

@@ -15,9 +15,9 @@ spring:
     hikari:
       maximum-pool-size: ${SUT_DB_POOL_SIZE:32}
   flyway:
-    # A V1 cria so o schema. As tabelas resource e allocation dependem das
-    # decisoes E-8 a E-13, do grupo II do Lote E, e a coluna version continua
-    # proibida ate o commit que introduzir OPTIMISTIC (ADR-0006).
+    # A V1 cria so o schema; a forma de resource e allocation (dono unico:
+    # esquemas.md, ADR-0015) ainda nao tem migracao V2. A coluna version
+    # continua proibida ate o commit que introduzir OPTIMISTIC (ADR-0006).
     schemas: sut
     default-schema: sut
     create-schemas: true

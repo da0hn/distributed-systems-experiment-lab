@@ -2479,18 +2479,16 @@ fica dívida nomeada no glossário, não fato reparado por este fecho.
 Aberta em 2026-08-10, achada ao conferir os diagramas que os fechos de `E-46` e `E-47`
 levaram para dois documentos diferentes.
 
-**O problema.** O diagrama de [`CONTEXT.md`](../CONTEXT.md), num bloco Mermaid sem
-título que o alcance (`docs/CONTEXT.md:818-827`), pergunta primeiro se as duas fontes
-alcançaram o commit final — o que produz `fonte atrasada` quando a resposta é não — e só
-depois confere a contiguidade de LSN, que produz `fonte incompleta`. O diagrama do
-[card de detecção de proteção
-inerte](../features/deteccao-de-protecao-inerte/feature-card.md), também num bloco
-Mermaid sem título que o alcance
-(`docs/features/deteccao-de-protecao-inerte/feature-card.md:71-96`), inverte a ordem: a
-contiguidade de LSN é conferida primeiro, e a marca de fim só depois. Para um stream que
-chega com buraco **e** estoura o limite de espera na mesma execução, os dois documentos
-rotulam o mesmo caso de formas diferentes — `fonte atrasada` no primeiro, `fonte
-incompleta` no segundo.
+**O problema.** O bloco Mermaid de
+[`CONTEXT.md`, os dois rótulos do instrumento](../CONTEXT.md#os-dois-rótulos-do-instrumento-decididos-em-2026-08-05)
+pergunta primeiro se as duas fontes alcançaram o commit final — o que produz
+`fonte atrasada` quando a resposta é não — e só depois confere a contiguidade de LSN, que
+produz `fonte incompleta`. O bloco Mermaid do
+[card de detecção de proteção inerte, integrações e contratos afetados](../features/deteccao-de-protecao-inerte/feature-card.md#integrações-e-contratos-afetados)
+inverte a ordem: a contiguidade de LSN é conferida primeiro, e a marca de fim só depois.
+Para um stream que chega com buraco **e** estoura o limite de espera na mesma execução, os
+dois documentos rotulam o mesmo caso de formas diferentes — `fonte atrasada` no primeiro,
+`fonte incompleta` no segundo.
 
 **Nenhum dos dois fechos decidiu a ordem entre as duas condições.**
 [`E-46`](#e-46-fecha-no-consumidor-do-broker-escolhida-em-2026-08-10) escolheu **quem**
@@ -2780,6 +2778,544 @@ vez, quando a pessoa escolhe — este fecho apura a elegibilidade, e não decide
   crescimento monotônico que a pessoa objetou: cada citação nova de um documento estável
   converte uma linha podável em permanente, e nada neste fecho aceita continuar
   produzindo esse efeito.
+
+#### `E-53` — A fonte de `created_at`/`updated_at` da definição de experimento, no Lab Plane
+
+Aberta em 2026-08-11, achada ao corrigir defeitos do ADR-0015 num ciclo de revisão. O
+ADR-0015 fixa quatro colunas do lado do instrumento — `executed_at`, `concluded_at`,
+`created_at` e `updated_at` da definição de experimento —, e decide que os dois últimos
+vêm do relógio do banco, por serem "metadado de CRUD sobre uma definição declarada via
+frontend — fora dos três papéis que a regra estrutural alcança"
+([ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#justificativa)).
+
+**O problema.** O Example Mapping de
+[`execucao-de-experimento`](../features/execucao-de-experimento/example-mapping.md#as-duas-fontes-de-tempo-da-execução-e-o-relógio-que-produz-cada-uma),
+escrito em 2026-08-07 a partir de uma decisão fechada em 2026-08-06, **afirmava** o oposto
+em **duas** das quatro colunas — para `executed_at`/`concluded_at` os dois sempre disseram
+o mesmo, o adaptador de relógio. **As duas citações a seguir reproduzem o texto que a
+seção trazia antes deste commit, e as duas foram substituídas nele**: "o valor vem do
+adaptador de relógio injetável, **nunca** de `DEFAULT now()`", e "nenhum ADR a carrega".
+Hoje a seção nomeia o ADR-0015 como dono normativo das **quatro** colunas e passa a
+ilustrá-lo, sem ser fonte de nenhuma. Nenhum ADR decidira essas quatro colunas antes de
+2026-08-11, e o ADR-0015 foi o primeiro a fazê-lo, para as quatro — em duas delas,
+`created_at`/`updated_at` da definição, com resposta divergente da que o Example Mapping
+trazia. A regra do relógio injetável do
+[`AGENTS.md`](../../AGENTS.md#regras-estruturais-que-valem-sempre) e o alcance por papel
+do valor fixado em [`E-13`](#e-13-fecha-por-papel-do-valor-e-o-agentsmd-muda-no-mesmo-commit)
+não decidem sozinhos qual das duas respostas vale: `created_at`/`updated_at` da definição
+não entram em veredito, escalonamento nem identidade — o mesmo raciocínio que já valia
+para `resource`/`allocation` no ADR-0015 —, e por isso a regra estrutural não obriga
+nenhuma das duas respostas por si só.
+
+**Duas alternativas, e a objeção de cada uma.**
+
+- **A — manter a decisão do ADR-0015.** `created_at`/`updated_at` da definição vêm do
+  relógio do banco, porque nenhum oráculo os lê e a dependência do adaptador em toda
+  escrita de CRUD do instrumento é custo sem benefício nomeado. **Objeção:** contradiz um
+  Example Mapping já escrito, ainda que nenhuma das regras dele tenha `Aprovada por`
+  preenchido; corrigir a seção em silêncio, sem que a pessoa veja a divergência, repetiria
+  o problema que a regra de citação existe para evitar — uma afirmação que deixa de ser
+  verdadeira em algum lugar do repositório, sem que ninguém tenha decidido isso.
+- **B — manter a decisão do Example Mapping.** As quatro colunas do lado do instrumento
+  vêm do adaptador de relógio injetável, sem exceção. **Objeção:** o Lab Plane é o
+  instrumento, e não o objeto de estudo; fazer todo metadado de CRUD do instrumento
+  depender do adaptador, sem que nenhum experimento hoje precise disso, estende uma regra
+  pensada para o domínio medido a um lugar onde ela ainda não tem pressão real — a mesma
+  distinção que o ADR-0015 já faz para `resource`/`allocation`, mas em sentido oposto.
+
+```mermaid
+flowchart LR
+    C["created_at/updated_at<br/>da definição, no Lab Plane"]
+    A["A — relógio do banco<br/>ADR-0015"]
+    B["B — adaptador injetável<br/>example-mapping.md"]
+    C --> A
+    C --> B
+    A -.->|" contradiz o<br/>example mapping "| X1["sem decisão"]
+    B -.->|" estende a regra do<br/>domínio ao instrumento "| X2["sem decisão"]
+```
+
+**Sem recomendação, no momento em que esta linha foi aberta.** A linha nasce com a
+divergência registrada entre os dois documentos, e, até este ponto, nenhum dos dois havia
+sido alterado para resolvê-la. O ADR-0015 nasceu `Aceito` antes de esta linha existir; a
+resolução chega no fecho abaixo, no mesmo commit que corrige o Example Mapping de
+`execucao-de-experimento`.
+
+#### `E-53` fecha em `created_at`/`updated_at`, e metade de `E-26` continua aberta
+
+Fechada em 2026-08-11, pela pessoa. Decisão, na letra:
+
+> `created_at`/`updated_at` são campos de crud servem apenas para registrar quando foi
+> criado ou alterado então não precisam de relógio injetavel
+
+**A alternativa escolhida é a A da linha `E-53`.** `created_at`/`updated_at` da definição
+de experimento vêm do relógio do banco — a decisão que o ADR-0015 já registrava. A
+justificativa é da pessoa: são metadado de CRUD, registram quando o registro nasceu ou
+mudou, e nada além disso.
+
+**A decisão alcança dois campos, e só esses dois.** `executed_at` e `concluded_at` não são
+alcançados por ela. Esta delimitação não é uma segunda frase da pessoa — é leitura
+aplicada ao fechar a linha, apoiada em `E-26` já classificar `created_at`/`updated_at`
+como "metadados de CRUD, sem relação com medida" e em `E-26` tratar `executed_at`/
+`concluded_at` como pergunta separada, no mesmo bloco
+([`E-26`](#e-26--timestamps-nas-tabelas-do-lab-plane)). **O recorte é revisável pela
+pessoa**, e confirmar se ele reflete o que ela quis dizer é **pendência desta linha**, não
+resolvida por este fecho.
+
+**Isto fecha metade de `E-26`, e não a linha inteira.** A primeira metade — a fonte de
+`created_at`/`updated_at` da definição — está decidida por este fecho. A segunda — se
+`executed_at`/`concluded_at` entram no papel veredito quando a curva do grupo D for
+construída sobre eles, e como as duas fontes de tempo (relógio do Lab Plane e LSN do WAL)
+se alinham — continua aberta, exatamente como `E-26` a deixou.
+
+**A contradição que a fila carregava sobre `E-26`, registrada e não reescrita.** Duas
+frases desta página descreviam o estado de `E-26` de formas incompatíveis, e as duas
+continuam no lugar em que foram escritas: [a terceira rodada do grupo
+II](#a-terceira-rodada-do-grupo-ii-em-2026-08-06) afirma que "`E-25` e `E-26` fixaram as
+colunas de tempo dos dois lados da fronteira", e o registro dentro de [`E-36` fecha no
+broker com persistência antes da
+emissão](#e-36-fecha-no-broker-com-persistência-antes-da-emissão-escolhida-em-2026-08-10)
+nota que "a linha `E-26` em si continue sem decisão". As duas estavam corretas para
+partes diferentes da mesma linha: `E-25`, do lado medido, tinha de fato fechado; `E-26`,
+do lado do instrumento, não tinha decisão nenhuma até este fecho. Depois dele, a primeira
+frase passa a valer só para a metade CRUD, e a segunda continua valendo para
+`executed_at`/`concluded_at`.
+
+**O Example Mapping de `execucao-de-experimento` é corrigido no mesmo commit.** A seção
+`### As duas fontes de tempo da execução, e o relógio que produz cada uma` afirmava que
+as quatro colunas vinham do adaptador injetável; a correção e a citação a este fecho vivem
+em [`execucao-de-experimento`, Example
+Mapping](../features/execucao-de-experimento/example-mapping.md#as-duas-fontes-de-tempo-da-execução-e-o-relógio-que-produz-cada-uma).
+
+#### `E-54` — a seção "O que este ADR desfaz fora de si" não está versionada em lugar nenhum
+
+Aberta em 2026-08-11, achada num ciclo de revisão do ADR-0015. O ADR-0015 nasce com uma
+seção `## O que este ADR desfaz fora de si`, e o próprio `E-41` já tinha previsto a
+lacuna: "se cada ADR passa a listar o que desfaz fora de si — e se a checagem disso é
+humana ou executável — ninguém decidiu: `Pergunta em aberto`"
+([`E-41`](#e-41--o-que-a-decisão-do-broker-desfaz-fora-do-adr)).
+
+**O problema.** A seção não está em
+[`.claude/skills/adr/references/adr.md`](../../.claude/skills/adr/references/adr.md), não
+está em [`README.md`](README.md#convenções), e a única menção a ela fora do ADR-0015 é o
+próprio `E-41`, ainda sem decisão. O ADR-0012 já usava a mesma forma informalmente — uma
+tabela `Documento | Linha | Estava | Passa a ser`, reescrita "no mesmo commit deste ADR"
+([`0012`, `## Justificativa`](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#justificativa)),
+mas sem título nem heading própria; o ADR-0015 é o primeiro a nomeá-la e a dar heading.
+Sem template nem convenção registrada, o próximo ADR não a terá, e nada vai acusar a
+falta.
+
+**Duas alternativas.**
+
+- **A — a seção vira obrigatória**, no template e no `README.md`, com a checagem feita
+  por quem escreve o ADR, ou por um verificador que confira se cada documento citado ali
+  foi de fato tocado no mesmo commit. **Objeção:** sem o verificador, "obrigatória" vira
+  ceremônia não fiscalizada — a mesma falha que `AGENTS.md` já recusa para "lembrar de
+  atualizar" —, e o verificador precisaria abrir cada documento citado e confirmar que
+  ele mudou, o que nenhum script deste repositório faz hoje.
+- **B — a seção continua opcional**, e cada ADR decide se a inclui, como aconteceu até
+  aqui: o ADR-0012 sem nomeá-la, o ADR-0015 com ela. **Objeção:** quem lê um ADR sem a
+  seção não sabe se ela falta porque nada ficou desatualizado ou porque ninguém a
+  escreveu — a ausência deixa de ser sinal confiável assim que um ADR a omite por
+  esquecimento.
+
+**Sem recomendação.** Decidir entre A e B é decisão de processo, e `E-41` já registrou que
+ninguém a tomou. Esta linha formaliza que a lacuna persiste depois de um segundo ADR
+tê-la usado sem que exista onde ela esteja descrita.
+
+#### `E-55` — o artefato deste tema contraria a triagem de 2026-08-06
+
+Aberta em 2026-08-11, achada num ciclo de revisão do ADR-0015. **O ADR-0015 existe contra
+a triagem escrita neste repositório, e nada até esta linha registrava isso.**
+
+**O problema.** A
+[triagem de 2026-08-06](plano-de-escrita-do-lote-e.md#o-que-a-redução-cortou-e-para-onde-cada-coisa-foi)
+reaplicou os quatro critérios às linhas fechadas e concluiu que o tema "a chave, o
+discriminador e o tempo" **não** sobrevive a eles — "esquema não é arquitetura duradoura"
+—, mandando-o para "a migração `V2` e o card". A mesma seção declara que as seções
+`## ADR-0013` e `## ADR-0015` do plano "continuam válidas como conteúdo, e deixaram de ser
+destino de ADR", e que a seção `## ADR-0014` permanece como insumo do `0011`, "e não como
+ADR próprio"
+([`plano-de-escrita-do-lote-e.md#estado`](plano-de-escrita-do-lote-e.md#estado)). O
+ADR-0015 foi escrito assim mesmo, nasceu `Aceito` e já foi ao [índice](README.md#índice);
+nenhum documento registrava a contradição.
+
+```mermaid
+flowchart TD
+    T["triagem de 2026-08-06<br/>quatro critérios reaplicados"]
+    T -->|" o tema não sobrevive "| C["migração V2 e card"]
+    A["ADR-0015, Aceito<br/>escrito em 2026-08-11"]
+    A -.->|" contraria "| T
+    C -.->|" ninguém escolheu<br/>entre os dois "| Q["sem decisão"]
+    A -.-> Q
+```
+
+**Duas alternativas.**
+
+- **A — manter o ADR-0015 como está**, e tratar a triagem como superada para este tema.
+  **Objeção:** o critério que a triagem aplicou — esquema não é arquitetura duradoura —
+  não foi revogado por nada; mantê-lo por omissão faz o próximo tema de esquema herdar um
+  precedente que ninguém decidiu criar.
+- **B — rebaixar o tema ao destino que a triagem lhe deu**, com o conteúdo indo para a
+  migração `V2` e para os cards, e o ADR-0015 sendo substituído ou retirado pela forma que
+  o [lifecycle](README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05) permitir.
+  **Objeção:** o ADR-0015 já emendou o ADR-0002 e já é citado por cinco documentos deste
+  commit; desfazê-lo custa reescrever todos eles, e a decisão que ele carrega continuaria
+  valendo, só que espalhada.
+
+**Sem recomendação.** Escolher o artefato é da pessoa, pela regra de 2026-08-04, e esta
+linha existe para que a escolha seja feita **vendo** a contradição, e não por omissão. O
+ADR-0015 carrega o mesmo registro no cabeçalho, no campo `Divergência de artefato`.
+
+#### `E-55` fecha na divisão entre o ADR e um documento de arquitetura, escolhida em 2026-08-11
+
+**Escolhida pela pessoa em 2026-08-11, e não é nem a A nem a B.** O tema é dividido em
+dois artefatos, e **o esquema deixa de ser documentado por DDL**: ele vira **diagrama ER**,
+e nenhum documento vigente carrega bloco SQL. A exceção é o diretório
+`docs/adr/arquivo/` inteiro, que não é vigente, e ela está nomeada em
+[`esquemas.md`](../architecture/esquemas.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam).
+
+| Fica no [ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão) | Vai para [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut) |
+|-----------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| a ausência de chave estrangeira, com a `Pergunta em aberto` de `E-9`                          | a chave primária composta e a ordem das colunas                                      |
+| a proibição de uma estratégia ler `updated_at`                                                | o índice aditivo `(partition_id, resource_id)`                                       |
+| a janela delimitada por evento, nunca por tempo                                               | os tipos `timestamptz NOT NULL`, sem `DEFAULT` e sem trigger                         |
+| a fonte do relógio por papel do valor, com o fecho de `E-53`                                  | —                                                                                    |
+| a assimetria de nome entre os dois schemas, e a tradução num ponto único                      | —                                                                                    |
+
+**A assimetria de nome fica no ADR apesar de parecer esquema.** Ela decorre da fronteira do
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão): nenhuma
+constraint pode ligar `partition_id` a `execution_id`, e é essa impossibilidade que obriga
+a tradução a existir num ponto único.
+
+**O Feature Card não recebe forma de tabela nenhuma.** O critério é o mesmo que descartou a
+primeira alternativa abaixo.
+
+```mermaid
+flowchart TD
+    T["tema: a chave, o discriminador<br/>e as colunas de tempo"]
+    T --> A["ADR-0015<br/>o que restringe a medição"]
+    T --> E["esquemas.md<br/>a forma das tabelas"]
+    T -.->|" descartado "| C["feature card"]
+    T -.->|" descartado "| S["bloco SQL"]
+    E --> D1["erDiagram do sut"]
+    E --> D2["erDiagram do lab_plane"]
+    D1 -.->|" sem linha entre eles,<br/>e a ausência é a decisão "| D2
+```
+
+**Dois `erDiagram` separados, e nunca um.** Desenhar os dois schemas num canvas só, com uma
+linha entre eles, renderizaria visualmente uma chave estrangeira que a fronteira do
+ADR-0010 proíbe. **A ausência de linha é a decisão**, e o texto de `esquemas.md` diz isso.
+Como diagrama não desenha ausência, cada diagrama leva abaixo dele a prosa que nomeia o que
+foi decidido **não** existir, e o que o Mermaid não expressa — a ordem das colunas na chave
+e o índice aditivo.
+
+**As três descartadas, e o motivo de cada uma.**
+
+- **O diagrama dentro dos Feature Cards.** Duas capacidades tocam o schema do sistema
+  medido — `deteccao-de-atualizacao-perdida` e `deteccao-de-protecao-inerte` —, e o mesmo
+  desenho apareceria duas vezes, livre para divergir, sem dono.
+- **O diagrama dentro do ADR-0015.** O corpo de um ADR aceito só muda por cerimônia de
+  [lifecycle](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07), e o esquema
+  muda antes disso: a coluna `version` entra quando a estratégia `OPTIMISTIC` nascer, como
+  o [ADR-0006](0006-a-forma-da-estrategia-de-concorrencia.md#decisão) e o comentário da
+  `V1` do sistema medido já anunciam.
+- **Manter um bloco SQL ilustrativo ao lado do diagrama.** Criaria um segundo lugar onde a
+  forma da tabela vive, e ele divergiria do diagrama.
+
+**O que este fecho não resolve.** O critério que a triagem de 2026-08-06 aplicou — "esquema
+não é arquitetura duradoura" — **não** foi revogado por esta escolha: ele foi honrado, e o
+esquema saiu do ADR. Se ele alcança outro tema é decisão de quem trouxer o próximo.
+[`E-54`](#e-54--a-seção-o-que-este-adr-desfaz-fora-de-si-não-está-versionada-em-lugar-nenhum)
+continua aberta, e não é tocada por este fecho.
+
+#### `E-56` — o tipo SQL de `value`, `capacity` e `amount` nunca foi decidido
+
+Aberta em 2026-08-11, achada ao redigir
+[`esquemas.md`](../architecture/esquemas.md#o-que-o-diagrama-do-sut-não-desenha).
+
+**O problema.** O rascunho do ADR-0015 trazia um bloco DDL que declarava `bigint` nas três
+colunas, e **linha nenhuma desta fila decidiu isso**.
+[`E-8`](#a-primeira-rodada-do-grupo-ii-em-2026-08-06) decidiu o tipo da **identidade**, e
+não o das grandezas. A única fonte que argumenta pelos três tipos é o documento arquivado,
+que recomenda `bigint` porque "`integer` estoura em `2^31`" e porque manter `amount` e
+`capacity` no mesmo tipo mantém a soma do oráculo do predicado no tipo do limite
+([`modelo-de-dados.md`](arquivo/proposta-2026-08-03/modelo-de-dados.md#por-que-cada-escolha-de-tipo-e-restrição)).
+Recomendação arquivada não é decisão desta fila. Com o DDL fora dos documentos, o diagrama
+marca as três como lacuna, e a migração não tem o que copiar.
+
+**Duas alternativas.**
+
+- **A — `bigint` nas três**, ratificando a recomendação arquivada. **Objeção:** ratificar
+  por inércia é o que já produziu um DDL afirmando tipo que ninguém escolheu.
+- **B — `integer` nas três**, e o estouro em `2^31` vira limite declarado do experimento.
+  **Objeção:** um estouro no meio de uma execução vira exceção do banco no caminho medido
+  do E1 ao E4, e o veredito sai contaminado por defeito do instrumento.
+
+**Sem recomendação.** Se `amount` é sempre inteiro nunca foi enunciado em documento algum,
+e a resposta muda o conjunto de alternativas.
+
+#### `E-57` — a definição de experimento tem dois donos declarados
+
+Aberta em 2026-08-11, achada ao redigir `esquemas.md`.
+
+**O problema.** O
+[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)
+põe a definição de experimento e o resultado no banco do `lab-journal`.
+[`E-26`](#e-26--timestamps-nas-tabelas-do-lab-plane) e o
+[Example Mapping de `execucao-de-experimento`](../features/execucao-de-experimento/example-mapping.md#as-duas-fontes-de-tempo-da-execução-e-o-relógio-que-produz-cada-uma)
+falam das quatro colunas de tempo como estando "nas tabelas do Lab Plane", e o ADR-0015
+decide de onde vem o relógio de `created_at`/`updated_at` **da definição**. Enquanto os
+dois donos convivem, `esquemas.md` não pode desenhar a tabela, e uma decisão de relógio
+fica sem tabela a que se aplicar.
+
+**Duas alternativas.**
+
+- **A — a definição vive no `lab_journal`**, e "Lab Plane" em `E-26` é imprecisão de
+  vocabulário. **Objeção:** o ADR-0015 e o Example Mapping passam a falar de colunas de um
+  schema que não é o que eles nomeiam.
+- **B — a definição vive no `lab_plane`**, e o ADR-0011 alcança só o **resultado**.
+  **Objeção:** contraria o argumento do ADR-0008 que o ADR-0011 usou — o instrumento que
+  mede guardaria o que mediu — a menos que a definição seja insumo, e não registro.
+
+**Sem recomendação.** A distinção entre instrumento e caderno é do ADR-0011, e escolher
+aqui por leitura seria decidir.
+
+#### `E-58` — a forma da alteração do ADR-0002 por este ADR não foi nomeada
+
+Aberta em 2026-08-11, ao redigir o ADR-0015.
+
+**O problema.** O ADR-0015 acrescenta colunas às duas tabelas que o
+[ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão) fixou com "nenhuma outra
+coluna entra no MVP". Isso altera um ADR aceito, e as formas permitidas são as do
+[lifecycle](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) — escolher entre
+elas é da pessoa. **A pessoa não nomeou nenhuma**, e o ADR-0015 aplicou **emenda** por
+precedente: o [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md) e o
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#justificativa) já
+emendaram regra dentro da mesma `## Decisão`. O rastro está no cabeçalho do ADR-0002, no
+mesmo commit.
+
+**Duas alternativas.**
+
+- **A — confirmar a emenda.** **Objeção:** o critério da emenda em
+  [`README.md`](README.md#a-emenda-terceira-forma-ao-lado-da-substituição-e-da-subsunção)
+  excluiria este caso na leitura literal, e confirmar por precedente amplia o critério sem
+  que ninguém tenha escrito o alcance novo.
+- **B — subsunção.** A regra do ADR-0002 passaria a ser lida como "nenhuma outra coluna
+  **de negócio** entra no MVP", e o ADR-0015 a citaria sem contradizê-la. **Objeção:**
+  reescrever o alcance de uma regra aceita sem que o texto dela mude deixa o leitor do
+  ADR-0002 sem sinal de que a leitura mudou, a menos que o rastro seja explícito.
+
+**Sem recomendação.** Enquanto esta linha estiver aberta, o rastro no ADR-0002 diz
+`emenda`, e trocá-lo exige a escolha da pessoa.
+
+#### `E-62` — a citação entre aspas não tem verificador, e ela quebra em silêncio
+
+Aberta em 2026-08-11, achada na revisão do ADR-0015.
+
+**O problema.** A política de citação da
+[raiz](../../AGENTS.md#ao-trabalhar-aqui) manda citar por caminho e âncora, e
+`scripts/check_citations.py` confere exatamente isso. Só que este repositório também cita
+**entre aspas**, e num volume que só aparece quando alguém conta. **Só no fecho de
+[`E-35`](#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10) há cinco frases entre
+aspas, de quatro alvos distintos** — o ADR-0012 duas vezes, o `AGENTS.md`, a `V1` do
+`lab-plane` e o ADR-0011. O número é de 2026-08-11 e cobre **um** fecho: ele é piso, e não
+total do repositório. **A aspas é um acoplamento mais forte que a âncora, e é o único
+que ninguém verifica**: quem edita o alvo não é avisado, o caminho continua existindo, a
+âncora continua resolvendo, e o script passa. Aconteceu neste ciclo — a reescrita de um
+comentário de migração invalidou a frase que `E-35` cita, e quem pegou foi o **revisor
+independente do ciclo**, lendo os dois arquivos lado a lado. Nenhum verificador acusou, e
+a pessoa não chegou a ver o defeito.
+
+**Um dos quatro alvos é o `AGENTS.md`, e é ele que tira o problema da hipótese.** O fecho
+de `E-35` reproduz "não tem solução decidida" de
+[`AGENTS.md`](../../AGENTS.md#este-repositório-é-entregue-no-homelab), e **este commit
+edita o `AGENTS.md`**. É o único alvo tocado aqui cuja citação literal continua sendo
+afirmada como **viva** — as duas de `E-53` também têm alvo editado neste commit, mas
+nascem declaradas como históricas. As cinco frases foram conferidas uma a uma em
+2026-08-11, e as cinco continuam vivas; o que nenhuma ferramenta fez foi conferir.
+
+**Quatro das cinco não casam com o alvo por comparação literal**, o que dimensiona o
+trabalho de quem for verificá-las: três estão quebradas por fim de linha e recuo, e a
+da `V1` carrega o prefixo `-- ` de comentário SQL, com a inicial rebaixada para
+minúscula para caber na frase que a introduz. **A quinta casa literalmente, numa linha
+só, sem normalizar nada**: a frase do ADR-0011 — "o instrumento que mede guardaria o
+que mediu" — está inteira em [`0011`, Histórico de execução dentro do `lab-plane`](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#histórico-de-execução-dentro-do-lab-plane).
+Comparar as outras quatro exige normalizar espaço, comentário e caixa antes.
+
+**Quatro alternativas.**
+
+- **A — verificador de citação literal.** Toda frase entre aspas seguida de uma citação de
+  caminho é procurada no alvo. **Objeção:** aspas também marcam ênfase e fala, e o
+  falso positivo pode inviabilizar o uso.
+- **B — marcação explícita do trecho citável no alvo**, e o verificador só confere o que
+  estiver marcado. **Objeção:** exige tocar todo alvo, inclusive os que ninguém pode
+  editar.
+- **C — proibir a citação entre aspas**, deixando só caminho e âncora. **Objeção:** a
+  aspas carrega o que a âncora não carrega — a frase exata que sustenta o argumento.
+- **D — nada muda, e a busca pela frase fica por conta de quem edita.** **Objeção:** é o
+  estado de hoje, e é justamente ele que falhou neste ciclo; uma disciplina que depende de
+  alguém lembrar não é rede de segurança.
+
+**Sem recomendação, e sem conduta provisória.** Escrever aqui o que fazer até a linha
+fechar seria decidir por `D`, que é uma das alternativas em jogo.
+
+#### `E-63` — os comentários das duas `V1` ficaram defasados, e reescrevê-los esbarra em `E-62`
+
+Aberta em 2026-08-11, ao redigir o ADR-0015.
+
+**O problema tem dois lados, e é um só.** O comentário da `V1` do sistema medido diz que
+"As tabelas `resource` e `allocation` dependem das decisoes E-8 a E-13"
+(`system-under-test/src/main/resources/db/migration/V1__criar_schema_do_sut.sql:4`), e o
+da `V1` do instrumento diz que "Nenhuma tabela entra aqui. As do Lab Plane dependem das
+decisoes E-8 a E-13"
+(`lab-plane/src/main/resources/db/migration/V1__criar_schema_do_lab_plane.sql:7-8`). As
+duas frases deixaram de descrever o estado:
+
+- **do lado medido**, a forma passou a ter dono em
+  [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut), e o que
+  falta é a migração, não a decisão. O mesmo texto, em prosa, foi corrigido neste commit
+  em [`contracts/README.md`](../contracts/README.md#o-ddl-de-um-serviço-não-é-contrato) —
+  o comentário ficou para trás;
+- **do lado do instrumento**, `E-35` decidiu que uma tabela entra ali, e
+  [`esquemas.md`](../architecture/esquemas.md#o-schema-do-instrumento-lab_plane) a desenha
+  com evidência em `E-35` e `E-50`, e não em `E-8` a `E-13`. Como aquele arquivo nasce
+  dono único da forma, o repositório passa a afirmar as duas coisas.
+
+**Por que nenhum dos dois foi corrigido no mesmo commit.** A segunda frase é citada
+**entre aspas** pelo fecho de
+[`E-35`](#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10), e reescrevê-la a
+quebra em silêncio — é o que
+[`E-62`](#e-62--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio)
+enfileira. A reescrita foi tentada neste ciclo, produziu a quebra, e foi revertida.
+
+**Quem reproduz cada frase, depois deste commit.** A do lado do instrumento tem dois
+citantes: o fecho de `E-35`, de 2026-08-10, e o parágrafo acima desta linha. A do lado
+medido tem um citante, e ele nasce aqui: o parágrafo acima desta linha. O
+[ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-que-este-adr-desfaz-fora-de-si)
+alcança as duas na tabela `desfaz`, e as **parafraseia** de propósito — ele nasce
+`Aceito`, e uma frase literal ali só se consertaria por
+[patch](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07), o que
+encareceria toda alternativa abaixo. Esta linha, ao contrário, reproduz as duas: sem a
+frase literal, quem a ler depois não tem como conferir a defasagem que ela registra. Cada
+alternativa abaixo nomeia os citantes que ela quebra.
+
+**Três alternativas.**
+
+- **A — reescrever os dois comentários e corrigir o fecho de `E-35` junto.** **Objeção:**
+  o fecho é registro datado do que se sabia em 2026-08-10, e editá-lo para acompanhar o
+  alvo apaga a história que ele existe para guardar. E o custo não para nele: as duas
+  reproduções do parágrafo acima quebram junto, e entram no mesmo commit. **E há um
+  citante a mais, criado por este próprio commit:**
+  [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut) cita aquele
+  comentário **por linha** — `V1__criar_schema_do_sut.sql:5-7` —, e reescrevê-lo desloca
+  ou apaga as linhas citadas sem que verificador nenhum acuse.
+- **B — reescrever só o comentário do lado medido**, deixando o do instrumento intacto.
+  **Objeção:** o lado medido passou a ter citante neste commit — o parágrafo acima o
+  reproduz entre aspas —, e reescrevê-lo sem corrigir esta linha produz aqui o mesmo modo
+  de falha que
+  [`E-62`](#e-62--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio)
+  registra. E deixa os dois lados divergentes: quem ler o outro não terá como saber se a
+  frase está viva ou defasada. **O citante novo pesa mais nesta alternativa que na A**,
+  porque é exatamente o lado medido que
+  [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut) cita por
+  linha, em `V1__criar_schema_do_sut.sql:5-7`: B reescreve o único comentário que ganhou
+  citante neste commit.
+- **C — esperar `E-62` fechar** e tratar os dois pela forma que ela escolher. **Objeção:**
+  a defasagem fica na árvore por tempo indeterminado, e um comentário de migração é lido
+  justamente por quem for escrever a migração.
+
+**Sem recomendação.**
+
+#### `E-65` fecha no script de nome de tabela, escolhida em 2026-08-11
+
+Aberta e fechada na mesma réplica, em 2026-08-11. **O problema.** `esquemas.md` promete
+atualizar o `erDiagram` sempre que a forma mudar, e os `V2__*.sql` que a criarem
+precisam ficar equalizados com essas mesmas mudanças — sem mecanismo, "lembrar de
+atualizar" é exatamente o que este repositório recusa para toda outra sincronização.
+
+**A pessoa escolheu, na letra.** Um mecanismo mecânico, e não uma regra em prosa: um
+script, `scripts/check_schema_sync.py`, que **compara nome de tabela** entre o
+`erDiagram` de `esquemas.md` e as migrações Flyway, com uma baseline que **declara** a
+divergência deliberada, no mesmo padrão de `citations-baseline.txt`.
+
+**Duas alternativas descartadas.**
+
+- **Regra em `AGENTS.md`** mandando atualizar `esquemas.md` junto da migração.
+  **Objeção da pessoa:** "lembrar de atualizar" é o mecanismo que este repositório
+  recusa — é o mesmo argumento que já afasta prosa como guarda em
+  [`Q-0002-1`](../questions/Q-0002-1.md).
+- **Comparar tabela e coluna**, não só o nome da tabela. **Objeção da pessoa:** custo
+  alto para o ganho; o nome da tabela já pega o caso que mais importa — migração e
+  diagrama descrevendo tabelas diferentes.
+
+**O que falta.** O script não existe ainda, e nenhum `V2__*.sql` existe para comparar
+contra `esquemas.md`. O mecanismo comparado é só **nome de tabela** — nada aqui autoriza
+estender o escopo para coluna, tipo ou índice sem decisão nova.
+[`esquemas.md`](../architecture/esquemas.md#por-que-a-forma-vive-aqui-e-não-dentro-do-adr-0015)
+aponta para este fecho.
+
+#### `E-68` — duas citações por linha ao ADR-0002 são editáveis, e ninguém decidiu o alvo
+
+Aberta em 2026-08-11, ao inventariar a defasagem que o commit do ADR-0015 causa. **O
+problema.** O cabeçalho novo do ADR-0002 desloca o corpo dele em dez linhas, e **vinte e
+quatro** citações por linha apontam para dentro — contadas **fora de `docs/adr/arquivo/`**,
+que carrega mais três dezenas ao mesmo alvo, igualmente deslocadas, e que nunca é editado e
+é isento por `scripts/check_citations.py`. Sem essa qualificação a contagem não se
+reproduz. Vinte e duas não têm conserto aqui: sete
+vivem em corpo de ADR aceito — `0006`, `0009` e `0011` —, e só saem por **patch**
+registrado em cada um; quinze são a dívida que o
+[fecho de `E-44`](#e-44-fecha-em-reparo-imediato-escolhida-em-2026-08-10) nomeou e não
+reparou; e duas dessas quinze só existem porque a entrada de cabeçalho que elas citam foi
+reescrita agora.
+
+**As outras duas são editáveis, e por isso ficam sem categoria.** Nenhuma está em corpo de
+ADR aceito, e nenhuma é alcançada pela dívida de `E-44`:
+
+| Onde vive                                                                                    | O que ela cita | Por que o conserto exige decisão                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+|----------------------------------------------------------------------------------------------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`README.md`, rastro de alterações](README.md#o-rastro-de-alterações-emendado-em-2026-08-04) | `0002:95-96`   | a célula afirma falar da delegação de `version`, e `:95-96` já caía em `## Problema` antes deste commit; qual trecho sustenta a afirmação é escolha                                                                                                                                                                                                                                                                                                                                           |
+| [esta fila, `D-DOM-05`](#d-dom-05--se-verdict-vira-quatro-termos)                            | `0002:186-190` | **está em prosa, e não em bloco Mermaid** — e o intervalo nunca apontou para o que a frase afirma. Ela sustenta "o booleano do predicado de capacidade", e `:186-190` são a cauda do `sequenceDiagram` do oráculo do **contador** mais o parágrafo de `sucessos`; o predicado vive em `### O oráculo do predicado`. Não falta escolher qual intervalo deslocado é o certo: falta decidir se o alvo passa a ser a âncora daquela seção, que é o que `C-1` exige de prosa alcançável por título |
+
+**Sem recomendação.** Consertá-las por conta própria seria escolher o alvo, e escolher o
+alvo de uma citação é decidir o que a afirmação se apoia. As duas ficam como estão até a
+pessoa dizer.
+
+## A dívida de ADR do Lote E, levantada em 2026-08-06
+
+**Esta seção é um levantamento congelado em 2026-08-06, e não é recontada a cada linha
+nova.** A frase abaixo — "nenhum ADR nasceu" — já não é verdadeira: ADRs do Lote E
+nasceram depois dela. **Quantos são, quais são e em que estado estão é do
+[`docs/adr/README.md`](README.md#índice)**, que é o dono do inventário; nomeá-los aqui
+repetiria a contagem que este repositório manda não duplicar, e a lista envelheceria no
+ADR seguinte. O argumento que a seção sustenta — que a fila virou depósito por omissão de
+escolha de artefato — permanece válido: nem todo tema fechado desde então recebeu ADR.
+
+**Vinte e nove linhas fecharam desde 2026-08-06, e nenhum ADR nasceu.** O último é o
+[ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md), de 2026-08-05,
+vindo do Lote A. Todo o Lote E vive nesta fila, e em nenhum outro lugar.
+
+
+### A triagem contra os quatro critérios
+
+**Esta seção foi podada em 2026-08-11, e volta como lápide.** O
+[ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-que-este-adr-desfaz-fora-de-si)
+cita esta âncora para nomear o tema de que ele nasceu, e a regra da poda manda o heading
+permanecer onde houver citação. O que saiu foi a narrativa de 2026-08-06 — por que cada
+tema foi triado assim; a tabela fica, porque é o que a citação alcança.
+
+| Tema candidato                                       | Linhas fechadas                                | Estado                          |
+|------------------------------------------------------|------------------------------------------------|---------------------------------|
+| a fronteira de schema e o CDC como fonte do veredito | `E-18`, `E-19`                                 | **contradiz o ADR-0002**        |
+| os quatro serviços e o caderno fora do Git           | `E-14` a `E-17`, `E-20`                        | **emenda o ADR-0008**           |
+| o transporte do veredito até o oráculo               | `E-12`, `E-28`, `E-29`, `E-33`                 | maduro                          |
+| o alcance das regras estruturais por papel do valor  | `E-13`                                         | maduro; já mudou o `AGENTS.md`  |
+| a identidade derivada da semente                     | `E-8`, `E-11`, `E-24`                          | maduro                          |
+| a chave, o discriminador e as colunas de tempo       | `E-9`, `E-10`, `E-22`, `E-23`, `E-25` a `E-27` | ADR-0015 escrito; poda pendente |
+| a entrega: build, imagem, banco e configuração       | `E-1` a `E-7`, `E-21`, `E-31`                  | **incompleto**: `E-3` aberta    |
+
+**A coluna da direita não é recontada a cada linha nova.** Quem é dono do inventário de
+ADR é o [`README.md`](README.md#índice); esta tabela registra o estado de cada tema na
+triagem, e não o estado do repositório hoje.
 
 #### `E-30` fecha em limite finito com alerta, escolhida em 2026-08-10
 

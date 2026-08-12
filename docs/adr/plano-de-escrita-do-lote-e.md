@@ -70,6 +70,14 @@ flowchart TD
 
 ## Estado
 
+**Este retrato é de 2026-08-06, e não foi atualizado quando a decisão mudou.** O
+`ADR-0015` — e, antes dele, o `ADR-0013` — nasceram `Aceito` depois desta seção,
+contrariando a frase abaixo e "deixaram de ser destino de ADR" mais adiante. O `ADR-0015`
+registra a contradição e a resolução no próprio cabeçalho, no campo `Divergência de
+artefato`, e no fecho de
+[`E-55`](fila-de-decisoes.md#e-55-fecha-na-divisão-entre-o-adr-e-um-documento-de-arquitetura-escolhida-em-2026-08-11).
+A tabela de três abaixo descreve 2026-08-06, e não hoje.
+
 **O Lote E produz três ADRs, e não seis.** A primeira contagem era inflação: ADR serve a
 **alteração permanente e de impacto**, e não a toda escolha fechada. A redução foi decidida
 em 2026-08-06, reaplicando os quatro critérios com esse rigor.
@@ -476,30 +484,17 @@ reabre.** Isso é gatilho de reabertura, e vai escrito.
 
 ### A decisão
 
-Chave primária composta `(execution_id, id)`. **Sem chave estrangeira** em
-`allocation.resource_id`, com verificação de órfãs em lugar dela. Índice
-`(execution_id, resource_id)`, com o plano efetivo registrado. O discriminador tem **nomes
-assimétricos, um por lado da fronteira**. As tabelas medidas ganham `created_at` e
-`updated_at`, `timestamptz NOT NULL`, **sem `DEFAULT` e sem trigger** — o valor vem da
-aplicação, pelo adaptador de relógio.
-
-### O DDL que a decisão produz
-
-```sql
-CREATE TABLE resource (
-    partition_id uuid        NOT NULL,
-    id           bigint      NOT NULL,
-    value        bigint      NOT NULL,
-    capacity     bigint      NOT NULL,
-    created_at   timestamptz NOT NULL,
-    updated_at   timestamptz NOT NULL,
-    CONSTRAINT resource_pk PRIMARY KEY (partition_id, id)
-);
-```
-
-`allocation` repete a forma, com `resource_id bigint NOT NULL` apontando para
-`resource.id` **sem foreign key**, e o join se faz em duas colunas:
-`a.partition_id = r.partition_id AND a.resource_id = r.id`.
+**Este retrato é de 2026-08-06, e não foi atualizado quando a forma ganhou dono
+próprio.** No fecho de
+[`E-55`](fila-de-decisoes.md#e-55-fecha-na-divisão-entre-o-adr-e-um-documento-de-arquitetura-escolhida-em-2026-08-11),
+a pessoa roteou a forma das tabelas — chave, ordem de coluna, índice e tipo — para
+[`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut), dono único
+dela desde 2026-08-11. Repetir a forma aqui em prosa recriaria o segundo lugar vivo que
+a alternativa "um bloco SQL ilustrativo ao lado" foi descartada por criar
+([`esquemas.md`](../architecture/esquemas.md#por-que-a-forma-vive-aqui-e-não-dentro-do-adr-0015)).
+O que este ADR restringe — sem chave estrangeira, discriminador com nomes assimétricos,
+fonte de `created_at`/`updated_at` pela aplicação — está no corpo do
+[ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão).
 
 ### Os argumentos que precisam sobreviver ao ADR
 
@@ -529,6 +524,14 @@ experimento do grupo E vier a ler `updated_at`, a regra acima entra sob pressão
 
 ### Cards a reconciliar
 
-Nenhum card afirma DDL hoje — os três dizem explicitamente "não existe DDL nem contrato
-de esquema", com `Q-INT-5` citada. **Confira se essa afirmação ainda é verdadeira** depois
-que este ADR nascer, e atualize a pergunta se não for.
+Nenhum card afirma DDL hoje — dois deles diziam, até 2026-08-11, explicitamente "não
+existe DDL nem contrato de esquema", com `Q-INT-5` citada; o terceiro,
+`observacao-passo-a-passo`, dizia "o esquema existe apenas como prosa no ADR-0002".
+**Confira se essa afirmação ainda é verdadeira** depois que este ADR nascer, e atualize
+a pergunta se não for.
+
+**Conferido em 2026-08-11:** nenhum card afirma DDL. `Q-INT-5` passou a "parcialmente
+resolvida" — **dois** resíduos seguem abertos, e não um: as órfãs de `E-9`, e o tipo SQL
+de `value`, `capacity` e `amount`, dono de `E-56`, sem o qual nenhum `CREATE TABLE` é
+escrito ([`integrations.md`](../architecture/integrations.md#perguntas-em-aberto)) —, e a
+forma vive em [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut).

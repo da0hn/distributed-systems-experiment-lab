@@ -80,8 +80,11 @@ O critério de igualdade entre dois traços foi fixado depois, pelo
 
 ## Integrações e contratos afetados
 
-Um passo emite SQL real contra o PostgreSQL, numa transação real. Não há contrato
-formalizado: o esquema existe apenas como prosa no ADR-0002 — ver `Q-INT-5` em
+Um passo emite SQL real contra o PostgreSQL, numa transação real. **Não há contrato
+formalizado**, e `esquemas.md` não é um — ele é dono da forma, e diz isso de si mesmo. A
+forma de `resource` e `allocation` vive
+[lá](../../architecture/esquemas.md#o-schema-do-sistema-medido-sut), e a migração que a
+aplica ainda não foi escrita — ver `Q-INT-5` em
 [`integrations.md`](../../architecture/integrations.md#perguntas-em-aberto).
 
 **Cada observação é enfileirada num buffer em memória no instante em que nasce, e uma

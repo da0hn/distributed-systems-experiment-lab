@@ -229,8 +229,8 @@ Dois pontos que só aparecem nesta pasta:
 - **Todo fluxo descrito em prosa vai também como diagrama
   Mermaid**, junto do parágrafo que
   o descreve. `sequenceDiagram` para ordem no tempo, `flowchart` para topologia e
-  hierarquia. Excalidraw só para o que o Mermaid não expressa, exportado como
-  `.excalidraw.svg` em [`diagrams/`](diagrams/).
+  hierarquia, `erDiagram` para a forma de um schema. Excalidraw só para o que o Mermaid
+  não expressa, exportado como `.excalidraw.svg` em [`diagrams/`](diagrams/).
 - **Um diagrama que não acrescenta nada à prosa fica de
   fora.** Repetir a mesma informação
   em duas formas não é redundância útil quando as duas dizem exatamente o mesmo.

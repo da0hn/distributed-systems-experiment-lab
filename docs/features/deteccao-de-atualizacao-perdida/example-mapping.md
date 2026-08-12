@@ -80,14 +80,17 @@ P1 e P3 foram respondidas por R14/R15 do ADR-0006, `Aceito`.
 
 ### `updated_at` existe no esquema, e nenhuma estratégia pode lê-la
 
-**Esta seção entrou aqui em 2026-08-07**, e vem de duas decisões fechadas em 2026-08-06.
-Elas descrevem comportamento desta capacidade, e nenhum ADR as carrega — por isso ele
-passa a viver aqui.
+**Esta seção entrou aqui em 2026-08-07**, a partir de duas decisões fechadas em
+2026-08-06. O
+[`ADR-0015`](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#as-colunas-de-tempo-e-a-fonte-do-relógio-por-papel-do-valor)
+passou a ser o dono normativo destas duas colunas, no lado medido; esta seção é
+ilustração dela, não fonte.
 
-`created_at` e `updated_at` entram em `resource` e `allocation` como `timestamptz NOT
-NULL`, sem `DEFAULT` e sem trigger, com o valor vindo do adaptador de relógio no momento
-da escrita. A ausência de `DEFAULT` é deliberada: uma escrita que esqueça a coluna falha
-por `NOT NULL` em vez de gravar um valor plausível e errado.
+`created_at` e `updated_at` existem em `resource` e `allocation`, quem as preenche é a
+aplicação pelo adaptador de relógio, e **a escrita que esquecer uma delas falha alto** em
+vez de gravar um instante plausível e errado. A **forma** das duas colunas não é descrita
+aqui — ela vive em
+[`esquemas.md`](../../architecture/esquemas.md#o-que-o-diagrama-do-sut-não-desenha).
 
 A objeção que a decisão não dissolveu é pedagógica, e vira regra escrita porque não é
 executável:

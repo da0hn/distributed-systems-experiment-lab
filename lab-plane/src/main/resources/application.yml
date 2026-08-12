@@ -10,9 +10,9 @@ spring:
     username: ${LAB_PLANE_DB_USER:lab_plane}
     password: ${LAB_PLANE_DB_PASSWORD:lab_plane}
   flyway:
-    # A V1 cria so o schema: sem NENHUMA migracao o Flyway nao roda, e a
-    # fronteira de E-18 ficaria em configuracao e ausente no banco. As
-    # tabelas dependem das decisoes E-8 a E-13, do grupo II do Lote E.
+    # A V1 cria so o schema: sem nenhuma migracao o Flyway nao roda, e a
+    # fronteira de E-18 fica ausente no banco. A forma da tabela de
+    # execucoes ativas segue sem nome (esquemas.md; decisoes E-35, E-50).
     schemas: lab_plane
     default-schema: lab_plane
     create-schemas: true

@@ -371,13 +371,17 @@ _Evidência_: `docs/adr/0001-o-passo-como-unidade-de-execucao.md:59-64,181-185`
 ### O domínio medido
 
 **Resource** — `estabelecido`
-A entidade que carrega `id`, `value` e `capacity`. Nenhum nome de negócio, e nenhuma
-outra coluna no MVP. _Evite_: counter, account, inventory, balance.
+A entidade que carrega `id`, `value` e `capacity`, e nenhum nome de negócio. **Esta
+entrada não fecha a lista de colunas**, e o dono da forma é
+[`esquemas.md`](architecture/esquemas.md#o-schema-do-sistema-medido-sut).
+_Evite_: counter, account, inventory, balance.
 _Evidência_: `docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:88-93`
 
 **Allocation** — `estabelecido`
 A entidade que carrega `id`, `resource_id` e `amount`. Uma alocação criada nunca é
-liberada, e a tabela é apenas acrescida. _Evite_: reservation, order, item.
+liberada, e a tabela é apenas acrescida. **Esta entrada não fecha a lista de colunas**,
+e o dono da forma é [`esquemas.md`](architecture/esquemas.md#o-schema-do-sistema-medido-sut).
+_Evite_: reservation, order, item.
 _Evidência_: `docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:91`, sem estado em
 `:437-440`
 

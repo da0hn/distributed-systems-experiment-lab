@@ -12,15 +12,16 @@
 - **Questões que este ADR encaminha:** [`Q-0002-1`](../questions/Q-0002-1.md) a
   [`Q-0002-4`](../questions/Q-0002-4.md), na mesma seção.
 
-- **Última atualização:** 2026-08-09
+- **Última atualização:** 2026-08-11
 - **Alterado por:** [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)
   — emenda; a classificação do dual write como "o fenômeno do grupo B que a etapa 6
   estuda" (seção "O oráculo exato", `:175`) passa a grupo C, escrita parcial.
 - **Alterado por:**
   [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) — emenda; a
-  regra de que `value_inicial` e `value_final` são "lidos do banco" (seção "O oráculo
-  exato", `:156-157`) e o `SELECT` cruzado de schema, nas seções "O oráculo lê o banco,
-  e NÃO DEVE ler o log de observações" e "O oráculo do predicado", deixam de valer.
+  regra de que `value_inicial` e `value_final` são "lidos do banco"
+  ([seção "O oráculo exato"](#o-oráculo-exato)) e o `SELECT` cruzado de schema, nas seções
+  "O oráculo lê o banco, e NÃO DEVE ler o log de observações" e "O oráculo do predicado",
+  deixam de valer.
   `value_inicial` passa a vir do `INSERT` do estado inicial, e `value_final` do último
   evento de `resource.value` no WAL, por replicação lógica; a fonte do oráculo de
   capacidade fica sem decisão, registrada como pergunta em aberto.
@@ -28,6 +29,15 @@
   [ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md) —
   subsunção; o alcance da proibição da seção "O oráculo lê o banco, e NÃO DEVE ler o log
   de observações" passa a ser critério de proveniência.
+- **Alterado por:**
+  [ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md) —
+  emenda; a regra de que "nenhuma outra coluna entra no MVP" ([seção "Decisão"](#decisão))
+  e a contagem "duas tabelas e cinco colunas" ([seção "Positivas"](#positivas)) passam a
+  admitir `partition_id`, `created_at` e `updated_at` como colunas adicionais nas duas
+  tabelas do domínio medido. A existência delas é do ADR-0015, e a forma é de
+  [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut).
+  `execution_id` não entra nesta emenda: é o **nome** que o instrumento usa para o
+  discriminador, e não coluna que este ADR fixe: a do `lab_plane` segue sem forma.
 
 ## Vocabulário
 
@@ -697,8 +707,10 @@ teste.
 
 ## Patches aplicados
 
-Nenhum patch aplicado.
-
 O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
+
+| Data       | Seção do corpo                              | O que mudou                                                                                           | Por quê                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+|------------|---------------------------------------------|-------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-11 | Cabeçalho, entrada `Alterado por: ADR-0010` | a citação por linha `:156-157`, ao lado de "seção 'O oráculo exato'", virou âncora `#o-oráculo-exato` | o mesmo commit que emenda este ADR pelo ADR-0015 acrescentou **dez** linhas de cabeçalho acima de `## Contexto`, deslocando o corpo inteiro (`## Vocabulário` saiu de `:32` para `:42`). A citação **já era imprecisa antes deste commit**: `:156-157` eram a cerca de código e a fórmula `perdidas = commits − (value_final − value_inicial)`, e a regra citada entre aspas, "lidos do banco", estava em `:161`. O deslocamento somou a isso levar `:156-157` para dentro de "A identidade das entidades…", noutra seção — e a âncora conserta as duas coisas de uma vez |
