@@ -991,27 +991,17 @@ nenhum oráculo lê. A segunda é a única que altera o que se está medindo.
 
 #### `E-30` — o slot do conector deixou de ser por execução, e vira permanente
 
-Com o conector publicando continuamente, o replication slot dele é **um só e de vida
-longa**, e não um por execução. A retenção de WAL sai do cenário "um slot órfão por
-execução morta" e entra em "um slot que retém tudo se o conector ficar fora do ar" — no
-banco compartilhado do homelab, com vizinhos. `max_slot_wal_keep_size` volta a ser a
-mitigação, e continua sendo parâmetro de cluster que afeta terceiros.
+**Fechada em 2026-08-10**, e o enunciado vive no fecho:
+[`E-30` fecha em limite finito com alerta](#e-30-fecha-em-limite-finito-com-alerta-escolhida-em-2026-08-10).
 
 ### O que a quarta rodada apurou antes de perguntar, em 2026-08-06
 
 #### `E-30` não entra nesta rodada, e a razão é que ela depende de `E-5`
 
-A mitigação de retenção é `max_slot_wal_keep_size`, que é **parâmetro de cluster**. Decidir
-o valor dele exige antes saber se o laboratório roda no PostgreSQL compartilhado do homelab
-ou em uma instância própria — que é a linha `E-5`, aberta. Fixar um valor agora seria impor
-um limite ao vizinho sem ter decidido que existe vizinho.
-
-> **A premissa deste adiamento não vale mais, e ninguém percebeu na hora.** `E-5` já
-> estava fechada quando este parágrafo foi escrito, no PostgreSQL **compartilhado** do
-> homelab. O argumento se inverte: sabe-se que o vizinho existe, e não fixar o limite é
-> que passa a impor risco a ele. `E-30` deixa de estar bloqueada e passa a estar
-> **aberta e decidível**. O que ela decide continua sendo parâmetro de cluster, e por
-> isso a decisão alcança o `homelab-infrastructure`, e não só este repositório.
+**O adiamento caiu, e a linha fechou em 2026-08-10.** Ele dependia de `E-5`, que já estava
+fechada quando este parágrafo foi escrito — o argumento se invertia por inteiro. Tanto o
+adiamento quanto a premissa caída estão registrados no fecho:
+[`E-30` fecha em limite finito com alerta](#e-30-fecha-em-limite-finito-com-alerta-escolhida-em-2026-08-10).
 
 ### A quarta rodada do grupo II, em 2026-08-06
 
@@ -2756,6 +2746,65 @@ vez, quando a pessoa escolhe — este fecho apura a elegibilidade, e não decide
   crescimento monotônico que a pessoa objetou: cada citação nova de um documento estável
   converte uma linha podável em permanente, e nada neste fecho aceita continuar
   produzindo esse efeito.
+
+#### `E-30` fecha em limite finito com alerta, escolhida em 2026-08-10
+
+**O problema, que a poda desta linha trouxe para cá.** Com o conector de CDC publicando
+continuamente, o replication slot dele é **um só e de vida longa**, e não um por execução.
+A retenção de WAL deixou de ser "um slot órfão por execução morta" e passou a ser "um slot
+que retém tudo enquanto o conector estiver fora do ar" — num banco que o homelab
+compartilha com vizinhos.
+
+**A escolha.** `max_slot_wal_keep_size` recebe **valor finito**, e a retenção do slot ganha
+**alerta**. A observabilidade vem da stack que o cluster já opera, e **nenhuma tecnologia
+nova entra por causa disto**: a
+[regra estrutural](../../AGENTS.md#regras-estruturais-que-valem-sempre) não é acionada,
+porque nada entra na stack **deste** repositório.
+
+**O que fica aqui é a exigência; o valor, não.** Qual número o parâmetro recebe é
+configuração de cluster, e vive no
+[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure). Fixá-lo aqui
+seria este repositório decidindo o que ele não opera.
+
+**Por que limite, e não retenção livre.** Sem limite, um conector fora do ar retém WAL até
+encher o disco do cluster e derrubar quem não tem relação nenhuma com o laboratório. Com
+limite, o pior caso é **slot invalidado**, e a guarda de
+[`E-46`](#e-46-fecha-no-consumidor-do-broker-escolhida-em-2026-08-10) o detecta. A troca é
+explícita: aceita-se perder a medida de uma execução para não derrubar o vizinho.
+
+**As duas formas do pior caso não são a mesma, e a classificação para elas já existe.**
+Slot invalidado **e recriado** produz `fonte incompleta`, o rótulo que
+[`E-45`](#e-45-fecha-em-fonte-incompleta-escolhida-em-2026-08-10) criou. Slot invalidado
+**e não recriado** produz fonte atrasada, que é outra coisa: os dados chegam, e chegam
+velhos.
+
+**O adiamento de 2026-08-06 foi escrito sobre uma premissa que já tinha caído, e isso não
+é anedota.** Aquele parágrafo adiou `E-30` dizendo que ela dependia de `E-5` — se o
+laboratório rodaria no PostgreSQL compartilhado ou em instância própria. `E-5` já estava
+fechada no **compartilhado** quando ele foi escrito. O argumento se invertia por inteiro:
+sabendo que o vizinho existe, é **não** fixar o limite que passa a impor risco a ele. Uma
+linha pode ficar bloqueada por uma dependência que já foi satisfeita, e nada no processo
+confere isso — quem escreve o adiamento é quem precisa reler a linha de que ele depende.
+
+#### `E-41` fecha em seção obrigatória, escolhida em 2026-08-10
+
+**A escolha.** Todo ADR passa a carregar uma seção que lista **o que ele desfaz fora de
+si**, e o commit que traz o ADR **toca esses arquivos**. O precedente do ADR-0012, que fez
+isso uma vez por iniciativa de quem o escreveu, vira regra.
+
+**Por que o commit toca os arquivos, e não apenas os lista.** Uma decisão que invalida um
+texto sem corrigi-lo deixa o repositório afirmando duas coisas contraditórias, e quem ler
+a segunda não tem como saber que ela caiu. Uma lista sem o conserto adia a correção para
+um commit que pode nunca vir, e o intervalo entre os dois é justamente quando alguém lê.
+
+**A regra vale daqui em diante, e não retroage.** Um ADR aceito não ganha a seção depois do
+fato: acrescentá-la seria editar o corpo fora das formas que o
+[lifecycle](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) autoriza. Os
+ADRs anteriores a 2026-08-10 seguem sem ela, e isso é consequência aceita, e não descuido.
+
+**Onde a regra já está escrita, e onde ainda não.** Ela vive no template e no lifecycle da
+skill de ADR. Torná-la explícita também no `README.md` desta pasta **segue pendente** — a
+skill governa quem escreve pela skill, e o `README.md` é o que um leitor consulta.
 
 ## A saída, decidida em 2026-08-06
 
