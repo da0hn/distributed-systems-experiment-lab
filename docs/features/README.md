@@ -12,9 +12,9 @@ O processo está em [`../specification-process.md`](../specification-process.md)
 |------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|----------------------|--------------------------------|
 | [observacao-passo-a-passo](observacao-passo-a-passo/feature-card.md)                                 | como parar, falhar e observar **entre** dois passos de uma operação                            | [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md), `Aceito`                            | 12, todas aprovadas  | especificado, não implementado |
 | [execucao-de-experimento](execucao-de-experimento/feature-card.md)                                   | o que um resultado zero significa, e quando ele é defeito do instrumento                       | [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md), `Aceito`    | 15, todas aprovadas  | especificado, não implementado |
-| [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md)                   | quantos incrementos se perderam, e sob qual proteção — E1 e E3                                 | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                         | 19, 18 aprovadas     | especificado, não implementado |
-| [deteccao-de-protecao-inerte](deteccao-de-protecao-inerte/feature-card.md)                           | por que uma proteção pode estar presente e não proteger nada — E5                              | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                         | 11, 10 aprovadas     | especificado, não implementado |
-| [streaming-e-replay-do-log-de-observacoes](streaming-e-replay-do-log-de-observacoes/feature-card.md) | como a tela vê o histórico completo e o que acontece ao vivo, sem perder nem repetir evento    | [`ADR-0016`](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md), `Aceito`                | 7, 6 aprovadas       | especificado, não implementado |
+| [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md)                   | quantos incrementos se perderam, e sob qual proteção — E1 e E3                                 | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                         | 19, todas aprovadas  | especificado, não implementado |
+| [deteccao-de-protecao-inerte](deteccao-de-protecao-inerte/feature-card.md)                           | por que uma proteção pode estar presente e não proteger nada — E5                              | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                         | 11, todas aprovadas  | especificado, não implementado |
+| [streaming-e-replay-do-log-de-observacoes](streaming-e-replay-do-log-de-observacoes/feature-card.md) | como a tela vê o histórico completo e o que acontece ao vivo, sem perder nem repetir evento    | [`ADR-0016`](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md), `Aceito`                | 7, todas aprovadas   | especificado, não implementado |
 | [distincao-entre-higiene-e-invalidacao](distincao-entre-higiene-e-invalidacao/feature-card.md)       | se um evento atrasado do broker invalida o veredito, ou é resíduo inofensivo de janela fechada | [`ADR-0012`](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md), `Aceito` | 7, todas aprovadas   | especificado, não implementado |
 
 **Nenhuma capacidade está implementada, e isso não quer dizer que não haja código.** Há
@@ -23,29 +23,31 @@ uma única regra de negócio dentro**. A árvore versionada é a prova do que ex
 índice é o dono do que cada capacidade cobre, e a coluna `Regras` é a dona de quantas
 regras cada uma tem.
 
-**Sessenta e oito das setenta e uma regras foram aprovadas por pessoa em 2026-08-12**,
-em dois blocos e por um mesmo critério de **procedência**: cada uma transcreve decisão
-que já vive em ADR aceito, em fecho desta fila ou em guardrail da raiz, de modo que
-aprová-la confirmou a fidelidade da transcrição sem redecidir o mérito. A `R19` de
-[deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md#regras-de-negócio)
-é anterior aos dois blocos, por decisão de 2026-08-06 ([E-76,
-fecho](../adr/fila-de-decisoes.md#e-76-fecha-em-a-regra-desce-para-o-feature-card-escolhida-em-2026-08-12)).
+**As setenta e uma regras dos seis cards foram aprovadas por pessoa**, todas em
+2026-08-12 exceto a `R19` de
+[deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md#regras-de-negócio),
+de 2026-08-06
+([E-76, fecho](../adr/fila-de-decisoes.md#e-76-fecha-em-a-regra-desce-para-o-feature-card-escolhida-em-2026-08-12)).
 
-**Três regras ficaram de fora, e cada uma por um motivo próprio.** Nenhuma delas foi
-rejeitada: o que falta é dono a montante, e cada uma tem hoje uma linha da fila que o
-produzirá.
+**O critério foi a procedência, e ele separou dois grupos.** Sessenta e sete regras
+apenas transcrevem decisão que já vivia em ADR aceito, em fecho da fila ou em guardrail
+da raiz — aprová-las confirmou a fidelidade da transcrição, sem redecidir o mérito. As
+outras três não tinham dono a montante, e **cada uma exigiu que a pessoa decidisse
+antes**, no mesmo dia:
 
-| Regra                                             | Por que não foi aprovada                                                         | Linha da fila |
-|---------------------------------------------------|----------------------------------------------------------------------------------|----------------|
-| `R18` de `deteccao-de-atualizacao-perdida`        | a única evidência está no arquivo congelado, que é proposta e não decisão aceita | [`E-86`](../adr/fila-de-decisoes.md#e-86--a-regra-r18-do-e1-é-viva-e-a-única-evidência-dela-está-no-arquivo-congelado) |
-| `R7` de `deteccao-de-protecao-inerte`             | o ADR-0002 recusa por escrito decidir o nível de isolamento                      | [`E-87`](../adr/fila-de-decisoes.md#e-87--o-nível-de-isolamento-como-parâmetro-do-experimento-e-os-três-destinos) |
-| `R4` de `streaming-e-replay-do-log-de-observacoes` | a evidência declara a própria ausência: é proposta do card                       | [`E-88`](../adr/fila-de-decisoes.md#e-88--o-sinal-de-encerramento-do-stream-que-a-r4-de-streaming-propõe-sem-adr) |
+| Regra                                             | O que faltava                                                                   | Onde foi decidido |
+|---------------------------------------------------|----------------------------------------------------------------------------------|--------------------|
+| `R18` de `deteccao-de-atualizacao-perdida`        | de onde vem `value_inicial`, já que a única evidência era o arquivo congelado    | [`E-86`](../adr/fila-de-decisoes.md#e-86-fecha-em-o-estado-inicial-é-escrito-com-a-captura-aberta-escolhida-em-2026-08-12) |
+| `R7` de `deteccao-de-protecao-inerte`             | onde vive o nível de isolamento, que o ADR-0002 recusa por escrito decidir       | [`E-87`](../adr/fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12) |
+| `R4` de `streaming-e-replay-do-log-de-observacoes` | como o fim de uma execução chega ao `lab-journal` e ao frontend                  | [`E-88`](../adr/fila-de-decisoes.md#e-88-fecha-em-evento-terminal-pelo-broker-e-o-stream-fecha-depois-dele-escolhida-em-2026-08-12) |
 
-Aprova-se a **regra** e não o card, pela decisão `B-3`, de 2026-08-05, e uma regra
-`pendente` NÃO DEVE virar cenário Gherkin. **Nenhuma das sessenta e oito ganhou
-cenário**: os ciclos que as aprovaram não tocaram nenhum `behavior.feature`, pelo motivo
-da seção abaixo. O mesmo raciocínio alcança qualquer conversão automática do card para
-fora daqui.
+**O fecho de `E-87` criou uma capacidade que ainda não tem card**: a comparação entre
+níveis de isolamento. Ela é o item conhecido e não especificado mais recente, e está na
+seção própria deste índice.
+
+Aprova-se a **regra** e não o card, pela decisão `B-3`, de 2026-08-05. **Nenhuma das
+setenta e uma ganhou cenário**: os ciclos que as aprovaram não tocaram nenhum
+`behavior.feature`, pelo motivo da seção abaixo.
 
 ### Os quatro `behavior.feature` estão inativos
 
@@ -106,6 +108,22 @@ Também é comportamento do instrumento, comum aos dois oráculos já especifica
 ([`ADR-0013`](../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)).
 
 ## Capacidade conhecida e não especificada
+
+**A comparação entre níveis de isolamento, decidida em 2026-08-12 e ainda sem card.**
+
+O fecho de
+[`E-87`](../adr/fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12)
+decidiu que comparar o mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e
+`SERIALIZABLE` é **capacidade própria**, com card próprio, e não parâmetro do card de
+outro oráculo. **O card ainda não existe**, e esta linha é o registro disso.
+
+O que o fecho já fixou, e que a redação NÃO DEVE contradizer: nenhuma combinação de
+nível e estratégia é recusada — `OPTIMISTIC` sob `READ COMMITTED` quebra a invariante
+sem exceção nenhuma, e é esse o fenômeno que o E5 ensina —, e o relatório DEVE exibir o
+par declarado ao lado do veredito. A `R7` de
+[deteccao-de-protecao-inerte](deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)
+segue aprovada e citando aquele fecho; se o card novo a absorve ou se ela permanece como
+ponteiro é decisão da redação.
 
 **E4 — `optimistic-under-contention`, o veredito em formato curva.**
 

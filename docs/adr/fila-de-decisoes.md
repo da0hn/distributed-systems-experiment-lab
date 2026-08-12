@@ -3834,10 +3834,37 @@ observável no stream**, o que só passou a fazer diferença depois que o
 `SELECT` do caminho do veredito. Quem fechar `Q-0002-4` NÃO DEVE presumir que fechou
 esta, e quem fechar esta NÃO DEVE presumir que respondeu a limpeza entre execuções.
 
-**O que esta linha NÃO decide.** Ela não escolhe entre as origens acima, e não antecipa
-qual delas o experimento usa. Enquanto estiver aberta, `R18` segue `pendente` no card e
-**NÃO DEVE** virar cenário Gherkin, pela regra de
-[`docs/AGENTS.md`](../AGENTS.md#feature-card).
+
+#### `E-86` fecha em o estado inicial é escrito com a captura aberta, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12.**
+
+**O que fica decidido.** O `INSERT` do estado inicial acontece com a replicação lógica
+**já ativa**, e o oráculo obtém `value_inicial` do primeiro evento daquele
+`partition_id` no stream. Os dois lados de `perdidas = commits − (value_final −
+value_inicial)` passam a vir da mesma fonte, e nenhum deles é constante no código do
+oráculo.
+
+**A alternativa descartada, e o motivo.** Presumir `value_inicial` da convenção de
+criação era mais barata e não mudava protocolo nenhum. Perde porque transforma metade da
+subtração em constante: um setup alterado produziria número errado sem sinal, que é o
+falso negativo silencioso que a `R18` existe para impedir.
+
+**O que isso obriga.** Abrir a captura **antes** do setup passa a ser parte do protocolo
+de execução, e o oráculo precisa distinguir o evento de criação do primeiro evento
+medido. O discriminador de
+[`E-23`](#e-23-fecha-em-nomes-assimétricos-um-por-lado-da-fronteira) é o que torna isso
+possível: a linha nasce com o `partition_id` daquela execução, e não existe antes dela.
+
+**Uma alternativa não precisou ser avaliada.** Criar o estado inicial por migração
+Flyway está fora **por construção**, e não por preferência: a coluna do discriminador
+entra em `resource` e `allocation` pelo
+[ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-nome-assimétrico-do-discriminador-e-a-tradução-num-ponto-único)
+, e uma migração não pré-cria linha de execução que ainda não existe.
+
+**A `R18` é aprovada como está escrita**, e passa a citar este fecho. **Este fecho não
+fecha [`Q-0002-4`](../questions/Q-0002-4.md)**: quem limpa entre duas execuções, e se o
+histórico da anterior sobrevive, continuam sem resposta.
 
 ### `E-88` — o sinal de encerramento do stream, que a `R4` de streaming propõe sem ADR
 
@@ -3874,9 +3901,51 @@ flowchart LR
   LJ -->|" stream "| FE["frontend<br/>como o fim é sinalizado?<br/>não decidido"]
 ```
 
-**O que esta linha NÃO decide.** Ela não escolhe entre fechar a conexão e emitir evento
-terminal, e não presume que o sinal do `lab-journal` seja o mesmo da sentinela do
-`lab_plane`. `R4` segue `pendente` e NÃO DEVE virar cenário Gherkin.
+
+#### `E-88` fecha em evento terminal pelo broker, e o stream fecha depois dele, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12.** As duas metades foram decididas juntas, porque
+a segunda não faz sentido sem a primeira.
+
+**Como o `lab-journal` descobre o fim.** O runtime emite um **evento terminal de
+observação** depois do último passo, e ele viaja pelo mesmo buffer, pela mesma thread de
+publicação e pelo mesmo broker que o
+[ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#o-runtime-publica-por-um-buffer-em-memória-numa-thread-separada)
+decidiu. Por viajar no mesmo canal ordenado, ele **não pode ultrapassar** observação
+nenhuma ainda enfileirada.
+
+**Como o stream sinaliza ao frontend.** O `lab-journal` entrega o evento terminal ao
+cliente, carregando o cursor do último evento da execução, e **só então** fecha o
+stream.
+
+**As duas alternativas descartadas, e o motivo de cada uma.** Sinalizar por chamada
+direta do `lab-plane` ao `lab-journal` perde porque a chamada é fora de banda: com o
+buffer assíncrono, ela pode chegar antes das observações ainda enfileiradas e truncar o
+stream sem que ninguém perceba. Fechar a conexão sem evento perde porque um fechamento é
+indistinguível de queda de rede, e a `R2` manda o cliente reconectar com `Last-Event-ID`
+— ele reconectaria indefinidamente contra uma execução que acabou.
+
+```mermaid
+sequenceDiagram
+    participant RT as runtime
+    participant BUF as buffer · thread
+    participant RB as RabbitMQ
+    participant LJ as lab-journal
+    participant FE as frontend
+    RT->>BUF: observação do último passo
+    RT->>BUF: evento terminal
+    BUF->>RB: publica na ordem
+    RB->>LJ: entrega na ordem
+    LJ->>FE: ...observações...
+    LJ->>FE: evento terminal, com o cursor do último
+    LJ--xFE: fecha o stream
+```
+
+**Este fecho não decide a marca de fim do caminho do veredito.** Aquela é do
+[`E-47`](#e-47-fecha-na-sentinela-escolhida-em-2026-08-10), é escrita pelo sistema medido e
+viaja o WAL. **São dois sinais, em dois caminhos**, e nada aqui os funde.
+
+**A `R4` passa a citar este fecho e a nomear o evento terminal**, e é aprovada.
 
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 
@@ -5000,18 +5069,11 @@ exceção nenhuma, porque inserir uma alocação não incrementa a versão de li
 Tratar o isolamento como mais um valor da mesma enumeração apagaria a distinção que o
 experimento existe para mostrar.
 
-Três destinos são possíveis, e a escolha não foi feita.
-
-- **Estratégias de concorrência**, com o isolamento declarado como eixo separado dentro
-da mesma decisão. O custo é uma decisão que passa a carregar dois eixos.
-- **Experiment**, que define o que uma execução declara. O isolamento seria um campo da
-definição, ao lado da semente. O custo é decidir a semântica do parâmetro num ADR cujo
-assunto é o ciclo de vida da execução.
-- **Linha própria nesta fila**, se a escolha tiver alternativas e trade-off que nenhuma
-das duas comporte.
-
-Uma pista contra o terceiro destino: o E5 não escolhe um nível, ele varre três. O que a
-plataforma precisa é do eixo de variação, e não de um valor decidido uma vez.
+**Os três destinos considerados em 2026-07-31 saíram deste texto em 2026-08-12**, no
+turno em que a linha fechou. Eram "estratégias de concorrência, com o isolamento como
+eixo separado", "Experiment, com o isolamento como campo da definição" e "linha própria
+nesta fila". O fecho de `E-87` diz por que nenhum foi tomado, e a terceira é o que esta
+linha acabou sendo.
 
 Registrado em 2026-07-31, no levantamento do que falta para fechar o MVP.
 
@@ -5039,10 +5101,40 @@ diz que "o isolamento é parâmetro da definição de experimento, e tem ADR pr�
 fila". Enquanto a pendência não tinha número, essa promessa não apontava para lugar
 nenhum, e a `R7` ficava sem chão a montante.
 
-**Os três destinos acima seguem abertos, e esta linha não escolhe nenhum.** A pista
-contra o terceiro — que o E5 varre três níveis em vez de escolher um — também continua
-valendo como está escrita. `R7` segue `pendente` até o fecho, e NÃO DEVE virar cenário
-Gherkin.
+#### `E-87` fecha em card novo para a comparação entre níveis de isolamento, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12**, e **nenhum dos três destinos de 2026-07-31 foi
+tomado** — as saídas deles saíram do texto neste mesmo turno.
+
+**A pergunta estava mal formulada, e o reenquadramento é da pessoa.** Os três destinos
+perguntavam *qual ADR*. Desde 2026-08-01 o ADR deixou de ser a forma principal de
+documentação, e o teste é outro: o que descreve o que o sistema faz, e é verificável,
+vai para Feature Card. Comparar o mesmo experimento sob três níveis de isolamento é
+verificável — "dada uma execução declarando `SERIALIZABLE`, quando duas transações
+conflitam, então uma aborta com `40001`". **É feature, e não decisão arquitetural.**
+
+**Dois dos três destinos já eram impossíveis quando a decisão foi retomada.**
+"Experiment" não existe como artefato. E "estratégias de concorrência" é o
+[ADR-0006](0006-a-forma-da-estrategia-de-concorrencia.md) , `Aceito`, que não recebe
+decisão nova desde 2026-08-11. O terceiro, linha própria nesta fila, é o que esta linha
+foi.
+
+**O que fica decidido.** A capacidade ganha **card próprio**, e ele não é sobre declarar
+um parâmetro: é sobre **comparar os três níveis e dizer quais protegem, e a que custo**.
+O nível de isolamento é propriedade da transação, e a estratégia é código da aplicação —
+o E5 existe para separar os dois eixos, e um card que os comparasse dentro do card de
+outro oráculo apagaria a separação.
+
+**A plataforma NÃO DEVE recusar combinação alguma de nível e estratégia.** `OPTIMISTIC`
+sob `READ COMMITTED` quebra a invariante sem exceção nenhuma, porque inserir uma
+alocação não incrementa a versão de linha alguma — e é exatamente esse o fenômeno que o
+E5 ensina. Recusar a combinação apagaria o problema antes de mostrá-lo, contra a
+[regra pedagógica](../../AGENTS.md#regra-pedagógica) . **O relatório DEVE exibir o par
+declarado ao lado do veredito**, sem o que o número não é interpretável.
+
+**A `R7` de detecção de proteção inerte é aprovada** e passa a citar este fecho no lugar
+do plano. Se o card novo a absorve ou se ela permanece como ponteiro é trabalho da
+redação dele, e não desta linha.
 
 ## A anomalia por frequência: uma proposta que muda o estatuto da barreira
 
