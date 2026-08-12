@@ -31,7 +31,9 @@
 # existe mais.
 
 # ----------------------------------------------------------------------------
-# `D-4` — dez citações por linha, dentro dos ADRs 0008 e 0009.
+# `D-4` — as citações por linha dentro dos ADRs 0008 e 0009. A contagem não é
+# escrita aqui: as entradas estão logo abaixo, e um número em comentário já
+# divergiu delas uma vez.
 #
 # As duas citavam `docs/architecture/decisoes-pendentes.md`, e o ADR-0008 citava
 # também `arquitetura-alvo.md` e `modelo-de-dados.md`. Os três arquivos foram
@@ -42,6 +44,15 @@
 # criada no mesmo dia — que incorpora a afirmação que cada citação sustentava.
 # O ADR se sustenta sem o documento citado; a citação permanece quebrada no
 # corpo, e o adendo diz o que ela dizia.
+#
+# ATENÇÃO: a premissa do primeiro parágrafo caiu. A imutabilidade do corpo foi
+# revogada em 2026-08-07, e o bloco de `C-6`, acima, é o registro de duas
+# citações consertadas por patch por causa dessa revogação. As entradas abaixo
+# continuam aqui por escolha de **forma** — o adendo —, e não por falta de
+# conserto: os três arquivos foram movidos sem alteração, e trocar o prefixo do
+# caminho as resolveria com os números de linha intactos. Se elas viram patch ou
+# permanecem é decisão de pessoa, aberta na linha `E-72` de
+# `docs/adr/fila-de-decisoes.md`.
 docs/adr/0008-os-dois-planos-em-processos-separados.md:../architecture/arquitetura-alvo.md:29-34
 docs/adr/0008-os-dois-planos-em-processos-separados.md:../architecture/decisoes-pendentes.md:254-255
 docs/adr/0008-os-dois-planos-em-processos-separados.md:../architecture/modelo-de-dados.md:154-158

@@ -1984,6 +1984,40 @@ faz parte da saída que for escolhida.
 `### Neutras` do ADR-0008 permanece **byte a byte**, porque nenhuma forma autoriza tocá-lo
 — e é exatamente esse impasse que a linha existe para resolver.
 
+#### `E-72` — doze citações quebradas esperam sob uma premissa que já caiu
+
+Aberta em 2026-08-11, ao conferir se a baseline de citações tinha entrada obsoleta.
+
+**O problema.** As doze entradas de `scripts/citations-baseline.txt` são citações por
+linha, nos ADRs 0008 e 0009, para três arquivos arquivados em
+`docs/adr/arquivo/proposta-2026-08-03/`. O bloco que as autoriza dá o motivo: "o corpo de
+um ADR aceito NÃO DEVE ser editado", escrito em 2026-08-05. **A imutabilidade do corpo foi
+revogada em 2026-08-07**, e o bloco imediatamente acima daquele, o de `C-6`, é o registro
+de duas citações consertadas por patch exatamente por causa da revogação. As doze ficaram
+onde estavam, sob uma justificativa que a revogação esvaziou.
+
+**O conserto existe, e foi verificado e não suposto.** Os três arquivos foram movidos sem
+alteração de conteúdo: a linha 154-158 de `modelo-de-dados.md` no arquivo congelado traz,
+na letra, a frase sobre buffer pool, WAL, checkpointer, autovacuum e tabela de locks que o
+ADR-0008 cita; e 230-233 de `decisoes-pendentes.md` traz o que o ADR-0009 cita. Trocar o
+prefixo do caminho resolve as doze, com os números de linha intactos.
+
+**Por que isto não é execução, e sim decisão.** O bloco da baseline registra uma escolha
+deliberada de **forma**: cada um dos dois ADRs recebeu um **adendo** que incorpora a
+afirmação que a citação sustentava, e a nota diz que "a citação permanece quebrada no
+corpo, e o adendo diz o que ela dizia". Repontar as doze troca essa forma por outra, e
+esvazia parte do que os dois adendos existem para sustentar. Quem escolhe entre uma forma
+e outra é a pessoa.
+
+| Saída                                                       | O que ela faz                                                                                                                       |
+|-------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| repontar as doze por patch, e manter os adendos             | a baseline esvazia, o verificador passa sem exceção nenhuma, e os adendos passam a ser redundância deliberada em vez de único apoio |
+| manter como está, e corrigir só a justificativa da baseline | nada muda no corpo dos ADRs, e o bloco passa a dizer que a escolha é da forma, e não da impossibilidade de editar                   |
+| repontar só as citações que nenhum adendo cobre             | exige medir, uma a uma, o que cada adendo absorveu — trabalho que nenhuma das outras duas saídas pede                               |
+
+**Sem recomendação.** Enquanto a linha estiver aberta, as doze entradas permanecem na
+baseline, e o bloco de comentário delas remete a esta linha.
+
 #### `E-37` — o que a proibição de derivar estado de stream alcança
 
 **Estado:** `fechada`, em 2026-08-09. Os três desdobramentos que esta linha deixou
