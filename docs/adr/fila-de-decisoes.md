@@ -3638,6 +3638,45 @@ colunas de tempo" na
 e podar metade do tema deixaria a tabela dizendo "podado" sobre um tema que continua na
 fila.
 
+#### `E-77` — a âncora resolve, e o alvo não sustenta a afirmação
+
+Aberta em 2026-08-11, achada pelo revisor independente do ciclo do card de
+[distinção entre higiene e invalidação](../features/distincao-entre-higiene-e-invalidacao/feature-card.md).
+
+**O problema.** [`check_citations.py`](../../scripts/check_citations.py) confere que o
+caminho existe e que a âncora resolve. Nada confere que o alvo **diga** o que a frase que
+o cita afirma. Uma citação assim não quebra nunca: ela nasce apontando para outro texto, e
+continua apontando para ele por edição nenhuma.
+
+**O caso medido.** Uma frase sobre a **ausência de reinício automático** do `lab-plane`
+levava como evidência
+[As decisões do grupo I](#as-decisões-do-grupo-i-em-2026-08-06). Aquela seção registra que
+`E-3` foi adiada, que o `ComparisonError` permanece e que a linha segue aberta — e não diz
+uma palavra sobre reinício. O fato existe, e está no fecho de
+[`E-35`](#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10), onde sustenta outra
+coisa: que estado em memória se perde, e não quantas réplicas sobem. **Os três
+verificadores mecânicos passaram**, e quem pegou foi o revisor independente.
+
+**Por que esta linha não é
+[`E-62`](#e-62--a-citação-entre-aspas-não-tem-verificador-e-ela-quebra-em-silêncio).**
+Aquela trata da frase reproduzida **entre aspas**, cujo acoplamento com o alvo é literal e
+verificável por busca. Aqui não há frase a procurar: a citação apenas **descreve** o alvo,
+e a descrição está errada. Nenhuma das quatro alternativas de `E-62` alcança este caso —
+fechar aquela linha deixa esta intacta.
+
+**Três saídas, e nenhuma escolhida.**
+
+| Saída | Objeção |
+|---|---|
+| exigir que toda evidência venha com a frase do alvo entre aspas, reduzindo esta classe à de `E-62` | multiplica exatamente o acoplamento que `E-62` ainda está decidindo se aceita |
+| declarar o **revisor independente** a única guarda, e escrever isso | ele só roda dentro do ciclo de especificação, e tem teto de três réplicas — patch de ADR e edição desta fila não passam por ele |
+| verificador heurístico que exija termo compartilhado entre a frase e o título citado | "sustenta" não é sobreposição de vocabulário; erra nos dois sentidos e treina quem escreve a driblá-lo |
+
+**Sem recomendação.** A primeira saída depende de `E-62`, que está aberta.
+
+**Nada fica bloqueado por ela.** Ela nomeia uma lacuna de verificação, e não impede
+edição nenhuma.
+
 ## A saída, decidida em 2026-08-06
 
 **A dívida de ADR que enunciou esta linha saiu da fila em 2026-08-10**, por não ser
