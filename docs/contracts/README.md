@@ -91,22 +91,25 @@ flowchart LR
     T -.->|" SELECT cruzado — proibido "| E
 ```
 
-Por isso o DDL de `resource` e `allocation` **saiu do inventário de contratos**. Ele tem
-dois donos, e nenhum deles é este diretório:
+Por isso o esquema de `resource` e `allocation` **saiu do inventário de contratos**. Ele
+tem donos, e nenhum deles é este diretório:
 
-- **O modelo de dados** é a decisão do
-  [ADR-0002](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão), que fixa as duas
-  entidades, suas colunas e a ausência de `version`.
+- **O modelo de dados** é dos ADRs
+  [0002](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão) e
+  [0015](../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão):
+  duas entidades sem `version`, mais o discriminador e as colunas de tempo. A **forma** é
+  de [`esquemas.md`](../architecture/esquemas.md#o-schema-do-sistema-medido-sut), em
+  diagrama ER, e **nenhum documento vigente carrega DDL**.
 - **O esquema executável** são as migrações Flyway de cada serviço. Hoje existe uma por
   serviço, e **nenhuma cria tabela**: `V1__criar_schema_do_lab_plane.sql`,
   `V1__criar_schema_do_lab_journal.sql` e `V1__criar_schema_do_sut.sql`, cada uma em
   `<serviço>/src/main/resources/db/migration/`. Elas criam apenas o schema de cada
-  serviço, porque sem nenhuma migração o Flyway não roda. As tabelas `resource` e
-  `allocation` dependem das decisões de modelo de dados que ainda não fecharam.
+  serviço, porque sem nenhuma migração o Flyway não roda. A migração que cria `resource` e
+  `allocation` ainda não foi escrita.
 
 `Q-INT-5` foi escrita sob a premissa de que faltava um contrato de esquema para essas duas
-entidades. A premissa não sobrevive à regra acima, e o destino da linha é a matriz de
-integrações, não este diretório.
+entidades. A premissa não sobrevive à regra acima nem à decisão de 2026-08-11, e o destino
+da linha é a matriz, não este diretório.
 
 ## A rota de proxy não é endpoint publicado
 

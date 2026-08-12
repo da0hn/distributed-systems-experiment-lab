@@ -174,8 +174,9 @@ O ciclo de vida de ADR aceito, incluindo emenda, subsunção e adendo, continua 
 
 - Linhas são quebradas em aproximadamente 88 colunas.
 - Todo fluxo apresentado vai **também** como diagrama Mermaid, junto do parágrafo que o
-  descreve. `sequenceDiagram` para ordem no tempo, `flowchart` para topologia e hierarquia.
-  Excalidraw só para o que o Mermaid não expressa, exportado como `.excalidraw.svg`.
+  descreve. `sequenceDiagram` para ordem no tempo, `flowchart` para topologia e hierarquia,
+  `erDiagram` para a forma de um schema. Excalidraw só para o que o Mermaid não expressa,
+  exportado como `.excalidraw.svg`.
 - Sem emojis. Sem linguagem de marketing.
 - Um link Markdown longo PODE ultrapassar 88 colunas — quebrá-lo no meio o inutiliza.
 

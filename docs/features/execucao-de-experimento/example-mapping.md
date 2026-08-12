@@ -132,16 +132,26 @@ um defeito que torna a de baixo ilegível.
 
 ### As duas fontes de tempo da execução, e o relógio que produz cada uma
 
-**Esta seção entrou aqui em 2026-08-07**, e vem de uma decisão fechada em 2026-08-06.
-Ela descreve comportamento desta capacidade, e nenhum ADR a carrega — por isso ele passa
-a viver aqui.
+**Esta seção entrou aqui em 2026-08-07**, a partir de uma decisão fechada em 2026-08-06.
+O dono normativo das **quatro** colunas passou a ser o
+[`ADR-0015`](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#as-colunas-de-tempo-e-a-fonte-do-relógio-por-papel-do-valor),
+que fixa `created_at`/`updated_at` da definição no relógio do banco e
+`executed_at`/`concluded_at` no adaptador. Esta seção passa a **ilustrá-lo**, e não é
+fonte de nenhuma das quatro; o que
+[`E-53`, fecho](../../adr/fila-de-decisoes.md#e-53-fecha-em-created_atupdated_at-e-metade-de-e-26-continua-aberta)
+deixou aberto está no parágrafo seguinte.
 
 `executed_at`, `concluded_at`, `created_at` e `updated_at` existem nas tabelas do Lab
-Plane, e **o valor vem do adaptador de relógio injetável, nunca de `DEFAULT now()`**. A
-razão não é de gosto: pelo alcance por papel do valor, se o veredito em formato curva do
-grupo D for construído sobre `executed_at` e `concluded_at`, esses valores entram no papel
-**veredito**, e a regra do relógio os alcança. É a primeira aplicação concreta daquela
-formulação.
+Plane, e a decisão de 2026-08-06 pôs os quatro sob o adaptador de relógio injetável. **O
+fecho de
+[`E-53`](../../adr/fila-de-decisoes.md#e-53-fecha-em-created_atupdated_at-e-metade-de-e-26-continua-aberta)
+corrigiu esse alcance para dois campos**: `created_at`/`updated_at` são metadado de CRUD e
+passam a vir do relógio do banco. `executed_at` e `concluded_at` continuam sob o
+adaptador: pelo alcance por papel do valor, se o veredito em formato curva do grupo D for
+construído sobre eles, entram no papel **veredito**, e a regra do relógio os alcança — é a
+metade de `E-26` que `E-53` deixou aberta. **O recorte "só esses dois" é leitura do fecho,
+e não da pessoa — e é revisável por ela**; a confirmação do alcance fica registrada como
+pendência na própria linha `E-53`.
 
 `P12` é o que a decisão deixou aberto. `executed_at` e `concluded_at` marcam a fronteira
 da janela medida pelo relógio do **instrumento**; o oráculo ordena eventos por LSN do WAL

@@ -24,6 +24,7 @@ que ela nomeia. A terceira coluna diz o que aquele documento **não** prova.
 |---------------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
 | o que existe e executa                | a árvore versionada, `pom.xml`, `compose.yaml`, `frontend/package.json` e os testes             | configuração prova presença, e não funcionamento               |
 | o estado de uma fronteira de processo | [matriz de integrações](architecture/integrations.md#matriz)                                    | abra a evidência primária citada antes de concluir             |
+| a forma de tabela dos dois schemas    | [esquemas.md](architecture/esquemas.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam)  | não cobre `lab_journal`; forma decidida não é migração escrita |
 | a decisão arquitetural vigente        | [índice de ADRs](adr/README.md#índice)                                                          | plano e auditoria não substituem decisão aceita                |
 | a decisão ainda aberta                | [fila de decisões](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira)                           | não feche a lacuna por inferência                              |
 | o comportamento de uma capacidade     | [índice de capacidades](features/README.md#índice)                                              | regra `pendente` não é comportamento aprovado                  |
@@ -62,7 +63,7 @@ flowchart TD
 | `CONTEXT.md`               | glossário canônico do vocabulário vigente          |
 | `features/`                | comportamento de cada capacidade especificada      |
 | `contracts/`               | contrato formal entre processos, quando existir    |
-| `architecture/`            | a matriz das fronteiras de processo e seu estado   |
+| `architecture/`            | a matriz das fronteiras e a forma dos schemas      |
 | `adr/`                     | as decisões arquiteturais duráveis, e a fila       |
 | `questions/`               | uma questão encaminhada por arquivo                |
 | `audits/`                  | auditoria datada; recomendação, e nunca decisão    |
