@@ -56,3 +56,14 @@ jobs:
           done
           python .claude/skills/feature-planning/scripts/check_artifact_limits.py \
             --root . "${args[@]}"
+
+      # Compara o nome de tabela de cada `erDiagram` de
+      # `docs/architecture/esquemas.md` com as migrações Flyway do serviço
+      # correspondente. A baseline carrega a divergência deliberada, e uma
+      # entrada dela que deixe de casar com algo reprova — uma linha que
+      # autoriza uma divergência já resolvida esconderia a próxima.
+      - name: Verificar a sincronia entre diagrama e migração
+        run: >
+          python scripts/check_schema_sync.py
+          --root .
+          --baseline scripts/schema-sync-baseline.txt
