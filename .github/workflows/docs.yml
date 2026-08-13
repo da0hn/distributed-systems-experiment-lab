@@ -16,10 +16,15 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   verificar:
-    name: Citações e limites de caracteres
+    name: Forma e evidência dos documentos
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
 
@@ -27,40 +32,33 @@ jobs:
         with:
           python-version: '3.13'
 
-      # Alvo inexistente, linha citada além do fim do alvo, e âncora que não
-      # corresponde a título nenhum. A baseline carrega os defeitos conhecidos,
-      # cada um com a decisão que o autorizou.
-      - name: Verificar as citações
-        run: >
-          python scripts/check_citations.py
-          --root .
-          --baseline scripts/citations-baseline.txt
-
-      # O glob alcança TODO `.md` sob `docs/`, e não mais só os ADRs numerados.
-      # A pessoa decidiu em 2026-08-12, no fecho do orçamento de prosa: o teto
-      # passou a ser propriedade da CLASSE de artefato, e a medição passou a
-      # alcançar a pasta inteira. Antes disso, tudo com teto próprio fora de
-      # `docs/adr/` — os Feature Card, `integrations.md` — era medido em edição
-      # e por ninguém no CI.
+      # Uma execução, quatro verificações: citação, limite de caracteres,
+      # padding de tabela e fim de linha. As duas primeiras são delegadas por
+      # subprocesso a quem já é dono delas, e as duas últimas são nativas da
+      # porta.
       #
-      # **Alargar o glob não reprova ninguém por consequência automática**, e
-      # essa foi a condição da escolha. Quem já excedia quando o alcance mudou
-      # está em `TRIAGE_PENDING`, dentro do script, e é reportado como `TRIAGEM`
-      # sem reprovar até a classe dele ser decidida. Cada entrada de lá some
-      # quando a decisão for escrita, e a lista vazia é o estado final.
+      # **Ligar a porta ao CI corrige uma divergência, e não é refatoração.**
+      # Até 2026-08-13 este workflow chamava os dois verificadores delegados
+      # um a um, e as duas verificações NATIVAS não rodavam em CI nenhum —
+      # elas existiam apenas no hook `PostToolUse` de `.claude/settings.json`.
+      # O efeito era que o agente media mais que o repositório, e quem editava
+      # um `.md` sem o agente não era alcançado por nada. A própria docstring
+      # de `verify_docs.py` já declarava a varredura completa como "o modo da
+      # linha de comando e o do CI", e a segunda metade era falsa.
+      #
+      # O teto é propriedade da CLASSE de artefato, e a medição alcança toda a
+      # pasta `docs/`. Quem já excedia quando o alcance mudou está em
+      # `TRIAGE_PENDING`, dentro do verificador de limites, e é reportado como
+      # `TRIAGEM` sem reprovar até a classe dele ser decidida.
       #
       # `.claude/**` continua fora, de propósito e com custo nomeado: a pessoa
       # escolheu `docs/` contra "todo Markdown versionado". Instrução de skill é
       # classe isenta de qualquer forma, mas nada a mede.
-      - name: Verificar os limites de caracteres sob docs/
-        run: |
-          set -euo pipefail
-          args=()
-          while IFS= read -r f; do
-            args+=(--file "$f")
-          done < <(find docs -type f -name '*.md' | sort)
-          python .claude/skills/feature-planning/scripts/check_artifact_limits.py \
-            --root . "${args[@]}"
+      - name: Verificar citações, limites, tabelas e fim de linha
+        run: >
+          python scripts/verify_docs.py
+          --root .
+          --baseline scripts/verify-docs-baseline.txt
 
       # Recusa identificador repetido na fila. Nasceu do fecho de `E-73`, em
       # 2026-08-12: `E-62` e `E-63` nomearam duas linhas cada um, os pares
