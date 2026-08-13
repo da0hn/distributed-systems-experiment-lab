@@ -1,8 +1,8 @@
 # Capacidades
 
-As capacidades do laboratório, especificadas por Feature Card e Example Mapping. Os
-quatro `behavior.feature` existem na árvore e estão **inativos** — a subseção do índice
-diz por quê.
+As capacidades do laboratório, especificadas por Feature Card e Example Mapping. Quais
+`behavior.feature` são especificação viva, e qual segue inativo, é da subseção do
+índice — este parágrafo não os reconta.
 
 O processo está em [`../specification-process.md`](../specification-process.md).
 
@@ -24,13 +24,13 @@ uma única regra de negócio dentro**. A árvore versionada é a prova do que ex
 índice é o dono do que cada capacidade cobre, e a coluna `Regras` é a dona de quantas
 regras cada uma tem.
 
-**Setenta e uma regras foram aprovadas por pessoa**, todas em 2026-08-12 exceto a `R19` de
-[deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md#regras-de-negócio),
+**Setenta e uma regras foram aprovadas por pessoa**, todas em 2026-08-12 exceto a
+`R19` de [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md#regras-de-negócio),
 de 2026-08-06
 ([E-76, fecho](../adr/fila-de-decisoes.md#e-76-fecha-em-a-regra-desce-para-o-feature-card-escolhida-em-2026-08-12)).
 Cinco cards têm a coluna `Regras` marcando `todas aprovadas`; a de
-`execucao-de-experimento` passa a misturar aprovada e pendente, pelas `R16` e `R17` que o
-[`ADR-0018`](../adr/0018-cada-controle-roda-sob-o-seu-proprio-nivel.md)
+`execucao-de-experimento` passa a misturar aprovada e pendente, pelas `R16` e `R17`
+que o [`ADR-0018`](../adr/0018-cada-controle-roda-sob-o-seu-proprio-nivel.md)
 acrescentou — as quinze regras dela já aprovadas continuam contadas nas setenta e uma.
 
 **O critério foi a procedência, e ele separou dois grupos.** Sessenta e sete regras
@@ -50,30 +50,33 @@ antes**, no mesmo dia:
 com três regras, todas `pendente` — a primeira capacidade deste índice cujas regras
 ainda não têm `Aprovada por` preenchido.
 
-Aprova-se a **regra** e não o card, pela decisão `B-3`, de 2026-08-05. **Nenhuma das
-setenta e uma regras aprovadas ganhou cenário**: os ciclos que as aprovaram não tocaram
-nenhum `behavior.feature`, pelo motivo da seção abaixo. As três regras da comparação
-entre níveis também não geram cenário, mas por outro motivo: elas são `pendente`, e uma
-regra `pendente` NÃO DEVE virar cenário Gherkin
-([`docs/AGENTS.md`](../AGENTS.md#feature-card)) — não por faltar a comparação
-cenário a cenário que a seção abaixo exige dos quatro `behavior.feature` já escritos.
+Aprova-se a **regra** e não o card, pela decisão `B-3`, de 2026-08-05. **A frase que
+dizia que nenhuma regra aprovada tinha ganhado cenário deixou de valer em 2026-08-12**,
+quando a comparação cenário a cenário foi feita — o que ela achou está na seção abaixo.
+As três regras da comparação entre níveis seguem sem cenário, e por motivo próprio:
+elas são `pendente`, e uma regra `pendente` NÃO DEVE virar cenário Gherkin
+([`docs/AGENTS.md`](../AGENTS.md#feature-card)).
 
-### Os quatro `behavior.feature` estão inativos
+### Qual `behavior.feature` é especificação viva
 
-Os arquivos ficam na árvore e **não** são especificação viva, e o cabeçalho de cada um
-declara isso. Enquanto valer, nenhum cenário deles sustenta teste ou código.
+Um `.feature` é especificação viva quando **cada** regra que ele cobre tem
+`Aprovada por` preenchido, e o cabeçalho `ARQUIVO INATIVO` é o que declara o
+contrário. A volta é **por arquivo**, e não regra a regra: uma regra aprovada entre
+quatro não reativa nada. Aprovação parcial mantém o arquivo inativo e libera escrever
+cenário apenas sobre a regra aprovada — são dois efeitos distintos, e confundi-los
+reativa arquivo não conferido. O dono da regra é
+[`../specification-process.md`](../specification-process.md#o-feature-inativo-e-como-ele-volta-ao-conjunto-ativo).
 
-**A razão original deixou de valer em 2026-08-12, e a inatividade continua.** O texto
-acima dizia que nenhuma regra coberta por eles tinha `Aprovada por` preenchido; hoje
-quase todas têm. O que impede a reativação automática é outra coisa: **os cenários foram
-escritos enquanto as regras estavam `pendente`**, e nada garante que cada um descreva a
-regra na forma em que ela foi aprovada. Reativar exige comparar cenário a cenário com a
-regra aprovada, e essa comparação não foi feita. Trocar o cabeçalho sem ela declararia
-especificação viva sobre texto não conferido.
+**A comparação cenário a cenário foi feita em 2026-08-12**, e três arquivos voltaram
+ao conjunto ativo. Ela não foi cosmética: três cenários saíram, cada um com o motivo
+escrito no Example Mapping da capacidade. Dois afirmavam comportamento que nenhuma
+regra aprovada sustenta, e um afirmava DDL, que não é comportamento externo.
 
-Eles voltam ao conjunto ativo **regra a regra**, e não de uma vez: quando uma pessoa
-aprovar uma regra, os cenários que ela sustenta deixam de ser inativos. Até lá nada é
-migrado nem apagado.
+O `behavior.feature` de
+[execucao-de-experimento](execucao-de-experimento/feature-card.md) segue inativo, e o
+motivo agora é o da própria regra: as `R16` e `R17` que o
+[`ADR-0018`](../adr/0018-cada-controle-roda-sob-o-seu-proprio-nivel.md) acrescentou
+nasceram `pendente`.
 
 ## Os cards não são um por experimento
 
