@@ -3947,6 +3947,97 @@ viaja o WAL. **São dois sinais, em dois caminhos**, e nada aqui os funde.
 
 **A `R4` passa a citar este fecho e a nomear o evento terminal**, e é aprovada.
 
+### `E-89` — a classificação do zero quando o nível de isolamento é o eixo variado
+
+Aberta em 2026-08-12, na revisão do card de
+[comparação entre níveis de isolamento](../features/comparacao-entre-niveis-de-isolamento/feature-card.md),
+e registrada lá como `P6`.
+
+**O problema.** A capacidade nova diz "quais níveis protegem a invariante e a que
+custo".
+A palavra `protegido` já tem dono normativo: ela é um dos veredictos da
+[classificação do zero](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-zero-é-classificado-e-a-classificação-tem-quatro-valores)
+do ADR-0004, `Aceito`. A ordem 1 daquela tabela diz que **o controle negativo não
+violar** produz `inválido`, e `inválido` **NÃO DEVE** ser reportado como evidência de
+proteção. Sob `SERIALIZABLE`, o controle negativo — a estratégia `NONE` — não viola.
+Aplicada ao pé da letra, a ordem 1 classificaria o braço `SERIALIZABLE` como `inválido`,
+e nunca como `protegido`.
+
+**A tabela não está errada; ela foi escrita antes de o nível ser um eixo.**
+Quando a ordem 1 foi redigida, o único jeito de o controle negativo não violar era a
+carga não gerar contenção, e aí `inválido` é o veredito certo.
+
+**O dado que separa as duas causas já existe, e a ordem 1 não olha para ele.** O
+ADR-0004
+manda contar coincidências em
+[toda execução, medida ou de controle](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#a-plataforma-conta-coincidências),
+e a ordem 2 já consulta as do controle negativo. `SERIALIZABLE` no PostgreSQL é SSI: ele
+não bloqueia, ele aborta no commit — as janelas continuam se sobrepondo, e
+`coincidências > 0`. É o oposto de `SELECT ... FOR UPDATE`, que fecha a janela por
+construção e produz `coincidências = 0`. As duas causas do zero de violações são
+distinguíveis pelo número que a plataforma já calcula.
+
+```mermaid
+flowchart TD
+    Z["controle negativo NONE<br/>não violou"] --> C{"coincidências<br/>do controle negativo"}
+    C -->|" = 0 "| A["a carga não gera contenção<br/>é o inválido da ordem 1"]
+    C -->|" maiores que 0 "| B["a carga gera contenção,<br/>e o nível a neutralizou<br/>a ordem 1 não cobre este caso"]
+    style A fill:#1d3a4a, stroke:#60a5fa, color:#e5e7eb
+    style B fill:#4a1d1d, stroke:#f87171, color:#e5e7eb
+```
+
+**O que esta linha NÃO decide.** O que quantifica "o custo" de um nível que protege
+segue sendo `P4` do card, e a generalização além do E5 segue sendo `P5`.
+
+#### `E-89` fecha em cada controle roda sob o seu próprio nível, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12.** A tabela do ADR-0004 fica **byte a byte**: ela
+não precisava mudar, e o que faltava era uma decisão que aquele ADR nunca tomou.
+
+**Os dois controles respondem perguntas diferentes, e por isso rodam sob níveis
+diferentes.** O controle negativo pergunta *a carga oferece exposição?* — propriedade da
+carga, e não do nível — e por isso roda sob o nível **mais fraco**. O controle positivo
+pergunta *a anomalia é possível aqui?* — propriedade do par (nível, estratégia) — e por
+isso roda sob o nível **medido**. A assimetria é a decisão, e não efeito colateral dela.
+
+**O nível de isolamento NÃO entra na carga declarada.** A comparabilidade entre duas
+contagens continua exigindo o mesmo `N`, o mesmo número de workers e a mesma operação,
+como o ADR-0004 já escreve em
+[a plataforma conta coincidências](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#a-plataforma-conta-coincidências).
+O nível não está nessa lista, e esta linha o mantém fora dela de propósito.
+
+**Com isso o braço `SERIALIZABLE` cai na ordem 5, e o veredito é `protegido`.** O
+controle negativo viola sob o nível mais fraco, e a ordem 1 não dispara. As
+coincidências dele são maiores que zero, e a ordem 2 não dispara. `SERIALIZABLE` é SSI e
+não bloqueia — as janelas continuam se sobrepondo —, então as coincidências da medida
+também são maiores que zero, e a ordem 3 não dispara. O controle positivo aborta com
+SQLSTATE `40001` em vez de violar, e a ordem 4 não dispara. Sobra a ordem 5.
+
+```mermaid
+flowchart TD
+    CN["controle negativo<br/>NONE sob o nível mais fraco"] --> O1{"ordem 1<br/>não violou?"}
+    O1 -->|" violou "| O2{"ordem 2<br/>coincidências<br/>do controle = 0?"}
+    O2 -->|" maiores que 0 "| O3{"ordem 3<br/>coincidências<br/>da medida = 0?"}
+    O3 -->|" maiores que 0 "| O4{"ordem 4<br/>controle positivo<br/>sob o nível medido<br/>violou?"}
+    O4 -->|" abortou com 40001 "| P["ordem 5<br/>protegido"]
+    style P fill:#1d4a2b, stroke:#4ade80, color:#e5e7eb
+```
+
+**As três saídas descartadas, e o motivo de cada uma.**
+
+| Saída descartada                                                  | Por que não                                                                                                                         |
+|--------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| O nível entra na carga, e cada braço tem controle próprio | o braço `SERIALIZABLE` viraria `inválido`, e a capacidade precisaria de um segundo vocabulário de veredito fora da tabela |
+| Qualificar a ordem 1 pelas coincidências do controle negativo    | altera a decisão de um ADR aceito, e a saída escolhida alcança o mesmo resultado sem tocar nela                           |
+| Lacuna aceita, "protege" em prosa e `protegido` como veredito      | dois sentidos para a mesma raiz no mesmo repositório, e nada no relatório diria qual está em uso                           |
+
+**O teste das quatro perguntas responde `sim` nas quatro**, e o
+[processo](../specification-process.md#adr--só-decisão-arquitetural-durável) chama isso
+de ADR carregando comportamento: o ADR leva o porquê, e o card leva o quê.
+
+**Esta linha NÃO fecha `P2`** — onde o nível de isolamento é declarado continua sem
+dono. Ela decide sob qual nível cada controle roda, e não quem declara o nível nem onde.
+
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 
 **Esta seção é um levantamento congelado em 2026-08-06, e não é recontada a cada linha
