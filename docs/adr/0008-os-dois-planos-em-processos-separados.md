@@ -9,7 +9,7 @@
   [`decisoes-pendentes.md`](arquivo/proposta-2026-08-03/decisoes-pendentes.md), e
   `D-ARQ-01` por consequência.
 
-- **Última atualização:** 2026-08-11
+- **Última atualização:** 2026-08-13
 - **Alterado por:** [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)
   — emenda; a região de pacote `dev.da0hn.lab.controlplane` (seção "Decisão", tabela de
   pacotes, `:70`) passa a `dev.da0hn.lab.sut`.
@@ -25,6 +25,19 @@
   log e oráculo" (seção "Decisão", `:55-56`) deixa de valer quanto ao log. O log de
   observações passa ao `lab-journal`, um terceiro serviço com schema próprio; os outros
   quatro continuam no `lab-plane`.
+- **Alterado por:**
+  [ADR-0019](0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md) — emenda; a
+  frase "o `deploy/` nasce com dois `Deployment`" (seção "Negativas") deixa de valer. O
+  `deploy/` não nasce neste repositório, e os manifests vivem no
+  `homelab-infrastructure`. O mesmo ADR-0019 também honra, alhures, o `DEVE` de réplica
+  única do **`lab-plane`** — e só dele, do ADR-0012 — como critério de aceite do
+  Deployment dele na issue #2 do `homelab-infrastructure`, e não uma decisão desta
+  emenda. A separação de **processos** entre Control Plane e Lab Plane, fixada acima em
+  `## Decisão`, permanece intacta — nenhum dos dois deixa de rodar em processo próprio.
+  A pendência sem solução é a que
+  [`AGENTS.md`](../../AGENTS.md#este-repositório-é-entregue-no-homelab) já nomeia: um
+  experimento que sobe deliberadamente uma segunda instância roda sob `selfHeal` —
+  `Pergunta em aberto` em `E-95`.
 
 ## Contexto
 

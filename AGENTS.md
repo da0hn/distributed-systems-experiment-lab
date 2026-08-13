@@ -361,18 +361,28 @@ exigência é que um serviço **nasça já entregando**. **O contrato de entrega
 na ADR 0017 daquele repositório — leia-a antes de propor qualquer coisa sobre build,
 empacotamento ou deploy. Não o resuma aqui.
 
+**Três itens deste contrato foram contrariados em 2026-08-13**, pelo
+[ADR-0019](docs/adr/0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md#decisão):
+a tag como SHA do commit, o bump por commit deste repositório e a ausência de webhook.
+Só este lado decidiu — a ADR 0017 do homelab segue `Aceita`, sem alteração, lá. O que
+mudou e por quê está no ADR-0019, e não aqui.
+
 Três guardrails operacionais, e nada além deles:
 
-- **A tag da imagem é o SHA do commit, nunca `latest`.**
+- **A tag da imagem é `X.Y.Z-<run_number>`, nunca `latest`.** `X.Y.Z` vem do `pom.xml`
+  do reactor e do `frontend/package.json`; o SHA do commit vive no label OCI
+  `org.opencontainers.image.revision`, e não na tag.
 - **Nenhum Secret vive neste repositório.** Eles ficam cifrados no homelab e são
   referenciados por nome.
-- **`deploy/` não existe hoje**, e a decisão sobre a forma dele está aberta na
-  [fila de decisões](docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira).
+- **`deploy/` não existe, e por decisão nunca vai existir aqui.** Os manifests vivem no
+  `homelab-infrastructure`, em `kubernetes/applications/distributed-consistency-lab/`.
 
-**Uma lacuna, e ela é uma só: o pipeline está parcialmente implementado, bloqueado pela
-decisão de `deploy/`.** Ele publica imagem e não faz o bump de um `deploy/` que não
-existe, e o `Application` do ArgoCD segue em `ComparisonError`. **Não o chame de
-completo.**
+**A lacuna muda de natureza, e não desaparece.** A decisão sobre a forma da entrega está
+tomada; falta implementá-la do lado do `homelab-infrastructure`. O inventário de issues
+que rastreiam essa implementação é da
+[matriz de integrações](docs/architecture/integrations.md#matriz), e não é repetido
+aqui. Até a issue #2 fechar, o `Application` do ArgoCD segue em `ComparisonError`. **Não
+chame o pipeline de completo.**
 
 O estado de cada fronteira de entrega é da
 [matriz de integrações](docs/architecture/integrations.md#matriz). Três cuidados que não

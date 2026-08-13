@@ -66,11 +66,11 @@ Ordem derivada de [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). A 
 | 8     | **Experiment: definição, semente, hipótese e asserções**     | aberta                                   |
 | 9     | **Os dois formatos de veredito: booleano e curva**           | aberta                                   |
 | 10    | **Arquitetura mínima, stack e guardas executáveis**          | **parcialmente consumida** pelo ADR-0008 |
-| 11    | **Entrega contínua no homelab desde o dia zero**             | aberta                                   |
+| 11    | **Entrega contínua no homelab desde o dia zero**             | **parcialmente consumida** pelo ADR-0019 |
 
 O porquê de cada posição, as questões que cada linha carrega e o histórico de como a
-fila chegou a esta ordem estão em [`README.md`](README.md#índice) e nos próprios ADRs. As três
-linhas abertas levam o detalhe abaixo.
+fila chegou a esta ordem estão em [`README.md`](README.md#índice) e nos próprios ADRs. As
+quatro posições abaixo levam o detalhe.
 
 **Posição 8 — Experiment.** Precisa resolver a tensão entre o Designer na interface e a
 definição versionada. [`Q-0002-4`](../questions/Q-0002-4.md) pede aqui o ciclo de vida de
@@ -126,8 +126,11 @@ recomendação não se perca.
 
 `D-ARQ-12` é a única com custo fora deste repositório: ela emenda um documento
 `Aceito` do [`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure).
-`D-ARQ-15` fecha o `ComparisonError` que o ArgoCD reporta hoje, e a separação por
-processo muda a forma que ela precisa declarar.
+`D-ARQ-15` **não** fecha o `ComparisonError` que o ArgoCD reporta: a linha que a
+absorveu, `E-3`, fechou em 2026-08-13 decidindo onde os manifests vivem
+([ADR-0019](0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md)), e o
+`Application` só sai de `ComparisonError` quando eles existirem lá — pendência da
+[issue #2](https://github.com/da0hn/homelab-infrastructure/issues/2) do homelab.
 
 ### Bloco 1 — destravam o esquema e a primeira migração
 
@@ -511,13 +514,13 @@ consequência de `D-DAT-05`, decidida em 2026-08-05, depois de os blocos existir
 
 ### As decisões do grupo I, em 2026-08-06
 
-| ID    | Escolha                                                          | Seguiu a recomendação? |
-|-------|------------------------------------------------------------------|------------------------|
-| `E-1` | Maven, emendando a ADR 0017 do homelab                           | sim                    |
-| `E-2` | três módulos e dois executáveis, com o nome corrigido para `sut` | parcialmente           |
-| `E-3` | **adiada**, por escolha explícita                                | —                      |
-| `E-5` | PostgreSQL compartilhado do homelab, com schema por aplicação    | **não**                |
-| `E-7` | Flyway, fechada por consequência de `E-5`                        | sim                    |
+| ID    | Escolha                                                             | Seguiu a recomendação? |
+|-------|---------------------------------------------------------------------|------------------------|
+| `E-1` | Maven, emendando a ADR 0017 do homelab                              | sim                    |
+| `E-2` | três módulos e dois executáveis, com o nome corrigido para `sut`    | parcialmente           |
+| `E-3` | adiada em 2026-08-06; **fechada em 2026-08-13**, sem `deploy/` aqui | **não**                |
+| `E-5` | PostgreSQL compartilhado do homelab, com schema por aplicação       | **não**                |
+| `E-7` | Flyway, fechada por consequência de `E-5`                           | sim                    |
 
 **`E-1` — Maven.** A emenda à ADR 0017 do `homelab-infrastructure` é custo aceito, e ela
 é o único item deste lote com efeito fora deste repositório. `Q-INT-4` fecha com ela.
@@ -530,9 +533,9 @@ permitida em identificador de código pela decisão `A5`, registrada em
 [`../CONTEXT.md`](../CONTEXT.md#a-sigla-sut-no-código-decidida-em-2026-08-05) — em prosa
 continua `system under test` por extenso.
 
-**`E-3` — adiada.** O `ComparisonError` no ArgoCD permanece, e a exigência da ADR 0017
-de nascer entregando fica pendente junto. A linha continua aberta nesta fila; nada mais
-neste lote depende dela, porque o build e o esquema não leem o `deploy/`.
+**`E-3` — fechada em 2026-08-13**, e o enunciado vive no fecho:
+[`E-3` fecha em manifests no `homelab-infrastructure`](#e-3-fecha-em-manifests-no-homelab-infrastructure-escolhida-em-2026-08-13).
+Nada neste lote dependia dela, porque o build e o esquema não leem o `deploy/`.
 
 ### `E-5`, decidida contra a recomendação, e o que ela arrasta
 
@@ -631,11 +634,13 @@ matriz continuam rodando sempre. O do módulo que não mudou agora é barato, ma
 grátis — ele resolve o cache, exporta um manifesto idêntico ao anterior e ocupa um
 runner.
 
-**O obstáculo não é o GitHub Actions, é a regra de tag.** A tag é o SHA do commit, e o
-motivo está escrito no próprio workflow: uma tag móvel torna impossível dizer qual
-imagem produziu um resultado de experimento, que é a propriedade que este repositório
-existe para ter. Um job pulado deixa `ghcr.io/.../<módulo>:<sha>` sem existir, e todo
-manifest que referencie o SHA do commit para os quatro serviços aponta para o vazio.
+**O obstáculo não era o GitHub Actions, era a regra de tag.** Até o fecho, a tag era o
+SHA do commit, e o motivo estava escrito no próprio workflow: uma tag móvel torna
+impossível dizer qual imagem produziu um resultado de experimento, que é a propriedade
+que este repositório existe para ter. Um job pulado deixaria `ghcr.io/.../<módulo>:<sha>`
+sem existir, e todo manifest que referenciasse o SHA do commit para os quatro serviços
+apontaria para o vazio. O diagrama abaixo registra esse obstáculo como ele era, antes do
+fecho:
 
 ```mermaid
 flowchart TD
@@ -654,27 +659,22 @@ flowchart TD
 | 2. matriz dinâmica, tag por módulo | mais barato e mais honesto                       | transfere a complexidade inteira para `E-3`       |
 | 3. não fazer nada                  | zero mecanismo novo; a regra de tag fica intacta | um job redundante por módulo intocado, por commit |
 
-**A recomendação é a 3, e o motivo é que não há número.** Nenhum job de imagem completou
-no GitHub até hoje, e o tempo de construção de uma imagem continua desconhecido.
-Escolher entre 1 e 2 antes da primeira medição é optar pela complexidade no escuro. E a
-alternativa 2 decide na prática a forma da tag, que é conteúdo de `E-3` — adiada por
-escolha explícita na mesma data.
+**Por que o número demorou a existir, e o motivo não era deste repositório.** Em
+2026-08-06 os dois workflows passaram a executar — o `docs` fechou verde em 7s, e no
+`build` o job `provas` obteve runner e `mvn verify` passou em 1m16s. Os quatro jobs
+`imagem`, que rodam em paralelo depois dele, ficaram quinze minutos na fila e terminaram
+com `The job was not acquired by Runner of type hosted even after multiple attempts`.
+Uma reexecução passou mais de quarenta minutos sem sequer criar os jobs, e o
+cancelamento foi recusado com `Cannot cancel a workflow re-run that has not yet queued`
+enquanto a API do próprio run continuava a reportar `queued` — dois subsistemas do
+GitHub discordando sobre o mesmo objeto. A causa foi incidente de plataforma no GitHub
+Actions, reportado em [`githubstatus.com`](https://www.githubstatus.com/) na mesma data;
+nada neste repositório o provocou, e a medição esperou o serviço normalizar.
 
-**Gatilho que reabre esta linha:** a primeira execução real do workflow produzir um
-tempo de build, ou `E-3` fechar. O que vier primeiro.
-
-**Por que ainda não há número, e o motivo não é deste repositório.** Em 2026-08-06 os
-dois workflows passaram a executar — o `docs` fechou verde em 7s, e no `build` o job
-`provas` obteve runner e `mvn verify` passou em 1m16s. Os quatro jobs `imagem`, que
-rodam em paralelo depois dele, ficaram quinze minutos na fila e terminaram com
-`The job was not acquired by Runner of type hosted even after multiple attempts`. Uma
-reexecução passou mais de quarenta minutos sem sequer criar os jobs, e o cancelamento
-foi recusado com `Cannot cancel a workflow re-run that has not yet queued` enquanto a
-API do próprio run continuava a reportar `queued` — dois subsistemas do GitHub
-discordando sobre o mesmo objeto. A causa é incidente de plataforma no GitHub Actions,
-reportado em [`githubstatus.com`](https://www.githubstatus.com/) na mesma data. Nada
-neste repositório o provoca e nada aqui o resolve; a medição espera o serviço
-normalizar.
+**Fechada em 2026-08-13**, e o enunciado vive no fecho:
+[`E-21` fecha em pular com matriz dinâmica montada do diff](#e-21-fecha-em-pular-com-matriz-dinâmica-montada-do-diff-escolhida-em-2026-08-13).
+O gatilho que este parágrafo registrava — a primeira execução real produzir um tempo de
+build, ou `E-3` fechar — disparou duas vezes, e as duas estão descritas lá.
 
 ### A primeira rodada do grupo II, em 2026-08-06
 
@@ -1056,8 +1056,9 @@ a conviver com essa leitura. A regra fala de estratégia de concorrência, e nã
 #### `E-31` — onde vive a configuração do Debezium Server
 
 Ele não é um módulo Maven, e não nasce do reactor. A configuração é declarativa e precisa
-ser versionada, entregue e bumpada como os outros quatro artefatos. **Isso reabre a
-pressão sobre `E-3`**, a forma do `deploy/`, que segue adiada.
+ser versionada, entregue e bumpada como os outros quatro artefatos. **Isso reabria a
+pressão sobre `E-3`**, a forma do `deploy/`, que seguia adiada até fechar em 2026-08-13
+([`E-3` fecha em manifests no `homelab-infrastructure`](#e-3-fecha-em-manifests-no-homelab-infrastructure-escolhida-em-2026-08-13)).
 
 #### `E-32` — o teste que prova que o LSN chega ao consumidor
 
@@ -1106,9 +1107,10 @@ aplicação.
 | só variável de ambiente               | ambiente          | as variáveis do manifesto |
 | esperar `E-3`                         | —                 | nada, e o CDC não sobe    |
 
-A terceira não é neutra. Enquanto ela durar, o Debezium Server roda no `compose.yaml` de
-desenvolvimento e **não existe no homelab** — o que significa que o veredito não pode ser
-produzido lá.
+A terceira não era neutra. Enquanto durou, o Debezium Server rodou só no `compose.yaml`
+de desenvolvimento e **não existiu no homelab** — o veredito não podia ser produzido lá.
+`E-3` fechou em 2026-08-13 decidindo **onde os manifests vivem**, e não decidiu onde a
+configuração do Debezium Server vive: essa parte de `E-31` continua sem forma.
 
 ### A quinta rodada do grupo II, em 2026-08-06
 
@@ -1135,8 +1137,10 @@ ADR 0017 daquele repositório:
   `E-31` sobre onde a configuração vive **não** decide onde a senha vive; ela já está
   decidida, e fora deste repositório.
 - **O `Application` do ArgoCD aponta para um `deploy/` que não existe.** Já é o
-  `ComparisonError` registrado em `E-3`. Um serviço a mais não o piora, mas também não
-  chega ao cluster antes de `E-3` fechar.
+  `ComparisonError` que motivou `E-3`. Um serviço a mais não o piora, mas também não
+  chega ao cluster antes de os manifests existirem no `homelab-infrastructure` — `E-3`
+  fechou em 2026-08-13 decidindo que eles vivem lá; criá-los é a
+  [issue #2](https://github.com/da0hn/homelab-infrastructure/issues/2).
 
 **Pergunta em aberto: a ADR 0017 alcança uma imagem que este repositório não constrói?** O
 `AGENTS.md` registra que ela descreve o laboratório como "monorepo de microsserviços JVM",
@@ -1156,7 +1160,10 @@ daqui a produz. Se isso é caso previsto ou lacuna, não foi conferido aqui.
 é descartado em silêncio, porque ele é resíduo de uma janela que já fechou. A distinção só
 se sustenta se um `lab-plane` souber quais execuções estão ativas — e com duas réplicas,
 uma delas não sabe. **A réplica única deixou de ser preferência e virou condição do
-veredito confiável**, o que é insumo vivo para `E-3`, ainda aberta. A consequência está em
+veredito confiável**, o que era insumo vivo para `E-3` enquanto ela seguiu aberta. Com
+`E-3` fechada em 2026-08-13, o lugar que honra esse `DEVE` é o manifesto do
+`homelab-infrastructure` — [ADR-0019](0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md#decisão)
+e [issue #2](https://github.com/da0hn/homelab-infrastructure/issues/2). A consequência está em
 [ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#consequências),
 e onde a lista de execuções ativas vive continua aberto em
 [`E-35`](#e-35--onde-o-lab-plane-guarda-quais-execuções-estão-ativas).
@@ -4197,7 +4204,10 @@ tema foi triado assim; a tabela fica, porque é o que a citação alcança.
 
 **A coluna da direita não é recontada a cada linha nova.** Quem é dono do inventário de
 ADR é o [`README.md`](README.md#índice); esta tabela registra o estado de cada tema na
-triagem, e não o estado do repositório hoje.
+triagem, e não o estado do repositório hoje. Por isso a célula "`E-3` aberta", de
+2026-08-06, não foi atualizada quando `E-3` fechou em 2026-08-13 — o estado atual está no
+fecho de [`E-3`](#e-3-fecha-em-manifests-no-homelab-infrastructure-escolhida-em-2026-08-13),
+não nesta tabela.
 
 #### `E-30` fecha em limite finito com alerta, escolhida em 2026-08-10
 
@@ -4643,9 +4653,11 @@ continua apontando para ele por edição nenhuma.
 
 **O caso medido.** Uma frase sobre a **ausência de reinício automático** do `lab-plane`
 levava como evidência
-[As decisões do grupo I](#as-decisões-do-grupo-i-em-2026-08-06). Aquela seção registra que
-`E-3` foi adiada, que o `ComparisonError` permanece e que a linha segue aberta — e não diz
-uma palavra sobre reinício. O fato existe, e está no fecho de
+[As decisões do grupo I](#as-decisões-do-grupo-i-em-2026-08-06). Aquela seção registrava,
+em 2026-08-11, que `E-3` fora adiada, que o `ComparisonError` permanecia e que a linha
+seguia aberta — e não dizia uma palavra sobre reinício. (`E-3` fechou em 2026-08-13, e a
+seção citada mudou de texto; o defeito que esta linha registra é sobre a citação de
+2026-08-11, e não sobre o estado de hoje.) O fato existe, e está no fecho de
 [`E-35`](#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10), onde sustenta outra
 coisa: que estado em memória se perde, e não quantas réplicas sobem. **Os três
 verificadores mecânicos passaram**, e quem pegou foi o revisor independente.
@@ -5544,6 +5556,110 @@ flowchart TD
 **Esta linha NÃO decide o destino de `execucao-de-experimento`.** Ele segue inativo por
 `R16` e `R17` `pendente`, e continua acima do teto. Quando as duas forem aprovadas, o
 arquivo precisa de decisão própria — dividir, cortar, ou rever o teto de novo.
+
+## A entrega sai do `deploy/`, e o build ganha matriz dinâmica, decidido em 2026-08-13
+
+`E-3` e `E-21` fecham juntas, porque a segunda estava presa à primeira desde
+2026-08-06. As duas viraram
+[ADR-0019](0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md), porque a
+tag deixar de ser o SHA do commit contradiz o guardrail do
+[`AGENTS.md`](../../AGENTS.md#este-repositório-é-entregue-no-homelab) e o item 2 da ADR
+0017 do homelab — e é essa contradição que torna o ADR obrigatório, e não só a
+recomendação dos quatro critérios.
+
+### Os dois enunciados de fecho
+
+#### `E-3` fecha em manifests no `homelab-infrastructure`, escolhida em 2026-08-13
+
+**Escolhida pela pessoa em 2026-08-13.** Os manifests do laboratório vivem no
+[`homelab-infrastructure`](https://github.com/da0hn/homelab-infrastructure), em
+`kubernetes/applications/distributed-consistency-lab/`, junto dos Secrets. Este
+repositório **não** cria `deploy/`, e a ausência deixa de ser adiamento: é decisão. O
+argumento completo, as três alternativas descartadas e os trade-offs vivem em
+[ADR-0019, seção "Os manifests vivem no `homelab-infrastructure`"](0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md#os-manifests-vivem-no-homelab-infrastructure-e-deploy-não-nasce-aqui).
+
+```mermaid
+flowchart LR
+    A["árvore deste repositório<br/>reorganiza-se com frequência"] --> B{"deploy/<br/>vive aqui?"}
+    B -->|" sim "| C["prune: true do ArgoCD<br/>alcança o cluster"]
+    B -->|" não, homelab-infrastructure "| D["a reorganização daqui<br/>não toca o cluster"]
+    style C fill:#4a1d1d, stroke:#f87171, color:#e5e7eb
+    style D fill:#1d4a2b, stroke:#4ade80, color:#e5e7eb
+```
+
+**O motivo positivo, resumido aqui e detalhado no ADR:** `deploy/` neste repositório
+expunha a árvore a esse risco — reorganizações frequentes sob um `Application` com
+`prune: true`. O risco não chegou a se realizar: `deploy/` já sumiu uma vez, mas por
+limpeza de árvore no commit `e1c88ae`, e o `Application` nunca saiu de `ComparisonError`
+para sincronizar workload nenhum
+([`plano-do-laboratorio.md`, "O acoplamento já existe, e não é
+hipotético"](../plano-do-laboratorio.md#o-acoplamento-já-existe-e-não-é-hipotético)).
+Manifests e Secrets voltam a viver no mesmo repositório, o que a ADR 0017 do homelab
+tinha separado.
+
+#### `E-21` fecha em pular com matriz dinâmica montada do diff, escolhida em 2026-08-13
+
+**Escolhida pela pessoa em 2026-08-13.** O build pula o módulo intocado, com a matriz de
+`imagem` montada a partir do `git diff` da base do push ou do Pull Request
+(`.github/workflows/build.yml:136-146`, montagem; `:190-201`, o módulo fora da lista não
+entra na matriz — já implementado). O argumento completo vive em
+[ADR-0019, seção "O build pula o módulo intocado"](0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md#o-build-pula-o-módulo-intocado-com-matriz-montada-a-partir-do-diff).
+
+**Duas coisas mudaram desde a recomendação de 2026-08-06, e as duas precisam estar
+escritas aqui.**
+
+O obstáculo desapareceu por consequência de `E-3` e da tag por módulo, decidida junto no
+ADR-0019. A alternativa 3 desta linha temia que um job pulado deixasse
+`ghcr.io/.../<módulo>:<sha>` sem existir, e todo manifesto que referenciasse aquele SHA
+para os quatro serviços apontaria para o vazio. Com tag por módulo e o Image Updater
+resolvendo cada imagem pela própria tag mais recente, nada exige que as quatro existam
+na mesma versão.
+
+O número passou a existir. "Nenhum job de imagem completou no GitHub até hoje" era
+verdade durante um incidente de plataforma em 2026-08-06, e deixou de ser. Medido por
+`gh run view`: no run de 2026-08-07, com cache frio, `lab-plane` levou 2m49s,
+`lab-journal` 1m13s, `system-under-test` 1m29s e `frontend` 58s; no run de 2026-08-11,
+commit só de documentação com cache quente, os quatro levaram 24s, 17s, 27s e 17s. O
+gatilho de reabertura que a linha original declarava — a primeira execução real produzir
+um tempo de build, ou `E-3` fechar — disparou duas vezes.
+
+```mermaid
+flowchart TD
+    O["obstáculo de 2026-08-06:<br/>SHA inexistente para módulo pulado"] -->|" E-3 + tag por módulo "| R["Image Updater resolve<br/>cada imagem pela própria tag"]
+    N["falta de número"] -->|" gh run view,<br/>2026-08-07 e 2026-08-11 "| M["tempos medidos,<br/>cache frio e cache quente"]
+    R --> F["E-21 fecha:<br/>pular, com matriz dinâmica"]
+    M --> F
+```
+
+### `E-95` — um experimento com segunda instância deliberada roda sob um orquestrador com `selfHeal`
+
+**Aberta em 2026-08-13, ao fechar `E-3` e `E-21`.** A pendência já era nomeada em
+[`AGENTS.md`](../../AGENTS.md#este-repositório-é-entregue-no-homelab): "um experimento
+que sobe deliberadamente uma segunda instância roda sob um `Application` com `selfHeal`",
+e isso "não tem solução decidida". Ela ganha identificador próprio agora porque
+[ADR-0019](0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md#a-réplica-única-do-lab-plane-passa-a-ser-critério-de-aceite-na-issue-2)
+torna `replicas: 1` do `lab-plane` critério de aceite normativo na issue #2, e o
+experimento que precisaria da segunda réplica para provar o `JVM_LOCK` falhando
+([`AGENTS.md`](../../AGENTS.md#regras-estruturais-que-valem-sempre)) roda, se rodar no
+cluster, sob esse mesmo `Application`.
+
+**O problema.** Se alguém subir uma segunda réplica do `lab-plane` no cluster de
+propósito, para o experimento, o `selfHeal` do ArgoCD reconcilia o `Deployment` de volta
+ao manifest — que declara `replicas: 1` — e desfaz a segunda instância antes ou durante
+a medição. O experimento passaria a medir o orquestrador junto com o fenômeno, a mesma
+confusão system under test / Lab Plane um nível abaixo que o
+[plano, "Quatro riscos"](../plano-do-laboratorio.md#quatro-riscos-que-nenhum-dos-dois-repositórios-registrou)
+já registra para a etapa 6.
+
+| Alternativa                                                 | A favor                                       | Contra                                                                                     |
+|-------------------------------------------------------------|-----------------------------------------------|--------------------------------------------------------------------------------------------|
+| 1. `ignoreDifferences` no campo `replicas` do Deployment    | simples, sem tocar o `Application` em runtime | o cluster aceita divergência de réplica permanentemente, não só durante o experimento      |
+| 2. Desligar `selfHeal` antes do experimento, religar depois | preciso, escopo só à janela do experimento    | depende de automação externa ao runtime medido; erro humano deixa o cluster sem `selfHeal` |
+| 3. Rodar o `JVM_LOCK` fora do cluster, só localmente        | zero mudança de infraestrutura                | não prova a réplica única do ambiente que a issue #2 declara                               |
+
+**Nenhuma alternativa foi escolhida.** Nenhum experimento do grupo A com segunda
+instância deliberada foi executado até hoje; a linha aguarda a etapa em que o `JVM_LOCK`
+precisar rodar contra o ambiente do cluster, e não só localmente.
 
 ## De onde esta fila veio
 

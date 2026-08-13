@@ -16,8 +16,6 @@ tabelas::docs/AGENTS.md:coluna 2 em tabela de largura 83
 tabelas::docs/adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md:coluna 2 em tabela de largura 283
 tabelas::docs/adr/README.md:coluna 1 em tabela de largura 50
 tabelas::docs/adr/README.md:coluna 2 em tabela de largura 46
-tabelas::docs/architecture/integrations.md:coluna 6 em tabela de largura 62
-tabelas::docs/architecture/integrations.md:coluna 7 em tabela de largura 283
 tabelas::docs/features/README.md:coluna 1 em tabela de largura 52
 tabelas::docs/features/README.md:coluna 2 em tabela de largura 82
 tabelas::docs/features/README.md:coluna 3 em tabela de largura 133

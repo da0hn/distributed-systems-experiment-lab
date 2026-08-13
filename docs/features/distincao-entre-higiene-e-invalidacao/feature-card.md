@@ -61,8 +61,9 @@ Gatilho: o consumidor descarta um evento cujo discriminador de execução não c
 - O valor do limite de espera de R7, o escopo dele (por execução ou global), e a
   distinção entre cancelamento e abandono no registro. `Pergunta em aberto`
   ([E-50, fecho](../../adr/fila-de-decisoes.md#e-50-fecha-em-três-caminhos-de-saída-da-lista-escolhida-em-2026-08-12)).
-- A réplica única como garantia formal de entrega — `E-3` continua aberta
-  ([As decisões do grupo I](../../adr/fila-de-decisoes.md#as-decisões-do-grupo-i-em-2026-08-06)).
+- A réplica única como garantia formal de entrega — `E-3` fechou movendo o `DEVE`: vira
+  critério de aceite da issue #2 do homelab
+  ([ADR-0019](../../adr/0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md#a-réplica-única-do-lab-plane-passa-a-ser-critério-de-aceite-na-issue-2)).
 - A contiguidade de LSN e o reconhecimento da marca de fim do oráculo do predicado —
   `R8`/`R9` de
   [deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio).
@@ -98,8 +99,8 @@ pendência fechar, nunca neste card. Nenhum contrato OpenAPI ou AsyncAPI nasce d
 
 - `Pergunta em aberto`: a forma da tabela, e os detalhes de R7 — seguem no
   [Example Mapping](example-mapping.md#perguntas-em-aberto).
-- A réplica única não tem garantia formal na entrega — `E-3` continua aberta
-  ([As decisões do grupo I](../../adr/fila-de-decisoes.md#as-decisões-do-grupo-i-em-2026-08-06)).
+- A réplica única não tem garantia formal aqui — vira critério de aceite da issue #2 do
+  `homelab-infrastructure`, não linha de fila (ver "Fora de escopo").
 
 ## Critérios de pronto
 
@@ -110,10 +111,9 @@ pendência fechar, nunca neste card. Nenhum contrato OpenAPI ou AsyncAPI nasce d
   fechado permanece intacto.
 - **R3 pela contagem**: todo descarte aparece no relatório, com o motivo — higiene ou
   invalidação.
-- **R5 pela ausência de segunda réplica, condicionada ao fecho de `E-3`**: até lá,
-  nenhuma configuração conhecida sobe duas réplicas do `lab-plane` ao mesmo tempo, e a
-  garantia formal de entrega permanece `Pergunta em aberto`
-  ([As decisões do grupo I](../../adr/fila-de-decisoes.md#as-decisões-do-grupo-i-em-2026-08-06)).
+- **R5 pela ausência de segunda réplica, condicionada ao fecho da issue #2** (ver "Fora
+  de escopo"): até lá, nenhuma configuração sobe duas réplicas do `lab-plane`, e a
+  garantia formal permanece `Pergunta em aberto`.
 
 ## Links
 
