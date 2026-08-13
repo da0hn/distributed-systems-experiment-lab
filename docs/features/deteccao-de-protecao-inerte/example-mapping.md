@@ -136,3 +136,40 @@ R1 (a verdade derivada) é estrutural e vira `Contexto`.
 O comportamento sob `REPEATABLE READ` está no exemplo 7.2 e **virou** cenário, porque é
 o resultado que mais contraria a intuição: o nome do nível sugere proteção que ele não
 dá para este fenômeno.
+
+**Atualizado no ciclo de reativação de 2026-08-12.** `R8` (guarda de contiguidade de
+LSN, com o rótulo `fonte incompleta`) e `R9` (espera pela marca de fim, com o rótulo
+`fonte atrasada`) não têm cenário: as duas descrevem o comportamento do consumidor do
+broker sob falha de transporte, e nenhum exemplo concreto delas foi levado ao Example
+Mapping ainda — não é ausência por decisão, é lacuna a preencher num ciclo futuro. `R10`
+(sem chave estrangeira em `allocation.resource_id`) não vira cenário por constituição:
+um cenário Gherkin não cita coluna nem tabela, e `R10` só existe em termos de uma.
+
+`R11` (o plano de execução efetivo do braço `SERIALIZABLE` DEVE ser registrado no
+relatório) **não tem nada com broker nem transporte** — a origem dela está descrita
+acima, no parágrafo de "O ADR-0015 não participa disso": sem o índice aditivo que aquele
+ADR fixa, o `40001` viria da varredura sequencial e do lock de relação, e ninguém
+distinguiria essa causa da causa real do abort. Ela não vira cenário porque o que
+observa é um artefato interno do relatório (o plano de execução publicado), e nenhum
+exemplo concreto que expresse isso como comportamento externo foi levado ao Example
+Mapping ainda — mesma lacuna das outras duas, por motivo próprio.
+
+**O exemplo 5.1 (`OPTIMISTIC` produz o mesmo resultado) deixou de sustentar um cenário
+Gherkin próprio.** O cenário `a estratégia otimista não protege a invariante derivada`
+foi retirado de `behavior.feature`: nenhuma das onze regras deste card cobre a
+semântica de uma estratégia de concorrência específica — o card marca isso em `## Fora
+de escopo` — e as regras mais próximas (`R1`/`R2` de
+[comparacao-entre-niveis-de-isolamento](../comparacao-entre-niveis-de-isolamento/feature-card.md#regras-de-negócio))
+seguem `pendente`. O exemplo permanece aqui, como ilustração da parte contraintuitiva
+que motivou o card; ele volta a ter cenário quando uma regra aprovada o cobrir.
+
+**O exemplo 7.4 (o eixo do isolamento é ortogonal ao eixo da estratégia) também deixou
+de sustentar cenário Gherkin próprio, pelo mesmo critério.** O cenário `o eixo do
+isolamento é independente do eixo da estratégia` foi retirado de `behavior.feature` no
+ciclo anterior — esta linha registra o que só existia no raciocínio daquela réplica, e
+não em arquivo nenhum. Nenhuma das onze regras deste card afirma a interação entre o
+eixo do isolamento e o eixo da estratégia; `R7` varre só o eixo do isolamento, com a
+estratégia fixa, e a semântica de uma estratégia específica é `Fora de escopo`, pela
+mesma razão do exemplo 5.1. O exemplo 7.4 permanece aqui como a leitura correta da
+varredura — é o que ela **ensina**, e não o que `R7` sozinha afirma — e volta a ter
+cenário quando uma regra aprovada cobrir a interação entre os dois eixos.

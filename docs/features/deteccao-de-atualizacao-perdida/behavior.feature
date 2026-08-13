@@ -1,15 +1,12 @@
 # language: pt
 #
-# ARQUIVO INATIVO — este arquivo NÃO é especificação viva.
+# Este arquivo cobre somente regra aprovada por pessoa, na forma em que ela foi
+# aprovada. Nenhum cenário aqui sustenta regra `pendente` — regra pendente NÃO DEVE
+# virar cenário Gherkin. O estado de cada regra é do índice de capacidades, e não é
+# repetido aqui: docs/features/README.md#índice.
 #
-# Nenhuma regra que estes cenários cobrem tem `Aprovada por` preenchido, e uma regra
-# pendente não sustenta Gherkin. Enquanto isso valer, nada aqui DEVE virar teste ou
-# código. Os cenários ficam na árvore, e voltam ao conjunto ativo regra a regra,
-# quando uma pessoa aprovar a regra que cada um sustenta.
-# O estado das regras é do índice de capacidades: docs/features/README.md#índice.
-#
-# Fonte das regras: docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md, Aceito,
-# e docs/plano-do-laboratorio.md, seção 6.
+# Fonte das regras: feature-card.md, tabela "Regras de negócio" — dona da coluna
+# `Evidência` de cada regra.
 
 Funcionalidade: Detecção da atualização perdida
   Para que "às vezes perde" seja substituído por uma contagem
@@ -18,7 +15,6 @@ Funcionalidade: Detecção da atualização perdida
 
   Contexto:
     Dado um recurso com value igual a 0
-    E que o esquema não tem coluna version
     E que cada worker tem sua própria conexão
 
   @teste-ausente @oraculo
@@ -59,7 +55,8 @@ Funcionalidade: Detecção da atualização perdida
   Cenário: o oráculo lê o WAL do sistema medido e não o log de observações
     Dado uma execução terminada
     Quando o oráculo determina o valor final do recurso
-    Então o valor vem do último valor de resource.value visto no stream de replicação
+    Então o valor final vem do último value do recurso visto no stream de replicação
+    E a comparação só ocorre depois de o stream alcançar o LSN do commit final
     E o valor inicial vem do INSERT que criou o estado inicial no mesmo stream
     E nenhuma entrada do log de observações é usada para derivá-lo
     E nenhum SELECT é emitido contra o schema do system under test
@@ -78,22 +75,21 @@ Funcionalidade: Detecção da atualização perdida
     Quando as duas geram o identificador do recurso
     Então os dois identificadores coincidem
 
-  @teste-ausente @semente @recusa
-  Cenário: o banco não gera identidade
-    Dado o esquema de resource e allocation
-    Quando ele é inspecionado
-    Então nenhuma coluna de identidade usa SERIAL, IDENTITY, nextval ou valor padrão
-
-  @teste-ausente @conexao
-  Cenário: um pool menor que o número de workers invalida a execução
+  @teste-ausente @conexao @borda
+  Esquema do Cenário: um pool que não é maior que o número de workers invalida a execução
     Dado uma execução declarando 10 workers
-    E um pool de conexões com capacidade 5
+    E um pool de conexões com capacidade <capacidade>
     Quando a execução é submetida
     Então a plataforma recusa a execução
     E a recusa informa que o pool serializaria os workers
 
+    Exemplos:
+      | capacidade |
+      | 10         |
+      | 5          |
+
   @teste-ausente @comparacao
-  Esquema do Cenário: a mesma carga sob quatro estratégias
+  Esquema do Cenário: a mesma carga sob três estratégias
     Dado a carga de 10 workers e 100 incrementos
     Quando ela executa sob a estratégia "<estrategia>"
     Então o valor final do recurso é <resultado>
@@ -102,5 +98,4 @@ Funcionalidade: Detecção da atualização perdida
       | estrategia    | resultado    |
       | NONE          | menor que 100|
       | ATOMIC_UPDATE | 100          |
-      | OPTIMISTIC    | 100          |
       | PESSIMISTIC   | 100          |

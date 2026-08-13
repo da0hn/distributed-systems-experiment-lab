@@ -1,15 +1,12 @@
 # language: pt
 #
-# ARQUIVO INATIVO — este arquivo NÃO é especificação viva.
+# Este arquivo cobre somente regra aprovada por pessoa, na forma em que ela foi
+# aprovada. Nenhum cenário aqui sustenta regra `pendente` — regra pendente NÃO DEVE
+# virar cenário Gherkin. O estado de cada regra é do índice de capacidades, e não é
+# repetido aqui: docs/features/README.md#índice.
 #
-# Nenhuma regra que estes cenários cobrem tem `Aprovada por` preenchido, e uma regra
-# pendente não sustenta Gherkin. Enquanto isso valer, nada aqui DEVE virar teste ou
-# código. Os cenários ficam na árvore, e voltam ao conjunto ativo regra a regra,
-# quando uma pessoa aprovar a regra que cada um sustenta.
-# O estado das regras é do índice de capacidades: docs/features/README.md#índice.
-#
-# Fonte das regras: docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md, Aceito,
-# e docs/plano-do-laboratorio.md, seção 6, E5.
+# Fonte das regras: feature-card.md, tabela "Regras de negócio" — dona da coluna
+# `Evidência` de cada regra.
 
 Funcionalidade: Detecção de proteção presente e inerte
   Para que "ter uma estratégia" deixe de ser confundido com "estar protegido"
@@ -52,16 +49,9 @@ Funcionalidade: Detecção de proteção presente e inerte
   Cenário: o oráculo não alcança o schema do sistema medido
     Dado uma execução terminada
     Quando o oráculo determina a soma das alocações
-    Então nenhum SELECT é emitido contra o schema do system under test
+    Então a soma vem dos eventos de INSERT no WAL do sistema medido
+    E nenhum SELECT é emitido contra o schema do system under test
     E nenhuma entrada do log de observações é usada para derivá-la
-
-  @teste-ausente @protecao-inerte
-  Cenário: a estratégia otimista não protege a invariante derivada
-    Dado a estratégia OPTIMISTIC ativa
-    E dois workers que leem a soma das alocações antes de qualquer inserção
-    Quando cada um insere uma alocação de 6
-    Então a soma das alocações é 12
-    E nenhuma exceção de conflito de versão é lançada
 
   @teste-ausente @isolamento
   Esquema do Cenário: o mesmo experimento sob três níveis de isolamento
@@ -75,11 +65,3 @@ Funcionalidade: Detecção de proteção presente e inerte
       | READ COMMITTED  | 12         | 0       |
       | REPEATABLE READ | 12         | 0       |
       | SERIALIZABLE    | 6          | 1       |
-
-  @teste-ausente @ortogonalidade
-  Cenário: o eixo do isolamento é independente do eixo da estratégia
-    Dado a estratégia OPTIMISTIC sob o nível "READ COMMITTED"
-    E a estratégia NONE sob o nível "SERIALIZABLE"
-    Quando os dois braços executam a mesma carga
-    Então o primeiro braço viola a invariante
-    E o segundo braço não viola a invariante
