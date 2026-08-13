@@ -5620,6 +5620,73 @@ ainda inexistente.
 **Esta linha não decide o destino de `graphify-out/`.** Se aqueles quatro arquivos
 deveriam estar versionados é pergunta anterior, de mérito próprio, e sem prazo.
 
+## O controle do instrumento que mede o repositório, levantado em 2026-08-12
+
+### `E-94` — a exigência de caso de controle não alcança o verificador
+
+Aberta em 2026-08-12, depois de duas sessões lerem o mesmo verificador sobre os mesmos
+blobs e chegarem a conclusões opostas.
+
+**O problema.** Este repositório exige caso de controle do **experimento**, e não o
+exige do **instrumento** que mede o próprio repositório. O
+[ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-zero-é-classificado-e-a-classificação-tem-quatro-valores)
+torna o controle negativo obrigatório, e o
+[`AGENTS.md`](../../AGENTS.md#arquitetura-conceitual) repete que sem `NONE` violando o
+resultado das outras estratégias não significa nada. Nada equivalente alcança
+`scripts/check_citations.py`, `scripts/check_queue_ids.py`,
+`scripts/check_schema_sync.py`, `scripts/verify_docs.py`, nem o
+`check_artifact_limits.py` da skill `feature-planning`.
+
+**Medido em 2026-08-12:** nenhum dos cinco tem autoteste, sonda ou caso de controle, e o
+repositório não tem suíte de teste.
+
+**A evidência é de dois lados, e é isso que sustenta a linha.** Duas medições erradas
+falharam no mesmo ponto — aceitar a saída de um instrumento sem entrada de resposta
+conhecida. Uma afirmou CRLF onde havia LF, porque `grep -c $''` dentro de substituição
+de comando chega ao `grep` como padrão vazio e devolve a contagem de linhas. A outra
+afirmou LF numa árvore que tinha CRLF, por estender a uma máquina o que mediu na sua. O
+que desempatou foram dois casos de controle, um de cada lado.
+
+**O agravante, e a datação que ele não tem.** A baseline de um verificador passou a
+descrever **uma máquina** em vez do repositório, e envelheceu para dentro de arquivo
+versionado sem ninguém ver. **Quando isso começou não é mais mensurável:** os `mtime`
+que responderiam foram sobrescritos pela restauração, como
+[`E-93`](#e-93--a-deriva-de-fim-de-linha-não-tem-detector-no-git) registra.
+
+**O controle tem duas direções, e o vocabulário daqui já tem as duas.** Uma regra que
+exija só a primeira deixa passar um verificador que acusa tudo.
+
+| Direção                                   | No laboratório                                                                                                                    | No verificador                             |
+|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| o caso que **DEVE** produzir o efeito     | o controle negativo, a estratégia `NONE`, que viola por definição                                                                 | um arquivo defeituoso que DEVE ser acusado |
+| o caso que **NÃO DEVE** produzir o efeito | a [calibração](0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador) do ADR-0002, sem perda, que DEVE dar zero | um arquivo limpo que NÃO DEVE ser acusado  |
+
+**Cuidado de vocabulário, e ele já quase virou contradição.** Em terminologia geral de
+experimento, o caso que deve produzir o efeito costuma se chamar controle **positivo**.
+Aqui não: o `NONE` é o controle **negativo**, e o controle **positivo** é a barreira, em
+[ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#a-barreira-é-o-controle-positivo).
+Um texto que trocasse os dois contradiria ADR aceito.
+
+**A propriedade que faz um controle valer:** ele DEVE ser produzido por mecanismo
+diferente do que está sob teste. É por isso que o `NONE` é execução separada, e não um
+ramo dentro do código da estratégia — se o controle percorresse o mesmo caminho da
+medida, um defeito no caminho apareceria nos dois lados e se cancelaria.
+
+**Cinco alternativas, e nenhuma escolhida.**
+
+| Alternativa                                                                    | Custo declarado                                                                                    |
+|--------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| regra de disciplina no `AGENTS.md`, sem guarda executável                      | é texto, e as três regras estruturais que já são só texto estão em `Q-0002-1` justamente por isso  |
+| modo de autoteste dentro de cada verificador                                   | compartilha a camada de I/O do que testa: um defeito de leitura passa nos dois lados               |
+| suíte de teste própria, em código, fora dos scripts                            | é código novo sem teste próprio, e o repositório não tem suíte onde ela caiba                      |
+| corpus de fixtures versionado, um arquivo por classe de defeito, mais um limpo | é dado e não código, revisável em diff — mas é mais um lugar que diverge quando o formato muda     |
+| lacuna aceita                                                                  | a próxima leitura divergente entre duas sessões não terá como ser desempatada senão à mão, de novo |
+
+**Esta linha não decide, e não classifica o artefato.** Se a saída é regra em arquivo de
+instrução, guarda executável ou dado versionado, é da escolha; e o que conta como
+artefato de um fecho é de
+[`E-91`](#e-91-fecha-em-instrução-e-verificador-contam-como-artefato-escolhida-em-2026-08-12).
+
 ## De onde esta fila veio
 
 As duas origens continuam no repositório, e as duas viram lápide pela decisão `C-2`.
