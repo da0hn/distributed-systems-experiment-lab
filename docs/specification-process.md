@@ -77,6 +77,49 @@ caminho e erro material, nunca a tese. Uma objeção que aparecer depois de o AD
 escrito custa um documento novo. Por isso a linha da fila carrega o peso do
 debate — ela é o único lugar em que uma objeção ainda cabe sem custar um documento.
 
+### Quando um fecho da fila está coberto, decidido em 2026-08-12
+
+Duas escolhas da pessoa, tomadas em 2026-08-12, respondem o que acontece **depois** que
+uma linha da fila fecha.
+
+**A citação a um fecho é provisória.** Um documento **PODE** citar um fecho de
+[`fila-de-decisoes.md`](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira) enquanto não
+existir artefato próprio daquela decisão. Quando o artefato nascer, a citação **DEVE**
+migrar para ele, e só então o fecho fica podável. A origem é
+[`E-90`](adr/fila-de-decisoes.md#e-90-fecha-em-citação-a-esta-fila-é-provisória-escolhida-em-2026-08-12).
+
+O motivo é que a fila cresce, funde e poda linha a linha, e um documento estável não
+deveria depender de um alvo que se move. Enquanto o artefato não existe, porém, apagar a
+citação deixa a afirmação sem evidência — e evidência ausente é pior que
+evidência móvel.
+
+**Quatro lugares cobrem um fecho, e não dois.** ADR e Feature Card são os dois óbvios.
+Um **arquivo de instrução** e um **script verificador** que aplique a regra também
+contam. A origem é
+[`E-91`](adr/fila-de-decisoes.md#e-91-fecha-em-instrução-e-verificador-contam-como-artefato-escolhida-em-2026-08-12).
+
+O critério é o enforcement, e não o formato. Uma regra que um verificador recusa vincula
+mais do que uma regra escrita num artefato que nenhum processo executa. Escrever um card
+para uma regra que já vive num verificador criaria dois lugares para a mesma regra, e
+eles divergiriam na primeira edição de um deles.
+
+```mermaid
+flowchart TD
+  F["a linha da fila fecha"] --> Q{"onde a regra vive?"}
+  Q -->|" ADR ou Feature Card "| A["coberto,<br/>e a citação migra para lá"]
+  Q -->|" arquivo de instrução<br/>ou verificador "| B["coberto,<br/>pelo enforcement"]
+  Q -->|" só no fecho "| C["descoberto:<br/>a citação ao fecho<br/>continua legítima"]
+  A --> P["o fecho fica podável"]
+  B --> P
+  C --> E["o fecho permanece"]
+  style P fill:#1d4a2b, stroke:#4ade80, color:#e5e7eb
+```
+
+**Isto NÃO dispensa card nem ADR para decisão sobre o que o sistema faz.** A cobertura
+por instrução ou por verificador alcança regra de processo, de escrita e de vocabulário.
+Comportamento observável continua exigindo o artefato que os
+[quatro critérios](#adr--só-decisão-arquitetural-durável) indicarem.
+
 ## Os cinco artefatos, e quando cada um entra
 
 ```mermaid

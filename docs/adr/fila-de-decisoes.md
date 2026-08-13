@@ -41,6 +41,11 @@ outra decisão.
 o slug do GitHub Flavored Markdown fixado por `C-1a`. O verificador
 [`scripts/check_citations.py`](../../scripts/check_citations.py) confere as duas formas.
 
+**A citação a um fecho é provisória, e migra quando o artefato nascer.** A regra é de
+[`E-90`](#e-90-fecha-em-citação-a-esta-fila-é-provisória-escolhida-em-2026-08-12), e o
+dono do texto normativo é
+[`specification-process.md`](../specification-process.md#quando-um-fecho-da-fila-está-coberto-decidido-em-2026-08-12).
+
 Os números de ADR **não** estão atribuídos nas linhas abertas. Um número é atribuído
 quando o ADR é escrito — atribuir antes cria buracos na sequência quando a ordem muda.
 
@@ -4025,11 +4030,11 @@ flowchart TD
 
 **As três saídas descartadas, e o motivo de cada uma.**
 
-| Saída descartada                                                  | Por que não                                                                                                                         |
-|--------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| O nível entra na carga, e cada braço tem controle próprio | o braço `SERIALIZABLE` viraria `inválido`, e a capacidade precisaria de um segundo vocabulário de veredito fora da tabela |
-| Qualificar a ordem 1 pelas coincidências do controle negativo    | altera a decisão de um ADR aceito, e a saída escolhida alcança o mesmo resultado sem tocar nela                           |
-| Lacuna aceita, "protege" em prosa e `protegido` como veredito      | dois sentidos para a mesma raiz no mesmo repositório, e nada no relatório diria qual está em uso                           |
+| Saída descartada                                              | Por que não                                                                                                               |
+|---------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| O nível entra na carga, e cada braço tem controle próprio     | o braço `SERIALIZABLE` viraria `inválido`, e a capacidade precisaria de um segundo vocabulário de veredito fora da tabela |
+| Qualificar a ordem 1 pelas coincidências do controle negativo | altera a decisão de um ADR aceito, e a saída escolhida alcança o mesmo resultado sem tocar nela                           |
+| Lacuna aceita, "protege" em prosa e `protegido` como veredito | dois sentidos para a mesma raiz no mesmo repositório, e nada no relatório diria qual está em uso                          |
 
 **O teste das quatro perguntas responde `sim` nas quatro**, e o
 [processo](../specification-process.md#adr--só-decisão-arquitetural-durável) chama isso
@@ -4037,6 +4042,125 @@ de ADR carregando comportamento: o ADR leva o porquê, e o card leva o quê.
 
 **Esta linha NÃO fecha `P2`** — onde o nível de isolamento é declarado continua sem
 dono. Ela decide sob qual nível cada controle roda, e não quem declara o nível nem onde.
+
+### `E-90` — o alcance da remoção de citações a esta fila
+
+Aberta em 2026-08-11, ao conferir o que a poda deixou para trás.
+
+**O problema.** O
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#patches-aplicados)
+e o
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#patches-aplicados)
+removeram as citações que faziam a esta fila, os dois com o mesmo motivo escrito na
+linha de patch: documentos estáveis deixam de citar a fila, que cresce, funde e poda
+linha a linha. **Nenhum documento diz até onde essa prática vale.**
+
+**A medição de 2026-08-12.** Trinta arquivos a citam de fora, por âncora de fecho.
+O [ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão)
+sozinho carrega vinte e oito ponteiros.
+
+**O que a ausência de regra custa, e ela custa nos dois sentidos.** Um fecho citado de
+fora não pode ser podado, e a poda é o que impede esta fila de crescer. Apagar a citação
+onde não existe artefato, porém, deixa a afirmação sem evidência: as três regras de
+[`comparacao-entre-niveis-de-isolamento`](../features/comparacao-entre-niveis-de-isolamento/feature-card.md#regras-de-negócio)
+têm o fecho de `E-87` como evidência única, e nada mais no repositório as sustenta.
+
+#### `E-90` fecha em citação a esta fila é provisória, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12.** Um documento **PODE** citar um fecho desta fila
+enquanto não existir artefato próprio daquela decisão. Quando o artefato nascer, a
+citação **DEVE** migrar para ele, e só então o fecho fica podável.
+
+**A regra normativa vive em
+[`specification-process.md`](../specification-process.md#quando-um-fecho-da-fila-está-coberto-decidido-em-2026-08-12),
+e não é repetida aqui.** Uma segunda cópia dela divergiria na primeira edição de uma das
+duas, que é o defeito que este repositório já pagou mais de uma vez.
+
+```mermaid
+flowchart LR
+  F["fecho desta fila"] -->|" documento externo cita "| C["citação provisória<br/>legítima enquanto<br/>não há artefato"]
+  C --> N{"nasceu ADR ou card<br/>daquela decisão?"}
+  N -->|" não "| C
+  N -->|" sim "| M["a citação migra<br/>para o artefato"]
+  M --> P["o fecho fica podável"]
+  style P fill:#1d4a2b, stroke:#4ade80, color:#e5e7eb
+```
+
+**Nenhum arquivo muda por esta escolha.** Os trinta que citam esta fila hoje continuam
+válidos. A migração acontece uma citação por vez, quando o artefato daquela decisão
+existir — e é ela que destrava a poda, em vez de a poda esperar por uma varredura
+completa que precisaria acontecer de uma vez.
+
+**As duas saídas descartadas, e o motivo de cada uma.**
+
+| Saída descartada                                   | Por que não                                                                                                                                            |
+|----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Lacuna aceita, e a prática segue sem regra escrita | os trinta arquivos continuariam pregando fechos no lugar, e a poda seguiria travada caso a caso, sem ninguém saber quando ela se destrava              |
+| Aplicar a remoção aos trinta arquivos agora        | onde não há artefato, a citação não tem para onde ir — três regras aprovadas ficariam sem evidência, e escrever o artefato antes é trabalho não pedido |
+
+**Esta linha NÃO decide qual citação migra primeiro.** Ela diz quando uma citação a esta
+fila é legítima e quando ela precisa migrar; a ordem do trabalho continua sem dono.
+
+### `E-91` — absorção por arquivo de instrução conta como artefato?
+
+Aberta em 2026-08-11, ao varrer os fechos sem ADR nem card.
+
+**O levantamento daquele dia estava defasado, e foi refeito em 2026-08-12.** Cinco
+linhas mudaram depois dos merges. `E-9`, `E-22`, `E-23` e `E-27` são citadas pelo
+[ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão), e
+`E-35` pelo card
+[`distincao-entre-higiene-e-invalidacao`](../features/distincao-entre-higiene-e-invalidacao/feature-card.md#riscos-e-decisões-pendentes).
+`E-5` não é falta de artefato: ele alterou um ADR aceito sem declarar, e isso já está
+registrado em [`E-71`](#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito).
+
+**O que sobra tem uma forma só.** Sete fechos — `E-13`, `E-38`, `E-39`, `E-44`, `E-45`,
+`E-48` e `E-49` — foram absorvidos por `AGENTS.md`, por `CONTEXT.md` ou pelo próprio
+verificador. Eles não são decisão sem registro: são decisão registrada num lugar que não
+é `docs/adr/` nem `docs/features/`. **A pergunta não é "card ou ADR", e sim se esse
+lugar conta.**
+
+#### `E-91` fecha em instrução e verificador contam como artefato, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12.** Um fecho está **coberto** quando a regra dele
+vive num arquivo que o agente lê antes de trabalhar: um arquivo de instrução, ou um
+script verificador que aplique a regra.
+
+**O critério é o enforcement, e não o formato.** Uma regra que o
+[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py)
+recusa vincula mais do que uma regra escrita num artefato que nenhum processo executa.
+Escrever um card para `E-38` e `E-39` criaria um segundo lugar onde o mesmo teto vive, e
+o [`AGENTS.md`](../../AGENTS.md#ao-trabalhar-aqui) já proíbe repetir estado que outro
+documento é dono de manter.
+
+```mermaid
+flowchart TD
+  F["fecho desta fila"] --> Q{"onde a regra dele vive?"}
+  Q -->|" docs/adr/ "| A["ADR"]
+  Q -->|" docs/features/ "| C["Feature Card"]
+  Q -->|" AGENTS.md, CONTEXT.md "| I["arquivo de instrução"]
+  Q -->|" script que a recusa "| V["verificador"]
+  Q -->|" lugar nenhum "| N["descoberto:<br/>a decisão precisa de artefato"]
+  A --> OK["coberto"]
+  C --> OK
+  I --> OK
+  V --> OK
+  style OK fill:#1d4a2b, stroke:#4ade80, color:#e5e7eb
+  style N fill:#4a1d1d, stroke:#f87171, color:#e5e7eb
+```
+
+**Os sete saem da lista de fechos sem artefato.** Sobra
+[`E-43`](#e-43-fecha-em-três-linhas-escolhidas-em-2026-08-10), que decide sobre a
+organização desta própria fila e não tem destino fora dela.
+
+**A saída descartada, e o motivo.** Exigir card ou ADR para cada um dos sete geraria
+sete documentos novos, todos sobre regra de processo, todos repetindo texto que já vive
+no arquivo que o agente carrega. Os dois divergiriam na primeira edição de um deles, e
+ninguém saberia qual dos dois estava valendo.
+
+**Esta linha NÃO dispensa card nem ADR para decisão sobre o que o sistema faz.** A
+cobertura por instrução ou por verificador alcança regra de processo, de escrita e de
+vocabulário. Comportamento observável continua exigindo o artefato que os
+[quatro critérios](README.md#uma-decisão-merece-adr-quando) indicarem.
 
 ## A dívida de ADR do Lote E, levantada em 2026-08-06
 
