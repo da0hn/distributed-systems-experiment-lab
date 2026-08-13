@@ -1,14 +1,16 @@
-# Build, provas e imagem. Decisao `E-4`, em `docs/adr/fila-de-decisoes.md`.
+# Build, provas e imagem. Decisão `E-4`, em `docs/adr/fila-de-decisoes.md`.
 #
-# **Nenhum experimento roda aqui.** O E1 do MVP e obrigado a violar a
-# invariante — esse e o resultado que ele existe para produzir — e um
-# experimento cujo resultado esperado e a violacao inverteria o significado
-# de verde. O experimento e acionado pela pessoa, no frontend.
+# **Nenhum experimento roda aqui.** O E1 do MVP é obrigado a violar a
+# invariante — esse é o resultado que ele existe para produzir — e um
+# experimento cujo resultado esperado é a violação inverteria o significado
+# de verde. O experimento é acionado pela pessoa, no frontend.
 #
-# O que falta, e por que: o bump da tag nos manifests de `deploy/` nao existe
-# porque `E-3` foi adiada por escolha explicita em 2026-08-06. Enquanto ela
-# nao fechar, este workflow publica a imagem e nada a consome — o
-# `ComparisonError` que o ArgoCD reporta continua.
+# **Este repositório não tem `deploy/`, e isso é decisão e não lacuna.** Os
+# manifests do laboratório vivem no `homelab-infrastructure`, junto dos
+# Secrets, e quem os aponta para a imagem nova é o ArgoCD Image Updater, que
+# observa o GHCR. Nenhum commit de bump sai daqui, e por isso nenhuma
+# credencial de escrita em outro repositório existe neste. É `E-3`, fechada
+# em 2026-08-13.
 name: build
 
 on:
@@ -20,15 +22,111 @@ on:
 permissions:
   contents: read
 
+# Dois pushes seguidos na `master` publicariam duas versões em paralelo, e a
+# ordem de chegada ao GHCR deixaria de ser a ordem dos commits. Na `master` a
+# execução anterior termina; num Pull Request ela é cancelada, porque ali o
+# que importa é o veredito do último push.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   JAVA_VERSION: '25'
   NODE_VERSION: '24'
 
 jobs:
 
+  mudancas:
+    name: Módulos alterados
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      modulos: ${{ steps.detectar.outputs.modulos }}
+    steps:
+      # O diff precisa do histórico, e o checkout raso não o tem.
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      # A versão é lida de onde ela vive, e não declarada aqui: os três
+      # executáveis Java herdam a do reactor, e o frontend tem a própria no
+      # `package.json`. Um número copiado para este arquivo seria um segundo
+      # lugar de verdade, e os dois divergiriam na primeira release.
+      #
+      # `shared` não vira imagem — é biblioteca dos outros três, e por isso
+      # aparece só como gatilho de reconstrução, nunca como item da matriz.
+      - name: Detectar o que mudou
+        id: detectar
+        run: |
+          set -euo pipefail
+
+          case "${{ github.event_name }}" in
+            pull_request) base='${{ github.event.pull_request.base.sha }}' ;;
+            push)         base='${{ github.event.before }}' ;;
+            *)            base='' ;;
+          esac
+
+          # Primeiro push de uma branch, force-push e `workflow_dispatch` não
+          # têm base utilizável. Nesses casos constrói tudo: um diff contra
+          # uma base inexistente devolveria a lista vazia, e o silêncio seria
+          # lido como "nada mudou".
+          if [ -z "$base" ] \
+            || [ "$base" = "0000000000000000000000000000000000000000" ] \
+            || ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            echo "Sem base de comparação utilizável: constrói tudo."
+            alterados='TODOS'
+          else
+            alterados="$(git diff --name-only "$base" '${{ github.sha }}')"
+            echo "Base: $base"
+            echo "$alterados"
+          fi
+
+          # Uma mudança em `shared/`, no reactor, no `Dockerfile` ou neste
+          # workflow alcança os três executáveis Java: os três compilam a
+          # partir dos mesmos arquivos.
+          comum='^(pom\.xml|Dockerfile|shared/|\.github/workflows/build\.yml)'
+
+          afeta() {
+            [ "$alterados" = 'TODOS' ] && return 0
+            printf '%s\n' "$alterados" | grep -qE "$1"
+          }
+
+          itens=''
+          juntar() {
+            [ -n "$itens" ] && itens="${itens},"
+            itens="${itens}{\"modulo\":\"$1\",\"contexto\":\"$2\",\"versao\":\"$3\"}"
+          }
+
+          # `<version>` do próprio projeto é o primeiro depois de `</parent>`;
+          # o anterior é a versão do Spring Boot. O sufixo `-SNAPSHOT` sai,
+          # porque tag OCI nomeia artefato publicado e não candidato local.
+          versao_jvm="$(
+            sed -n '/<\/parent>/,$p' pom.xml \
+              | grep -m1 -oP '(?<=<version>)[^<]+'
+          )"
+          versao_jvm="${versao_jvm%-SNAPSHOT}"
+
+          versao_web="$(
+            grep -m1 -oP '(?<="version": ")[^"]+' frontend/package.json
+          )"
+
+          for modulo in lab-plane lab-journal system-under-test; do
+            if afeta "${comum}|^${modulo}/"; then
+              juntar "$modulo" '.' "$versao_jvm"
+            fi
+          done
+
+          if afeta '^(frontend/|\.github/workflows/build\.yml)'; then
+            juntar 'frontend' './frontend' "$versao_web"
+          fi
+
+          echo "modulos=[${itens}]" >> "$GITHUB_OUTPUT"
+          echo "Matriz: [${itens}]"
+
   provas:
     name: Build, testes e guardas
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
 
@@ -39,8 +137,12 @@ jobs:
           cache: maven
 
       # Os testes de contexto sobem um PostgreSQL real por Testcontainers. O
-      # runner hospedado ja traz Docker; sem ele, a prova de equivalencia de
-      # traco de SQL que o ADR-0001 exige nao teria onde rodar.
+      # runner hospedado já traz Docker; sem ele, a prova de equivalência de
+      # traço de SQL que o ADR-0001 exige não teria onde rodar.
+      #
+      # O reactor inteiro roda mesmo quando um só módulo muda, e isso é
+      # deliberado: `shared` é dependência dos três, e provar só o módulo
+      # tocado deixaria passar a quebra que ele causa nos outros dois.
       - name: Verificar o reactor Maven
         run: mvn -B verify
 
@@ -58,46 +160,89 @@ jobs:
 
   imagem:
     name: Publicar no GHCR
-    needs: provas
-    if: github.ref == 'refs/heads/master'
+    needs: [mudancas, provas]
+    # A lista vazia acontece quando o commit tocou só documentação, e aí não
+    # há imagem a publicar. Antes desta condição, todo commit de `docs/`
+    # publicava quatro tags novas de conteúdo idêntico.
+    if: >
+      github.ref == 'refs/heads/master'
+      && needs.mudancas.outputs.modulos != '[]'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - modulo: lab-plane
-            contexto: .
-          - modulo: lab-journal
-            contexto: .
-          - modulo: system-under-test
-            contexto: .
-          - modulo: frontend
-            contexto: ./frontend
+        incluir: ${{ fromJSON(needs.mudancas.outputs.modulos) }}
     steps:
       - uses: actions/checkout@v5
 
       - uses: docker/setup-buildx-action@v3
 
-      # Credencial efemera do proprio job, por exigencia da ADR 0017 do
-      # `homelab-infrastructure`. Nenhum Secret de longa duracao vive aqui.
+      # Credencial efêmera do próprio job, por exigência da ADR 0017 do
+      # `homelab-infrastructure`. Nenhum Secret de longa duração vive aqui.
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # A tag e o SHA do commit, e nunca `latest`. Uma tag movel torna
-      # impossivel dizer qual imagem produziu um resultado de experimento —
-      # que e a propriedade que este repositorio existe para ter.
+      # A tag é `X.Y.Z-<build>`, e nunca `latest`. O que a regra protege é
+      # poder dizer qual imagem produziu um resultado de experimento, e uma
+      # tag imutável basta para isso — `github.run_number` cresce a cada
+      # execução e nunca se repete. O commit exato fica em
+      # `org.opencontainers.image.revision`, e é por ele que se volta do
+      # artefato ao código.
+      #
+      # O número pula por imagem: se um commit toca só `lab-plane`, ele sobe
+      # para `-42` enquanto `lab-journal` fica em `-37`. É o comportamento
+      # desejado. Nada exige que as quatro imagens existam na mesma versão,
+      # porque nenhum manifesto as referencia por um identificador comum — o
+      # Image Updater resolve cada imagem pela tag mais recente dela.
       - name: Construir e publicar
         uses: docker/build-push-action@v6
         with:
-          context: ${{ matrix.contexto }}
+          context: ${{ matrix.incluir.contexto }}
           build-args: |
-            MODULE=${{ matrix.modulo }}
+            MODULE=${{ matrix.incluir.modulo }}
           push: true
-          tags: ghcr.io/${{ github.repository }}/${{ matrix.modulo }}:${{ github.sha }}
-          cache-from: type=gha,scope=${{ matrix.modulo }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.modulo }}
+          tags: >
+            ghcr.io/${{ github.repository }}/${{ matrix.incluir.modulo }}:${{ matrix.incluir.versao }}-${{ github.run_number }}
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ matrix.incluir.versao }}-${{ github.run_number }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          cache-from: type=gha,scope=${{ matrix.incluir.modulo }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.incluir.modulo }}
+
+  # O único check obrigatório é este, e o motivo está na ADR 0017 do homelab:
+  # um check que depende de matriz filtrada NUNCA reporta status quando a
+  # matriz sai vazia, e o Pull Request trava para sempre esperando por ele.
+  # `if: always()` faz este job rodar mesmo assim, e o `result` de cada
+  # dependência é conferido à mão — `needs` sozinho pularia o job.
+  porta:
+    name: Porta do build
+    needs: [mudancas, provas, imagem]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Conferir o veredito de cada job
+        run: |
+          set -euo pipefail
+          echo "mudancas: ${{ needs.mudancas.result }}"
+          echo "provas:   ${{ needs.provas.result }}"
+          echo "imagem:   ${{ needs.imagem.result }}"
+
+          # `skipped` é resultado legítimo para `imagem`: Pull Request não
+          # publica, e commit sem módulo alterado não tem o que publicar.
+          for r in '${{ needs.mudancas.result }}' '${{ needs.provas.result }}'; do
+            [ "$r" = 'success' ] || { echo 'Prova obrigatória falhou.'; exit 1; }
+          done
+
+          case '${{ needs.imagem.result }}' in
+            success|skipped) ;;
+            *) echo 'A publicação da imagem falhou.'; exit 1 ;;
+          esac
