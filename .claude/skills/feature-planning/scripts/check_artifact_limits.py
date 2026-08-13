@@ -99,7 +99,12 @@ CLASS_LIMITS = {
     # Um card acima do limite cobre mais de uma capacidade, e o caminho é dividi-la.
     # O corte sai da prosa, NUNCA da evidência.
     "feature card": 5500,
-    "bdd": 3500,
+    # Ancorado no teto do Feature Card em 2026-08-12, e a âncora é imperfeita de
+    # propósito: o card mede só prosa, e a classe `bdd` mede tudo — em Gherkin a
+    # tabela `Exemplos:` é o cenário, e não ilustração dele. O aperto é o sinal. O
+    # 3500 anterior foi calibrado antes de qualquer card ter dezenove regras
+    # aprovadas; com elas, ele cobrava menos de um cenário por regra.
+    "bdd": 5500,
     "plano de implementação": 7000,
     # Tudo o que nenhuma classe acima alcança. Calibrado para o Feature Card.
     "genérico": 4000,

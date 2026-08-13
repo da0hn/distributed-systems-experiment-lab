@@ -1341,11 +1341,11 @@ fixa também a outra.
 **Uma execução sai da lista de execuções ativas do `lab_plane` por três caminhos, e por
 nenhum outro.**
 
-| Caminho                     | Quando                                                   | O que o dispara                                            |
-|-----------------------------|----------------------------------------------------------|------------------------------------------------------------|
-| a **sentinela** de fim      | a execução alcança o fim, e todos os workers terminam    | o evento da marca que [`E-47`](#e-47-fecha-na-sentinela-escolhida-em-2026-08-10) escolheu |
-| o **limite de espera**      | nenhuma marca chega dentro do limite                     | o adaptador de relógio do `lab-plane`                      |
-| o **cancelamento** explícito | a pessoa encerra a execução                              | o frontend, pelo qual ela já declara experimento           |
+| Caminho                      | Quando                                                | O que o dispara                                                                           |
+|------------------------------|-------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| a **sentinela** de fim       | a execução alcança o fim, e todos os workers terminam | o evento da marca que [`E-47`](#e-47-fecha-na-sentinela-escolhida-em-2026-08-10) escolheu |
+| o **limite de espera**       | nenhuma marca chega dentro do limite                  | o adaptador de relógio do `lab-plane`                                                     |
+| o **cancelamento** explícito | a pessoa encerra a execução                           | o frontend, pelo qual ela já declara experimento                                          |
 
 **A sentinela passa a remover a linha, e isso deixa de ser hipótese.** O enunciado
 registrava que nenhum fecho atribuíra essa remoção a ator nenhum, e que ela continuava
@@ -2194,13 +2194,13 @@ decidida.** Medidos em 2026-08-12 por
 [`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py),
 com o glob já estendido:
 
-| Arquivo                                             | Medido        | Classe que o alcança hoje | O que está em dúvida                                              |
-|-----------------------------------------------------|---------------|---------------------------|-------------------------------------------------------------------|
-| `docs/CONTEXT.md`                                   | 37.974/4.000  | genérico                  | cresce por termo resolvido (inventário) e carrega doutrina (instrução) |
-| `docs/specification-process.md`                     | 22.510/4.000  | genérico                  | cresce por regra de processo decidida                            |
-| `docs/architecture/integrations.md`                 | 12.314/12.000 | arquitetura               | excede a própria classe por 314; a matriz cresce por fronteira    |
-| `docs/audits/2026-08-06-coerencia-e-limites-...`    | 8.062/4.000   | genérico                  | é registro datado, como `docs/adr/arquivo/**`                     |
-| `docs/questions/Q-0001-1.md`                        | 4.282/4.000   | genérico                  | o índice de questões é isento; a questão individual não é          |
+| Arquivo                                          | Medido        | Classe que o alcança hoje | O que está em dúvida                                                   |
+|--------------------------------------------------|---------------|---------------------------|------------------------------------------------------------------------|
+| `docs/CONTEXT.md`                                | 37.974/4.000  | genérico                  | cresce por termo resolvido (inventário) e carrega doutrina (instrução) |
+| `docs/specification-process.md`                  | 22.510/4.000  | genérico                  | cresce por regra de processo decidida                                  |
+| `docs/architecture/integrations.md`              | 12.314/12.000 | arquitetura               | excede a própria classe por 314; a matriz cresce por fronteira         |
+| `docs/audits/2026-08-06-coerencia-e-limites-...` | 8.062/4.000   | genérico                  | é registro datado, como `docs/adr/arquivo/**`                          |
+| `docs/questions/Q-0001-1.md`                     | 4.282/4.000   | genérico                  | o índice de questões é isento; a questão individual não é              |
 
 **Um eixo que a triagem precisa, e ele não é meu — foi medido por quem fez o
 movimento.** Um arquivo pode ter crescido porque alguém **escreveu**, ou porque alguém
@@ -3294,12 +3294,12 @@ e nenhum documento vigente carrega bloco SQL. A exceção é o diretório
 [`schemas/`](../architecture/schemas/README.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam).
 
 | Fica no [ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão) | Vai para [`schemas/sut.md`](../architecture/schemas/sut.md#o-schema-do-sistema-medido-sut) |
-|-----------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| a ausência de chave estrangeira, com a `Pergunta em aberto` de `E-9`                          | a chave primária composta e a ordem das colunas                                      |
-| a proibição de uma estratégia ler `updated_at`                                                | o índice aditivo `(partition_id, resource_id)`                                       |
-| a janela delimitada por evento, nunca por tempo                                               | os tipos `timestamptz NOT NULL`, sem `DEFAULT` e sem trigger                         |
-| a fonte do relógio por papel do valor, com o fecho de `E-53`                                  | —                                                                                    |
-| a assimetria de nome entre os dois schemas, e a tradução num ponto único                      | —                                                                                    |
+|-----------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
+| a ausência de chave estrangeira, com a `Pergunta em aberto` de `E-9`                          | a chave primária composta e a ordem das colunas                                            |
+| a proibição de uma estratégia ler `updated_at`                                                | o índice aditivo `(partition_id, resource_id)`                                             |
+| a janela delimitada por evento, nunca por tempo                                               | os tipos `timestamptz NOT NULL`, sem `DEFAULT` e sem trigger                               |
+| a fonte do relógio por papel do valor, com o fecho de `E-53`                                  | —                                                                                          |
+| a assimetria de nome entre os dois schemas, e a tradução num ponto único                      | —                                                                                          |
 
 **A assimetria de nome fica no ADR apesar de parecer esquema.** Ela decorre da fronteira do
 [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão): nenhuma
@@ -4426,12 +4426,12 @@ sem que a mesclagem acuse nada.
 motivo declarado no fecho, e não a posição no arquivo. Medida pela
 [consulta reversa](../AGENTS.md#antes-de-reduzir-um-documento) antes de qualquer edição:
 
-| Linha                                              | Citantes | Em ADR aceito | Destino          |
-|----------------------------------------------------|----------|---------------|-------------------|
-| `E-62` — que forma cobre a entrada de decisão nova | 6        | 3             | fica `E-62`      |
-| `E-62` — a citação entre aspas                     | 4        | **0**         | vira **`E-81`**  |
-| `E-63` — a emenda e o título citado por trecho     | 3        | 3             | fica `E-63`      |
-| `E-63` — os comentários das duas `V1`              | 1        | **1**         | vira **`E-82`**  |
+| Linha                                              | Citantes | Em ADR aceito | Destino         |
+|----------------------------------------------------|----------|---------------|-----------------|
+| `E-62` — que forma cobre a entrada de decisão nova | 6        | 3             | fica `E-62`     |
+| `E-62` — a citação entre aspas                     | 4        | **0**         | vira **`E-81`** |
+| `E-63` — a emenda e o título citado por trecho     | 3        | 3             | fica `E-63`     |
+| `E-63` — os comentários das duas `V1`              | 1        | **1**         | vira **`E-82`** |
 
 **O par escolhido custou um patch; o outro custaria três, em dois ADRs aceitos.** O
 patch está registrado em
@@ -4889,7 +4889,7 @@ sem `Alterado por`.
 **Três alternativas, e o motivo do descarte de cada uma.**
 
 | Alternativa                              | Por que foi descartada                                                                                                                           |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+|------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 | chamar de **emenda**, forma já existente | emenda ajusta uma regra acessória; chamar de emenda a amputação de cinco subseções e a troca de título estica a palavra para o próximo leitor    |
 | **substituir** o ADR-0014 pelo par       | reusar o número apaga a distinção entre o velho e o novo, e as citações vivas passariam a apontar para um documento que não é o que elas citaram |
 | **isentar** o ADR-0014 do teto de prosa  | o estouro era sintoma de o ADR cobrir mais de uma decisão; isentar tratava o sintoma e deixava a causa — duas decisões num corpo só — intacta    |
@@ -5037,11 +5037,11 @@ flowchart TD
 do caso, e não do regime — o regime geral continua sendo o que a tabela mais abaixo deixa
 em aberto, e esta escolha não o fecha.
 
-| Saída                                           | O que ela faz                                                                   | Motivo do descarte, ou o custo aceito                                                  |
-|-------------------------------------------------|---------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
-| teto próprio para o ADR-0014                    | o script ganha limite ou isenção nomeada para este arquivo, e o job passa       | contradiz o argumento da divisão: trata o sintoma do estouro e deixa a causa intacta   |
-| **comprimir a prosa do ADR-0014 — escolhida**   | o excesso sai do corpo, e o arquivo volta para dentro do teto vigente           | o que sai é escolhido pelo espaço que falta, e não pelo que o trecho vale              |
-| mesclar com o job vermelho                      | o estouro fica declarado aqui, e o `docs` segue reprovando até a linha fechar   | um guardrail que reprova e é ignorado deixa de distinguir este estouro do próximo      |
+| Saída                                         | O que ela faz                                                                 | Motivo do descarte, ou o custo aceito                                                |
+|-----------------------------------------------|-------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| teto próprio para o ADR-0014                  | o script ganha limite ou isenção nomeada para este arquivo, e o job passa     | contradiz o argumento da divisão: trata o sintoma do estouro e deixa a causa intacta |
+| **comprimir a prosa do ADR-0014 — escolhida** | o excesso sai do corpo, e o arquivo volta para dentro do teto vigente         | o que sai é escolhido pelo espaço que falta, e não pelo que o trecho vale            |
+| mesclar com o job vermelho                    | o estouro fica declarado aqui, e o `docs` segue reprovando até a linha fechar | um guardrail que reprova e é ignorado deixa de distinguir este estouro do próximo    |
 
 **O motivo da escolha.** Dar teto ao ADR-0014 contradiria o argumento com que a divisão
 foi decidida: se estourar era sintoma de o ADR cobrir mais de uma decisão, afrouxar a
@@ -5097,11 +5097,11 @@ deixa os seis arquivos acima exatamente como estão.
 **três coisas, e não uma**; as três foram decididas no mesmo ato, e é por isso que este
 fecho não é de uma alternativa só.
 
-| O que a linha perguntava        | O que foi escolhido                                                             |
-|---------------------------------|---------------------------------------------------------------------------------|
-| quem é dono do número           | o script continua dono, e passa a declarar **classe de artefato**, e não caminho |
-| o que a medição alcança no CI   | todo `.md` sob `docs/`, e não todo Markdown versionado                          |
-| como uma isenção nasce          | pela classe, e nunca mais uma a uma                                             |
+| O que a linha perguntava      | O que foi escolhido                                                              |
+|-------------------------------|----------------------------------------------------------------------------------|
+| quem é dono do número         | o script continua dono, e passa a declarar **classe de artefato**, e não caminho |
+| o que a medição alcança no CI | todo `.md` sob `docs/`, e não todo Markdown versionado                           |
+| como uma isenção nasce        | pela classe, e nunca mais uma a uma                                              |
 
 **A classe substitui a isenção avulsa.** A terceira alternativa da tabela acima — "medir
 tudo sem falhar" — foi descartada pelo custo que ela mesma declarava, e a primeira —
@@ -5475,6 +5475,75 @@ referência é contada no **controle negativo**, e não na execução medida: um
 que serializa fecha a janela, e ler esse zero como carga fraca condenaria a estratégia
 mais protetora. E o veredito `sem exposição`, previsto aqui, não existe — o controle
 negativo já detectava aquele caso, e o lugar foi ocupado por `janela mal declarada`.
+
+## O teto do `.feature`, decidido em 2026-08-12
+
+### `E-92` — o teto da classe `bdd` reprova arquivo cuja regra foi toda aprovada
+
+Aberta em 2026-08-12, ao realinhar os quatro `behavior.feature` às regras aprovadas.
+
+**O problema.** A regra de retorno do processo diz que um `.feature` "volta ao conjunto
+ativo quando cada regra que ele cobre tiver `Aprovada por` preenchido, e não antes" — em
+[`specification-process.md`](../specification-process.md#o-feature-inativo-e-como-ele-volta-ao-conjunto-ativo).
+Aprovação é necessária **e** suficiente. A marca `ARQUIVO INATIVO`, porém, isenta o
+arquivo do teto de tamanho, e retirá-la devolve o teto no mesmo instante. Com as regras
+aprovadas, dois arquivos passaram a reprovar.
+
+**A assimetria que ninguém tinha notado.** A classe `bdd` é a **única** que mede o
+artefato inteiro; todas as outras descontam diagrama, código e tabela e medem só
+prosa. Isso é deliberado, e o motivo está na skill: em Gherkin a tabela `Exemplos:` é o
+cenário, e não ilustração dele. A consequência é que o teto não limita prosa inchada —
+um `.feature` quase não tem prosa. Ele limita **quantos cenários** o arquivo pode ter.
+
+**Medido em 2026-08-12** pelo
+[`check_artifact_limits.py`](../../.claude/skills/feature-planning/scripts/check_artifact_limits.py),
+contra o teto de `3500` então vigente:
+
+| Arquivo                                            | Medido | Estado então               |
+|----------------------------------------------------|--------|----------------------------|
+| `deteccao-de-protecao-inerte/behavior.feature`     | 2771   | ativo, dentro              |
+| `observacao-passo-a-passo/behavior.feature`        | 4416   | ativo, excedendo           |
+| `deteccao-de-atualizacao-perdida/behavior.feature` | 4494   | ativo, excedendo           |
+| `execucao-de-experimento/behavior.feature`         | 6460   | inativo, e por isso isento |
+
+`deteccao-de-atualizacao-perdida` tem dezenove regras aprovadas. Os 4494 dão cerca de
+236
+caracteres por regra — menos que um cenário cada.
+
+#### `E-92` fecha em o teto sobe para 5500, escolhida em 2026-08-12
+
+**Escolhida pela pessoa em 2026-08-12.** O teto da classe `bdd` passa de `3500` para
+`5500`, ancorado no teto do Feature Card: **um `.feature` não deveria ultrapassar o card
+cujas regras ele verifica.**
+
+**A âncora é imperfeita, e o aperto é de propósito.** O card mede só prosa, e a classe
+`bdd` mede tudo — então `5500` é mais apertado para o `.feature` do que para o card. É
+esse aperto que mantém o sinal sobre `execucao-de-experimento`, que segue acima do teto
+com treze cenários para uma capacidade só. Um teto calibrado para fazer tudo caber não
+teria dito nada sobre ele.
+
+```mermaid
+flowchart TD
+  A["behavior.feature"] --> M{"tem marca<br/>ARQUIVO INATIVO?"}
+  M -->|" sim "| I["isento do teto"]
+  M -->|" não "| T{"cabe em 5500?"}
+  T -->|" sim "| OK["ativo, e medido"]
+  T -->|" não "| X["reprova:<br/>cenários demais<br/>para uma capacidade"]
+  style OK fill:#1d4a2b, stroke:#4ade80, color:#e5e7eb
+  style X fill:#4a1d1d, stroke:#f87171, color:#e5e7eb
+```
+
+**As três saídas descartadas, e o motivo de cada uma.**
+
+| Saída descartada                                      | Por que não                                                                                                             |
+|-------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| Dividir cada capacidade em vários `.feature`          | a árvore prevê um `behavior.feature` singular por pasta, e vários por card é desenho novo de especificação, não redação |
+| Manter os dois inativos, e emendar a regra de retorno | "inativo" passaria a significar duas coisas, e um arquivo poderia ficar inativo para sempre com toda regra aprovada     |
+| Cortar cenário até caber                              | todo cenário presente cobre regra aprovada corretamente alinhada, e o corte sai da prosa, nunca da evidência            |
+
+**Esta linha NÃO decide o destino de `execucao-de-experimento`.** Ele segue inativo por
+`R16` e `R17` `pendente`, e continua acima do teto. Quando as duas forem aprovadas, o
+arquivo precisa de decisão própria — dividir, cortar, ou rever o teto de novo.
 
 ## De onde esta fila veio
 
