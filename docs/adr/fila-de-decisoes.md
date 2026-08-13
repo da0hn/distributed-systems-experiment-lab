@@ -5582,18 +5582,40 @@ arquivos nascem LF, e a mesma baseline aparece obsoleta. Duas sessões leram o m
 verificador sobre os mesmos blobs e chegaram a resultados opostos, cada uma correta
 sobre a própria árvore.
 
-**A saída proposta pela sessão par.** Um `.gitattributes` na raiz, com `* text=auto
-eol=lf`. O git passaria a impor no checkout o que hoje só o verificador mede depois do
-fato, e a deriva deixaria de ser possível em vez de ser detectada.
+**A saída proposta pela sessão par, e o que ela de fato faz.** Um `.gitattributes` na
+raiz, com `* text=auto eol=lf`. Ela **não** cria detector: o git normaliza o conteúdo da
+árvore antes de compará-lo com o índice — o mesmo que `core.autocrlf=input` já faz —, e
+um arquivo com CRLF em disco segue comparando igual a um blob LF. O `git status`
+continua dizendo limpo. O que a diretiva garante é que o **blob** nunca receba CRLF,
+qualquer que seja a configuração local da máquina que commitou.
 
-**As objeções, e nenhuma foi respondida.**
+**São dois problemas, e não duas saídas para um.** A contaminação do repositório é o que
+a diretiva previne. A deriva da árvore de trabalho é o que aconteceu aqui, e segue sem
+detector no git. Tratá-los como alternativas faria alguém ler "resolvido" com o detector
+ainda inexistente.
+
+**As objeções à diretiva, e nenhuma foi respondida.**
 
 | Objeção                                        | Por quê                                                                                                                                                |
 |------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `text=auto` classifica por heurística          | um `.excalidraw.svg` classificado como texto tem o fim de linha reescrito, e a convenção de diagrama deste repositório prevê exatamente esse formato   |
 | `graphify-out/` é saída gerada                 | quatro arquivos regeneráveis por ferramenta externa a este repositório; impor LF neles decide o fim de linha de algo cuja versionagem não foi decidida |
 | a renormalização é um commit que toca a árvore | `git add --renormalize .` precisa existir, ser revisável, e não pode ser confundido com mudança de conteúdo em nenhum diff futuro                      |
-| o verificador continua necessário depois?      | `.gitattributes` previne na escrita e `verify_docs.py` mede o que já está lá; se um torna o outro dispensável, ninguém verificou                       |
+| a diretiva dispensa o verificador?             | não: ela previne a contaminação do blob, e o `verify_docs.py` é o único que mede a árvore. Nenhum dos dois cobre o que o outro cobre                   |
+
+**Duas perguntas em aberto.**
+
+- **O que detecta a deriva da árvore, e em que momento.** Hoje o `verify_docs.py` a mede
+  depois do fato, e só na máquina que derivou. O hook `PostToolUse` mediria na escrita,
+  mas alcança apenas o que o agente grava por `Edit` e `Write` — ferramenta externa,
+  geração automática e edição por IDE ficam de fora.
+- **Se este caso teve causa de desenho ou de hook quebrado.** Levantada pela sessão
+  par. O hook entrou em `3d49498`, às 19h27 de 2026-08-12, e foi corrigido em `2b92218`,
+  às 22h03 do mesmo dia; entre os dois ele falhava em silêncio, por caminho relativo. Os
+  doze arquivos tiveram o último commit **antes** das 19h27 — onze em 2026-08-07, e
+  `docs/questions/README.md` às 15h07 de 2026-08-12. Isso **não** fecha a pergunta: o
+  CRLF podia ter sido gravado sem commit, a qualquer momento, e a datação por `mtime`
+  **não é mais possível**, porque a restauração dos doze sobrescreveu os carimbos.
 
 **Esta linha não decide o destino de `graphify-out/`.** Se aqueles quatro arquivos
 deveriam estar versionados é pergunta anterior, de mérito próprio, e sem prazo.
