@@ -400,6 +400,15 @@ são estado, e por isso ficam:
 - **Prefira registrar uma questão em aberto a inventar uma decisão para fechar uma
   lacuna.**
   No processo deste repositório, a primeira vale mais que a segunda.
+- **Toda pendência levantada na sessão entra num rastreador de tarefas, no mesmo turno
+  em que aparece, e sai dele quando fecha.** É a regra de
+  [`docs/AGENTS.md`](docs/AGENTS.md#a-regra-que-vale-antes-de-qualquer-outra) aplicada a
+  pendência operacional: uma que fica só na conversa desaparece no próximo compact, em
+  silêncio, e ninguém fica sabendo o que se perdeu. O rastreador **não** substitui o
+  arquivo — objeção, alternativa descartada e decisão continuam indo para o artefato no
+  mesmo turno, e o que entra no rastreador é o trabalho que sobrou depois disso. A regra
+  nomeia o hábito e **nunca a ferramenta**: o rastreador é recurso do ambiente que
+  executa o agente, pelo mesmo motivo que proíbe versionar catálogo de skills.
 - **Não invente integração, contrato ou
   regra.** Toda afirmação relevante leva evidência com
   caminho de arquivo e **âncora nomeada** — `<arquivo>.md#<slug-do-título>`, no slug do
