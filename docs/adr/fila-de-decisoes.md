@@ -5547,6 +5547,57 @@ flowchart TD
 `R16` e `R17` `pendente`, e continua acima do teto. Quando as duas forem aprovadas, o
 arquivo precisa de decisão própria — dividir, cortar, ou rever o teto de novo.
 
+## O fim de linha na árvore de trabalho, levantado em 2026-08-12
+
+### `E-93` — a deriva de fim de linha não tem detector no git
+
+Aberta em 2026-08-12 pela sessão par, depois de doze arquivos ficarem com CRLF na árvore
+de trabalho sem que nenhum comando de git denunciasse.
+
+**O problema.** O repositório roda com `core.autocrlf=input` e sem `.gitattributes`
+versionado. O `input` converte CRLF para LF na **escrita do commit**, e normaliza a
+árvore de trabalho ao compará-la com o índice. Um arquivo com CRLF em disco e LF no blob
+normaliza para LF, bate com o blob, e o git o declara **limpo** — em `git status` e em
+`git diff`. Os bytes divergem do que está versionado, e nenhum comando de git mostra.
+
+**Como apareceu.** Doze arquivos — o `ADR-0005`, sete de `docs/questions/` e quatro de
+`graphify-out/` — estavam com CRLF em disco numa árvore de trabalho, e LF no blob. A
+diferença era de 251 bytes só no `ADR-0005`. Quem viu foi `scripts/verify_docs.py`, que
+lê os bytes crus sem passar pelo git.
+
+```mermaid
+flowchart TD
+  E["ferramenta local escreve<br/>o arquivo com CRLF"]
+  E --> G{"git compara árvore e índice<br/>sob autocrlf=input"}
+  G -->|" normaliza CRLF para LF "| L["git status: limpo<br/>git diff: vazio"]
+  E --> V["verify_docs.py lê<br/>os bytes crus"]
+  V --> D["acusa CRLF — depois do fato,<br/>e só na máquina que derivou"]
+  style L fill:#4a1d1d, stroke:#f87171, color:#e5e7eb
+  style D fill:#1d3a4a, stroke:#60a5fa, color:#e5e7eb
+```
+
+**A consequência que durou mais que o defeito.** As doze entradas da baseline do
+verificador descreviam **uma máquina**, e não o repositório: num checkout novo os mesmos
+arquivos nascem LF, e a mesma baseline aparece obsoleta. Duas sessões leram o mesmo
+verificador sobre os mesmos blobs e chegaram a resultados opostos, cada uma correta
+sobre a própria árvore.
+
+**A saída proposta pela sessão par.** Um `.gitattributes` na raiz, com `* text=auto
+eol=lf`. O git passaria a impor no checkout o que hoje só o verificador mede depois do
+fato, e a deriva deixaria de ser possível em vez de ser detectada.
+
+**As objeções, e nenhuma foi respondida.**
+
+| Objeção                                        | Por quê                                                                                                                                                |
+|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `text=auto` classifica por heurística          | um `.excalidraw.svg` classificado como texto tem o fim de linha reescrito, e a convenção de diagrama deste repositório prevê exatamente esse formato   |
+| `graphify-out/` é saída gerada                 | quatro arquivos regeneráveis por ferramenta externa a este repositório; impor LF neles decide o fim de linha de algo cuja versionagem não foi decidida |
+| a renormalização é um commit que toca a árvore | `git add --renormalize .` precisa existir, ser revisável, e não pode ser confundido com mudança de conteúdo em nenhum diff futuro                      |
+| o verificador continua necessário depois?      | `.gitattributes` previne na escrita e `verify_docs.py` mede o que já está lá; se um torna o outro dispensável, ninguém verificou                       |
+
+**Esta linha não decide o destino de `graphify-out/`.** Se aqueles quatro arquivos
+deveriam estar versionados é pergunta anterior, de mérito próprio, e sem prazo.
+
 ## De onde esta fila veio
 
 As duas origens continuam no repositório, e as duas viram lápide pela decisão `C-2`.
