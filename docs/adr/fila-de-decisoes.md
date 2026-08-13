@@ -4047,6 +4047,8 @@ flowchart TD
 [processo](../specification-process.md#adr--só-decisão-arquitetural-durável) chama isso
 de ADR carregando comportamento: o ADR leva o porquê, e o card leva o quê.
 
+**Formalizada no [ADR-0018](0018-cada-controle-roda-sob-o-seu-proprio-nivel.md).**
+
 **Esta linha NÃO fecha `P2`** — onde o nível de isolamento é declarado continua sem
 dono. Ela decide sob qual nível cada controle roda, e não quem declara o nível nem onde.
 
@@ -5660,6 +5662,146 @@ já registra para a etapa 6.
 **Nenhuma alternativa foi escolhida.** Nenhum experimento do grupo A com segunda
 instância deliberada foi executado até hoje; a linha aguarda a etapa em que o `JVM_LOCK`
 precisar rodar contra o ambiente do cluster, e não só localmente.
+
+## O fim de linha na árvore de trabalho, levantado em 2026-08-12
+
+### `E-93` — a deriva de fim de linha não tem detector no git
+
+Aberta em 2026-08-12 pela sessão par, depois de doze arquivos ficarem com CRLF na árvore
+de trabalho sem que nenhum comando de git denunciasse.
+
+**O problema.** O repositório roda com `core.autocrlf=input` e sem `.gitattributes`
+versionado. O `input` converte CRLF para LF na **escrita do commit**, e normaliza a
+árvore de trabalho ao compará-la com o índice. Um arquivo com CRLF em disco e LF no blob
+normaliza para LF, bate com o blob, e o git o declara **limpo** — em `git status` e em
+`git diff`. Os bytes divergem do que está versionado, e nenhum comando de git mostra.
+
+**Como apareceu.** Doze arquivos — o `ADR-0005`, sete de `docs/questions/` e quatro de
+`graphify-out/` — estavam com CRLF em disco numa árvore de trabalho, e LF no blob. A
+diferença era de 251 bytes só no `ADR-0005`. Quem viu foi `scripts/verify_docs.py`, que
+lê os bytes crus sem passar pelo git.
+
+```mermaid
+flowchart TD
+  E["ferramenta local escreve<br/>o arquivo com CRLF"]
+  E --> G{"git compara árvore e índice<br/>sob autocrlf=input"}
+  G -->|" normaliza CRLF para LF "| L["git status: limpo<br/>git diff: vazio"]
+  E --> V["verify_docs.py lê<br/>os bytes crus"]
+  V --> D["acusa CRLF — depois do fato,<br/>e só na máquina que derivou"]
+  style L fill:#4a1d1d, stroke:#f87171, color:#e5e7eb
+  style D fill:#1d3a4a, stroke:#60a5fa, color:#e5e7eb
+```
+
+**A consequência que durou mais que o defeito.** As doze entradas da baseline do
+verificador descreviam **uma máquina**, e não o repositório: num checkout novo os mesmos
+arquivos nascem LF, e a mesma baseline aparece obsoleta. Duas sessões leram o mesmo
+verificador sobre os mesmos blobs e chegaram a resultados opostos, cada uma correta
+sobre a própria árvore.
+
+**A saída proposta pela sessão par, e o que ela de fato faz.** Um `.gitattributes` na
+raiz, com `* text=auto eol=lf`. Ela **não** cria detector: o git normaliza o conteúdo da
+árvore antes de compará-lo com o índice — o mesmo que `core.autocrlf=input` já faz —, e
+um arquivo com CRLF em disco segue comparando igual a um blob LF. O `git status`
+continua dizendo limpo. O que a diretiva garante é que o **blob** nunca receba CRLF,
+qualquer que seja a configuração local da máquina que commitou.
+
+**São dois problemas, e não duas saídas para um.** A contaminação do repositório é o que
+a diretiva previne. A deriva da árvore de trabalho é o que aconteceu aqui, e segue sem
+detector no git. Tratá-los como alternativas faria alguém ler "resolvido" com o detector
+ainda inexistente.
+
+**As objeções à diretiva, e nenhuma foi respondida.**
+
+| Objeção                                        | Por quê                                                                                                                                                |
+|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `text=auto` classifica por heurística          | um `.excalidraw.svg` classificado como texto tem o fim de linha reescrito, e a convenção de diagrama deste repositório prevê exatamente esse formato   |
+| `graphify-out/` é saída gerada                 | quatro arquivos regeneráveis por ferramenta externa a este repositório; impor LF neles decide o fim de linha de algo cuja versionagem não foi decidida |
+| a renormalização é um commit que toca a árvore | `git add --renormalize .` precisa existir, ser revisável, e não pode ser confundido com mudança de conteúdo em nenhum diff futuro                      |
+| a diretiva dispensa o verificador?             | não: ela previne a contaminação do blob, e o `verify_docs.py` é o único que mede a árvore. Nenhum dos dois cobre o que o outro cobre                   |
+
+**Duas perguntas em aberto.**
+
+- **O que detecta a deriva da árvore, e em que momento.** Hoje o `verify_docs.py` a mede
+  depois do fato, e só na máquina que derivou. O hook `PostToolUse` mediria na escrita,
+  mas alcança apenas o que o agente grava por `Edit` e `Write` — ferramenta externa,
+  geração automática e edição por IDE ficam de fora.
+- **Se este caso teve causa de desenho ou de hook quebrado.** Levantada pela sessão
+  par. O hook entrou em `3d49498`, às 19h27 de 2026-08-12, e foi corrigido em `2b92218`,
+  às 22h03 do mesmo dia; entre os dois ele falhava em silêncio, por caminho relativo. Os
+  doze arquivos tiveram o último commit **antes** das 19h27 — onze em 2026-08-07, e
+  `docs/questions/README.md` às 15h07 de 2026-08-12. Isso **não** fecha a pergunta: o
+  CRLF podia ter sido gravado sem commit, a qualquer momento, e a datação por `mtime`
+  **não é mais possível**, porque a restauração dos doze sobrescreveu os carimbos.
+
+**Esta linha não decide o destino de `graphify-out/`.** Se aqueles quatro arquivos
+deveriam estar versionados é pergunta anterior, de mérito próprio, e sem prazo.
+
+## O controle do instrumento que mede o repositório, levantado em 2026-08-12
+
+### `E-94` — a exigência de caso de controle não alcança o verificador
+
+Aberta em 2026-08-12, depois de duas sessões lerem o mesmo verificador sobre os mesmos
+blobs e chegarem a conclusões opostas.
+
+**O problema.** Este repositório exige caso de controle do **experimento**, e não o
+exige do **instrumento** que mede o próprio repositório. O
+[ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-zero-é-classificado-e-a-classificação-tem-quatro-valores)
+torna o controle negativo obrigatório, e o
+[`AGENTS.md`](../../AGENTS.md#arquitetura-conceitual) repete que sem `NONE` violando o
+resultado das outras estratégias não significa nada. Nada equivalente alcança
+`scripts/check_citations.py`, `scripts/check_queue_ids.py`,
+`scripts/check_schema_sync.py`, `scripts/verify_docs.py`, nem o
+`check_artifact_limits.py` da skill `feature-planning`.
+
+**Medido em 2026-08-12:** nenhum dos cinco tem autoteste, sonda ou caso de controle, e o
+repositório não tem suíte de teste.
+
+**A evidência é de dois lados, e é isso que sustenta a linha.** Duas medições erradas
+falharam no mesmo ponto — aceitar a saída de um instrumento sem entrada de resposta
+conhecida. Uma afirmou CRLF onde havia LF, porque `grep -c $''` dentro de substituição
+de comando chega ao `grep` como padrão vazio e devolve a contagem de linhas. A outra
+afirmou LF numa árvore que tinha CRLF, por estender a uma máquina o que mediu na sua. O
+que desempatou foram dois casos de controle, um de cada lado.
+
+**O agravante, e a datação que ele não tem.** A baseline de um verificador passou a
+descrever **uma máquina** em vez do repositório, e envelheceu para dentro de arquivo
+versionado sem ninguém ver. **Quando isso começou não é mais mensurável:** os `mtime`
+que responderiam foram sobrescritos pela restauração, como
+[`E-93`](#e-93--a-deriva-de-fim-de-linha-não-tem-detector-no-git) registra.
+
+**O controle tem duas direções, e o vocabulário daqui já tem as duas.** Uma regra que
+exija só a primeira deixa passar um verificador que acusa tudo.
+
+| Direção                                   | No laboratório                                                                                                                    | No verificador                             |
+|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| o caso que **DEVE** produzir o efeito     | o controle negativo, a estratégia `NONE`, que viola por definição                                                                 | um arquivo defeituoso que DEVE ser acusado |
+| o caso que **NÃO DEVE** produzir o efeito | a [calibração](0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador) do ADR-0002, sem perda, que DEVE dar zero | um arquivo limpo que NÃO DEVE ser acusado  |
+
+**Cuidado de vocabulário, e ele já quase virou contradição.** Em terminologia geral de
+experimento, o caso que deve produzir o efeito costuma se chamar controle **positivo**.
+Aqui não: o `NONE` é o controle **negativo**, e o controle **positivo** é a barreira, em
+[ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#a-barreira-é-o-controle-positivo).
+Um texto que trocasse os dois contradiria ADR aceito.
+
+**A propriedade que faz um controle valer:** ele DEVE ser produzido por mecanismo
+diferente do que está sob teste. É por isso que o `NONE` é execução separada, e não um
+ramo dentro do código da estratégia — se o controle percorresse o mesmo caminho da
+medida, um defeito no caminho apareceria nos dois lados e se cancelaria.
+
+**Cinco alternativas, e nenhuma escolhida.**
+
+| Alternativa                                                                    | Custo declarado                                                                                    |
+|--------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| regra de disciplina no `AGENTS.md`, sem guarda executável                      | é texto, e as três regras estruturais que já são só texto estão em `Q-0002-1` justamente por isso  |
+| modo de autoteste dentro de cada verificador                                   | compartilha a camada de I/O do que testa: um defeito de leitura passa nos dois lados               |
+| suíte de teste própria, em código, fora dos scripts                            | é código novo sem teste próprio, e o repositório não tem suíte onde ela caiba                      |
+| corpus de fixtures versionado, um arquivo por classe de defeito, mais um limpo | é dado e não código, revisável em diff — mas é mais um lugar que diverge quando o formato muda     |
+| lacuna aceita                                                                  | a próxima leitura divergente entre duas sessões não terá como ser desempatada senão à mão, de novo |
+
+**Esta linha não decide, e não classifica o artefato.** Se a saída é regra em arquivo de
+instrução, guarda executável ou dado versionado, é da escolha; e o que conta como
+artefato de um fecho é de
+[`E-91`](#e-91-fecha-em-instrução-e-verificador-contam-como-artefato-escolhida-em-2026-08-12).
 
 ## De onde esta fila veio
 

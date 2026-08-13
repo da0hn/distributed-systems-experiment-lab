@@ -1,15 +1,13 @@
 # language: pt
 #
-# ARQUIVO INATIVO — este arquivo NÃO é especificação viva.
+# Este arquivo cobre somente regra aprovada por pessoa, na forma em que ela foi
+# aprovada. Nenhum cenário aqui sustenta regra `pendente` — regra pendente NÃO DEVE
+# virar cenário Gherkin. O estado de cada regra é do índice de capacidades, e não é
+# repetido aqui: docs/features/README.md#índice.
 #
-# Nenhuma regra que estes cenários cobrem tem `Aprovada por` preenchido, e uma regra
-# pendente não sustenta Gherkin. Enquanto isso valer, nada aqui DEVE virar teste ou
-# código. Os cenários ficam na árvore, e voltam ao conjunto ativo regra a regra,
-# quando uma pessoa aprovar a regra que cada um sustenta.
-# O estado das regras é do índice de capacidades: docs/features/README.md#índice.
-#
-# Fonte das regras: docs/adr/0001-o-passo-como-unidade-de-execucao.md, Aceito.
-# Regras em debate não aparecem aqui — elas vivem em example-mapping.md.
+# Fonte das regras: feature-card.md, tabela "Regras de negócio" — dona da coluna
+# `Evidência` de cada regra. Regras em debate não aparecem aqui — elas vivem em
+# example-mapping.md.
 
 Funcionalidade: Observação passo a passo de uma operação
   Para que a intercalação e a falha sejam endereçáveis por nome

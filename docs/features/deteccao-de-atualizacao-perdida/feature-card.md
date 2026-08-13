@@ -129,6 +129,11 @@ reportou falha entra na contagem; uma que esgotou as tentativas, não. R9 é tes
 negativa: o `lab_plane` não tem `GRANT` no schema do `system-under-test`, e um `SELECT`
 cruzado **falha** por permissão em vez de retornar linha.
 
+**R2, R10 e a segunda metade de R3 são verificadas por inspeção de schema, não por
+Gherkin** — nenhuma sustenta comportamento externo, e um cenário citaria coluna e
+tabela. Um teste sobre `information_schema` (ou equivalente) cobre as três: sem
+`SERIAL`/`IDENTITY`/`nextval`/`DEFAULT` em coluna de identidade, e sem `version`.
+
 ## Links
 
 [Example Mapping](example-mapping.md) · [BDD](behavior.feature) ·

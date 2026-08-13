@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/verify_docs.py --hook",
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/verify_docs.py\" --hook",
             "timeout": 30
           }
         ]

@@ -131,3 +131,33 @@ definição, e a violação é pega por P8, que ainda não tem resposta.
 R8 (toda observação carrega a tentativa) vira asserção dentro de outros cenários, não um
 cenário próprio — um cenário que só verifique a presença de um campo testa estrutura,
 não comportamento.
+
+**Atualizado no ciclo de reativação de 2026-08-12.** R1 (o runtime chama o passo; o
+passo NÃO DEVE chamar o runtime) é estrutural, da mesma família de R2: descreve a
+direção de uma chamada, um invariante de acoplamento entre dois planos, e não um
+veredito, contagem ou recusa observável de fora. O Contraexemplo 1.2, acima, já mostra a
+forma da violação — ela é pega por separação de processo (ADR-0008) e por teste
+estrutural, não por Gherkin.
+
+R9 (`COMMIT` é o retorno do callback do `TransactionTemplate`, não um passo; `AFTER_COMMIT`
+é a primeira fronteira depois do escopo) define **de onde** vem o endereço
+`AFTER_COMMIT` dentro do mecanismo de transação — é vocabulário de implementação, não
+comportamento observável por si. Os cenários que dependem de `AFTER_COMMIT` já existem,
+no card irmão `deteccao-de-atualizacao-perdida`, e testam a **consequência** de alcançar
+essa fronteira (o que conta em `commits`), não esta definição.
+
+R11 (a cláusula de honestidade — toda anomalia reproduzida com barreiras DEVE aparecer
+também sem barreiras, sob carga alta) está satisfeita por construção desde o ADR-0004: a
+execução medida roda sem agendamento (nota acima, na seção R11). O que a cláusula pede —
+comparar o resultado com e sem barreira, sob carga alta — é um protocolo de várias
+execuções, não uma asserção única expressável num cenário curto; o card
+`execucao-de-experimento` testa a garantia estrutural (agendamento zero na execução
+medida), e não há cenário adicional a escrever aqui.
+
+R12 (as observações DEVEM atravessar para o `lab-journal` durante a execução, pelo
+buffer em memória e pela thread separada que o ADR-0017 fixa) descreve o mecanismo de
+transporte por dentro. O comportamento observável na borda — o `lab-journal` mostra a
+observação antes do fim da execução, e não só depois, em lote — pertence ao card
+`streaming-e-replay-do-log-de-observacoes`, que testa o que a interface vê. Um cenário
+aqui não descreveria comportamento externo sem citar buffer e thread, que são
+componentes internos do runtime.

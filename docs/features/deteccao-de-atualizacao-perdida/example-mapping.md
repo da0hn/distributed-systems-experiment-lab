@@ -64,7 +64,10 @@ elas vêm.
 
 - **Exemplo E3.1** — A mesma carga roda quatro vezes: `NONE` perde; `ATOMIC_UPDATE`,
   `OPTIMISTIC`, `PESSIMISTIC` chegam a 100, `OPTIMISTIC` pagando em taxa de aborto e
-  `PESSIMISTIC` em espera de lock — a tabela precisa das duas colunas.
+  `PESSIMISTIC` em espera de lock — a tabela precisa das duas colunas. **`OPTIMISTIC`
+  aqui é aspiracional, não corrente**: ela exige a coluna de versão que `R2` proíbe hoje
+  (nota abaixo, em "O que não virou cenário, e por quê"), e só entra em jogo quando a
+  migração de `R16` a trouxer.
 
 ### R12 a R16 — O contrato de estratégia (ADR-0006)
 
@@ -171,3 +174,42 @@ aprovou foi a **pessoa**, em 2026-08-06, no fecho de
 — e não o ciclo de redação, que só a transportou para cá. O escopo desse transporte
 fechou em card e Example Mapping, e não tocou `behavior.feature`: R19 é candidata à
 próxima passada dedicada, junto de R13 a R15.
+
+**Atualizado no ciclo de reativação de 2026-08-12.** `R16` (uma estratégia PODE exigir
+coluna além das que o ADR-0002 e o ADR-0015 já decidiram) não tem cenário: ela é uma
+permissão sobre processo de código — a migração nasce no mesmo commit que introduz a
+estratégia — e não descreve comportamento observável da plataforma; não há veredito,
+contagem nem recusa para um cenário Gherkin afirmar.
+
+**A linha `OPTIMISTIC` saiu do `Esquema do Cenário: a mesma carga sob três estratégias`
+nesta mesma rodada, pelo critério que já havia retirado o cenário de `OPTIMISTIC` do
+card irmão (`deteccao-de-protecao-inerte`): nenhuma regra aprovada afirma o valor final
+sob `OPTIMISTIC`, e a própria `R2` — "o esquema NÃO DEVE carregar uma coluna `version`"
+— torna a estratégia irrealizável hoje, já que o
+[`ADR-0006`, Decisão](../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão),
+`Aceito`, a condiciona a essa coluna.** A linha volta quando `R16` trouxer a migração que
+introduz a coluna de versão de `OPTIMISTIC` no código.
+
+**Decisão da pessoa, 2026-08-12: a segunda metade de `R3` — "o esquema NÃO DEVE usar
+`SERIAL`, `IDENTITY`, `nextval` nem valor padrão do banco" — sai do Gherkin, junto de
+`R2` e `R16`.** As três são regra de schema puro, sem consequência comportamental
+observável de fora; `R2` e `R16` já não tinham cenário, e a segunda metade de `R3` **era
+a única exceção** — o cenário `o banco não gera identidade` (que inspecionava
+`information_schema` citando `resource` e `allocation`) foi retirado de
+`behavior.feature` por isso, e não por esquecimento. A verificação dela passa a ser de
+schema, nos `## Critérios de pronto` do [Feature Card](feature-card.md#critérios-de-pronto).
+
+Duas saídas foram avaliadas e descartadas antes desta: abrir uma exceção nomeada na
+convenção de comportamento externo do [`docs/AGENTS.md`, BDD](../../AGENTS.md#bdd) foi
+recusado porque `R2` e `R16` são do mesmo tipo e voltariam a ser candidatas ao mesmo
+afrouxamento — a exceção não ficaria contida neste caso. Reescrever o cenário como "a
+aplicação sempre fornece o identificador, e uma inserção sem ele falha" também foi
+descartado: pressupõe uma restrição (coluna obrigatória sem valor padrão) que nenhuma
+regra aprovada afirma, e troca "o banco não gera identidade" por "o banco recusa
+identidade ausente" — outra regra, não uma reescrita fiel desta.
+
+**A primeira metade de `R3`** ("o identificador DEVE ser gerado pela aplicação a partir
+da semente") **também não tem cenário próprio.** O cenário mais próximo — `duas
+execuções da mesma semente produzem os mesmos identificadores` — testa a determinação
+por semente, que é o texto de `R4`, não quem gera o identificador. `R3` fica, portanto,
+**sem cobertura Gherkin nenhuma** neste arquivo, nas duas metades.

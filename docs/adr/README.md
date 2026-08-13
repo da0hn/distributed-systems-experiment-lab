@@ -131,6 +131,7 @@ O motivo do arquivamento e o que sobreviveu estão em
 | [0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md)                 | A chave, o discriminador de execução e as colunas de tempo                 | `Aceito` |
 | [0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md)                              | O streaming e o replay do log de observações                               | `Aceito` |
 | [0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md) | A persistência antecipada do log de observações, e o buffer que a alimenta | `Aceito` |
+| [0018](0018-cada-controle-roda-sob-o-seu-proprio-nivel.md)                                | Cada controle roda sob o seu próprio nível                                 | `Aceito` |
 | [0019](0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md)                    | A entrega sai do `deploy/`, e a imagem ganha tag semântica                 | `Aceito` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele

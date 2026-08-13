@@ -2,15 +2,15 @@
 #
 # ARQUIVO INATIVO — este arquivo NÃO é especificação viva.
 #
-# Nenhuma regra que estes cenários cobrem tem `Aprovada por` preenchido, e uma regra
-# pendente não sustenta Gherkin. Enquanto isso valer, nada aqui DEVE virar teste ou
-# código. Os cenários ficam na árvore, e voltam ao conjunto ativo regra a regra,
-# quando uma pessoa aprovar a regra que cada um sustenta.
-# O estado das regras é do índice de capacidades: docs/features/README.md#índice.
+# Nem toda regra que este card cobre está aprovada. O estado de cada regra é do
+# índice de capacidades, e não é repetido aqui: docs/features/README.md#índice. Um
+# `.feature` volta ao conjunto ativo quando cada regra que ele cobre tiver
+# `Aprovada por` preenchido, e não antes — ver
+# docs/specification-process.md#o-feature-inativo-e-como-ele-volta-ao-conjunto-ativo.
 #
-# Fonte das regras: docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md
-# e docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md, os dois Aceito.
-# O ADR-0003 está Aceito, e não gerou cenário aqui — ver example-mapping.md.
+# Fonte das regras: feature-card.md, tabela "Regras de negócio" — dona da coluna
+# `Evidência` de cada regra. O ADR-0003 está Aceito, e não gerou cenário aqui — ver
+# example-mapping.md.
 
 Funcionalidade: Execução de um experimento e classificação do veredito
   Para que um resultado zero signifique proteção e não defeito do instrumento
