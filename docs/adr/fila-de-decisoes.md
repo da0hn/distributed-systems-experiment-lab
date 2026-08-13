@@ -4040,6 +4040,8 @@ flowchart TD
 [processo](../specification-process.md#adr--só-decisão-arquitetural-durável) chama isso
 de ADR carregando comportamento: o ADR leva o porquê, e o card leva o quê.
 
+**Formalizada no [ADR-0018](0018-cada-controle-roda-sob-o-seu-proprio-nivel.md).**
+
 **Esta linha NÃO fecha `P2`** — onde o nível de isolamento é declarado continua sem
 dono. Ela decide sob qual nível cada controle roda, e não quem declara o nível nem onde.
 
