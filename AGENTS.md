@@ -308,9 +308,13 @@ diante:
   `commits` DEVE igualar `value_final − value_inicial` — em
   [ADR-0002](docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador).
   Qual é essa estratégia ainda não foi decidido.
-- **`version` não existe no esquema.** Quem a acrescenta é o ADR de estratégias de
-  concorrência, junto da política que a lê. O esboço ilustrativo do ADR-0001 lê uma
-  coluna que o esquema não tem — o esboço não é normativo.
+- **`version` não existe no esquema, e não é por falta de decisão.** O
+  [ADR-0006](docs/adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão) já fixou que
+  `OPTIMISTIC` a exige em `resource`, e fixou junto o portão: ela entra no commit que
+  introduzir a estratégia, e não antes. Não a trate como pendência — ela é a regra
+  pedagógica aplicada a uma coluna, primeiro o problema e depois a solução. O esboço
+  ilustrativo do ADR-0001 lê uma coluna que o esquema não tem, e o esboço não é
+  normativo.
 
 As questões encaminhadas vivem em [`docs/questions/`](docs/questions/README.md), um
 arquivo por questão. **Use e cite o identificador definido no
