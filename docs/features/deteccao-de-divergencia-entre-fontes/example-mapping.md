@@ -1,10 +1,16 @@
 # Detecção de divergência entre fontes — Example Mapping
 
-Companheiro de [`feature-card.md`](feature-card.md). As três regras vêm da decisão da
-pessoa em 2026-08-13, registrada no
+Companheiro de [`feature-card.md`](feature-card.md). As três primeiras regras vêm da
+decisão da pessoa em 2026-08-13, registrada no
 [fecho de `E-96`](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13),
 sobre o
 [enunciado da mesma linha](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única).
+**Duas regras novas, `R4` e `R5`, e o refinamento de `R1` e `R3`, vêm de seis decisões
+que a pessoa tomou em 2026-08-14** — o resíduo exato da comparação, a relação entre
+rótulo e veredito, o nome do rótulo, o desenho do aviso de conclusão e a consulta
+indevida. Essas decisões vivem numa fila que não é família citável
+([`AGENTS.md`, ao trabalhar aqui](../../../AGENTS.md#ao-trabalhar-aqui)); por isso o
+conteúdo delas está trazido por inteiro nesta página, em vez de citado.
 
 ## História
 
@@ -14,57 +20,116 @@ sobre o
 
 ## Regras
 
-1. O endpoint de confirmação **DEVE** ser consultado somente depois que a execução
-   silencia, e **NÃO DEVE** ser consultado dentro da janela medida.
+1. O oráculo **DEVE** consultar o endpoint de confirmação somente ao receber o aviso de
+   conclusão do sistema medido, e **NÃO DEVE** consultá-lo dentro da janela medida.
 2. O endpoint **DEVE** retornar um consolidado por recurso — valor final, capacidade,
    soma das alocações e contagem de alocações —, mais a contagem de alocações órfãs.
 3. Uma divergência entre o consolidado do endpoint e a leitura do stream **DEVE**
-   invalidar o veredito da execução, e **DEVE** ser reportada no frontend.
+   produzir o rótulo `fontes divergentes` — nenhum veredito é emitido para a execução —,
+   e o rótulo **DEVE** ser reportado no frontend.
+4. O sistema medido **DEVE** avisar a conclusão do processo por um callback HTTP,
+   disparado e esquecido, fora da janela medida; a impossibilidade de entregá-lo **NÃO
+   DEVE** alterar nada no sistema medido. Esgotado um limite de espera sem o aviso
+   chegar, a execução termina sem veredito.
+5. O endpoint de confirmação **DEVE** registrar o instante de cada consulta recebida, e
+   **NÃO DEVE** recusar nenhuma. O relatório final **DEVE** cruzar esses instantes com a
+   janela medida; uma consulta registrada dentro dela é falha de medição — catalogada,
+   apresentada no relatório, e sem veredito emitido.
+
+**A precedência entre os três rótulos do instrumento já cobria este caso, e nenhuma
+regra acima a altera.** A contiguidade da sequência é conferida primeiro, e produz
+`fonte incompleta`; depois pergunta-se se as duas fontes alcançaram o commit final, e a
+falha produz `fonte atrasada`; só então pergunta-se se elas concordam, e a discordância
+produz `fontes divergentes` — o resultado que `R3` fixa.
+
+```mermaid
+flowchart TD
+    E["a execução termina"] --> C{"sequência de LSN<br/>contígua?"}
+    C -->|" não "| I["fonte incompleta"]
+    C -->|" sim "| Q{"as duas fontes alcançaram<br/>o commit final?"}
+    Q -->|" não "| A["fonte atrasada"]
+    Q -->|" sim "| D{"elas concordam?"}
+    D -->|" não "| F["fontes divergentes — R3"]
+    D -->|" sim "| V["veredito válido"]
+```
+
+**O caminho até o frontend, que bloqueava `R3` na rodada anterior, foi decidido em
+2026-08-14 — fora deste ciclo, e trazido aqui por inteiro, porque a fila não é família
+citável.** O `lab-plane` publica o rótulo, ou o veredito, como mensagem terminal no
+mesmo RabbitMQ que já leva a observação; o `lab-journal` persiste e emite por SSE, a
+mesma exigência de a definição e o resultado do experimento viverem no banco dele
+([ADR-0011, O caderno de laboratório sai do
+Git](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)).
+O `Backend For Frontend` segue recusado — o relatório de duas camadas é montado pelo
+`lab-journal`, dono do resultado
+([ADR-0011, Um Backend For Frontend entre o frontend e os dois
+serviços](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#um-backend-for-frontend-entre-o-frontend-e-os-dois-serviços))
+— e nenhuma aresta nova entra na topologia: `lab-plane` → RabbitMQ
+([ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão))
+e RabbitMQ → `lab-journal` → frontend
+([ADR-0014](../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-evento-sai-do-passo-pelo-broker);
+[ADR-0016](../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-replay-por-cursor-é-o-único-mecanismo-com-ou-sem-histórico-completo))
+já existiam. O custo aceito é que o rótulo atravessa a peça que os experimentos do grupo
+B sabotam de propósito
+([ADR-0012, Justificativa](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#justificativa)),
+sem LSN para desduplicar — mitigado por idempotência pelo discriminador de execução. A
+mesma decisão abriu uma mensagem de abertura de execução, pelo mesmo broker, publicada
+pelo `lab-plane` com a definição inteira copiada; ela pertence ao card de
+[streaming-e-replay-do-log-de-observacoes](../streaming-e-replay-do-log-de-observacoes/feature-card.md)
+e não é regra deste — mas dela decorre a distinção que `R4` usa entre execução que não
+produziu veredito e veredito perdido no transporte.
 
 ```mermaid
 sequenceDiagram
     participant SUT as system-under-test
     participant OR as oráculo, no lab-plane
     Note over SUT,OR: janela medida — a execução ainda está em curso
-    Note over OR: R1 — o oráculo não emite a consulta enquanto a janela está aberta
+    Note over OR: R1 — o oráculo não consulta enquanto a janela está aberta
     Note over SUT,OR: execução silencia
-    OR->>SUT: consulta o endpoint — R1
-    SUT-->>OR: consolidado por recurso, mais órfãs — R2
-    OR->>OR: compara com o stream de CDC
-    alt divergem
-        Note over OR: veredito inválido — R3; caminho até<br/>o frontend não decidido, ver Perguntas em aberto
-    else concordam
-        Note over OR: veredito normal
+    alt aviso chega dentro do limite — R4
+        SUT-->>OR: aviso de conclusão, HTTP, disparado e esquecido
+        OR->>SUT: consulta o endpoint — R1
+        SUT-->>OR: consolidado por recurso, mais órfãs — R2
+        OR->>OR: compara com o stream de CDC
+        alt divergem
+            Note over OR: rótulo fontes divergentes — R3, sem veredito
+        else concordam
+            Note over OR: veredito normal
+        end
+    else limite estourado — R4
+        Note over OR: falha de medição — sem veredito
     end
+    Note over SUT,OR: uma consulta fora do gatilho é registrada — R5
 ```
 
 ## Exemplos concretos
 
-| Regra | Dado                                                                                             | Quando                             | Então                                                                                                                                     |
-|-------|--------------------------------------------------------------------------------------------------|------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| R1    | uma execução em andamento, workers ainda escrevendo                                              | a janela medida ainda está aberta  | o oráculo não consulta o endpoint — nenhuma chamada sai dele antes da quiescência                                                         |
-| R1    | uma execução que acabou de silenciar                                                             | o oráculo consulta o endpoint      | a consulta acontece fora da janela medida, e não altera o tempo medido do experimento                                                     |
-| R2    | um recurso com `capacity = 100`, três alocações somando `70`, e nenhuma alocação órfã            | o endpoint é consultado            | ele devolve, para aquele recurso, `value_final`, `capacity = 100`, `soma = 70`, `contagem = 3`; a contagem de órfãs do consolidado é zero |
-| R2    | uma alocação sem `resource_id` correspondente na tabela de recursos, ao lado de recursos normais | o endpoint é consultado            | a contagem de órfãs do consolidado é maior que zero — separada dos recursos, porque a órfã não pertence a nenhum deles                    |
-| R3    | o stream de CDC relata `soma = 65`, e o endpoint relata `soma = 70` para o mesmo recurso         | o oráculo compara as duas leituras | a execução não produz veredito válido, e a divergência é reportada no frontend                                                            |
-| R3    | o stream de CDC e o endpoint concordam em todos os recursos tocados pela execução                | o oráculo compara as duas leituras | a execução produz veredito normalmente, sem reporte de divergência                                                                        |
+| Regra | Dado                                                                                                  | Quando                             | Então                                                                                                      |
+|-------|-------------------------------------------------------------------------------------------------------|------------------------------------|------------------------------------------------------------------------------------------------------------|
+| R1    | uma execução em andamento, workers ainda escrevendo                                                   | a janela medida ainda está aberta  | o oráculo não consulta — nenhum aviso foi recebido, e nenhuma chamada sai antes dele                       |
+| R1    | o sistema medido chama o callback de conclusão                                                        | o oráculo recebe o aviso           | a consulta acontece então, fora da janela medida, sem alterar o tempo medido do experimento                |
+| R2    | um recurso com `capacity = 100`, três alocações somando `70`, e nenhuma alocação órfã                 | o endpoint é consultado            | ele devolve, para aquele recurso, `value_final`, `capacity = 100`, `soma = 70`, `contagem = 3`; órfãs zero |
+| R2    | uma alocação sem `resource_id` correspondente na tabela de recursos, ao lado de recursos normais      | o endpoint é consultado            | a contagem de órfãs do consolidado é maior que zero — separada dos recursos, porque não pertence a nenhum  |
+| R3    | o stream de CDC relata `soma = 65`, e o endpoint relata `soma = 70` para o mesmo recurso              | o oráculo compara as duas leituras | nenhum veredito é emitido; sai o rótulo `fontes divergentes`, reportado no frontend                        |
+| R3    | o stream de CDC e o endpoint concordam em todos os recursos tocados pela execução                     | o oráculo compara as duas leituras | a execução produz veredito normalmente, sem rótulo algum                                                   |
+| R4    | a execução termina, e o sistema medido chama o callback dentro do limite de espera                    | o oráculo recebe o aviso           | ele consulta o endpoint, e a execução segue para a comparação                                              |
+| R4    | a execução termina, e o callback nunca chega — rede indisponível entre os dois planos                 | o limite de espera estoura         | a execução termina sem veredito, e nada no sistema medido é alterado pela falha de entrega                 |
+| R5    | um bug no runtime faz o oráculo consultar o endpoint enquanto a janela ainda está aberta              | o endpoint recebe a consulta       | ele registra o instante, sem recusar e sem retornar erro                                                   |
+| R5    | o relatório final cruza os instantes registrados pelo endpoint com a janela medida, e acha uma dentro | a execução é avaliada              | nenhum veredito é emitido; a consulta indevida é catalogada e apresentada no relatório                     |
 
-**O primeiro exemplo de `R3` acima só é possível sob a condição que o**
-[ADR-0012, Negativas](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)
-**deixa em aberto.** Aquele ADR fixa que o `lab-plane` **DEVE** usar o LSN — que "o
-servidor PostgreSQL lhe atribuiu antes de qualquer transporte existir" — para "ordenar,
-desduplicar e detectar buraco na sequência antes de calcular o veredito"
-([ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)).
-Sob essa regra, uma perda no transporte deixa buraco na sequência, e o buraco já
-invalida pela `R8` — o par "stream completo, relatando menos" só existe **se o LSN não
-sobreviver ao transporte inteiro**, a única condição que o mesmo ADR deixa sem prova e
-sem teste
-([ADR-0012, Negativas](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)).
-Um stream que chegou até `65`, sem buraco na sequência e com a marca de fim reconhecida
-— completo, pelo critério que as duas guardas verificam —, só relata menos do que o
-endpoint confirma (`70`) sob essa condição. **Não conclua que o resíduo desta
-capacidade é esse**: o tamanho dele depende de uma decisão ainda aberta sobre a
-sobrevivência do LSN — ver a pergunta em aberto abaixo.
+**A pessoa confirmou, em 2026-08-14, que o primeiro exemplo de `R3` acima é exatamente o
+resíduo desta capacidade — não mais uma hipótese.** O
+[ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
+fixa que o `lab-plane` **DEVE** usar o LSN — atribuído "antes de qualquer transporte
+existir" — para "ordenar, desduplicar e detectar buraco na sequência antes de calcular o
+veredito". Sob essa regra, uma perda no transporte deixa buraco na sequência, e o buraco
+já invalida pela `R8` de
+[deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)
+— o par "stream completo, relatando menos" só existe **se o LSN não sobreviver ao
+transporte inteiro**, e é só para essa falha que a comparação existe. A escolha vale
+para as duas direções: um stream relatando **menos** é evento que sumiu, um relatando
+**mais** é evento contado duas vezes — as duas passam despercebidas pela mesma causa, o
+LSN corrompido, que derruba a desduplicação e a conferência de contiguidade juntas.
 
 ### Contraexemplo — a objeção que a proposta não vence
 
@@ -111,104 +176,123 @@ Registrado aqui porque `R2` fixa a forma escolhida sem explicar por que as outra
 ficaram de fora — sem este registro, a pergunta "por que não o conjunto de
 identificadores, ou as linhas" voltaria sem resposta escrita.
 
+## Alternativas descartadas nas decisões de 2026-08-14
+
+### O caminho até o frontend
+
+Uma aresta nova e direta do `lab-plane` até o frontend foi recusada — contraria a letra
+do ADR-0011, que só admite comando no `lab-plane` e leitura no `lab-journal`, sem
+`Backend For Frontend`
+([ADR-0011, Decisão](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff)).
+O resultado atravessando o `lab-journal` foi escolhido: nenhuma aresta nova entra na
+topologia, e o resultado deixa de existir só no navegador de quem olhava, a mesma
+exigência do
+[ADR-0011, O caderno de laboratório sai do
+Git](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git).
+
+### O resíduo da comparação
+
+Arquivar a capacidade por redundância com o que o ADR-0012 já obriga foi recusado —
+desfaria uma regra aprovada por pessoa um dia antes, e descartaria junto a detecção de
+defeito no próprio somatório do oráculo, que o LSN não alcança. Emendar o ADR-0012
+também foi recusado — nada nele se tornou falso, e reabri-lo para acomodar uma
+vizinhança nova abriria precedente para reabrir ADR sem que nenhuma afirmação dele
+tenha caído.
+
+### O aviso de conclusão
+
+A marca de fim no stream, como reserva do aviso perdido, foi recusada — no caso em que o
+LSN não sobrevive, a marca também pode não ser reconhecida, e a reserva falharia junto
+com o que deveria cobrir. Consultar por conta própria passado o limite foi recusada —
+consultar sem saber que a execução terminou é o que a regra do silêncio, `R1`, proíbe.
+
+**Por que `R4` existe, e o que a torna diferente de uma chamada de passo comum.** A
+comparação existe para o caso em que o LSN não sobrevive ao transporte; um sinal de
+conclusão que trafegasse dentro do próprio stream de CDC seria inútil exatamente nessa
+falha, porque nasceria sujeito ao mesmo transporte que pode tê-lo corrompido. Por isso o
+aviso vai por HTTP, disparado e esquecido, fora do stream — e por isso ele precisa ser
+**disparado e esquecido**: se bloqueasse, repetisse ou lançasse exceção quando o
+`lab-plane` não responde, o comportamento do sistema medido passaria a depender do
+instrumento estar de pé, a confusão entre os dois planos que o ADR-0008 existe para
+evitar. Uma mensagem de abertura de execução, decidida no mesmo dia e publicada pelo
+`lab-plane` no mesmo broker, torna possível distinguir **execução que não produziu
+veredito** — abertura registrada, sem fechamento — de **veredito que se perdeu no
+transporte** — abertura e fechamento registrados, sem o resultado correspondente. Essa
+distinção pertence ao card de streaming e replay, e não é regra deste; `R4` só a usa.
+
+### A relação entre rótulo e veredito
+
+Um envelope único, em que todo resultado sai na mesma forma com um campo dizendo o
+tipo, foi recusado — põe falha de instrumento e resultado de consistência no mesmo
+plano, a confusão que invalida a conclusão. Um relatório por oráculo, sem composição
+nenhuma, foi recusado — uma execução que roda os dois oráculos produziria dois
+documentos sem relação declarada.
+
+### A consulta indevida
+
+Catalogar sem invalidar foi recusado — um veredito acompanhado de ressalva é o que a
+decisão da relação entre rótulo e veredito já recusou, e quem lê o número tende a
+ignorar a nota. Exigir que o endpoint recuse a consulta foi recusado — obrigaria o
+sistema medido a saber o que é janela medida, e o agnosticismo do desenho vale também
+aqui.
+
 ## Perguntas em aberto
 
-- **De quem é o endpoint.** Ele vive no sistema medido e só existe para medi-lo — o que
-  tensiona a exigência de o sistema medido ser ingênuo. Ninguém decidiu se ele é um
-  controlador de propósito experimental, uma rota de administração, ou outra forma.
-  Bloqueia a implementação, e não bloqueia este card.
-- **O caminho da divergência até o frontend.** O ADR-0011 fixa que o frontend fala com
-  o `lab-plane` para comando e com o `lab-journal` para leitura e streaming, sem
-  `Backend For Frontend`
-  ([ADR-0011, Decisão](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff)),
-  e nenhuma das duas arestas decididas leva um veredito de oráculo até lá. Duas saídas,
-  nenhuma decidida: uma aresta nova e direta do `lab-plane` até o frontend, que
-  contraria a letra do ADR-0011; ou o resultado atravessando o `lab-journal`, que
-  obriga um resultado de oráculo a passar pelo caderno de execuções — caminho que
-  nenhum documento deste repositório prevê hoje. Bloqueia o `.feature`: sem o caminho,
-  um `Então` não tem por onde afirmar que a divergência chegou ao frontend.
-- **O formato do resultado de divergência, e se ele já existe.** O vocabulário do
-  instrumento já nomeia três rótulos, nenhum veredito sobre o sistema medido: `fontes
-  divergentes` — as duas fontes alcançaram o commit final e discordam; `fonte atrasada`
-  — uma fonte não alcançou o ponto declarado a tempo; `fonte incompleta` — a sequência
-  de LSN tem buraco, e o oráculo não produz veredito. `docs/CONTEXT.md` não é família
-  citável como fonte
-  ([`AGENTS.md`, ao trabalhar aqui](../../../AGENTS.md#ao-trabalhar-aqui)), por isso as
-  três definições e a ordem de conferência entre elas estão trazidas por inteiro aqui e
-  no [feature card](feature-card.md#riscos-e-decisões-pendentes), em vez de citadas.
-
-  ```mermaid
-  flowchart TD
-      E["a execução termina"] --> C{"sequência de LSN<br/>contígua?"}
-      C -->|" não "| I["fonte incompleta"]
-      C -->|" sim "| Q{"as duas fontes alcançaram<br/>o commit final?"}
-      Q -->|" não "| A["fonte atrasada"]
-      Q -->|" sim "| D{"elas concordam?"}
-      D -->|" não "| F["fontes divergentes"]
-      D -->|" sim "| V["veredito válido"]
-  ```
-
-  Não está decidido se o resultado que `R3` exige **é** `fontes divergentes`, ou é
-  formato distinto; e, sendo o mesmo rótulo, em que ponto desta ordem entra o endpoint
-  de confirmação — fonte que não existia quando a ordem foi fixada. A composição desse
-  resultado, seja qual for, num relatório único com os outros formatos de veredito
-  continua decisão aberta, em
-  [capacidade conhecida e não especificada](../README.md#capacidade-conhecida-e-não-especificada).
-  Bloqueia o `.feature` desta capacidade: sem a resposta, um `Então` não tem o que
-  afirmar sobre o resultado.
-- **A forma concreta do endpoint** — rota, método, payload. Nenhum contrato nasce agora,
-  pela regra de que contrato só existe quando a interface existir
+- **De quem é o endpoint de confirmação.** Ele vive no sistema medido e só existe para
+  medi-lo — o que tensiona a exigência de o sistema medido ser ingênuo. Ninguém decidiu
+  se ele é um controlador de propósito experimental, uma rota de administração, ou
+  outra forma. Bloqueia a implementação, e o `.feature`.
+- **Qual rótulo o estouro do limite de espera do aviso de conclusão produz.** Pode ser
+  o mesmo `fonte atrasada`, que já nomeia a fonte que não alcançou o ponto declarado no
+  tempo declarado, ou um rótulo novo. O argumento a favor de reusar é que o glossário
+  evitou de propósito amarrar aquele rótulo a uma tecnologia; o argumento contra é que
+  o aviso não mede nada — ele é sinal de controle, e não leitura. Ninguém decidiu.
+  Bloqueia o `.feature` do ramo de estouro em `R4`.
+- **A forma concreta do endpoint e do callback** — rota, método, payload. Nenhum
+  contrato nasce agora, pela regra de que contrato só existe quando a interface existir
   ([`contracts/README.md`](../../contracts/README.md#estado-nenhum-contrato-existe)).
   Bloqueia o `.feature` e a implementação.
-- **Se a guarda de contiguidade de LSN**, que a soma do predicado já exige antes de
-  somar
-  ([ADR-0013, Decisão](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)),
-  também precisa cobrir a leitura do stream que alimenta esta comparação. É esta a
-  pergunta que o primeiro exemplo de `R3` na tabela acima ilustra — um stream completo
-  pelo critério de `R8`/`R9`, mas divergindo do endpoint —, como a nota logo abaixo da
-  tabela detalha. Nenhuma regra acima o afirma nem o nega.
-- **A direção oposta — stream relatando mais do que o endpoint — é produzível por
-  duplicação, mas o ADR-0012 já cobre metade dela.** O transporte "pode duplicar,
-  reordenar, perder"
-  ([ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)),
-  e aquele ADR fixa **desduplicar** como `DEVE` separado de **detectar buraco na
-  sequência** — "duplicata | descartar o evento já visto, pelo LSN"
-  ([ADR-0012, Justificativa](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#justificativa)).
-  A guarda de contiguidade de `R8` não detecta duplicação porque a desduplicação é
-  outro `DEVE`, que roda antes do veredito. O que não está escrito em documento nenhum,
-  e não é decidido aqui, é só: se `R3` alcança a divergência produzida por duplicação
-  não descartada, ou só a produzida por perda. **Pergunta, não conclusão**: se a
-  desduplicação do `lab-plane` já elimina esse caso antes de `R3` comparar, o resíduo
-  que esta capacidade reivindica muda de tamanho, e quanto é decisão aberta.
-- **Quando a leitura do stream está completa, no oráculo, para esta comparação.** `R1`
-  fixa a hora da consulta ao **endpoint** — depois que a execução silencia — e nenhuma
-  regra acima fixa a hora em que a leitura do stream pode ser considerada pronta para a
-  comparação de `R3`, antes de `R9` reconhecer a marca de fim. Comparar um consolidado
-  final contra um stream genuinamente ainda em trânsito diverge em execução sã, por
-  motivo distinto do exemplo de `R3` acima — que é sobre uma perda que `R8`/`R9` não
-  capturam, e não sobre uma leitura incompleta. Bloqueia o `.feature`: sem a condição de
-  término, um cenário de `R3` não sabe quando afirmar o resultado.
+- **`R4` tensiona a letra do ADR-0008, e nem este card nem quem o revisa decidem
+  isso.** O ADR-0008 fixa, sem qualificar a chamada de passo, que "O Control Plane NÃO
+  DEVE chamar o Lab Plane"
+  ([ADR-0008, Decisão](../../adr/0008-os-dois-planos-em-processos-separados.md#decisão)),
+  e o `## Contexto` do mesmo ADR define o Control Plane como o sistema medido. O aviso
+  de `R4` trafega exatamente nesse sentido — do sistema medido para o `lab-plane`. A
+  leitura de que a proibição vale só para execução de passo não está no texto do
+  ADR-0008: ela vem de uma frase diferente, "o runtime chama a operação, e a operação
+  nunca chama o runtime", que descreve o mecanismo de passo, não a chamada em si. Um
+  card não pode contradizer ADR aceito
+  ([`AGENTS.md`, ao trabalhar aqui](../../../AGENTS.md#ao-trabalhar-aqui);
+  [`docs/AGENTS.md`, Feature Card](../../AGENTS.md#feature-card)), e esta contradição
+  não é decidida aqui: vai à pessoa, que escolhe se `R4` muda de desenho ou se o
+  ADR-0008 recebe uma das formas do lifecycle. Bloqueia o `.feature` do ramo em que o
+  aviso chega.
+- **Qual identidade a execução carrega, e se é o mesmo discriminador que já particiona
+  o stream de CDC.** Se for, o discriminador ganha um segundo papel — rótulo de
+  partição e identidade de execução; se não, existem dois identificadores para a mesma
+  execução, e `R4`/`R5` precisariam dizer qual usam para correlacionar o aviso e a
+  consulta a uma execução específica. Ninguém decidiu; a resposta pertence sobretudo ao
+  card de streaming e replay, onde a mensagem de abertura vive. Não bloqueia o
+  `.feature` desta capacidade sozinha.
 - **A objeção que descartou "Chamada HTTP ao próprio system under test" no ADR-0010
   incide sobre `R3`, e não está respondida.** O motivo dado ali
   ([ADR-0010, Chamada HTTP ao próprio system under
   test](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#chamada-http-ao-próprio-system-under-test))
-  — "o instrumento passaria a depender dele para medi-lo" — descreve, antes de tudo, o
-  caso direto: um defeito no código do endpoint produz um consolidado errado, `R3` o
-  compara contra um stream correto, a divergência é falsa, e um veredito bom é
+  — "o instrumento passaria a depender dele para medi-lo" — descreve o caso direto: um
+  defeito no código do endpoint produz um consolidado errado, `R3` o compara contra um
+  stream correto, o rótulo `fontes divergentes` sai por engano, e um veredito bom é
   destruído sem que nada no sistema medido tenha falhado. O caso inverso, mais raro, é
   a coincidência: um bug no endpoint produz um consolidado que concorda com uma leitura
   de stream igualmente errada, e `R3` não teria como distinguir isso de um veredito
   correto. É diferente do contraexemplo acima, que é sobre corrupção **dentro** do
   banco; esta é sobre um erro **no código do endpoint**. Nenhuma regra acima o afirma
-  nem o nega.
-- **Se a recusa da consulta, do lado do endpoint, deve virar regra própria.** `R1`
-  obriga o **oráculo** a não consultar antes da quiescência; ela não obriga o endpoint a
-  recusar uma consulta prematura por conta própria — hoje nada garante isso caso o
-  oráculo tenha um bug e consulte cedo. Bloqueia o critério de pronto de `R1`, que só
-  verifica o lado do oráculo.
-- **O que `R3` faz com a contagem de órfãs de `R2` não foi decidido.** Ela entra no
-  consolidado, mas se uma divergência só nela já invalida o veredito, ou se ela conta
-  como algo distinto, não foi fixado. Toca
+  nem o nega — o encolhimento do escopo, em 2026-08-14, não muda essa objeção, porque
+  ela incide sobre a confiança no endpoint, não sobre o tamanho do resíduo que `R3`
+  cobre.
+- **O que `R3` e `R5` fazem com a contagem de órfãs de `R2` não foi decidido.** Ela
+  entra no consolidado, mas se uma divergência só nela já produz o rótulo, ou se ela
+  conta como algo distinto, não foi fixado — nem se uma consulta indevida que só toca
+  órfãs é catalogada do mesmo jeito. Toca
   [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu),
   aberta — quatro saídas foram propostas ao longo da linha, duas já contraditas pela
   resposta de 2026-08-13, e nenhuma foi formalmente escolhida —, e a `Pergunta em aberto` do
@@ -217,30 +301,34 @@ identificadores, ou as linhas" voltaria sem resposta escrita.
 
 ## Adiado de propósito
 
-| Item                                | Gatilho que o retoma                                                                                                                       |
-|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| O `.feature` desta capacidade       | a decisão do formato do resultado, do caminho até o frontend, da forma concreta do endpoint, e de quando a leitura do stream está completa |
-| A forma concreta do endpoint        | a decisão de rota, método e payload, seguida da criação do contrato formal                                                                 |
-| O alcance da guarda de contiguidade | a decisão sobre se ela cobre também a leitura que alimenta a comparação, e se distingue perda de duplicação                                |
+| Item                          | Gatilho que o retoma                                                                                                                   |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| O `.feature` desta capacidade | a decisão de quem é o endpoint, da forma concreta do endpoint e do callback, do rótulo do estouro, e da tensão entre `R4` e o ADR-0008 |
+| A forma concreta do endpoint  | a decisão de rota, método e payload, seguida da criação do contrato formal                                                             |
 
 ## O que não virou cenário, e por quê
 
-R1, R2 e R3 estão `aprovada`, e nenhuma virou cenário Gherkin nesta rodada — não porque a
-regra esteja em debate, mas porque encenar exige um `Então` concreto, e quatro lacunas
-de [Perguntas em aberto](#perguntas-em-aberto), marcadas `Bloqueia o .feature`, tornam
-isso impossível sem inventar.
+R1 a R5 estão `aprovada`, e nenhuma virou cenário Gherkin nesta rodada — não porque a
+regra esteja em debate, mas porque encenar exige um `Então` concreto, e quatro lacunas de
+[Perguntas em aberto](#perguntas-em-aberto) — quem é o endpoint, o rótulo do estouro, a
+forma concreta do endpoint e do callback, e a tensão entre `R4` e o ADR-0008 — tornam
+isso impossível sem inventar, para ao menos uma regra de cada vez.
 
-- **R1** tem um `Então` inteiramente temporal — antes ou depois da quiescência — e não
-  depende de nenhuma das quatro lacunas que bloqueiam o `.feature`. Ela depende, porém,
-  de uma quinta — se a recusa do lado do endpoint deve virar regra própria —, que
-  bloqueia o critério de pronto de `R1`, e não o `Então` do cenário. Ela poderia virar
-  cenário isolada, mas um `.feature` de uma regra só, enquanto as outras duas do mesmo
-  card ficam de fora, fragmenta a especificação sem ganho: o adiamento é do arquivo
-  inteiro, não da regra.
+- **R1** tem um `Então` inteiramente temporal — antes ou depois de receber o aviso — e
+  não depende de nenhuma das quatro lacunas. O bloqueio que a recusa do endpoint impunha a
+  ela, na rodada anterior, caiu: `R5` resolveu isso. Ela poderia virar cenário isolada,
+  mas um `.feature` de uma regra só, enquanto as outras quatro do mesmo card ficam de
+  fora, fragmenta a especificação sem ganho — o adiamento é do arquivo inteiro.
 - **R2** tem um `Então` que descreve a forma do consolidado, mas a forma concreta do
-  endpoint — rota, payload — é uma das quatro; um cenário precisaria descrever um
-  payload que ninguém decidiu.
-- **R3** tem um `Então` que descreve o resultado da divergência, e as outras três o
-  bloqueiam: o formato do resultado, o caminho até o frontend, e quando a leitura do
-  stream está completa para a comparação; um cenário precisaria afirmar sobre coisas
-  que ninguém decidiu.
+  endpoint — rota, payload — é uma das quatro lacunas.
+- **R3** tem um `Então` que descreve o rótulo `fontes divergentes`. O caminho até o
+  frontend, que a bloqueava na rodada anterior, foi decidido em 2026-08-14: nenhuma das
+  quatro lacunas restantes a bloqueia diretamente. Ela seria a primeira candidata a
+  cenário se o arquivo fosse fragmentado por regra — recusado pelo mesmo motivo de
+  sempre, e explicado no item de `R1` acima.
+- **R4** tem dois ramos: o aviso chegando dentro do limite, que a tensão com o ADR-0008
+  bloqueia — não cabe a este ciclo escrever um cenário sobre um mecanismo cuja
+  legalidade arquitetural está em disputa —; e o limite estourando, que depende também
+  do rótulo do estouro, ainda sem nome.
+- **R5** tem um `Então` que descreve o registro e a catalogação, mas depende da forma
+  concreta do endpoint para descrever como o instante é registrado.

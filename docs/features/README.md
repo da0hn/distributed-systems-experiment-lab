@@ -17,7 +17,7 @@ O processo está em [`../specification-process.md`](../specification-process.md)
 | [streaming-e-replay-do-log-de-observacoes](streaming-e-replay-do-log-de-observacoes/feature-card.md) | como a tela vê o histórico completo e o que acontece ao vivo, sem perder nem repetir evento            | [`ADR-0016`](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md), `Aceito`                                                  | 7, todas aprovadas           | especificado, não implementado |
 | [distincao-entre-higiene-e-invalidacao](distincao-entre-higiene-e-invalidacao/feature-card.md)       | se um evento atrasado do broker invalida o veredito, ou é resíduo inofensivo de janela fechada         | [`ADR-0012`](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md), `Aceito`                                   | 7, todas aprovadas           | especificado, não implementado |
 | [comparacao-entre-niveis-de-isolamento](comparacao-entre-niveis-de-isolamento/feature-card.md)       | quais níveis de isolamento protegem a invariante do E5, e a que custo                                  | [`E-87`, fecho](../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12) | 3, todas pendente            | especificado, não implementado |
-| [deteccao-de-divergencia-entre-fontes](deteccao-de-divergencia-entre-fontes/feature-card.md)         | como o oráculo confirma o que o stream de CDC entregou, e o que fazer quando as duas leituras divergem | [`E-96`, fecho](../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13)                         | 3, todas aprovadas           | especificado, não implementado |
+| [deteccao-de-divergencia-entre-fontes](deteccao-de-divergencia-entre-fontes/feature-card.md)         | como o oráculo confirma o que o stream de CDC entregou, e o que fazer quando as duas leituras divergem | [`E-96`, fecho](../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13)                         | 5, todas aprovadas           | especificado, não implementado |
 
 **Nenhuma capacidade está implementada, e isso não quer dizer que não haja código.** Há
 um esqueleto executável: ele compila, empacota e sobe contra PostgreSQL, e **não tem
@@ -25,23 +25,24 @@ uma única regra de negócio dentro**. A árvore versionada é a prova do que ex
 índice é o dono do que cada capacidade cobre, e a coluna `Regras` é a dona de quantas
 regras cada uma tem.
 
-**Setenta e quatro regras foram aprovadas por pessoa**, em três datas. Setenta em
+**Setenta e seis regras foram aprovadas por pessoa**, em quatro datas. Setenta em
 2026-08-12; a
 `R19` de [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md#regras-de-negócio)
 em 2026-08-06
 ([E-76, fecho](../fila-de-decisoes.md#e-76-fecha-em-a-regra-desce-para-o-feature-card-escolhida-em-2026-08-12));
-e as três de
+as três primeiras de
 [deteccao-de-divergencia-entre-fontes](deteccao-de-divergencia-entre-fontes/feature-card.md#regras-de-negócio)
-em 2026-08-13.
+em 2026-08-13; e as duas restantes da mesma capacidade, `R4` e `R5`, em 2026-08-14.
 Seis cards têm a coluna `Regras` marcando `todas aprovadas`; a de
 `execucao-de-experimento` passa a misturar aprovada e pendente, pelas `R16` e `R17`
 que o [`ADR-0018`](../adr/0018-cada-controle-roda-sob-o-seu-proprio-nivel.md)
-acrescentou — as quinze regras dela já aprovadas continuam contadas nas setenta e quatro.
+acrescentou — as quinze regras dela já aprovadas continuam contadas nas setenta e seis.
 
 **O critério foi a procedência, e ele separou em dois grupos as setenta aprovadas em
-2026-08-12.** As outras quatro ficam fora desta apuração, e não porque escapem do
-critério: a `R19` foi aprovada seis dias antes, e as três da detecção de divergência
-transcrevem uma decisão que a pessoa tomou no mesmo dia, antes de o card existir.
+2026-08-12.** As outras seis ficam fora desta apuração, e não porque escapem do
+critério: a `R19` foi aprovada seis dias antes, e as cinco da detecção de divergência
+transcrevem decisões que a pessoa tomou antes de cada rodada de redação — três em
+2026-08-13, duas em 2026-08-14.
 Sessenta e sete regras
 apenas transcrevem decisão que já vivia em ADR aceito, em fecho da fila ou em guardrail
 da raiz — aprová-las confirmou a fidelidade da transcrição, sem redecidir o mérito. As

@@ -2,27 +2,30 @@
 
 Estado: `especificado, não implementado` · Origem:
 [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13),
-decisão sem ADR — a pessoa recusou o artefato recomendado.
+decisão sem ADR; refinada em 2026-08-14, registrado no
+[Example Mapping](example-mapping.md#regras).
 
 ## Problema e resultado esperado
 
 O oráculo lê o WAL do sistema medido por replicação lógica, fonte única do veredito
 desde o
 [ADR-0010](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
-O risco que motivou esta proposta é a perda de evento no transporte entre o WAL e o
-oráculo
-([`E-96`, enunciado](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única)).
-Parte desse risco já é guardada, com os rótulos `fonte incompleta` e `fonte atrasada` —
-`R8` e `R9` de
-[deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio).
-Se essas guardas não alcançarem essa perda — `Pergunta em aberto` abaixo —, o resíduo
-que esta proposta cobre é: stream sem buraco, dentro do prazo, mas divergindo do que o
-sistema medido confirma; delimitação em Fora de escopo.
+O [ADR-0012](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
+já obriga o `lab-plane` a ordenar, desduplicar e detectar buraco na sequência pelo LSN,
+atribuído pelo servidor PostgreSQL **antes de qualquer transporte existir**. **O escopo
+desta capacidade encolheu para o resíduo dessas três obrigações**: um LSN corrompido,
+reescrito ou perdido as derruba juntas, em silêncio — a sequência parece contígua ao
+oráculo, e falta ou sobra evento. A comparação existe só para esse caso. Nenhum
+documento afirma que ele já ocorreu, mas o próprio
+[ADR-0012, Negativas](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)
+registra que não há teste que prove a sobrevivência do LSN — e esta é a única
+verificação que essa ressalva tem hoje, detalhada no
+[Example Mapping](example-mapping.md#regras).
 
-O resultado esperado é um segundo testemunho, por caminho distinto do WAL: o sistema
-medido expõe um endpoint que relata o que ocorreu no próprio schema. O oráculo consulta
-depois que a execução silencia, e compara o consolidado contra o que o stream entregou.
-Divergência invalida o veredito, e é reportada no frontend.
+O resultado esperado: o sistema medido expõe um endpoint com o consolidado por recurso,
+e avisa o oráculo por callback HTTP, independente do stream. O oráculo consulta o
+endpoint ao receber o aviso, e compara; divergência produz o rótulo `fontes
+divergentes`, sem veredito para a execução.
 
 ```mermaid
 sequenceDiagram
@@ -33,77 +36,93 @@ sequenceDiagram
     SUT->>W: escreve (INSERT/UPDATE)
     W->>OR: eventos de CDC, via conector e broker
     Note over SUT,OR: execução silencia — janela medida encerrada
-    OR->>SUT: consulta o endpoint de confirmação
-    SUT-->>OR: consolidado por recurso, mais órfãs
-    OR->>OR: compara stream x endpoint
-    alt divergência
-        Note over OR: veredito inválido — caminho até o<br/>frontend é decisão aberta de topologia, ver Example Mapping
-    else concordância
-        Note over OR: veredito válido da execução
+    alt aviso chega dentro do limite de espera
+        SUT-->>OR: aviso de conclusão, HTTP, disparado e esquecido
+        OR->>SUT: consulta o endpoint de confirmação
+        SUT-->>OR: consolidado por recurso, mais órfãs
+        OR->>OR: compara stream x endpoint
+        alt divergência
+            Note over OR: rótulo fontes divergentes — nenhum veredito emitido
+        else concordância
+            Note over OR: veredito segue normalmente
+        end
+    else limite estourado
+        Note over OR: falha de medição — sem veredito
     end
 ```
 
 ## Atores e gatilho
 
-- **O oráculo, no `lab-plane`** — consulta o endpoint depois que a execução silencia.
-- **O sistema medido** — expõe o endpoint, sem confiança cega: a fonte do número é o
-  stream; o endpoint é segundo testemunho.
-- **O frontend** — exibe a divergência, se ela existir.
+- **O sistema medido** — expõe o endpoint e o callback, agnóstico à janela medida: do
+  ponto de vista dele, fornece dados e avisa o cliente do próprio sistema.
+- **O oráculo**, no `lab-plane` — recebe o aviso, consulta, compara.
+- **O frontend** — exibe o rótulo, se existir, via SSE do `lab-journal`.
 
-Gatilho: fim da execução medida, quando a janela encerra.
+Gatilho: o sistema medido chama o callback, fora da janela medida.
 
 ## Escopo
 
-- A consulta ao endpoint, **somente** depois da quiescência.
-- O consolidado por recurso: valor final, capacidade, soma das alocações e contagem de
-  alocações, mais a contagem de alocações órfãs.
-- A comparação entre a leitura do stream e a leitura do endpoint.
-- A invalidação do veredito da execução quando as duas leituras divergirem.
-- O reporte da divergência no frontend.
+- A comparação cobre **só** a falha do LSN no transporte — corrompido, reescrito ou
+  perdido —, nas duas direções: stream relatando menos, ou mais por duplicata que a
+  desduplicação por LSN não descartou.
+- O aviso de conclusão, por callback HTTP disparado e esquecido, fora da janela medida,
+  com limite de espera: estourado, a execução termina sem veredito.
+- A consulta ao endpoint, disparada pelo aviso, e o consolidado por recurso que ele
+  retorna — valor final, capacidade, soma e contagem de alocações, mais órfãs.
+- O registro, pelo endpoint, do instante de cada consulta recebida, e a detecção pelo
+  relatório de consulta ocorrida dentro da janela medida.
+- Os três rótulos que a comparação pode produzir, no lugar de veredito, checados nesta
+  ordem: `fonte incompleta` (buraco de LSN), `fonte atrasada` (atraso), e `fontes
+  divergentes` (discordam). Compor isso com os vereditos dos oráculos segue
+  [capacidade conhecida e não
+  especificada](../README.md#capacidade-conhecida-e-não-especificada).
 
 ## Fora de escopo
 
-- Consultar o endpoint dentro da janela medida — proibido por `R1`.
-- A forma concreta do endpoint — rota, método, payload — e qualquer contrato formal:
-  nasce quando a interface existir
+- Consultar o endpoint fora do gatilho do aviso, ou o endpoint recusar uma consulta —
+  ele não recusa nada, registra.
+- A forma concreta do endpoint e do callback — rota, método, payload — e qualquer
+  contrato formal: nasce quando a interface existir
   ([`contracts/README.md`](../../contracts/README.md#estado-nenhum-contrato-existe)).
-- Quem verifica a órfã de `allocation` — pertence a
+- Quem verifica a órfã de `allocation` —
   [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu),
-  aberta, e não a este card.
-- Qualquer alteração ao ADR-0010: a letra dele não é contrariada, e o corpo não é
-  tocado por este card.
-- A contiguidade de LSN e a marca de fim, guardas de `R8`/`R9` de
-  [deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)
-  — se cobrem esta perda é `Pergunta em aberto`, acima.
-- Quando a leitura do stream está completa para ser comparada — `R1` fixa a hora da
-  consulta ao endpoint, não a do stream. `Pergunta em aberto`, no
-  [Example Mapping](example-mapping.md#perguntas-em-aberto).
+  aberta, e não este card.
+- Qualquer alteração ao ADR-0010, e a contiguidade de LSN e a marca de fim — guardas de
+  `R8`/`R9` de
+  [deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio),
+  que **não** cobrem a falha do LSN, e é por isso que esta capacidade existe.
 
 ## Regras de negócio
 
-| #  | Regra                                                                                                                                                                        | Evidência                                                                                                       | Aprovada por          |
-|----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|-----------------------|
-| R1 | O oráculo **DEVE** consultar o endpoint de confirmação somente depois que a execução silencia, e **NÃO DEVE** consultá-lo dentro da janela que o experimento mede.           | [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13) | pessoa, em 2026-08-13 |
-| R2 | O endpoint **DEVE** retornar um consolidado por recurso — o valor final, a capacidade, a soma das alocações e a contagem de alocações —, mais a contagem de alocações órfãs. | [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13) | pessoa, em 2026-08-13 |
-| R3 | Uma divergência entre o consolidado do endpoint e a leitura do stream de CDC **DEVE** invalidar o veredito daquela execução, e **DEVE** ser reportada no frontend.           | [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13) | pessoa, em 2026-08-13 |
+| #  | Regra                                                                                                                                                                                                                                                                                                                                                                                                                                | Evidência                                                                                                       | Aprovada por                                           |
+| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| R1 | O oráculo **DEVE** consultar o endpoint de confirmação somente ao receber o aviso de conclusão do sistema medido, e **NÃO DEVE** consultá-lo dentro da janela que o experimento mede.                                                                                                                                                                                                                                                | [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13) | pessoa, em 2026-08-13; gatilho precisado em 2026-08-14 |
+| R2 | O endpoint **DEVE** retornar um consolidado por recurso — o valor final, a capacidade, a soma das alocações e a contagem de alocações —, mais a contagem de alocações órfãs.                                                                                                                                                                                                                                                         | [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13) | pessoa, em 2026-08-13                                  |
+| R3 | Uma divergência entre o consolidado do endpoint e a leitura do stream de CDC **DEVE** produzir o rótulo `fontes divergentes` — nenhum veredito é emitido para a execução —, e o rótulo **DEVE** ser reportado no frontend.                                                                                                                                                                                                           | [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13) | pessoa, em 2026-08-13; precisada em 2026-08-14         |
+| R4 | O sistema medido **DEVE** avisar a conclusão do processo por um callback HTTP, disparado e esquecido, fora da janela medida; a impossibilidade de entregá-lo **NÃO DEVE** alterar nada no sistema medido. Esgotado um limite de espera sem o aviso chegar, a execução termina sem veredito — registrada, pelo par abertura/fechamento do broker, como execução que não produziu veredito, e não como veredito perdido no transporte. | [Example Mapping, O aviso de conclusão](example-mapping.md#o-aviso-de-conclusão)                                | pessoa, em 2026-08-14                                  |
+| R5 | O endpoint de confirmação **DEVE** registrar o instante de cada consulta recebida, e **NÃO DEVE** recusar nenhuma. O relatório final **DEVE** cruzar esses instantes com a janela medida; uma consulta registrada dentro dela é falha de medição — catalogada, apresentada no relatório, e sem veredito emitido.                                                                                                                     | [Example Mapping, A consulta indevida](example-mapping.md#a-consulta-indevida)                                  | pessoa, em 2026-08-14                                  |
 
 ## Integrações e contratos afetados
 
-Fronteira nova: `lab-plane` → `system-under-test`, depois da quiescência — o estado
-dela vive na [matriz](../../architecture/integrations.md#matriz), e este card não o
-repete. Sem contrato: nasce só quando a interface existir
+Fronteira nova: `system-under-test` → `lab-plane`, aviso de conclusão HTTP, disparado e
+esquecido, fora da janela medida; e `lab-plane` → `system-under-test`, a consulta
+disparada ao recebê-lo. Estado na
+[matriz](../../architecture/integrations.md#matriz), sem contrato — nasce só quando a
+interface existir
 ([`contracts/README.md`](../../contracts/README.md#estado-nenhum-contrato-existe)).
 
-**A letra do ADR-0010 não é contrariada** — endpoint do próprio sistema medido não é
-`SELECT` cruzado, pois quem lê o schema é o dono dele
+**A letra do ADR-0010 não é contrariada** — quem lê o schema é o dono dele
 ([ADR-0010, Decisão](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)).
-Quatro trechos ficam desatualizados, sem serem tocados — `### Negativas`,
-`## Justificativa`, o primeiro item de `## Trade-offs`, e "Chamada HTTP", título da
-alternativa no ADR-0010: aqui se adota a consulta ao endpoint, sem transporte
-decidido —, listados no
+Quatro trechos ficam desatualizados, intocados, no
 [fecho de `E-96`](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13),
 terceiro caso de
 [`E-71`](../../fila-de-decisoes.md#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito).
+
+**`R4` tensiona a letra do ADR-0008, e este card não resolve isso** — ele fixa que o
+sistema medido, o Control Plane daquele ADR, NÃO DEVE chamar o `lab-plane`
+([ADR-0008, Decisão](../../adr/0008-os-dois-planos-em-processos-separados.md#decisão)),
+e o aviso trafega nesse sentido. `Pergunta em aberto`, no
+[Example Mapping](example-mapping.md#perguntas-em-aberto).
 
 ```mermaid
 flowchart LR
@@ -111,47 +130,41 @@ flowchart LR
     W[("WAL")]
     T["conector e broker"]
     OR["oráculo, no lab-plane"]
+    RB["RabbitMQ"]
+    LJ["lab-journal"]
+    FE["frontend"]
     SUT -->|" escreve "| W --> T --> OR
-    OR -->|" endpoint, depois da quiescência "| SUT
+    SUT -.->|" aviso de conclusão, HTTP,<br/>disparado e esquecido "| OR
+    OR -->|" endpoint, ao receber o aviso "| SUT
     OR -.->|" SELECT cruzado do lab-plane — continua proibido "| SUT
+    OR -->|" mensagem terminal —<br/>veredito ou rótulo "| RB --> LJ -->|" SSE "| FE
 ```
 
-O caminho de `OR` até o frontend fica fora do diagrama: nenhuma aresta do
-[ADR-0011](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff)
-leva um veredito até lá — decisão aberta de topologia, no
-[Example Mapping](example-mapping.md#perguntas-em-aberto).
+**O rótulo chega ao frontend pelo mesmo caminho do veredito, decidido em 2026-08-14**:
+mensagem terminal no RabbitMQ, persistida e emitida por SSE pelo `lab-journal`, sem
+`Backend For Frontend` nem aresta nova — detalhado no
+[Example Mapping](example-mapping.md#regras).
 
 ## Riscos e decisões pendentes
 
-- **De quem é o endpoint.** `Pergunta em aberto`
-  ([`E-96`](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única)).
-- **O resultado de `R3` já tem nome.** O instrumento nomeia três rótulos, nunca
-  veredito do sistema medido: `fontes divergentes` — as duas fontes alcançaram o
-  commit final e discordam; `fonte atrasada` — uma não alcançou o ponto a tempo;
-  `fonte incompleta` — buraco na sequência de LSN, sem veredito. Ordem de conferência:
-  LSN, commit final, concordância. `Pergunta em aberto`: se `R3` produz `fontes
-  divergentes`, e onde entra o endpoint nessa ordem. Composição num relatório único
-  segue aberta
-  ([capacidade conhecida e não especificada](../README.md#capacidade-conhecida-e-não-especificada)).
-  Detalhada no [Example Mapping](example-mapping.md#perguntas-em-aberto).
-- **Se a guarda de contiguidade do ADR-0013 cobre a perda que motiva esta proposta.**
-  `Pergunta em aberto`, no [Example Mapping](example-mapping.md#perguntas-em-aberto).
-- **A objeção contra "Chamada HTTP" incide sobre `R3`, sem resposta.** `Pergunta em
-  aberto`, no [Example Mapping](example-mapping.md#perguntas-em-aberto).
-- **O que `R3` faz com a órfã de `R2` não foi decidido**, e toca
-  [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu),
-  aberta — no [Example Mapping](example-mapping.md#perguntas-em-aberto).
-- **Se a recusa do lado do endpoint deve virar regra própria.** `R1` obriga o oráculo;
-  o endpoint recusar por conta própria não está decidido. `Pergunta em aberto`, no
+- **De quem é o endpoint de confirmação, qual rótulo o estouro do aviso produz, e qual
+  identidade a execução carrega** — mesmo discriminador do CDC, ou um segundo
+  identificador. Ninguém decidiu; detalhado no
   [Example Mapping](example-mapping.md#perguntas-em-aberto).
+- **`R4` tensiona a letra do ADR-0008**, sem resolução — ver
+  [Integrações e contratos afetados](#integrações-e-contratos-afetados).
+- **A objeção contra "Chamada HTTP" incide sobre `R3`, e o que `R3`/`R5` fazem com a
+  órfã de `R2`** seguem sem resposta — a segunda toca
+  [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu),
+  aberta. Ambas no [Example Mapping](example-mapping.md#perguntas-em-aberto).
 
 ## Critérios de pronto
 
-R1 a R3 verificadas por teste. R1: o oráculo **NÃO DEVE** emitir a consulta antes da
-quiescência — verificado travando a execução em curso e checando ausência de chamada.
-R2: o consolidado contém as quatro grandezas por recurso mais a contagem de órfãs. R3:
-endpoint e stream discordando **DEVE** terminar sem veredito válido, com divergência
-exibida no frontend.
+R1 a R5 verificadas por teste. R1: sem consulta antes do aviso — travando a execução e
+checando ausência de chamada. R2: consolidado com as quatro grandezas por recurso, mais
+órfãs. R3: discordância **DEVE** produzir `fontes divergentes`, sem veredito. R4: sem
+aviso, esgotado o limite, sem veredito, e o sistema medido **NÃO DEVE** ser afetado. R5:
+consulta antes do aviso é registrada, catalogada, sem veredito.
 
 ## Links
 
@@ -159,13 +172,14 @@ exibida no frontend.
 - [`E-96`, enunciado](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única)
   e
   [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13)
+- [`ADR-0008`](../../adr/0008-os-dois-planos-em-processos-separados.md), `Aceito` —
+  tensionado por `R4`
 - [`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md),
-  `Aceito` — a fronteira que este card não contraria
+  `Aceito`
+- [`ADR-0012`](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md),
+  `Aceito`
 - [`ADR-0013`](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md),
-  `Aceito` — a guarda de contiguidade que delimita o risco
-- [`E-71`](../../fila-de-decisoes.md#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito) —
-  dona do diagnóstico de prosa desatualizada sem ADR
-- [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu) —
-  quem verifica a órfã, aberta
-- [`architecture/integrations.md`](../../architecture/integrations.md#matriz) — a
-  fronteira nova
+  `Aceito`
+- [`E-71`](../../fila-de-decisoes.md#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito)
+- [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu)
+- [`architecture/integrations.md`](../../architecture/integrations.md#matriz)
