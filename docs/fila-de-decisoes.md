@@ -6914,6 +6914,57 @@ execução, e como ela se relaciona com o discriminador de execução. E se a `R
 e replay muda: abrir o stream de uma execução cuja abertura não chegou não tem
 comportamento definido hoje.
 
+### `E-104` — o aviso de conclusão trafega no sentido que o ADR-0008 proíbe
+
+**Levantada em 2026-08-14**, ao especificar o aviso de conclusão escolhido em `E-100`. O
+ADR-0008 define o Control Plane como o sistema sob teste
+([ADR-0008, Contexto](adr/0008-os-dois-planos-em-processos-separados.md#contexto)) e
+fixa, **sem qualificar a chamada**: "O Control Plane NÃO DEVE chamar o Lab Plane"
+([ADR-0008, Decisão](adr/0008-os-dois-planos-em-processos-separados.md#decisão)). O
+diagrama da mesma seção desenha essa seta com o rótulo `proibido`. O aviso de conclusão
+trafega exatamente nela — do sistema medido para o `lab-plane`.
+
+**A leitura que salvaria o desenho não está no texto do ADR-0008.** Ela vem de uma frase
+diferente, da arquitetura conceitual do `AGENTS.md` da raiz: "O runtime chama a operação;
+a operação nunca chama o runtime". Aquele arquivo não é família citável, e por isso a
+frase é transcrita aqui inteira. Ela descreve o **mecanismo de passo**, e não a chamada em
+geral. Ler a proibição do ADR-0008 como restrita ao passo é acrescentar uma qualificação
+que o ADR não escreveu.
+
+```mermaid
+flowchart LR
+    SUT["system-under-test<br/>o Control Plane do ADR-0008"]
+    LP["lab-plane<br/>o Lab Plane do ADR-0008"]
+    LP -->|" chamada de passo, permitida "| SUT
+    LP -->|" consulta ao endpoint, ao receber o aviso "| SUT
+    SUT -.->|" aviso de conclusão — a seta que o ADR-0008 rotula proibido "| LP
+```
+
+**O que está em jogo não é o aviso, e sim o alcance da proibição.** A consulta ao endpoint
+sai do `lab-plane` e não tensiona nada. É o aviso, e só ele, que inverte o sentido.
+
+**Quatro saídas, e nenhuma é gratuita.**
+
+| Saída                                          | A favor                                                                       | Contra                                                                                                                       |
+| ---------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| O ADR-0008 recebe emenda ou adendo             | o desenho fica como está; a proibição passa a nomear a chamada de passo       | muda o alcance de decisão aceita, e ninguém conferiu se o argumento que a fundamentou alcança um aviso disparado e esquecido |
+| O aviso viaja pelo broker, e não por HTTP      | nenhuma chamada direta; o sentido proibido deixa de existir na topologia      | o sistema medido ganha dependência de broker por propósito experimental, e a regra de tecnologia exigiria dispensa nova      |
+| O `lab-plane` descobre o fim por conta         | o sistema medido não avisa nada, e fica ingênuo                               | é o problema que `E-100` fechou; sondar dentro da janela é o que a `R1` e a `R5` proíbem                                     |
+| O card é alinhado, e o aviso sai do desenho    | nenhuma decisão aceita é tocada                                               | a comparação perde o gatilho, e `R1` volta a não ter quando disparar                                                         |
+
+**A quinta saída não existe.** Aceitar a contradição e registrá-la é vedado: um card NÃO
+PODE contradizer ADR aceito, e a contradição **é** decisão arquitetural nova.
+
+**Um segundo trecho do mesmo ADR está falsificado, e ele é caso da linha `E-71`.** O
+diagrama de [ADR-0008,
+Decisão](adr/0008-os-dois-planos-em-processos-separados.md#decisão) desenha o oráculo
+lendo o PostgreSQL direto, com o rótulo "SELECT após a quiescência". O ADR-0010 proibiu
+esse `SELECT` depois
+([ADR-0010, Decisão](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)),
+e o desenho continua lá afirmando o contrário. Ele não entrou no inventário levantado por
+varredura porque aquela varredura leu prosa, e este trecho é rótulo de aresta dentro de um
+bloco Mermaid.
+
 ## De onde esta fila veio
 
 As duas origens continuam no repositório, e as duas viram lápide pela decisão `C-2`.
