@@ -6783,6 +6783,137 @@ relatório, e **nenhum veredito é emitido**. Catalogar sem invalidar foi recusa
 veredito acompanhado de ressalva é o que a decisão das duas camadas acabou de recusar, e
 quem lê o número tende a ignorar a nota.
 
+#### `E-97` fecha em o veredito viaja pelo broker até o `lab-journal`, escolhida em 2026-08-14
+
+**Escolhida pela pessoa em 2026-08-14.** A pergunta era por qual caminho o resultado da
+comparação chega ao frontend, e a resposta veio de uma decisão que já existia.
+
+**Metade da pergunta já estava respondida, e ninguém tinha percebido.** O
+[ADR-0011](adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)
+diz que "A definição de um experimento e o resultado dela DEVEM viver no banco do
+`lab-journal`". O resultado, portanto, **não fica** no `lab-plane`, e reportá-lo direto ao
+frontend o deixaria existindo só no navegador de quem estava olhando. O que restava era o
+transporte entre os dois serviços.
+
+**O veredito pega carona no cano que já existe.** O `lab-plane` publica o resultado como
+mensagem terminal da execução, no mesmo RabbitMQ por onde a observação já viaja; o
+`lab-journal` persiste e depois emite; o frontend recebe pelo SSE que já sai de lá. Nenhuma
+aresta nova entra na topologia, e nenhuma tecnologia nova entra no projeto.
+
+```mermaid
+flowchart LR
+    OR["oráculo, no lab-plane"] -->|" mensagem terminal "| B["RabbitMQ"]
+    B --> LJ[("lab-journal<br/>persiste, depois emite")]
+    LJ -->|" SSE "| FE["frontend"]
+    FE -->|" comando de execução "| LP["lab-plane"]
+```
+
+**O custo aceito é que o veredito atravessa a peça que os experimentos sabotam.** O
+RabbitMQ é o que o grupo B ataca de propósito, e o veredito, diferente do evento de CDC,
+**não tem LSN** para desduplicar. A mitigação exigida é idempotência pelo discriminador de
+execução, e a exigência que dela decorre é que o `lab-journal` saiba distinguir **veredito
+que não chegou** de **execução que não produziu veredito** — e essa distinção depende de um
+evento de início que ainda não existe.
+
+**Três alternativas foram recusadas.** HTTP direto entre os dois serviços foi recusado por
+criar um segundo cano entre um par já ligado, sem explicar por que a observação não migra
+junto. O `lab-journal` buscando no `lab-plane` foi recusado por criar aresta que a topologia
+não tem e por pôr a auditoria dependendo do instrumento estar de pé. O `lab-plane` guardando
+cópia do resultado foi recusado por criar um segundo lugar onde o resultado vive — que é
+exatamente o que a topologia evitou ao recusar histórico de execução dentro dele, e o que
+faria duas fontes responderem pela mesma execução.
+
+**O `Backend For Frontend` continua fora, e a recusa foi reafirmada.** O frontend segue
+mandando comando ao `lab-plane` e lendo do `lab-journal`, que é o CQRS que a topologia
+impõe. O relatório de duas camadas é montado pelo `lab-journal`, que já é dono do
+resultado, e não pelo frontend — sem isso, uma decisão do laboratório passaria a viver em
+JavaScript. Nenhuma limitação concreta exige serviço novo, que é o teste que a regra
+estrutural manda aplicar.
+
+**Uma leitura por fora, duas leituras por dentro, e elas não se confundem.** O oráculo lê o
+stream de CDC e lê o consolidado do endpoint, compara, e publica **uma** conclusão. As duas
+leituras nunca saem do `lab-plane` como versões concorrentes. Por fora, quem responde o que
+aconteceu com uma execução é o `lab-journal`, sempre — e a ordem serial dele, persistir
+antes de emitir, garante que o que a tela vê ao vivo e o que ela lê depois são o mesmo
+registro.
+
+### `E-103` — nada anuncia que uma execução começou
+
+**Levantada pela pessoa em 2026-08-14**, ao decidir que o veredito viaja pelo broker: "também
+precisamos garantir que seja emitido um evento para quando o experimento é solicitado, não
+sei se isso já foi especificado". A varredura respondeu que **não**: nenhuma capacidade,
+nenhum ADR e nenhuma linha da matriz especifica um evento de início.
+
+**O que existe é a definição e o fim, e nada no meio.** A definição do experimento já vive
+no banco do `lab-journal`, declarada pela pessoa pelo frontend, pelo
+[ADR-0011](adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git).
+O fim também está especificado, pela `R4` de
+[streaming e replay](features/streaming-e-replay-do-log-de-observacoes/feature-card.md#regras-de-negócio),
+que obriga o evento terminal e proíbe o fechamento nu com um argumento literal: "um
+fechamento nu é indistinguível de queda de rede". **O `lab-journal` sabe que o experimento
+existe, e não sabe que uma execução dele começou.**
+
+**A lacuna é o que torna o custo do transporte pagável ou não.** O fecho de `E-97` aceitou
+que o veredito atravesse o broker que os experimentos sabotam, e nomeou como exigência que
+o `lab-journal` distinga **veredito que não chegou** de **execução que não produziu
+veredito**. Sem registro de início, a distinção é impossível: a ausência do veredito não é
+ausência de nada, é silêncio idêntico ao de uma execução que nunca rodou. O argumento que
+fundamentou o evento terminal vale igual do outro lado da linha — um começo mudo é
+indistinguível de um começo que não houve.
+
+#### `E-103` fecha em abertura pelo broker, com a definição copiada, escolhida em 2026-08-14
+
+**Escolhida pela pessoa em 2026-08-14**, em duas partes.
+
+**O `lab-plane` publica uma mensagem de abertura, pelo mesmo RabbitMQ.** A execução passa a
+abrir com uma mensagem e fechar com outra, simétricas, pelo mesmo cano que já leva a
+observação e que agora leva também o veredito. O `lab-journal` cria o registro da execução
+ao receber a abertura, e a partir daí toda ausência é declarável.
+
+```mermaid
+sequenceDiagram
+    participant LP as lab-plane
+    participant B as RabbitMQ
+    participant LJ as lab-journal
+    LP->>B: abertura, com a definição copiada
+    B->>LJ: cria o registro da execução
+    LP->>B: observação, durante a execução
+    B->>LJ: persiste, depois emite
+    LP->>B: veredito, ou rótulo do instrumento
+    B->>LJ: mensagem terminal da execução
+```
+
+**O custo foi nomeado antes da escolha e aceito: se a própria abertura se perder, a
+execução inteira fica invisível.** O problema muda de lugar em vez de sumir. A criação
+preguiçosa do registro, ao chegar mensagem de execução desconhecida, foi oferecida e não
+escolhida — ela cobriria a abertura perdida, ao custo de dois caminhos criarem o mesmo
+registro e de o registro preguiçoso nascer sem o que a abertura carregava.
+
+**A abertura carrega a definição inteira, copiada, e não uma referência.** Semente,
+configuração, estratégia e número de workers viajam na mensagem. O registro da execução
+fica imune a edição posterior da definição, e uma execução antiga continua reproduzível
+pelo que ela de fato usou.
+
+**A objeção da duplicação foi oferecida, e o desenho a dissolve.** O custo declarado era o
+mesmo dado viver em dois lugares dentro do `lab-journal` e os dois divergirem. Eles não são
+duas cópias do mesmo fato: a definição é **molde**, e a cópia na abertura é **registro do
+que rodou**. Divergirem é o comportamento correto — a definição muda quando a pessoa a
+edita, e o registro não muda nunca. Um relatório que lesse o molde para descrever uma
+execução passada é que estaria errado.
+
+**Duas alternativas foram recusadas.** Criar o registro na primeira observação, sem
+mensagem de abertura, foi recusado porque a janela entre o comando e a primeira observação
+ficaria invisível, e uma execução que morre antes de observar qualquer coisa nunca teria
+existido — que é justamente a falha mais interessante de investigar. O frontend declarar a
+execução ao `lab-journal` foi recusado porque a topologia decidida diz que ele só lê de lá,
+e porque a auditoria passaria a depender de o navegador da pessoa ter conseguido fazer duas
+chamadas.
+
+**O que continua sem decisão.** O que a mensagem de abertura carrega como identidade da
+execução, e como ela se relaciona com o discriminador de execução. E se a `R1` de streaming
+e replay muda: abrir o stream de uma execução cuja abertura não chegou não tem
+comportamento definido hoje.
+
 ## De onde esta fila veio
 
 As duas origens continuam no repositório, e as duas viram lápide pela decisão `C-2`.
