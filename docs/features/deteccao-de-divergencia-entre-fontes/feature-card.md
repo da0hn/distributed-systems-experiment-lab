@@ -73,8 +73,8 @@ Gatilho: fim da execução medida, quando a janela encerra.
 - Qualquer alteração ao ADR-0010: a letra dele não é contrariada, e o corpo não é
   tocado por este card.
 - A contiguidade de LSN e a marca de fim, guardas de `R8`/`R9` de
-  [deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio),
-  já invalidadas antes desta comparação; esta capacidade só atua depois delas.
+  [deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)
+  — se cobrem esta perda é `Pergunta em aberto`, acima.
 - Quando a leitura do stream está completa para ser comparada — `R1` fixa a hora da
   consulta ao endpoint, não a do stream. `Pergunta em aberto`, no
   [Example Mapping](example-mapping.md#perguntas-em-aberto).
@@ -112,8 +112,8 @@ flowchart LR
     T["conector e broker"]
     OR["oráculo, no lab-plane"]
     SUT -->|" escreve "| W --> T --> OR
-    SUT -->|" endpoint, depois da quiescência "| OR
-    SUT -.->|" SELECT cruzado do lab-plane — continua proibido "| OR
+    OR -->|" endpoint, depois da quiescência "| SUT
+    OR -.->|" SELECT cruzado do lab-plane — continua proibido "| SUT
 ```
 
 O caminho de `OR` até o frontend fica fora do diagrama: nenhuma aresta do

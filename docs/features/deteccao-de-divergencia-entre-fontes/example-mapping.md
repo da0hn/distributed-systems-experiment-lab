@@ -49,16 +49,22 @@ sequenceDiagram
 | R3    | o stream de CDC relata `soma = 65`, e o endpoint relata `soma = 70` para o mesmo recurso         | o oráculo compara as duas leituras | a execução não produz veredito válido, e a divergência é reportada no frontend                                                            |
 | R3    | o stream de CDC e o endpoint concordam em todos os recursos tocados pela execução                | o oráculo compara as duas leituras | a execução produz veredito normalmente, sem reporte de divergência                                                                        |
 
-**O primeiro exemplo de `R3` acima é justamente o caso que as guardas de**
-[deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)
-**não capturam.** `R8` invalida com `fonte incompleta` só quando há buraco na
-sequência de LSN; `R9` invalida com `fonte atrasada` só quando a marca de fim não é
-reconhecida dentro do limite de espera. Nenhuma das duas exige que a soma relatada
-**corresponda** ao valor final: um stream que chegou até `65`, sem buraco na sequência
-e com a marca de fim reconhecida — completo, pelo critério que as duas guardas
-verificam —, passa por elas mesmo relatando menos do que o endpoint confirma (`70`),
-que é a direção que a perda no transporte produz. Ver a pergunta em aberto sobre se a
-guarda de contiguidade cobre este caso, abaixo.
+**O primeiro exemplo de `R3` acima só é possível sob a condição que o**
+[ADR-0012, Negativas](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)
+**deixa em aberto.** Aquele ADR fixa que o `lab-plane` **DEVE** usar o LSN — que "o
+servidor PostgreSQL lhe atribuiu antes de qualquer transporte existir" — para "ordenar,
+desduplicar e detectar buraco na sequência antes de calcular o veredito"
+([ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)).
+Sob essa regra, uma perda no transporte deixa buraco na sequência, e o buraco já
+invalida pela `R8` — o par "stream completo, relatando menos" só existe **se o LSN não
+sobreviver ao transporte inteiro**, a única condição que o mesmo ADR deixa sem prova e
+sem teste
+([ADR-0012, Negativas](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)).
+Um stream que chegou até `65`, sem buraco na sequência e com a marca de fim reconhecida
+— completo, pelo critério que as duas guardas verificam —, só relata menos do que o
+endpoint confirma (`70`) sob essa condição. **Não conclua que o resíduo desta
+capacidade é esse**: o tamanho dele depende de uma decisão ainda aberta sobre a
+sobrevivência do LSN — ver a pergunta em aberto abaixo.
 
 ### Contraexemplo — a objeção que a proposta não vence
 
@@ -162,15 +168,18 @@ identificadores, ou as linhas" voltaria sem resposta escrita.
   pelo critério de `R8`/`R9`, mas divergindo do endpoint —, como a nota logo abaixo da
   tabela detalha. Nenhuma regra acima o afirma nem o nega.
 - **A direção oposta — stream relatando mais do que o endpoint — é produzível por
-  duplicação, e não só por perda.** "O transporte PODE duplicar, reordenar ou perder
-  mensagem", em regra aprovada por pessoa
-  ([distincao-entre-higiene-e-invalidacao, Problema e resultado
-  esperado](../distincao-entre-higiene-e-invalidacao/feature-card.md#problema-e-resultado-esperado)).
-  Duas coisas não estão escritas em documento nenhum, e nenhuma delas é decidida aqui:
-  se `R3` alcança a divergência produzida por duplicação, ou só a produzida por perda;
-  e se a guarda de contiguidade de LSN de `R8` detecta duplicação, ou só detecta buraco
-  na sequência. A segunda importa porque, se `R8` já pega os dois casos, o resíduo que
-  esta capacidade reivindica encolhe.
+  duplicação, mas o ADR-0012 já cobre metade dela.** O transporte "pode duplicar,
+  reordenar, perder"
+  ([ADR-0012, Decisão](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)),
+  e aquele ADR fixa **desduplicar** como `DEVE` separado de **detectar buraco na
+  sequência** — "duplicata | descartar o evento já visto, pelo LSN"
+  ([ADR-0012, Justificativa](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#justificativa)).
+  A guarda de contiguidade de `R8` não detecta duplicação porque a desduplicação é
+  outro `DEVE`, que roda antes do veredito. O que não está escrito em documento nenhum,
+  e não é decidido aqui, é só: se `R3` alcança a divergência produzida por duplicação
+  não descartada, ou só a produzida por perda. **Pergunta, não conclusão**: se a
+  desduplicação do `lab-plane` já elimina esse caso antes de `R3` comparar, o resíduo
+  que esta capacidade reivindica muda de tamanho, e quanto é decisão aberta.
 - **Quando a leitura do stream está completa, no oráculo, para esta comparação.** `R1`
   fixa a hora da consulta ao **endpoint** — depois que a execução silencia — e nenhuma
   regra acima fixa a hora em que a leitura do stream pode ser considerada pronta para a
