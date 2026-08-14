@@ -58,12 +58,12 @@ intocado — o cabeçalho dele passa a registrar a mudança, conforme
 **A região de pacote do sistema sob teste passa a ser `dev.da0hn.lab.sut`.** As
 outras três linhas da tabela do ADR-0008 (`0008-...md:66-71`) NÃO mudam.
 
-| Pacote                       | Região                             |
-|------------------------------|------------------------------------|
-| `dev.da0hn.lab.shared`       | contratos vistos pelos dois planos |
-| `dev.da0hn.lab.labplane`     | o instrumento                      |
-| `dev.da0hn.lab.sut`          | o sistema sob teste                |
-| `dev.da0hn.lab.application`  | composição e ponto de entrada      |
+| Pacote                      | Região                             |
+|-----------------------------|------------------------------------|
+| `dev.da0hn.lab.shared`      | contratos vistos pelos dois planos |
+| `dev.da0hn.lab.labplane`    | o instrumento                      |
+| `dev.da0hn.lab.sut`         | o sistema sob teste                |
+| `dev.da0hn.lab.application` | composição e ponto de entrada      |
 
 A proibição da sigla `SUT` em `docs/CONTEXT.md:180` vale para **prosa**, e NÃO DEVE
 ser lida como proibição de identificador de código — decidido em

@@ -16,7 +16,7 @@ debatido um a um, antes de virar código.
 pedagogia e do roadmap. Ele **não** é dono da arquitetura vigente, do estado da árvore
 nem do contrato de entrega. A decisão arquitetural vigente está no
 [índice de ADRs](adr/README.md#índice); a decisão ainda aberta está na
-[fila](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira). Onde uma seção daqui divergir
+[fila](fila-de-decisoes.md#o-que-esta-fila-enfileira). Onde uma seção daqui divergir
 de um ADR aceito, **o ADR vale** — o que está escrito aqui é a análise da data em que
 foi escrita, e as seções superadas trazem a nota que aponta para quem as superou.
 
@@ -959,7 +959,7 @@ a fechou.
 | 1. Experiment Designer contra definição versionada | [ADR-0011](adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git): o caderno sai do Git, e a pessoa declara os dois pelo frontend |
 | 4. a fidelidade do runtime de passos               | [ADR-0004](adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#a-barreira-é-o-controle-positivo): a execução medida roda sem agendamento, e a barreira virou controle     |
 | 5. Java 25 e Spring Boot 4.x sem validação         | a checagem virou execução: o esqueleto compila, empacota e sobe (`pom.xml`, `compose.yaml`)                                                                                                |
-| 6. o esqueleto apagado antes do ADR                | a árvore de hoje nasceu depois; o `deploy/` continua ausente, e a [fila](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira) é quem o define                                                |
+| 6. o esqueleto apagado antes do ADR                | a árvore de hoje nasceu depois; o `deploy/` continua ausente, e a [fila](fila-de-decisoes.md#o-que-esta-fila-enfileira) é quem o define                                                    |
 
 As outras quatro — o oráculo do grupo D, a amostragem no tempo, a decisão tomada em
 outro repositório e o experimento destrutivo sob um orquestrador que ressuscita —
@@ -1014,13 +1014,13 @@ o que ele custa, e onde a ADR 0017 colide com o replanejamento.
 
 **Colide, e precisa de decisão aqui:**
 
-| A ADR 0017 afirma                                                | O plano de 2026-07-28 diz                                                                      |
-|------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
-| "monorepo de microsserviços JVM", "matriz de serviços"           | MVP é **uma aplicação e um banco**; decomposição provocada por experimento (etapa 4)           |
-| namespace único porque "eles falam entre si o tempo todo"        | não há "eles" — há um processo                                                                 |
-| "referência de projeto **Gradle**"                               | decisão de entrega contínua, **não decidida**; a seção 9 deste plano presume **reactor Maven** |
-| "**Toxiproxy**, para injetar partição e latência de rede"        | injeção na fronteira de passo, em processo; rede só no grupo B, etapa 5                        |
-| `path: deploy` no `Application`                                  | `deploy/` foi apagado; a árvore é decisão de arquitetura mínima                                |
+| A ADR 0017 afirma                                         | O plano de 2026-07-28 diz                                                                      |
+|-----------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| "monorepo de microsserviços JVM", "matriz de serviços"    | MVP é **uma aplicação e um banco**; decomposição provocada por experimento (etapa 4)           |
+| namespace único porque "eles falam entre si o tempo todo" | não há "eles" — há um processo                                                                 |
+| "referência de projeto **Gradle**"                        | decisão de entrega contínua, **não decidida**; a seção 9 deste plano presume **reactor Maven** |
+| "**Toxiproxy**, para injetar partição e latência de rede" | injeção na fronteira de passo, em processo; rede só no grupo B, etapa 5                        |
+| `path: deploy` no `Application`                           | `deploy/` foi apagado; a árvore é decisão de arquitetura mínima                                |
 
 A colisão do Gradle é a mais séria, e não é técnica — é de governança. Uma decisão sobre
 o build **deste** repositório está registrada como aceita em ADR de **outro**
@@ -1107,7 +1107,7 @@ Nada neste documento é decisão, e o passo que esta seção anunciava já foi d
 
 A decisão de processo já foi tomada: a primeira série foi arquivada em
 [`adr/arquivo/`](adr/arquivo/README.md) e a numeração recomeçou. A fila de decisões está
-em [`adr/fila-de-decisoes.md`](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira).
+em [`fila-de-decisoes.md`](fila-de-decisoes.md#o-que-esta-fila-enfileira).
 
 O ADR da seção 2 — **o passo como unidade de execução, observação e injeção de falha** —
 foi escrito e aceito, e outros o seguiram. Quem quiser saber o que já está decidido lê o

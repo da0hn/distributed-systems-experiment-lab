@@ -145,7 +145,7 @@ hipótese da etapa 5; a linha é reescrita como fato no mesmo commit deste ADR:
       S --> C
   ```
 
-  [`E-32`](fila-de-decisoes.md#e-32-fecha-na-cadeia-inteira-e-o-teste-ganha-uma-segunda-asserção)
+  [`E-32`](../fila-de-decisoes.md#e-32-fecha-na-cadeia-inteira-e-o-teste-ganha-uma-segunda-asserção)
   já decidiu a forma do teste: três contêineres — PostgreSQL com `wal_level=logical`
   por comando explícito, Debezium Server e RabbitMQ —, escrevendo e comparando o LSN
   lido com `pg_current_wal_lsn()`. **O teste não existe.** Até existir, o argumento
@@ -189,7 +189,7 @@ hipótese da etapa 5; a linha é reescrita como fato no mesmo commit deste ADR:
   No homelab, o PostgreSQL vem da Camada 6, compartilhada com outras cargas
   (`compose.yaml:1-3`), num "banco com vizinhos" que já obriga o relatório de todo
   experimento a registrar isso
-  ([`fila-de-decisoes.md`](fila-de-decisoes.md#e-5-decidida-contra-a-recomendação-e-o-que-ela-arrasta)).
+  ([`../fila-de-decisoes.md`](../fila-de-decisoes.md#e-5-decidida-contra-a-recomendação-e-o-que-ela-arrasta)).
   Um experimento de fila cheia passa a poder encher o disco desse banco. **Pergunta em
   aberto.** A mitigação natural, `max_slot_wal_keep_size`, é parâmetro de cluster e
   continua sem decisão.
@@ -197,23 +197,23 @@ hipótese da etapa 5; a linha é reescrita como fato no mesmo commit deste ADR:
   veredito ser confiável. Com duas réplicas, cada uma vê o backlog da outra, e nenhuma
   sabe dizer qual das duas causas produziu o descarte.
 - **Pergunta em aberto**
-  ([`E-31`](fila-de-decisoes.md#e-31-não-fecha-e-o-que-a-impede-é-uma-exigência-que-a-fila-não-enunciava)).
+  ([`E-31`](../fila-de-decisoes.md#e-31-não-fecha-e-o-que-a-impede-é-uma-exigência-que-a-fila-não-enunciava)).
   Onde vive a configuração do Debezium Server não está decidido; até decidir, ele
   passará a existir só no `compose.yaml` de desenvolvimento — o veredito não poderá ser
   produzido no homelab. Rodar no cluster exige mudar o `homelab-infrastructure`, e não
   só este repositório.
 - **Pergunta em aberto**
-  ([`E-35`](fila-de-decisoes.md#e-35--onde-o-lab-plane-guarda-quais-execuções-estão-ativas)).
+  ([`E-35`](../fila-de-decisoes.md#e-35--onde-o-lab-plane-guarda-quais-execuções-estão-ativas)).
   Onde o `lab-plane` guarda quais discriminadores estão ativos não está decidido. Em
   memória, um reinício apaga a resposta, e a execução seguinte descarta às cegas.
 - O `REPLICATION` vai para `cdc_connector` (`local/postgres-init.sql:20-24`), e não
   para o `lab-plane`: mantê-lo lá devolveria a credencial de leitura do WAL ao processo
   que produz o veredito.
 
-  | Papel           | `REPLICATION` | Por quê                                          |
-  |-----------------|---------------|--------------------------------------------------|
-  | `cdc_connector` | concedido     | só ele lê o WAL, fora do processo do veredito    |
-  | `sut`           | descartado    | amplia o que a falha da etapa 6 no `sut` alcança |
+| Papel           | `REPLICATION` | Por quê                                          |
+|-----------------|---------------|--------------------------------------------------|
+| `cdc_connector` | concedido     | só ele lê o WAL, fora do processo do veredito    |
+| `sut`           | descartado    | amplia o que a falha da etapa 6 no `sut` alcança |
 
   Custa um papel a mais: no homelab, é mudança no `homelab-infrastructure`, não só
   neste repositório.
@@ -221,7 +221,7 @@ hipótese da etapa 5; a linha é reescrita como fato no mesmo commit deste ADR:
 ### Neutras
 
 - **Pergunta em aberto**
-  ([`E-34`](fila-de-decisoes.md#e-34--qual-dos-dois-sinks-de-rabbitmq-e-o-que-ele-amarra)).
+  ([`E-34`](../fila-de-decisoes.md#e-34--qual-dos-dois-sinks-de-rabbitmq-e-o-que-ele-amarra)).
   Qual mecanismo do RabbitMQ recebe os eventos — a fila clássica sobre AMQP 0-9-1 ou o
   stream com semântica de offset e retenção. A escolha amarra qual fenômeno de
   saturação o grupo B consegue reproduzir, porque uma fila que enche não é a mesma

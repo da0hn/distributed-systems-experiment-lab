@@ -15,7 +15,7 @@
 ## Contexto
 
 O pipeline publica imagem desde `E-1`, decidida em 2026-08-06
-([`fila-de-decisoes.md`](fila-de-decisoes.md#as-decisões-do-grupo-i-em-2026-08-06)):
+([`../fila-de-decisoes.md`](../fila-de-decisoes.md#as-decisões-do-grupo-i-em-2026-08-06)):
 `mvn verify`, o build do frontend e, só depois, imagens no GHCR. `E-4` — o que o pipeline
 executa — segue **aberta**, sem fecho registrado; o comportamento atual só coincide com a
 recomendação lá escrita, e essa coincidência não é decisão. A tag era o SHA do commit,
@@ -55,7 +55,7 @@ Os manifests vivem no
 `kubernetes/applications/distributed-consistency-lab/`, junto dos Secrets cifrados por
 SOPS/KSOPS. Este repositório **não** cria `deploy/`: a ausência vira decisão, não lacuna.
 Fecha
-[`E-3`](fila-de-decisoes.md#e-3-fecha-em-manifests-no-homelab-infrastructure-escolhida-em-2026-08-13)
+[`E-3`](../fila-de-decisoes.md#e-3-fecha-em-manifests-no-homelab-infrastructure-escolhida-em-2026-08-13)
 por escolha, e não por adiamento.
 
 ```mermaid
@@ -93,7 +93,7 @@ O job `mudancas` monta a matriz a partir do `git diff` contra a base do push/PR
 job `imagem` (`.github/workflows/build.yml:190-201`). `shared/`, o reactor, o `Dockerfile`
 e o próprio workflow alcançam os três executáveis Java — mudar qualquer um reconstrói os
 três. Sem base de comparação utilizável, a matriz nasce completa. Fecha
-[`E-21`](fila-de-decisoes.md#e-21-fecha-em-pular-com-matriz-dinâmica-montada-do-diff-escolhida-em-2026-08-13).
+[`E-21`](../fila-de-decisoes.md#e-21-fecha-em-pular-com-matriz-dinâmica-montada-do-diff-escolhida-em-2026-08-13).
 
 ```mermaid
 flowchart TD
@@ -130,7 +130,7 @@ sequenceDiagram
 O cluster CNPG compartilhado ganha `wal_level=logical`, `max_replication_slots`,
 `max_wal_senders` e um role com `REPLICATION`, mantendo `E-5` intacta — o mesmo cluster
 do Keycloak e das demais cargas da Camada 6
-([`E-5`](fila-de-decisoes.md#e-5-decidida-contra-a-recomendação-e-o-que-ela-arrasta)). O
+([`E-5`](../fila-de-decisoes.md#e-5-decidida-contra-a-recomendação-e-o-que-ela-arrasta)). O
 custo é aceito por escrito: o cluster reinicia, e toda carga passa a escrever WAL
 maior.
 
@@ -280,7 +280,7 @@ substitui. Revise a probe quando o primeiro experimento do grupo D rodar.
 | [ADR-0008](0008-os-dois-planos-em-processos-separados.md#negativas)                                                                    | **emenda**: "o `deploy/` nasce com dois `Deployment`" (`### Negativas`) deixa de valer — `deploy/` não nasce aqui     |
 | [`AGENTS.md`](../../AGENTS.md#este-repositório-é-entregue-no-homelab)                                                                  | a tag deixa de ser o SHA; `deploy/` deixa de estar "aberta na fila" e passa a nunca nascer aqui, por decisão          |
 | [`architecture/integrations.md`](../architecture/integrations.md#matriz)                                                               | a seção de entrega e as linhas da matriz que descreviam `deploy/`, o bump e o `ComparisonError` sem decisão associada |
-| [`adr/fila-de-decisoes.md`](fila-de-decisoes.md#o-que-esta-fila-enfileira)                                                             | recebe o fecho de `E-3` e de `E-21`, cada um citando este ADR                                                         |
+| [`adr/fila-de-decisoes.md`](../fila-de-decisoes.md#o-que-esta-fila-enfileira)                                                          | recebe o fecho de `E-3` e de `E-21`, cada um citando este ADR                                                         |
 | [`features/distincao-entre-higiene-e-invalidacao/feature-card.md`](../features/distincao-entre-higiene-e-invalidacao/feature-card.md)  | `E-3` deixa de estar aberta; R5 ganha onde a réplica única é honrada                                                  |
 | [`.../distincao-entre-higiene-e-invalidacao/example-mapping.md`](../features/distincao-entre-higiene-e-invalidacao/example-mapping.md) | P5 e o "Adiado de propósito" de `E-3` disparam; o gatilho fechou                                                      |
 | [`contracts/README.md`](../contracts/README.md#o-que-existe-hoje-no-lugar-de-contrato)                                                 | a linha de manifests de entrega passa a citar este ADR como decisão, e não coincidência                               |

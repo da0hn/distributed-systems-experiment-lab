@@ -2,9 +2,9 @@
 
 Companheiro de [`feature-card.md`](feature-card.md). As três regras vêm da decisão da
 pessoa em 2026-08-13, registrada no
-[fecho de `E-96`](../../adr/fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13),
+[fecho de `E-96`](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13),
 sobre o
-[enunciado da mesma linha](../../adr/fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única).
+[enunciado da mesma linha](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única).
 
 ## História
 
@@ -41,20 +41,20 @@ sequenceDiagram
 
 ## Exemplos concretos
 
-| Regra | Dado                                                                                     | Quando                                      | Então                                                                                                           |
-|-------|------------------------------------------------------------------------------------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
-| R1    | uma execução em andamento, workers ainda escrevendo                                      | o oráculo tenta consultar o endpoint        | a consulta é recusada ou impossível pela arquitetura — ela só acontece depois da quiescência                    |
-| R1    | uma execução que acabou de silenciar                                                     | o oráculo consulta o endpoint               | a consulta acontece fora da janela medida, e não altera o tempo medido do experimento                           |
-| R2    | um recurso com `capacity = 100`, três alocações somando `70`                             | o endpoint é consultado para aquele recurso | ele devolve `value_final`, `capacity = 100`, `soma = 70`, `contagem = 3`, e a contagem de órfãs daquele recurso |
-| R2    | um recurso com uma alocação órfã, sem `resource_id` correspondente na tabela de recursos | o endpoint é consultado                     | a contagem de órfãs do consolidado é maior que zero                                                             |
-| R3    | o stream de CDC relata `soma = 70`, e o endpoint relata `soma = 65` para o mesmo recurso | o oráculo compara as duas leituras          | a execução não produz veredito válido, e a divergência é reportada no frontend                                  |
-| R3    | o stream de CDC e o endpoint concordam em todos os recursos tocados pela execução        | o oráculo compara as duas leituras          | a execução produz veredito normalmente, sem reporte de divergência                                              |
+| Regra | Dado                                                                                             | Quando                               | Então                                                                                                                                     |
+|-------|--------------------------------------------------------------------------------------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| R1    | uma execução em andamento, workers ainda escrevendo                                              | o oráculo tenta consultar o endpoint | a consulta é recusada ou impossível pela arquitetura — ela só acontece depois da quiescência                                              |
+| R1    | uma execução que acabou de silenciar                                                             | o oráculo consulta o endpoint        | a consulta acontece fora da janela medida, e não altera o tempo medido do experimento                                                     |
+| R2    | um recurso com `capacity = 100`, três alocações somando `70`, e nenhuma alocação órfã            | o endpoint é consultado              | ele devolve, para aquele recurso, `value_final`, `capacity = 100`, `soma = 70`, `contagem = 3`; a contagem de órfãs do consolidado é zero |
+| R2    | uma alocação sem `resource_id` correspondente na tabela de recursos, ao lado de recursos normais | o endpoint é consultado              | a contagem de órfãs do consolidado é maior que zero — separada dos recursos, porque a órfã não pertence a nenhum deles                    |
+| R3    | o stream de CDC relata `soma = 70`, e o endpoint relata `soma = 65` para o mesmo recurso         | o oráculo compara as duas leituras   | a execução não produz veredito válido, e a divergência é reportada no frontend                                                            |
+| R3    | o stream de CDC e o endpoint concordam em todos os recursos tocados pela execução                | o oráculo compara as duas leituras   | a execução produz veredito normalmente, sem reporte de divergência                                                                        |
 
 ### Contraexemplo — a objeção que a proposta não vence
 
 O `E-96` registra uma objeção de 2026-08-09 contra uma segunda fonte de leitura do mesmo
 banco: "as duas leem o mesmo banco, e nenhuma detecta erro do banco"
-([`E-96`, enunciado](../../adr/fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única)).
+([`E-96`, enunciado](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única)).
 Um recurso corrompido **dentro** do próprio PostgreSQL — uma linha alterada fora do
 caminho normal de escrita, por exemplo — apareceria igual nas duas leituras, porque as
 duas leem, cedo ou tarde, do mesmo dado persistido. R3 não detecta esse caso: ela
@@ -77,6 +77,18 @@ flowchart LR
     C -->|" não, e um evento<br/>se perde no transporte "| D["detectada — R3"]
 ```
 
+## Alternativas descartadas antes deste card
+
+> **O enunciado do `E-96` ofereceu três formas para o endpoint** — consolidado por
+> recurso, conjunto de identificadores, e as linhas —, cada uma com poder de detecção
+> diferente. A pessoa escolheu a primeira no fecho, e as outras duas não aparecem na
+> decisão; nenhum motivo foi dado por escrito para descartá-las
+> ([fecho de `E-96`](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13)).
+
+Registrado aqui porque `R2` fixa a forma escolhida sem explicar por que as outras duas
+ficaram de fora — sem este registro, a pergunta "por que não o conjunto de
+identificadores, ou as linhas" voltaria sem resposta escrita.
+
 ## Perguntas em aberto
 
 - **De quem é o endpoint.** Ele vive no sistema medido e só existe para medi-lo — o que
@@ -98,6 +110,22 @@ flowchart LR
   ([ADR-0013, Decisão](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)),
   também precisa cobrir a leitura do stream que alimenta esta comparação. Nenhuma regra
   acima o afirma nem o nega.
+- **A objeção que descartou "Chamada HTTP ao próprio system under test" no ADR-0010
+  incide sobre `R3`, e não está respondida.** O motivo dado ali: "o instrumento passaria
+  a depender dele para medi-lo" — um bug no próprio código do endpoint, e não uma
+  corrupção do banco, poderia produzir um consolidado que concorda com uma leitura de
+  stream igualmente errada, e `R3` não teria como distinguir isso de um veredito
+  correto. É diferente do contraexemplo acima, que é sobre corrupção **dentro** do
+  banco; esta é sobre um erro **no código do endpoint**. Nenhuma regra acima o afirma
+  nem o nega.
+- **O que `R3` faz com a contagem de órfãs de `R2` não foi decidido.** Ela entra no
+  consolidado, mas se uma divergência só nela já invalida o veredito, ou se ela conta
+  como algo distinto, não foi fixado. Toca
+  [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu),
+  aberta — quatro saídas foram propostas ao longo da linha, duas já contraditas pela
+  resposta de 2026-08-13, e nenhuma foi formalmente escolhida —, e a `Pergunta em aberto` do
+  [ADR-0015](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id)
+  sobre quem verifica a órfã — `R2` introduz uma quinta saída possível sem decidi-la.
 
 ## Adiado de propósito
 

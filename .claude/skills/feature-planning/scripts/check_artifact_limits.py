@@ -156,7 +156,7 @@ TRIAGE_PENDING = {
 INSTRUCTION_NAMES = {"AGENTS.md", "CLAUDE.md"}
 INSTRUCTION_ROOTS = (Path(".claude/agents"), Path(".claude/skills"))
 ARCHIVE_ROOT = Path("docs/adr/arquivo")
-QUEUE_PATH = Path("docs/adr/fila-de-decisoes.md")
+QUEUE_PATH = Path("docs/fila-de-decisoes.md")
 PLAN_PATH = Path("docs/plano-do-laboratorio.md")
 ADR_ROUTING_FORM = Path(
     "docs/adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md"
@@ -335,9 +335,21 @@ def prose_lines(text: str, skip_header: bool = False) -> list[tuple[int, str]]:
     return kept
 
 
+# O alvo de um link não é prosa, e contá-lo mede o continente em vez do conteúdo.
+# A prova apareceu quando a fila saiu de `docs/adr/` para `docs/`: os links para ela
+# ganharam `../`, três letras cada, e o ADR-0019 estourou o teto em exatamente quinze
+# — cinco links vezes três. Nenhuma palavra foi escrita. Pior, o conserto seria
+# impossível: reduzir o corpo de um ADR aceito não é forma permitida pelo lifecycle,
+# e o arquivo ficaria acima do teto para sempre por ter mudado de vizinho.
+#
+# O que fica na contagem é o texto visível do link, que é o que alguém lê.
+LINK_TARGET = re.compile(r"\[([^\]]*)\]\([^)\s]*(?:\s+\"[^\"]*\")?\)")
+
+
 def prose_only(text: str, skip_header: bool = False) -> str:
-    """Remove blocos cercados e linhas de tabela, que não entram na contagem."""
-    return "\n".join(line for _, line in prose_lines(text, skip_header))
+    """Remove blocos cercados, linhas de tabela e o alvo dos links."""
+    body = "\n".join(line for _, line in prose_lines(text, skip_header))
+    return LINK_TARGET.sub(r"\1", body)
 
 
 def counts_prose_only(relative_path: Path) -> bool:

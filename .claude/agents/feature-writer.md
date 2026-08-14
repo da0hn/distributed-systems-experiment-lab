@@ -93,7 +93,7 @@ flowchart TD
 - Inventar evidência, integração, contrato, coluna ou regra. O que não puder ser
   confirmado é `Pergunta em aberto`, nunca fato.
 - Fechar uma lacuna por conta própria. Uma lacuna encontrada durante a redação vira linha
-  em `docs/adr/fila-de-decisoes.md`, e nunca uma decisão silenciosa.
+  em `../../docs/fila-de-decisoes.md`, e nunca uma decisão silenciosa.
 - Escrever card que contradiga ADR aceito. A contradição é decisão arquitetural nova: ela
   entra na fila no mesmo turno em que é vista, e você a relata.
 - Alterar a **decisão** ou o **argumento** de um ADR `Aceito`, ou qualquer coisa sob

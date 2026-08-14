@@ -26,7 +26,7 @@ que ela nomeia. A terceira coluna diz o que aquele documento **não** prova.
 | o estado de uma fronteira de processo | [matriz de integrações](architecture/integrations.md#matriz)                                      | abra a evidência primária citada antes de concluir             |
 | a forma de tabela dos dois schemas    | [schemas/](architecture/schemas/README.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam) | não cobre `lab_journal`; forma decidida não é migração escrita |
 | a decisão arquitetural vigente        | [índice de ADRs](adr/README.md#índice)                                                            | plano e auditoria não substituem decisão aceita                |
-| a decisão ainda aberta                | [fila de decisões](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira)                             | não feche a lacuna por inferência                              |
+| a decisão ainda aberta                | [fila de decisões](fila-de-decisoes.md#o-que-esta-fila-enfileira)                                 | não feche a lacuna por inferência                              |
 | o comportamento de uma capacidade     | [índice de capacidades](features/README.md#índice)                                                | regra `pendente` não é comportamento aprovado                  |
 | se algo merece ADR                    | [critérios do índice](adr/README.md#uma-decisão-merece-adr-quando)                                | o artefato é escolhido depois da decisão, nunca antes          |
 | como alterar um ADR aceito            | [revogação da imutabilidade](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07)   | nenhuma forma além das listadas lá é permitida                 |

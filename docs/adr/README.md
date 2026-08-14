@@ -270,10 +270,10 @@ O teste, ao escrever: se a linha responde "o quê" e "quando", é livro-razão; 
 "por quê", pertence ao corpo.
 
 A escolha está no fecho de `E-66`, em
-[`fila-de-decisoes.md`](fila-de-decisoes.md#e-66-fecha-em-o-argumento-desce-do-cabeçalho-para-o-corpo-escolhida-em-2026-08-12).
+[`../fila-de-decisoes.md`](../fila-de-decisoes.md#e-66-fecha-em-o-argumento-desce-do-cabeçalho-para-o-corpo-escolhida-em-2026-08-12).
 Ela vale para todo ADR daqui em diante. **A aplicação retroativa ao ADR-0014 esteve
 bloqueada até 2026-08-12**, quando
-[`E-64`](fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12)
+[`E-64`](../fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12)
 escolheu desfazer por divisão: mover argumento para o corpo de um ADR aceito não cabe em
 nenhuma das seis formas sem forçar, e o que estava preso no cabeçalho do ADR-0014 saiu
 dele por inteiro, para o [ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md).
@@ -327,7 +327,7 @@ inteiramente perdido.
 
 ## Fila de decisões
 
-**A fila vive em [`fila-de-decisoes.md`](fila-de-decisoes.md) desde 2026-08-05.** Esta
+**A fila vive em [`../fila-de-decisoes.md`](../fila-de-decisoes.md) desde 2026-08-05.** Esta
 seção é uma lápide, na forma que a decisão `C-2` fixou: ela nomeia o destino do que
 estava aqui, e não some.
 
@@ -338,11 +338,11 @@ enquanto foram duas, uma decisão PODE ter sido tomada numa e reaberta na outra.
 página já era índice, convenção, histórico e processo de debate; a fila era a quinta
 coisa, e a única que cresce sem parar.
 
-| O que estava nesta seção            | Onde está agora                                                                      |
-|-------------------------------------|--------------------------------------------------------------------------------------|
-| as onze decisões derivadas do plano | [as decisões derivadas do plano](fila-de-decisoes.md#as-decisões-derivadas-do-plano) |
-| citar pelo nome, e não pela posição | [como citar uma linha](fila-de-decisoes.md#como-citar-uma-linha-desta-fila)          |
-| as três subseções de comentário     | os três títulos abaixo, preservados                                                  |
+| O que estava nesta seção            | Onde está agora                                                                         |
+|-------------------------------------|-----------------------------------------------------------------------------------------|
+| as onze decisões derivadas do plano | [as decisões derivadas do plano](../fila-de-decisoes.md#as-decisões-derivadas-do-plano) |
+| citar pelo nome, e não pela posição | [como citar uma linha](../fila-de-decisoes.md#como-citar-uma-linha-desta-fila)          |
+| as três subseções de comentário     | os três títulos abaixo, preservados                                                     |
 
 **Os três títulos abaixo continuam existindo**, porque citações vindas de ADRs
 **aceitos** apontam para esta página. O motivo original era mais forte: o corpo de um ADR
@@ -355,17 +355,17 @@ intocável.
 ### A ordem da arquitetura mínima e da entrega contínua está sob tensão
 
 **Movida** para
-[`fila-de-decisoes.md`](fila-de-decisoes.md#a-ordem-da-arquitetura-mínima-e-da-entrega-contínua-está-sob-tensão).
+[`../fila-de-decisoes.md`](../fila-de-decisoes.md#a-ordem-da-arquitetura-mínima-e-da-entrega-contínua-está-sob-tensão).
 
 ### O nível de isolamento não tem lugar nesta fila
 
 **Movida** para
-[`fila-de-decisoes.md`](fila-de-decisoes.md#o-nível-de-isolamento-não-tem-lugar-nesta-fila).
+[`../fila-de-decisoes.md`](../fila-de-decisoes.md#o-nível-de-isolamento-não-tem-lugar-nesta-fila).
 
 ### A anomalia por frequência: uma proposta que muda o estatuto da barreira
 
 **Movida** para
-[`fila-de-decisoes.md`](fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira).
+[`../fila-de-decisoes.md`](../fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira).
 Este título permanece porque o cabeçalho do
 [ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) o cita por
 âncora, e apagar o título antes de consertar essa citação é a ordem errada — o mesmo
@@ -515,12 +515,12 @@ via: ele é registrado, datado e limitado a texto que não carrega decisão.
 
 ### O que é patch, e o que não é
 
-| PODE ser patch                                  | NÃO DEVE ser patch                          |
-|-------------------------------------------------|----------------------------------------------|
-| citação quebrada, ou por linha em alvo editável | a decisão, na seção `## Decisão`             |
-| caminho de arquivo que foi movido ou arquivado  | a justificativa que sustentava a decisão     |
-| âncora, link e nome de seção citada             | alternativa descartada, ou o motivo dela     |
-| erro material: número trocado, termo grafado mal | trade-off, consequência ou escopo            |
+| PODE ser patch                                   | NÃO DEVE ser patch                       |
+|--------------------------------------------------|------------------------------------------|
+| citação quebrada, ou por linha em alvo editável  | a decisão, na seção `## Decisão`         |
+| caminho de arquivo que foi movido ou arquivado   | a justificativa que sustentava a decisão |
+| âncora, link e nome de seção citada              | alternativa descartada, ou o motivo dela |
+| erro material: número trocado, termo grafado mal | trade-off, consequência ou escopo        |
 
 **A fronteira é objetiva.** Se a correção muda o que alguém leria como escolha, ela não é
 patch: é emenda, subsunção ou substituição, e o caminho é um ADR novo. Na dúvida, o
@@ -586,7 +586,7 @@ e desde 2026-08-11 ela é **proibida**, pela regra de
 [Um ADR aceito não recebe decisão nova](#um-adr-aceito-não-recebe-decisão-nova-decidido-em-2026-08-11).
 Isso resolve o caso daqui em diante. **O caso que originou a regra foi fechado em
 2026-08-12**, pela linha
-[`E-64`](fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12):
+[`E-64`](../fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12):
 o ADR-0014 foi desfeito por divisão, a segunda vez que essa forma se aplicou a ele. O
 cabeçalho dele registra hoje o rastro comum de uma divisão, junto do
 [ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md),
@@ -653,13 +653,13 @@ vocabulário para dividir um.
 [ADR-0014](0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md),
 dividido pelo [ADR-0016](0016-o-streaming-e-o-replay-do-log-de-observacoes.md) em
 2026-08-11. A linha da fila que registra a escolha é
-[a divisão como sexta forma](fila-de-decisoes.md#a-divisão-como-sexta-forma-decidida-em-2026-08-11).
+[a divisão como sexta forma](../fila-de-decisoes.md#a-divisão-como-sexta-forma-decidida-em-2026-08-11).
 
 ## A seção `## O que este ADR desfaz fora de si`, obrigatória desde 2026-08-10
 
 **Todo ADR carrega essa seção, e ela vem imediatamente antes de `## Patches
 aplicados`.** A obrigação é da linha
-[`E-41`](fila-de-decisoes.md#e-41-fecha-em-seção-obrigatória-escolhida-em-2026-08-10) da
+[`E-41`](../fila-de-decisoes.md#e-41-fecha-em-seção-obrigatória-escolhida-em-2026-08-10) da
 fila, decidida em 2026-08-10. Ela esteve até agora escrita **apenas na skill que redige
 ADR**, e uma regra que só vive na ferramenta de escrita não alcança quem lê: a skill
 governa quem escreve por ela, e este `README.md` é o que se consulta para saber o que um
@@ -746,10 +746,10 @@ flowchart TD
 **O caso que originou a regra foi fechado em 2026-08-12, e não pela regra em si.** O
 ADR-0014 tinha ganhado duas subseções de `## Decisão`, mais um parágrafo normativo, que
 `a5d5777` não tinha. A linha
-[`E-64`](fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12)
+[`E-64`](../fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12)
 escolheu desfazer por divisão — a mesma forma desta seção, aplicada uma segunda vez ao
 mesmo ADR: o que havia entrado sem forma saiu do corpo do ADR-0014 e passou a viver,
 vigente, no [ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md),
 nascido `Aceito`. A escolha da regra em si — que uma entrada de decisão nova exige ADR
 próprio — está registrada no
-[fecho do `E-62`](fila-de-decisoes.md#e-62-fecha-em-adr-próprio-escolhida-em-2026-08-11).
+[fecho do `E-62`](../fila-de-decisoes.md#e-62-fecha-em-adr-próprio-escolhida-em-2026-08-11).

@@ -65,7 +65,7 @@ no fim: ele não se perde.
    política da raiz, em [`AGENTS.md`](../../AGENTS.md#ao-trabalhar-aqui).
 2. **Invenção.** Alguma integração, contrato, coluna, interface ou regra aparece como
    fato sem evidência? Alguma lacuna foi fechada por decisão do escritor, em vez de virar
-   linha em `docs/adr/fila-de-decisoes.md`?
+   linha em `../../docs/fila-de-decisoes.md`?
 3. **Contradição.** Algum artefato contraria um ADR aceito de `docs/adr/`? Um card que
    contradiz ADR aceito é defeito sempre: a contradição é decisão arquitetural nova, e ela
    entra na fila. Confira também contra `AGENTS.md` da raiz e

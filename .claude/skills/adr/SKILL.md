@@ -14,7 +14,7 @@ skill.
 ## Leia antes de escrever
 
 1. `docs/adr/README.md` — convenções de escrita, estados e numeração.
-2. `docs/adr/fila-de-decisoes.md` — a fila única, e o que cada linha destrava.
+2. `../../../docs/fila-de-decisoes.md` — a fila única, e o que cada linha destrava.
 3. `references/adr.md` — o template obrigatório.
 4. `references/adr-lifecycle.md` — o que fazer antes de criar, enquanto proposto, ao
    aceitar e depois de aceito.
@@ -67,7 +67,7 @@ o escritor recebe, o que ele NÃO DEVE fazer, e quem decide quando não converge
 
 O sub-agente NÃO DEVE escolher entre alternativas nem fechar lacuna sozinho. Uma lacuna
 encontrada durante a redação vira linha em
-`docs/adr/fila-de-decisoes.md`.
+`../../../docs/fila-de-decisoes.md`.
 
 ## Use o template obrigatório
 

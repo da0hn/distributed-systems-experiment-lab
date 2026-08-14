@@ -99,7 +99,7 @@ ali a enumeração não descreve as formas, ela oferece os valores que o campo a
 ## Questões em aberto
 
 [Esta seção existe só enquanto o estado for `Proposto`. Num ADR que nasce `Aceito`,
-omita-a: a pendência vira linha em `docs/adr/fila-de-decisoes.md`, ou questão própria
+omita-a: a pendência vira linha em `../../../../docs/fila-de-decisoes.md`, ou questão própria
 em `docs/questions/`, com o identificador que
 `docs/questions/README.md`, seção "Identificador", define.]
 

@@ -44,7 +44,7 @@ biblioteca
 O plano original mantinha `experiments/` e `docs/experiments/` no Git — a frase "juntos,
 o histórico vira um caderno de laboratório" vinha do `AGENTS.md`, e a linha `E-17` a
 declarou sem valor
-([`fila-de-decisoes.md`](fila-de-decisoes.md#a-quarta-rodada-em-2026-08-06-uma-contradição-com-adr-aceito)) —,
+([`../fila-de-decisoes.md`](../fila-de-decisoes.md#a-quarta-rodada-em-2026-08-06-uma-contradição-com-adr-aceito)) —,
 e nenhuma das duas pastas existe.
 
 O ADR-0002 decide quem deriva o identificador: ele DEVE ser "gerado no código do sistema
@@ -102,7 +102,7 @@ aplicada aqui à topologia.
 
 O frontend NÃO DEVE falar com um back-end único: manda comando ao `lab-plane`, lê
 histórico e streaming do `lab-journal`, sem `Backend For Frontend` — decisão em
-[`fila-de-decisoes.md`](fila-de-decisoes.md#a-sexta-rodada-em-2026-08-06-o-cdc-vira-fonte-do-veredito).
+[`../fila-de-decisoes.md`](../fila-de-decisoes.md#a-sexta-rodada-em-2026-08-06-o-cdc-vira-fonte-do-veredito).
 
 ```mermaid
 flowchart TB
@@ -157,11 +157,11 @@ entre por estar disponível, e `nginx.conf`/Vite já roteiam
 **Por que a contagem de "quatro" deixa de valer.** `E-15` fechou em quatro antes de
 `E-11`/`E-24` criarem o quinto — sequência, não inconsistência da fila:
 
-| Linha  | Fechou em                                                                                    | Resultado                                   |
-|--------|----------------------------------------------------------------------------------------------|---------------------------------------------|
-| `E-15` | [quinta rodada, grupo I](fila-de-decisoes.md#a-quinta-rodada-em-2026-08-06-o-cdc-conferido)  | quatro serviços no dia zero                 |
-| `E-11` | [segunda rodada, grupo II](fila-de-decisoes.md#a-segunda-rodada-do-grupo-ii-em-2026-08-06)   | componente de identidade: onde a regra mora |
-| `E-24` | [terceira rodada, grupo II](fila-de-decisoes.md#a-terceira-rodada-do-grupo-ii-em-2026-08-06) | componente de identidade: serviço próprio   |
+| Linha  | Fechou em                                                                                       | Resultado                                   |
+|--------|-------------------------------------------------------------------------------------------------|---------------------------------------------|
+| `E-15` | [quinta rodada, grupo I](../fila-de-decisoes.md#a-quinta-rodada-em-2026-08-06-o-cdc-conferido)  | quatro serviços no dia zero                 |
+| `E-11` | [segunda rodada, grupo II](../fila-de-decisoes.md#a-segunda-rodada-do-grupo-ii-em-2026-08-06)   | componente de identidade: onde a regra mora |
+| `E-24` | [terceira rodada, grupo II](../fila-de-decisoes.md#a-terceira-rodada-do-grupo-ii-em-2026-08-06) | componente de identidade: serviço próprio   |
 
 **Por que emenda o ADR-0008, e não o substitui.** O critério de
 [`README.md`](README.md#a-emenda-terceira-forma-ao-lado-da-substituição-e-da-subsunção)
@@ -198,15 +198,15 @@ fila citada no Contexto.
 
 **O componente de identidade é serviço próprio, não biblioteca.** A proposta recomendava
 que o domínio medido derivasse o identificador, ciente da semente
-([`fila-de-decisoes.md`](fila-de-decisoes.md#e-11-mudou-de-terreno-o-instrumento-já-publica-identidade-no-sistema-medido)).
+([`../fila-de-decisoes.md`](../fila-de-decisoes.md#e-11-mudou-de-terreno-o-instrumento-já-publica-identidade-no-sistema-medido)).
 A decisão foi contra essa recomendação, aceitando o custo de um contexto inteiro por uma
 regra de uma linha em troca de contrato testável
-([`fila-de-decisoes.md`](fila-de-decisoes.md#e-11-fecha-no-componente-próprio-e-abre-e-24-no-mesmo-ato)).
+([`../fila-de-decisoes.md`](../fila-de-decisoes.md#e-11-fecha-no-componente-próprio-e-abre-e-24-no-mesmo-ato)).
 Rodar separado dispensa escolher entre os dois planos
-([`fila-de-decisoes.md`](fila-de-decisoes.md#e-24--a-alternativa-c-isola-a-regra-e-não-decide-quem-a-invoca)).
+([`../fila-de-decisoes.md`](../fila-de-decisoes.md#e-24--a-alternativa-c-isola-a-regra-e-não-decide-quem-a-invoca)).
 A latência, objeção restante, some se a chamada ocorrer na fase de seeding — nenhum dos
 quatro experimentos hoje especificados pede identidade nova durante os passos
-([`fila-de-decisoes.md`](fila-de-decisoes.md#e-24-fecha-no-serviço-próprio-e-a-latência-sai-da-janela-se-a-derivação-for-antes)).
+([`../fila-de-decisoes.md`](../fila-de-decisoes.md#e-24-fecha-no-serviço-próprio-e-a-latência-sai-da-janela-se-a-derivação-for-antes)).
 
 ## Consequências
 
@@ -239,7 +239,7 @@ quatro experimentos hoje especificados pede identidade nova durante os passos
   (`0008-os-dois-planos-em-processos-separados.md:77-82`): `dev.da0hn.lab.shared` e
   `dev.da0hn.lab.application` continuam valendo.
 - O raiz do `AGENTS.md` é alinhado no mesmo commit, como `E-13` já fez
-  ([`fila-de-decisoes.md`](fila-de-decisoes.md#e-13-fecha-por-papel-do-valor-e-o-agentsmd-muda-no-mesmo-commit)).
+  ([`../fila-de-decisoes.md`](../fila-de-decisoes.md#e-13-fecha-por-papel-do-valor-e-o-agentsmd-muda-no-mesmo-commit)).
 
 ## Trade-offs
 

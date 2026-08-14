@@ -92,8 +92,10 @@ que a consumiria não existe. É provisionamento sem consumo, e está assim de p
 ## A topologia decidida, e o que falta dela
 
 O diagrama abaixo mostra **apenas o que falta**: os elementos e as travessias que os ADRs
-0010, 0011, 0012, 0014 e 0016 fixaram e que nenhum arquivo da árvore implementa. Ele não
-repete nenhuma aresta do diagrama anterior.
+0010, 0011, 0012, 0014 e 0016 fixaram, mais a consulta de confirmação que o
+[fecho de `E-96`](../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13)
+decidiu sem ADR — e que nenhum arquivo da árvore implementa. Ele não repete nenhuma aresta
+do diagrama anterior.
 
 ```mermaid
 flowchart TB
@@ -107,6 +109,7 @@ flowchart TB
     RB["RabbitMQ<br/>instância única, agora também<br/>no caminho da observação"]
     LP -->|" deriva ids na fase de seeding "| ID
     LP -->|" chamada de passo, por rede "| ST
+    LP -->|" consulta de confirmação, depois da quiescência "| ST
     LP -->|" observação "| RB
     RB -->|" consumo, persiste antes de emitir "| LJ
     LJ -->|" SSE, replay por cursor "| FE
@@ -129,7 +132,7 @@ constrói o oráculo com `SELECT` cruzado, que os ADRs 0010 e 0012 proíbem.
 | `frontend`                | `lab-journal`                                                                    | SSE, `Last-Event-ID` e replay por cursor                    | alimentar a timeline ao vivo, e repor o histórico                               | `decidido/não implementado` — o nginx já desliga buffer e cache; nada emite evento            | nenhum                        | `frontend/nginx.conf:22-27`; [ADR-0016](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-replay-por-cursor-é-o-único-mecanismo-com-ou-sem-histórico-completo)                                                                                                          |
 | `lab-plane`               | serviço de identidade                                                            | chamada de rede, na fase de seeding                         | derivar identificadores a partir da semente                                     | `decidido/não implementado` — não há módulo, imagem nem papel no banco                        | nenhum                        | [ADR-0011](../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade)                                                                                                                                                                |
 | `lab-plane`               | `system-under-test`                                                              | chamada de passo, por rede; sentido inverso proibido        | executar cada passo da operação medida                                          | `decidido/não implementado` — os dois processos sobem; nenhuma chamada existe                 | nenhum                        | [ADR-0008](../adr/0008-os-dois-planos-em-processos-separados.md#decisão); `system-under-test/pom.xml` não declara dependência do `lab-plane`                                                                                                                                        |
-| `lab-plane`               | `system-under-test`                                                              | HTTP, consulta depois da quiescência, fora da janela medida | confirmar o consolidado por recurso, e detectar divergência com o stream de CDC | `decidido/não implementado` — a decisão está na fila; nenhum código, rota nem contrato existe | nenhum; forma não decidida    | [`E-96`, fecho](../adr/fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13); [card](../features/deteccao-de-divergencia-entre-fontes/feature-card.md)                                                                                          |
+| `lab-plane`               | `system-under-test`                                                              | HTTP, consulta depois da quiescência, fora da janela medida | confirmar o consolidado por recurso, e detectar divergência com o stream de CDC | `decidido/não implementado` — a decisão está na fila; nenhum código, rota nem contrato existe | nenhum; forma não decidida    | [`E-96`, fecho](../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13); [card](../features/deteccao-de-divergencia-entre-fontes/feature-card.md)                                                                                              |
 | `lab-plane`               | RabbitMQ                                                                         | AMQP; mensagem de negócio, sem LSN                          | levar a observação até o `lab-journal`                                          | `decidido/não implementado`                                                                   | nenhum                        | [ADR-0014](../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#o-evento-sai-do-passo-pelo-broker)                                                                                                                                                    |
 | RabbitMQ                  | `lab-journal`                                                                    | AMQP; persiste, depois emite                                | alimentar o caderno durante a execução                                          | `decidido/não implementado`                                                                   | nenhum                        | [ADR-0016](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#no-lab-journal-a-ordem-é-serial-persiste-depois-emite)                                                                                                                                                       |
 | `system-under-test`       | PostgreSQL, schema `sut`                                                         | JDBC, uma conexão por worker                                | executar as operações do sistema medido                                         | `implementado` — conexão e schema existem; `resource` e `allocation` não                      | a órfã de `E-9`, em `Q-INT-5` | `system-under-test/src/main/resources/application.yml:12-23`; `system-under-test/src/main/resources/db/migration/V1__criar_schema_do_sut.sql`; [`schemas/sut.md`](schemas/sut.md#o-schema-do-sistema-medido-sut)                                                                    |
@@ -278,7 +281,7 @@ cursor**, decidido pelo
 sem condicionar a escolha a um limiar. O `nginx.conf` já pressupunha SSE; o que faltava
 era o ADR. [`Q-0022`](../questions/Q-0022.md), sobre os dois limiares nunca medidos,
 continua `pendente`: o ADR-0016 não a nomeia nem a resolve, e o destino dela é a linha
-[`E-59`](../adr/fila-de-decisoes.md#e-59--se-o-adr-0016-tira-a-premissa-de-q-0022).
+[`E-59`](../fila-de-decisoes.md#e-59--se-o-adr-0016-tira-a-premissa-de-q-0022).
 
 **`Q-INT-3` — resolvida.** O PostgreSQL é o **compartilhado da Camada 6 do homelab**, com
 schema por aplicação — decidido em 2026-08-06, contra a recomendação, e registrado nas
@@ -300,9 +303,9 @@ Toxiproxy, nomeado pela mesma ADR 0017, continua sem debate e sem uso aqui.**
 vive em [`schemas/sut.md`](schemas/sut.md#o-schema-do-sistema-medido-sut), e o que restringe a
 medição no [ADR-0015](../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão).
 Onde a órfã é verificada segue
-[aberto](../adr/fila-de-decisoes.md#e-9-fecha-a-escolha-e-abre-uma-pendência-que-e-18-criou).
+[aberto](../fila-de-decisoes.md#e-9-fecha-a-escolha-e-abre-uma-pendência-que-e-18-criou).
 **O tipo SQL de `value`, `capacity` e `amount` deixou de bloquear:**
-[`E-56`, fecho](../adr/fila-de-decisoes.md#e-56-fecha-em-bigint-nas-três-escolhida-em-2026-08-13)
+[`E-56`, fecho](../fila-de-decisoes.md#e-56-fecha-em-bigint-nas-três-escolhida-em-2026-08-13)
 fechou em 2026-08-13, e a forma decidida já está no `erDiagram` de
 [`schemas/sut.md`](schemas/sut.md#o-que-o-diagrama-do-sut-não-desenha) — dona da forma, e
 não repetida aqui. Isso não escreve nenhuma migração nova: a `V1` continua criando só o

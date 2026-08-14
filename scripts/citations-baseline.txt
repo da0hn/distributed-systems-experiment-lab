@@ -52,7 +52,7 @@
 # conserto: os três arquivos foram movidos sem alteração, e trocar o prefixo do
 # caminho as resolveria com os números de linha intactos. Se elas viram patch ou
 # permanecem é decisão de pessoa, aberta na linha `E-72` de
-# `docs/adr/fila-de-decisoes.md`.
+# `docs/fila-de-decisoes.md`.
 docs/adr/0008-os-dois-planos-em-processos-separados.md:../architecture/arquitetura-alvo.md:29-34
 docs/adr/0008-os-dois-planos-em-processos-separados.md:../architecture/decisoes-pendentes.md:254-255
 docs/adr/0008-os-dois-planos-em-processos-separados.md:../architecture/modelo-de-dados.md:154-158
@@ -65,3 +65,10 @@ docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/archite
 docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:243
 docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:1797-1800
 docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/architecture/decisoes-pendentes.md:230-233
+
+# O `plano-de-escrita-do-lote-e.md` saiu da árvore, e o ADR-0015 o cita três vezes.
+# As três ficam inconsertáveis pelo mesmo motivo das doze acima: reduzir ou
+# redirecionar o corpo de um ADR aceito exige forma do lifecycle, e nenhuma delas
+# alcança "o alvo foi apagado depois". A informação permanece no histórico do git.
+docs/adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md:plano-de-escrita-do-lote-e.md#o-que-a-redução-cortou-e-para-onde-cada-coisa-foi
+docs/adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md:plano-de-escrita-do-lote-e.md#adr-0015--a-chave-o-discriminador-de-execução-e-as-colunas-de-tempo

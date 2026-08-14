@@ -12,18 +12,18 @@
   [ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-que-este-adr-não-decide), que
   recusa por escrito decidir onde o nível de isolamento é declarado. O eixo do nível
   separado do eixo da estratégia vem do
-  [fecho de `E-87`](fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12).
+  [fecho de `E-87`](../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12).
   Resolve `P6` do Example Mapping de
   [`comparacao-entre-niveis-de-isolamento`](../features/comparacao-entre-niveis-de-isolamento/example-mapping.md#perguntas-em-aberto).
   Enunciado da proposta em
-  [`fila-de-decisoes.md`, `E-89`](fila-de-decisoes.md#e-89--a-classificação-do-zero-quando-o-nível-de-isolamento-é-o-eixo-variado).
+  [`../fila-de-decisoes.md`, `E-89`](../fila-de-decisoes.md#e-89--a-classificação-do-zero-quando-o-nível-de-isolamento-é-o-eixo-variado).
 
 ## Contexto
 
 O experimento `write-skew-inert-protection` (E5) ganhou um eixo novo: a capacidade
 [`comparacao-entre-niveis-de-isolamento`](../features/comparacao-entre-niveis-de-isolamento/feature-card.md),
 aceita pelo fecho de
-[`E-87`](fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12),
+[`E-87`](../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12),
 roda o mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e `SERIALIZABLE`, e
 compara os três vereditos. Antes dela, cada execução do E5 rodava sob um único nível,
 fixo.
@@ -37,7 +37,7 @@ tabela, só a carga sem contenção fazia `NONE` não violar.
 
 Sob `SERIALIZABLE`, `NONE` também não viola — porque o próprio nível protege a
 invariante, sem ação da estratégia de concorrência da aplicação, como o enunciado de
-[`E-89`](fila-de-decisoes.md#e-89--a-classificação-do-zero-quando-o-nível-de-isolamento-é-o-eixo-variado)
+[`E-89`](../fila-de-decisoes.md#e-89--a-classificação-do-zero-quando-o-nível-de-isolamento-é-o-eixo-variado)
 e o `Exemplo 7.4` de
 [`deteccao-de-protecao-inerte`](../features/deteccao-de-protecao-inerte/example-mapping.md#r7--o-nível-de-isolamento-como-eixo)
 registram. Aplicada ao pé da letra, a ordem 1 classificaria o braço `SERIALIZABLE` como
@@ -60,7 +60,7 @@ violação de janela mal declarada. Sob `SERIALIZABLE` essa contagem é maior qu
 nível não bloqueia, só aborta no commit, e as janelas continuam se sobrepondo.
 
 A lacuna foi registrada em
-[`fila-de-decisoes.md`, `E-89`](fila-de-decisoes.md#e-89--a-classificação-do-zero-quando-o-nível-de-isolamento-é-o-eixo-variado)
+[`../fila-de-decisoes.md`, `E-89`](../fila-de-decisoes.md#e-89--a-classificação-do-zero-quando-o-nível-de-isolamento-é-o-eixo-variado)
 como `P6` do Example Mapping de `comparacao-entre-niveis-de-isolamento`, e o
 [ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-que-este-adr-não-decide) já
 havia recusado, por escrito, decidir onde o nível de isolamento é declarado — pergunta
@@ -109,7 +109,7 @@ O nível de isolamento NÃO DEVE entrar na carga declarada que a
 exige. Continuam exigidos o mesmo `N`, workers e operação, nada além disso.
 
 Aplicada ao braço `SERIALIZABLE`, a decisão produz o traço abaixo, o mesmo que o
-[fecho de `E-89`](fila-de-decisoes.md#e-89-fecha-em-cada-controle-roda-sob-o-seu-próprio-nível-escolhida-em-2026-08-12)
+[fecho de `E-89`](../fila-de-decisoes.md#e-89-fecha-em-cada-controle-roda-sob-o-seu-próprio-nível-escolhida-em-2026-08-12)
 já descreve para esse braço: o controle negativo, sob `READ COMMITTED`, viola — a ordem 1
 não dispara. As coincidências dele são maiores que zero — a ordem 2 não dispara.
 `SERIALIZABLE` é SSI e não bloqueia: as janelas continuam se sobrepondo, e as
@@ -202,7 +202,7 @@ passa a integrar a carga declarada, ao lado de `N`, workers e operação.
 
 **Descartada.** Trata os três braços de forma simétrica — mais simples que a assimetria
 escolhida —, mas sob `SERIALIZABLE` `NONE` também não viola, como o
-[enunciado de `E-89`](fila-de-decisoes.md#e-89--a-classificação-do-zero-quando-o-nível-de-isolamento-é-o-eixo-variado)
+[enunciado de `E-89`](../fila-de-decisoes.md#e-89--a-classificação-do-zero-quando-o-nível-de-isolamento-é-o-eixo-variado)
 registra: o braço volta a cair na ordem 1 como `inválido`, e a alternativa reproduz o
 problema, não o resolve, exigindo um segundo vocabulário de veredito para "protegido"
 fora da tabela do ADR-0004.
@@ -254,7 +254,7 @@ de garantir o que esta decisão pressupõe.
 | [`execucao-de-experimento`, Feature Card](../features/execucao-de-experimento/feature-card.md#fora-de-escopo)                                                                                                                                                                                                                                                                                                     | Corrigido no mesmo commit: a frase passa a dizer, sem ambiguidade, que sob qual nível cada controle roda é deste ADR — o que já estava decidido —, distinguindo isso de onde o nível é declarado e de como a execução o leva à conexão, que continuam sem decisão.               |
 | [`docs/features/README.md`, índice](../features/README.md#índice)                                                                                                                                                                                                                                                                                                                                                 | Corrigido no mesmo commit: a coluna `Regras` de `execucao-de-experimento` passa de 15 para 17, com as duas novas `pendente`; a nota sobre a contagem de regras aprovadas é ajustada de propósito.                                                                                |
 | [`docs/adr/README.md`, índice](README.md#índice)                                                                                                                                                                                                                                                                                                                                                                  | Corrigido no mesmo commit: um ADR novo exige linha no índice. Nada mais do arquivo é tocado.                                                                                                                                                                                     |
-| [`fila-de-decisoes.md`, fecho de `E-89`](fila-de-decisoes.md#e-89-fecha-em-cada-controle-roda-sob-o-seu-próprio-nível-escolhida-em-2026-08-12)                                                                                                                                                                                                                                                                    | Corrigido no mesmo commit: ganha uma frase apontando para este ADR, para quem chega pela fila encontrar o artefato. O texto que a pessoa fechou não é alterado.                                                                                                                  |
+| [`../fila-de-decisoes.md`, fecho de `E-89`](../fila-de-decisoes.md#e-89-fecha-em-cada-controle-roda-sob-o-seu-próprio-nível-escolhida-em-2026-08-12)                                                                                                                                                                                                                                                              | Corrigido no mesmo commit: ganha uma frase apontando para este ADR, para quem chega pela fila encontrar o artefato. O texto que a pessoa fechou não é alterado.                                                                                                                  |
 
 O [ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md) **não**
 entra nesta lista: a tabela de classificação do zero permanece correta como está escrita,

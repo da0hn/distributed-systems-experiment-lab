@@ -125,7 +125,7 @@ ninguém decidiu: `Pergunta em aberto`.
   com que comparar; o consolidado que o system under test publica confere, mas não é
   independente dele.
 - **A fonte do oráculo de capacidade fica sem decisão. `Pergunta em aberto`
-  ([`E-37`](fila-de-decisoes.md#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança)).**
+  ([`E-37`](../fila-de-decisoes.md#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança)).**
   `Σ amount ≤ capacity` exige somar `INSERT`. O ADR-0002 proíbe derivar "o estado final
   do log de observações do runtime"; estender isso a um stream de CDC é leitura do
   registro arquivado
@@ -133,7 +133,7 @@ ninguém decidiu: `Pergunta em aberto`.
   não do ADR-0002. O E5 depende deste oráculo, e nenhuma fonte lhe foi dada.
 - **Se a proibição alcança também a leitura direta não está decidido. `Pergunta em
   aberto`
-  ([`E-37`](fila-de-decisoes.md#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança)).**
+  ([`E-37`](../fila-de-decisoes.md#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança)).**
   `value_inicial` vem do `INSERT` do estado inicial; `value_final`, do último evento do
   stream — nenhum dos dois soma, diferente da reconstrução que o predicado exige. `O20`
   já trata a leitura direta de `value_inicial` como aceitável, sem declarar se ela

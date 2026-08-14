@@ -199,7 +199,7 @@ Descartadas, com o motivo técnico de cada uma:
 
 - **Detecção de exposição a posteriori.** O log medido seria varrido depois para achar
   pares `READ`/`WRITE` sobrepostos. Perde porque exige a métrica de exposição que
-  [a anomalia por frequência](../../fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira)
+  [a anomalia por frequência](../../../fila-de-decisoes.md#a-anomalia-por-frequência-uma-proposta-que-muda-o-estatuto-da-barreira)
   declara não nomeada em documento nenhum — e decidir aqui seria decidir duas coisas.
 - **Emendar o plano e retirar o requisito.** Perde porque o cenário 25 é o único desenho
   que explica por que travar uma linha não ajuda no E5.
@@ -2284,7 +2284,7 @@ Contra: aquele arquivo já é índice, convenção, histórico e processo de deb
 linhas o transforma no maior documento do repositório, e `C-7` já o isentou do limite de
 caracteres por não ser ADR — a isenção viraria licença para crescer sem fim.
 
-**Alternativa 2 — extrair uma fila única para `../../fila-de-decisoes.md`.** A favor: a
+**Alternativa 2 — extrair uma fila única para `../../../fila-de-decisoes.md`.** A favor: a
 fila deixa de ser seção de um arquivo que faz outras quatro coisas; `docs/adr/` não é
 dissolvido pelo Lote D, então a fila sobrevive à pulverização sem precisar de destino
 novo; as duas seções atuais viram lápide, pela decisão `C-2`. Contra: cria um arquivo, e
@@ -2436,7 +2436,7 @@ trade-offs, e decididas na mesma sessão em que foram enumeradas.
 
 | Item  | Escolha da pessoa                                         | Seguiu a recomendação? |
 |-------|-----------------------------------------------------------|------------------------|
-| `B-1` | fila única, extraída para `../../fila-de-decisoes.md`    | sim                    |
+| `B-1` | fila única, extraída para `../../../fila-de-decisoes.md`    | sim                    |
 | `B-2` | não podar; a linha fecha por subsunção                    | sim                    |
 | `B-3` | aprova-se cada regra, e não o card                        | sim                    |
 | `B-4` | a contradição **é** decisão arquitetural nova, e gera ADR | **não**                |
@@ -2558,16 +2558,16 @@ citação por linha vinda de ADR aceito. Os outros oito podem ser movidos sem da
 
 ### A lápide desta fila, em 2026-08-05
 
-**A fila viva é [`../../fila-de-decisoes.md`](../../fila-de-decisoes.md) .** É a
+**A fila viva é [`../../../fila-de-decisoes.md`](../../../fila-de-decisoes.md) .** É a
 execução da decisão `B-1`, e a lápide segue a forma que `C-2` fixou: ela nomeia o
 destino de cada parte, e não some.
 
 | O que estava aqui                                | Onde está agora                                                                                       |
 |--------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| os Blocos 0 a 6, com as 64 linhas `D-*`          | [as decisões da rodada de arquitetura](../../fila-de-decisoes.md#as-decisões-da-rodada-de-arquitetura-de-2026-08-03) |
-| o agrupamento por assunto                        | [o agrupamento por assunto](../../fila-de-decisoes.md#o-agrupamento-por-assunto)                        |
-| `D-ARQ-02` e `D-DOM-11`, que não tinham bloco    | [as duas linhas sem bloco](../../fila-de-decisoes.md#as-duas-linhas-sem-bloco-classificadas-em-2026-08-05) |
-| o ciclo de vida de uma linha da fila             | [o que esta fila enfileira](../../fila-de-decisoes.md#o-que-esta-fila-enfileira)                        |
+| os Blocos 0 a 6, com as 64 linhas `D-*`          | [as decisões da rodada de arquitetura](../../../fila-de-decisoes.md#as-decisões-da-rodada-de-arquitetura-de-2026-08-03) |
+| o agrupamento por assunto                        | [o agrupamento por assunto](../../../fila-de-decisoes.md#o-agrupamento-por-assunto)                        |
+| `D-ARQ-02` e `D-DOM-11`, que não tinham bloco    | [as duas linhas sem bloco](../../../fila-de-decisoes.md#as-duas-linhas-sem-bloco-classificadas-em-2026-08-05) |
+| o ciclo de vida de uma linha da fila             | [o que esta fila enfileira](../../../fila-de-decisoes.md#o-que-esta-fila-enfileira)                        |
 
 **O texto dos blocos continua acima, e isso não é duplicação por descuido.** Este
 arquivo é append-only até a linha 1879, pelo achado registrado logo acima: nove citações
@@ -2731,7 +2731,7 @@ fosse dissolvida. Isso é tensão real, e `D-5` a herda.
 **O problema.** O documento carrega treze objeções contra a rodada de 2026-08-03. Três
 estão `verificado`, uma está `moderado`, e **nove estão `não conferido`** — plausíveis,
 com citações que ninguém checou uma a uma. Ele critica `decisoes-pendentes.md`, que é o
-documento cuja fila acabou de sair para `../../fila-de-decisoes.md`.
+documento cuja fila acabou de sair para `../../../fila-de-decisoes.md`.
 
 **Uma objeção não conferida não é achado nem ruído.** É trabalho de revisão adversarial
 parado no meio. Apagá-la descarta o trabalho; promovê-la a fato viola a regra de que o

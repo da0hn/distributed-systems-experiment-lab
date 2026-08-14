@@ -151,7 +151,7 @@ em vez de estimar; um número estimado não é evidência de limite.
 O racional fica em
 [`specification-process.md`](../../../docs/specification-process.md#feature-card--o-padrão);
 a decisão que muda um limite entra na
-[fila](../../../docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira) e depois no
+[fila](../../../docs/fila-de-decisoes.md#o-que-esta-fila-enfileira) e depois no
 script, nunca aqui.
 
 ## Gere os artefatos
@@ -274,7 +274,7 @@ python "${CLAUDE_SKILL_DIR}/scripts/check_artifact_limits.py" --root . --file <a
 Resolva toda violação antes de apresentar o plano. Se um limite impedir clareza,
 divida o artefato. NÃO DEVE aumentar um limite por conta própria: mudá-lo é decisão,
 e ela entra na
-[fila](../../../docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira) antes de o
+[fila](../../../docs/fila-de-decisoes.md#o-que-esta-fila-enfileira) antes de o
 script mudar.
 
 ## Entregue o planejamento

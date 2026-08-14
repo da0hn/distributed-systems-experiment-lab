@@ -33,13 +33,13 @@ A seção `## Os contextos propostos` já saiu do arquivo. Quatro continuam nele
 vocabulário, contra o que o processo define em
 [glossário de domínio](../specification-process.md#glossário-de-domínio--contextmd):
 
-| Seção                                                                                               | Natureza        | Dono correto                                                                            |
-|-----------------------------------------------------------------------------------------------------|-----------------|-----------------------------------------------------------------------------------------|
-| [termos ambíguos](../CONTEXT.md#termos-ambíguos-e-a-desambiguação-proposta)                         | proposta        | [fila](../adr/fila-de-decisoes.md#o-que-esta-fila-enfileira)                            |
-| [seis decisões de vocabulário](../CONTEXT.md#as-seis-decisões-de-vocabulário)                       | decisão fechada | ADR de vocabulário, ou a linha da fila que a fechou                                     |
-| [perguntas em aberto](../CONTEXT.md#perguntas-em-aberto)                                            | pendência       | [`docs/questions/`](../questions/README.md#índice)                                      |
-| [dois rótulos do instrumento](../CONTEXT.md#os-dois-rótulos-do-instrumento-decididos-em-2026-08-05) | decisão datada  | ADR de vocabulário                                                                      |
-| [a sigla `SUT` no código](../CONTEXT.md#a-sigla-sut-no-código-decidida-em-2026-08-05)               | decisão datada  | [fila#a5](../adr/fila-de-decisoes.md#a5--a-sigla-sut-no-código-decidida-em-2026-08-05)  |
+| Seção                                                                                               | Natureza        | Dono correto                                                                       |
+|-----------------------------------------------------------------------------------------------------|-----------------|------------------------------------------------------------------------------------|
+| [termos ambíguos](../CONTEXT.md#termos-ambíguos-e-a-desambiguação-proposta)                         | proposta        | [fila](../fila-de-decisoes.md#o-que-esta-fila-enfileira)                           |
+| [seis decisões de vocabulário](../CONTEXT.md#as-seis-decisões-de-vocabulário)                       | decisão fechada | ADR de vocabulário, ou a linha da fila que a fechou                                |
+| [perguntas em aberto](../CONTEXT.md#perguntas-em-aberto)                                            | pendência       | [`docs/questions/`](../questions/README.md#índice)                                 |
+| [dois rótulos do instrumento](../CONTEXT.md#os-dois-rótulos-do-instrumento-decididos-em-2026-08-05) | decisão datada  | ADR de vocabulário                                                                 |
+| [a sigla `SUT` no código](../CONTEXT.md#a-sigla-sut-no-código-decidida-em-2026-08-05)               | decisão datada  | [fila#a5](../fila-de-decisoes.md#a5--a-sigla-sut-no-código-decidida-em-2026-08-05) |
 
 **A medição desqualifica a explicação benigna.** São 35.633 caracteres de prosa contra
 um teto genérico de 4.000. "Glossário cresce com o vocabulário" não explica o número,
@@ -53,7 +53,7 @@ estimativa.** As seções da tabela acima somam 5.863 caracteres de prosa, num a
 correção abaixo continua certa pela natureza do artefato, e **não** é solução de
 tamanho: o glossário precisará de teto próprio ou de isenção de qualquer maneira, o que
 o torna dependente da linha do
-[orçamento de prosa](../adr/fila-de-decisoes.md#o-orçamento-de-prosa-quem-é-dono-do-teto-e-o-que-ele-alcança).
+[orçamento de prosa](../fila-de-decisoes.md#o-orçamento-de-prosa-quem-é-dono-do-teto-e-o-que-ele-alcança).
 
 **A contagem deste achado diverge da tabela dele.** A frase de abertura diz que quatro
 seções continuam no arquivo, e a tabela lista cinco. Qual das duas está certa não foi
@@ -70,7 +70,7 @@ glossário precisa de limite próprio.
 existem; as narrativas nunca migraram" — valia para duas seções, e não para todas.
 **Classificação:** redundância estrutural e violação de processo, alta.
 
-[A saída, decidida em 2026-08-06](../adr/fila-de-decisoes.md#a-saída-decidida-em-2026-08-06)
+[A saída, decidida em 2026-08-06](../fila-de-decisoes.md#a-saída-decidida-em-2026-08-06)
 determina que a linha deixa a fila quando nasce o ADR. As rodadas que geraram os ADRs
 0010 a 0012 seguem no corpo ativo com narrativa completa: 119.084 caracteres de prosa
 em cinquenta títulos. Dezesseis lápides já existem, e nenhuma aponta para um arquivo
@@ -92,14 +92,14 @@ flowchart TB
 
 **Estado em 2026-08-08: a poda é por linha, e não por rodada.** A consulta reversa
 decidida na
-[linha da apuração](../adr/fila-de-decisoes.md#o-que-apura-a-âncora-citada-antes-de-uma-redução)
+[linha da apuração](../fila-de-decisoes.md#o-que-apura-a-âncora-citada-antes-de-uma-redução)
 responde por título, e mediu esta divisão nos três níveis de heading que a fila usa:
 
-| Situação da seção                       | Seções | Prosa  |
-|-----------------------------------------|--------|--------|
-| citada de fora, exige lápide            | 34     | 33.286 |
-| sem citação alguma                      | 70     | 71.488 |
-| só âncora interna, quebra em silêncio   | 7      | 14.202 |
+| Situação da seção                     | Seções | Prosa  |
+|---------------------------------------|--------|--------|
+| citada de fora, exige lápide          | 34     | 33.286 |
+| sem citação alguma                    | 70     | 71.488 |
+| só âncora interna, quebra em silêncio | 7      | 14.202 |
 
 **A segunda linha não é movível em bloco, e a razão é o aninhamento.** Uma narrativa de
 rodada, em nível 3, não é citada por ninguém, enquanto as linhas `E-NN` que ela contém,
@@ -132,7 +132,7 @@ existe nessa regra, e o diagrama acima foi corrigido.
 registrado como possibilidade não escolhida — o relatório de execução incorporando a
 definição usada — não estava em ADR nenhum, nem como decisão, nem como alternativa
 descartada, nem como pergunta em aberto, e teria sido apagado junto. Ele virou
-[`E-42`](../adr/fila-de-decisoes.md#e-42--o-relatório-de-execução-incorpora-a-definição-usada-ou-a-cita).
+[`E-42`](../fila-de-decisoes.md#e-42--o-relatório-de-execução-incorpora-a-definição-usada-ou-a-cita).
 
 **A fila não encolheu, e isto não é falha da poda.** Ela saiu de 128.181 para 128.471
 caracteres de prosa: a narrativa removida tinha o tamanho da linha nova que a substituiu.

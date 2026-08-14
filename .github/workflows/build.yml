@@ -1,4 +1,4 @@
-# Build, provas e imagem. Decisão `E-4`, em `docs/adr/fila-de-decisoes.md`.
+# Build, provas e imagem. Decisão `E-4`, em `docs/fila-de-decisoes.md`.
 #
 # **Nenhum experimento roda aqui.** O E1 do MVP é obrigado a violar a
 # invariante — esse é o resultado que ele existe para produzir — e um

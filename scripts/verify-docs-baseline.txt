@@ -12,7 +12,4 @@
 # ocorrência do mesmo defeito, que é o oposto do que a baseline existe
 # para fazer. Consertou, apague a linha.
 
-tabelas::docs/AGENTS.md:coluna 2 em tabela de largura 83
 tabelas::docs/adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md:coluna 2 em tabela de largura 283
-tabelas::docs/adr/README.md:coluna 1 em tabela de largura 50
-tabelas::docs/adr/README.md:coluna 2 em tabela de largura 46

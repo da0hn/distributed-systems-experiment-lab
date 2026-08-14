@@ -46,7 +46,7 @@ Uma entrada tem quatro partes, e só essas quatro: **termo**, **definição brev
 
 | O que aparece na conversa                        | Onde ele vive                                   |
 |--------------------------------------------------|-------------------------------------------------|
-| alternativa de nome, com o argumento de cada uma | linha da `docs/adr/fila-de-decisoes.md`         |
+| alternativa de nome, com o argumento de cada uma | linha da `../../../docs/fila-de-decisoes.md`         |
 | decisão de vocabulário, proposta ou tomada       | a mesma linha da fila; ADR quando ela o merecer |
 | ata de como o termo foi debatido                 | a linha da fila, e nunca o glossário            |
 | pergunta em aberto e backlog de termos           | `docs/questions/`, ou o `example-mapping.md`    |

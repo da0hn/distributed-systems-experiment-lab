@@ -9,11 +9,11 @@ frase é o estado, e ela não é atualizada por commit: a árvore prova o que ex
 índices são donos das quantidades. Não escreva aqui inventário de módulo, contagem de
 ADR, de questão ou de regra, nem lista do que falta.
 
-| Comando                           | O que ele faz                                          |
-|-----------------------------------|--------------------------------------------------------|
-| `mvn verify`                      | compila e sobe cada serviço contra PostgreSQL efêmero  |
-| `docker compose up --build`       | sobe o banco e os serviços do `compose.yaml`           |
-| `npm --prefix frontend run build` | constrói a interface                                   |
+| Comando                           | O que ele faz                                         |
+|-----------------------------------|-------------------------------------------------------|
+| `mvn verify`                      | compila e sobe cada serviço contra PostgreSQL efêmero |
+| `docker compose up --build`       | sobe o banco e os serviços do `compose.yaml`          |
+| `npm --prefix frontend run build` | constrói a interface                                  |
 
 A stack, as versões e os serviços que sobem estão declarados em `pom.xml`,
 `compose.yaml` e `frontend/package.json`. Leia-os de lá — um número copiado para cá
@@ -21,7 +21,7 @@ envelhece sem avisar ninguém.
 
 O que existe, o que foi decidido e ainda não foi construído, e o que continua aberto
 vive na [matriz de integrações](docs/architecture/integrations.md#matriz) e na
-[fila de decisões](docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira).
+[fila de decisões](docs/fila-de-decisoes.md#o-que-esta-fila-enfileira).
 
 ### Os quatro serviços, e a regra que os separa
 
@@ -60,7 +60,7 @@ sistema medido é decisão do
 
 O inventário do que falta não vive aqui; ele é da
 [matriz](docs/architecture/integrations.md#matriz) e da
-[fila](docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira). Duas ausências, porém,
+[fila](docs/fila-de-decisoes.md#o-que-esta-fila-enfileira). Duas ausências, porém,
 são guardrail e não snapshot:
 
 - **O `REPLICATION` pertence ao papel do conector de CDC, nunca ao `lab-plane`.** Pôr a
@@ -232,7 +232,7 @@ esquema.
   segunda — "o uso do broker no caminho da observação". Se ela é dispensa nova ou é a
   segunda realocada pela divisão **não está decidido, e a lacuna foi aceita** em
   2026-08-12, no fecho de
-  [`E-84`](docs/adr/fila-de-decisoes.md#e-84-fecha-em-lacuna-aceita-escolhida-em-2026-08-12):
+  [`E-84`](docs/fila-de-decisoes.md#e-84-fecha-em-lacuna-aceita-escolhida-em-2026-08-12):
   ninguém está encarregado de responder, e a contagem acima não antecipa a resposta. **A
   regra que importa não depende do número** — uma dispensa registrada não é precedente, e
   a próxima precisa ser escrita por inteiro.
@@ -329,7 +329,7 @@ O processo é dono do seu próprio estado, em
 Quatro regras dele valem em toda edição, e por isso ficam aqui:
 
 - **A fila é uma só, e vive em
-  [`docs/adr/fila-de-decisoes.md`](docs/adr/fila-de-decisoes.md#o-que-esta-fila-enfileira).**
+  [`docs/fila-de-decisoes.md`](docs/fila-de-decisoes.md#o-que-esta-fila-enfileira).**
   As origens anteriores viraram lápide, e a de
   `docs/adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md` guarda o texto congelado
   porque ADRs aceitos citam aquele arquivo por número de linha.

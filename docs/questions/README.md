@@ -23,7 +23,7 @@ regra, e quem a nomeia é a seção
 `Proposto`. Se a resposta pertence a outra decisão, ela recebe status `encaminhado` e,
 no ato da aceitação do ADR de origem, é transportada para um arquivo nesta pasta —
 **inteira, não resumida**. O ADR de destino precisa nascer com o problema que motivou a
-entrada dele na [fila de decisões](../adr/fila-de-decisoes.md). Um resumo é a mesma
+entrada dele na [fila de decisões](../fila-de-decisoes.md). Um resumo é a mesma
 perda, mais devagar. O processo de debate que produz a questão está em
 [`adr/README.md`](../adr/README.md#processo-de-debate), e a coluna `Origem` guarda o ADR
 e o número que a questão tinha na seção dele.

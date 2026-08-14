@@ -15,7 +15,7 @@
   persistência e o buffer ao ADR-0017, não devolve a parte perdida — ela desfaz só o que
   havia entrado depois de `a5d5777`. Por que o arquivo não é renomeado junto é lacuna
   registrada na linha
-  [`E-83`](fila-de-decisoes.md#e-83--onde-mora-o-racional-de-não-renomear-o-arquivo-do-adr-0014)
+  [`E-83`](../fila-de-decisoes.md#e-83--onde-mora-o-racional-de-não-renomear-o-arquivo-do-adr-0014)
   da fila.
 
 - **Última atualização:** 2026-08-12
@@ -33,7 +33,7 @@
 - **Alterado por:**
   [ADR-0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md)
   — **divisão**, aplicada uma segunda vez, decidida em 2026-08-12
-  ([`fila-de-decisoes.md`](fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12)).
+  ([`../fila-de-decisoes.md`](../fila-de-decisoes.md#e-64-fecha-em-desfazer-por-divisão-escolhida-em-2026-08-12)).
   Duas subseções de `## Decisão` haviam entrado neste corpo depois de `a5d5777`, sem forma
   do lifecycle que as autorizasse — "A persistência no `lab-journal` começa na etapa 1, e
   não mais na 6" e "O runtime publica por um buffer em memória, numa thread separada" —,

@@ -68,7 +68,7 @@ Nem todo atrito é defeito de skill. Três destinos, e um deles é não fazer na
 | A regra atravessa skills                         | patch no `AGENTS.md`             |
 | Preferência da pessoa ainda não generalizada     | memória em `memory/`             |
 | Falha de execução sem padrão                     | nenhum — descarte com motivo     |
-| Decisão arquitetural do laboratório              | `docs/adr/fila-de-decisoes.md`   |
+| Decisão arquitetural do laboratório              | `../../../docs/fila-de-decisoes.md`   |
 
 Uma dúvida entre dois destinos vira pergunta ao usuário, nunca escolha silenciosa.
 

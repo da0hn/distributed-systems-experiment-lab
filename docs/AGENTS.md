@@ -34,10 +34,10 @@ que a segunda metade deixou de ser opcional.
 
 ## O que nunca é editado
 
-| Alvo                                | Por quê                                                                          |
-|-------------------------------------|----------------------------------------------------------------------------------|
-| `adr/arquivo/**`                    | registra o que se pensava naquela data; editar apaga a evidência                 |
-| a **decisão** de um ADR `Aceito`    | para mudá-la, escreva um ADR novo e marque o antigo `Substituído por ADR-NNNN`   |
+| Alvo                                | Por quê                                                                           |
+|-------------------------------------|-----------------------------------------------------------------------------------|
+| `adr/arquivo/**`                    | registra o que se pensava naquela data; editar apaga a evidência                  |
+| a **decisão** de um ADR `Aceito`    | para mudá-la, escreva um ADR novo e marque o antigo `Substituído por ADR-NNNN`    |
 | uma linha de `## Patches aplicados` | ela é o rastro que substituiu a proibição; removê-la apaga o que o rastro provava |
 
 **A imutabilidade do corpo foi revogada em 2026-08-07.** O corpo — tudo a partir da
@@ -115,7 +115,7 @@ decisões pendentes; critérios de pronto; links.
   não aprovada congela a versão errada dela, pelo mesmo motivo que vale para regra em
   debate.
 - **Um card NÃO PODE contradizer um ADR aceito.** A contradição **é** decisão
-  arquitetural nova: ela entra na [fila de decisões](adr/fila-de-decisoes.md) no mesmo
+  arquitetural nova: ela entra na [fila de decisões](fila-de-decisoes.md) no mesmo
   turno em que é vista, e o card é alinhado ao que o ADR que sair dela disser.
 - Um diagrama pesado demais para o card vai para o `example-mapping.md`, e o card faz
   link. O ganho é foco, e não orçamento: o card carrega o que uma consulta precisa, e o
@@ -209,12 +209,12 @@ coisas: termo, definição breve, status ou sinônimos, e link de origem.
 
 **O que não entra nele**, mesmo quando fala de vocabulário:
 
-| Conteúdo                                | Onde vive                                       |
-|-----------------------------------------|-------------------------------------------------|
-| alternativa de nome, com o descartado   | [fila de decisões](adr/fila-de-decisoes.md)     |
-| decisão proposta e seu racional         | fila, e ADR quando a decisão for arquitetural   |
-| pergunta em aberto sobre um termo       | [`questions/`](questions/README.md)             |
-| backlog e ata de rodada                 | fila de decisões                                |
+| Conteúdo                              | Onde vive                                     |
+|---------------------------------------|-----------------------------------------------|
+| alternativa de nome, com o descartado | [fila de decisões](fila-de-decisoes.md)       |
+| decisão proposta e seu racional       | fila, e ADR quando a decisão for arquitetural |
+| pergunta em aberto sobre um termo     | [`questions/`](questions/README.md)           |
+| backlog e ata de rodada               | fila de decisões                              |
 
 Um termo resolvido chega ao glossário **já decidido**, com o link para onde a decisão
 foi tomada. O glossário não é um segundo repositório de decisões.
@@ -248,7 +248,7 @@ próprio: `adr/arquivo/**`, que nunca é editado e por isso torna a citação in
 e a âncora interna `[texto]` seguida de `(#slug)`, que o verificador **não** acusa. Nada
 é gravado na árvore — a resposta é recalculada a cada execução, e por isso não existe
 derivado a envelhecer. Decidido em 2026-08-08, na
-[fila](adr/fila-de-decisoes.md#o-que-apura-a-âncora-citada-antes-de-uma-redução).
+[fila](fila-de-decisoes.md#o-que-apura-a-âncora-citada-antes-de-uma-redução).
 
 Onde a consulta apontar citação, o heading permanece com lápide, pela regra do
 [lifecycle](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07). O

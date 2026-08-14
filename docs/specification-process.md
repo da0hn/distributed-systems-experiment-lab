@@ -28,11 +28,11 @@ o retrato do dia em que o processo mudou, e não o estado de hoje.
 O problema não é o volume. É que os ADRs passaram a carregar três coisas de naturezas
 diferentes no mesmo documento:
 
-| O que está escrito lá                                             | O que é              |
-|-------------------------------------------------------------------|----------------------|
-| "o passo é a unidade de execução, e não o método linear"          | decisão arquitetural |
-| `perdidas = commits − (value_final − value_inicial)`              | regra de negócio     |
-| a tabela de cinco condições que classifica um veredito zero       | tabela de decisão    |
+| O que está escrito lá                                       | O que é              |
+|-------------------------------------------------------------|----------------------|
+| "o passo é a unidade de execução, e não o método linear"    | decisão arquitetural |
+| `perdidas = commits − (value_final − value_inicial)`        | regra de negócio     |
+| a tabela de cinco condições que classifica um veredito zero | tabela de decisão    |
 
 Só a primeira tem alternativas plausíveis e impacto arquitetural duradouro. As outras
 duas são **comportamento**: elas descrevem o que a plataforma faz, não o que foi
@@ -83,10 +83,10 @@ Duas escolhas da pessoa, tomadas em 2026-08-12, respondem o que acontece **depoi
 uma linha da fila fecha.
 
 **A citação a um fecho é provisória.** Um documento **PODE** citar um fecho de
-[`fila-de-decisoes.md`](adr/fila-de-decisoes.md#o-que-esta-fila-enfileira) enquanto não
+[`fila-de-decisoes.md`](fila-de-decisoes.md#o-que-esta-fila-enfileira) enquanto não
 existir artefato próprio daquela decisão. Quando o artefato nascer, a citação **DEVE**
 migrar para ele, e só então o fecho fica podável. A origem é
-[`E-90`](adr/fila-de-decisoes.md#e-90-fecha-em-citação-a-esta-fila-é-provisória-escolhida-em-2026-08-12).
+[`E-90`](fila-de-decisoes.md#e-90-fecha-em-citação-a-esta-fila-é-provisória-escolhida-em-2026-08-12).
 
 O motivo é que a fila cresce, funde e poda linha a linha, e um documento estável não
 deveria depender de um alvo que se move. Enquanto o artefato não existe, porém, apagar a
@@ -96,7 +96,7 @@ evidência móvel.
 **Quatro lugares cobrem um fecho, e não dois.** ADR e Feature Card são os dois óbvios.
 Um **arquivo de instrução** e um **script verificador** que aplique a regra também
 contam. A origem é
-[`E-91`](adr/fila-de-decisoes.md#e-91-fecha-em-instrução-e-verificador-contam-como-artefato-escolhida-em-2026-08-12).
+[`E-91`](fila-de-decisoes.md#e-91-fecha-em-instrução-e-verificador-contam-como-artefato-escolhida-em-2026-08-12).
 
 O critério é o enforcement, e não o formato. Uma regra que um verificador recusa vincula
 mais do que uma regra escrita num artefato que nenhum processo executa. Escrever um card
@@ -256,12 +256,12 @@ duradouro, cria restrição futura e representa um trade-off.
 
 O teste prático que separa os dois artefatos:
 
-| Pergunta                                                     | Sim → ADR | Sim → Feature Card |
-|--------------------------------------------------------------|-----------|--------------------|
-| Existe uma alternativa que alguém defenderia com argumento?  | sim       | —                  |
-| A escolha restringe o que se pode construir depois?          | sim       | —                  |
-| A frase descreve o que o sistema faz, e é verificável?       | —         | sim                |
-| Um teste poderia falhar por causa dela?                      | —         | sim                |
+| Pergunta                                                    | Sim → ADR | Sim → Feature Card |
+|-------------------------------------------------------------|-----------|--------------------|
+| Existe uma alternativa que alguém defenderia com argumento? | sim       | —                  |
+| A escolha restringe o que se pode construir depois?         | sim       | —                  |
+| A frase descreve o que o sistema faz, e é verificável?      | —         | sim                |
+| Um teste poderia falhar por causa dela?                     | —         | sim                |
 
 Uma regra que caiba nas duas colunas indica um ADR carregando comportamento. Escreva o
 ADR com o porquê, e o card com o quê, e faça o card citar o ADR.
@@ -318,7 +318,7 @@ Uma entrada do glossário tem quatro partes, e nada além delas:
 
 | Conteúdo                           | Destino                                     |
 |------------------------------------|---------------------------------------------|
-| alternativa de nome, com o debate  | [fila de decisões](adr/fila-de-decisoes.md) |
+| alternativa de nome, com o debate  | [fila de decisões](fila-de-decisoes.md)     |
 | decisão proposta, não tomada       | a mesma fila, na linha que a enfileira      |
 | ata de rodada, histórico de debate | o ADR que saiu dela, ou o arquivo histórico |
 | backlog e pendência                | [`questions/`](questions/README.md)         |
@@ -472,7 +472,7 @@ atende, por construção, aos quatro critérios de
 [`adr/README.md`](adr/README.md#uma-decisão-merece-adr-quando) — existe alternativa que
 alguém defende com argumento, e a escolha restringe o que se pode construir depois.
 
-A contradição entra na [fila de decisões](adr/fila-de-decisoes.md) no mesmo turno em que
+A contradição entra na [fila de decisões](fila-de-decisoes.md) no mesmo turno em que
 é vista, pela regra de que nada que importa existe apenas na conversa. O ADR que sair
 dela emenda, substitui ou ratifica o antigo, e o card é alinhado ao que o ADR disser.
 

@@ -38,7 +38,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-DEFAULT_QUEUE = Path("docs/adr/fila-de-decisoes.md")
+DEFAULT_QUEUE = Path("docs/fila-de-decisoes.md")
 
 # `### ` ou `#### `, seguido do identificador entre crases. O restante da linha
 # decide se é enunciado ou fecho.

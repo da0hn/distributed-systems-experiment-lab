@@ -43,7 +43,7 @@ flowchart LR
     P --> R
 ```
 
-- **A fila de decisões** vive em [`fila-de-decisoes.md`](../../fila-de-decisoes.md). É
+- **A fila de decisões** vive em [`fila-de-decisoes.md`](../../../fila-de-decisoes.md). É
   lá que uma linha ainda aberta é debatida e decidida.
 - **As dez objeções não conferidas** viraram `Q-0019` a `Q-0028` em
   [`questions/`](../../../questions/README.md), pela decisão `D-3`. Nenhuma foi

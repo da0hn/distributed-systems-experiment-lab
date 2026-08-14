@@ -144,7 +144,7 @@ Ao escrever ou alterar um ADR, o teste é este: se a linha do cabeçalho pode se
 respondida com "o quê" e "quando", ela é livro-razão; se ela responde "por quê", ela
 pertence ao corpo.
 
-A escolha está em `docs/adr/fila-de-decisoes.md`, no fecho de `E-66`. Ela vale para todo
+A escolha está em `../../../../docs/fila-de-decisoes.md`, no fecho de `E-66`. Ela vale para todo
 ADR daqui em diante; a aplicação retroativa ao ADR-0014 depende de `E-64`, porque mover
 argumento para o corpo de um ADR **aceito** não cabe em nenhuma das seis formas sem
 forçar.

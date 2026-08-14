@@ -65,5 +65,5 @@ aceito, e se registra na seção `## Patches aplicados` daquele arquivo. O regim
 [o do índice de ADRs](../../../docs/adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 
 Quando o atrito apontar para a **decisão** registrada num ADR, o destino continua sendo
-a fila de `docs/adr/fila-de-decisoes.md`, e o patch de skill é rejeitado na origem. Nem
+a fila de `../../../../docs/fila-de-decisoes.md`, e o patch de skill é rejeitado na origem. Nem
 o patch desta skill nem o patch de ADR muda decisão — só um ADR novo muda.

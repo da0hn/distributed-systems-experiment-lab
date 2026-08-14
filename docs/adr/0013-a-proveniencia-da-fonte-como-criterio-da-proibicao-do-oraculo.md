@@ -10,7 +10,7 @@
   recorta o alcance da proibição para critério de proveniência. Depende também do
   [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md), que aplicou o
   WAL ao oráculo exato e deixou a fonte do predicado sem decisão, na linha
-  [`E-37`](fila-de-decisoes.md#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança).
+  [`E-37`](../fila-de-decisoes.md#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança).
   Usa a detecção de buraco de LSN do
   [ADR-0012](0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão).
 
@@ -25,14 +25,14 @@ essa regra ao oráculo exato: `value_inicial` e `value_final` deixaram de vir de
 `SELECT` cruzado e passaram a vir do WAL, por replicação lógica. O mesmo ADR, na seção
 [`Negativas`](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#negativas),
 registrou que a fonte do oráculo do predicado — `Σ amount` — **ficou sem decisão**, na
-linha [`E-37`](fila-de-decisoes.md#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança)
+linha [`E-37`](../fila-de-decisoes.md#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança)
 da fila. Até este ADR, o
 [card de proteção inerte](../features/deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)
 carregava a mesma lacuna nas regras `R3` e `R5`, e o E5 não rodava enquanto ela não
 fechasse.
 
 A apuração de 2026-08-09, na segunda metade de
-[`E-37`](fila-de-decisoes.md#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança),
+[`E-37`](../fila-de-decisoes.md#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança),
 achou que o enunciado original da linha descrevia a proibição errada — como proibição de
 **reconstruir um total a partir de uma sequência**, quando a letra do ADR nomeia uma
 **fonte**: "Nenhum dos dois deriva o estado final do log de observações do runtime". O
@@ -133,16 +133,16 @@ item 3 de [`## Decisão`](#decisão) deste ADR exige antes de somar.
   **fonte atrasada** — estabelecido no
   [glossário](../CONTEXT.md#os-dois-rótulos-do-instrumento-decididos-em-2026-08-05) para
   o estouro do limite de espera — ou um rótulo distinto, não foi decidido
-  ([`E-37`, fecho](fila-de-decisoes.md#e-37-fecha-na-proveniência-e-a-contiguidade-deixa-de-ser-opcional)).
+  ([`E-37`, fecho](../fila-de-decisoes.md#e-37-fecha-na-proveniência-e-a-contiguidade-deixa-de-ser-opcional)).
   São falhas diferentes, e confundi-las num relatório afirma duas coisas com uma só
   palavra.
 - **Pergunta em aberto.** Onde a conferência de contiguidade vive no código não foi
   decidido
-  ([`E-37`, fecho](fila-de-decisoes.md#e-37-fecha-na-proveniência-e-a-contiguidade-deixa-de-ser-opcional)).
+  ([`E-37`, fecho](../fila-de-decisoes.md#e-37-fecha-na-proveniência-e-a-contiguidade-deixa-de-ser-opcional)).
   Não há código de oráculo na árvore hoje.
 - **Pergunta em aberto.** Se a espera pelo LSN do commit final, decidida em `O19` para o
   oráculo exato, alcança também o oráculo do predicado não foi decidido
-  ([`E-37`, fecho](fila-de-decisoes.md#e-37-fecha-na-proveniência-e-a-contiguidade-deixa-de-ser-opcional)).
+  ([`E-37`, fecho](../fila-de-decisoes.md#e-37-fecha-na-proveniência-e-a-contiguidade-deixa-de-ser-opcional)).
   Sem condição de término para a soma, `Σ amount` PODE ser lido cedo demais e sair
   parcial — o mesmo falso negativo que a guarda de contiguidade evita, por outra porta.
 - A guarda de contiguidade de LSN pressupõe que o LSN sobrevive ao transporte inteiro,

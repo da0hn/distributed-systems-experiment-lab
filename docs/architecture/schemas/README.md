@@ -4,10 +4,10 @@ Dona única da forma de **dois** schemas — `sut` e `lab_plane` —, e não dos
 repositório tem: `lab_journal` fica fora, porque o
 [ADR-0011](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)
 pôs a definição e o resultado de experimento lá. A forma dele não tem dono enquanto
-[`E-57`](../../adr/fila-de-decisoes.md#e-57--a-definição-de-experimento-tem-dois-donos-declarados)
+[`E-57`](../../fila-de-decisoes.md#e-57--a-definição-de-experimento-tem-dois-donos-declarados)
 não fechar. **Nenhum documento vigente carrega DDL** e a exceção é `docs/adr/arquivo/`
 inteiro, congelado — as duas coisas são do fecho de
-[`E-55`](../../adr/fila-de-decisoes.md#e-55-fecha-na-divisão-entre-o-adr-e-um-documento-de-arquitetura-escolhida-em-2026-08-11).
+[`E-55`](../../fila-de-decisoes.md#e-55-fecha-na-divisão-entre-o-adr-e-um-documento-de-arquitetura-escolhida-em-2026-08-11).
 Vários arquivos de lá carregam bloco SQL, entre eles a
 [proposta de modelo de dados](../../adr/arquivo/proposta-2026-08-03/modelo-de-dados.md#1-o-esquema-do-system-under-test).
 
@@ -17,7 +17,7 @@ um serviço saiu do inventário por regra própria, em
 [`contracts/README.md`](../../contracts/README.md#o-ddl-de-um-serviço-não-é-contrato).
 
 **O dono único é esta pasta, e não um arquivo.** O fecho de
-[`E-78`](../../adr/fila-de-decisoes.md#e-78--o-esquemasmd-vira-pasta-com-um-arquivo-por-serviço)
+[`E-78`](../../fila-de-decisoes.md#e-78--o-esquemasmd-vira-pasta-com-um-arquivo-por-serviço)
 mudou a granularidade em 2026-08-12, e não a decisão: o que `E-55` fixou — que existe um
 dono único da forma das tabelas — continua valendo, e o dono passou a ser o diretório. A
 fronteira entre os dois schemas não pertence a nenhum dos dois lados, e por isso ela vive
@@ -31,13 +31,13 @@ neste `README.md`, e não num deles.
 
 **O `lab_journal` não tem arquivo aqui, e a ausência é deliberada.** Criar um arquivo vazio
 afirmaria que existe forma decidida a documentar; ele nasce quando
-[`E-57`](../../adr/fila-de-decisoes.md#e-57--a-definição-de-experimento-tem-dois-donos-declarados)
+[`E-57`](../../fila-de-decisoes.md#e-57--a-definição-de-experimento-tem-dois-donos-declarados)
 fechar.
 
 ## Por que a forma vive aqui, e não dentro do ADR-0015
 
 Decidido pela pessoa em 2026-08-11, no fecho de
-[`E-55`](../../adr/fila-de-decisoes.md#e-55-fecha-na-divisão-entre-o-adr-e-um-documento-de-arquitetura-escolhida-em-2026-08-11).
+[`E-55`](../../fila-de-decisoes.md#e-55-fecha-na-divisão-entre-o-adr-e-um-documento-de-arquitetura-escolhida-em-2026-08-11).
 O [ADR-0015](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#decisão)
 fica com o que restringe **como o instrumento mede**; a forma desce para cá.
 
@@ -59,7 +59,7 @@ linha, porque o alvo não tem título).
 confiança na memória de quem editar.** `scripts/check_schema_sync.py` compara nome de
 tabela entre cada `erDiagram` abaixo e as migrações Flyway do serviço correspondente,
 com baseline própria para divergência deliberada — decidido em
-[`E-65`, fecho](../../adr/fila-de-decisoes.md#e-65-fecha-no-script-de-nome-de-tabela-escolhida-em-2026-08-11).
+[`E-65`, fecho](../../fila-de-decisoes.md#e-65-fecha-no-script-de-nome-de-tabela-escolhida-em-2026-08-11).
 O script ainda não existe.
 
 ## A ausência de linha entre os dois diagramas é a decisão
@@ -79,10 +79,10 @@ porque decorre da fronteira, e não da forma da tabela.
 
 - a coluna `version`, quando a estratégia `OPTIMISTIC` nascer;
 - a forma da tabela de execuções ativas — colunas, chave e migração —, que o fecho de
-  [`E-35`](../../adr/fila-de-decisoes.md#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10)
+  [`E-35`](../../fila-de-decisoes.md#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10)
   deixou explicitamente sem escolher;
 - onde a definição de experimento vive, quando `E-57` fechar.
 
 Uma mudança aqui **NÃO DEVE** alterar o ADR-0015. Se ela mudar como o instrumento mede,
 é decisão arquitetural nova, e entra na
-[fila](../../adr/fila-de-decisoes.md#o-que-esta-fila-enfileira).
+[fila](../../fila-de-decisoes.md#o-que-esta-fila-enfileira).
