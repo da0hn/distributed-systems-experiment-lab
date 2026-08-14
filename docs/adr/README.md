@@ -521,10 +521,45 @@ via: ele é registrado, datado e limitado a texto que não carrega decisão.
 | caminho de arquivo que foi movido ou arquivado   | a justificativa que sustentava a decisão |
 | âncora, link e nome de seção citada              | alternativa descartada, ou o motivo dela |
 | erro material: número trocado, termo grafado mal | trade-off, consequência ou escopo        |
+| marca datada depois de afirmação que caiu        | reescrever essa afirmação no lugar dela  |
 
 **A fronteira é objetiva.** Se a correção muda o que alguém leria como escolha, ela não é
 patch: é emenda, subsunção ou substituição, e o caminho é um ADR novo. Na dúvida, o
 caminho é o ADR novo.
+
+### O patch aditivo, decidido em 2026-08-14
+
+**Uma afirmação de ADR aceito que uma decisão posterior tornou falsa recebe uma marca, e
+não uma reescrita.** A quarta linha da tabela acima é essa forma, e ela existe porque as
+outras três não alcançavam o caso: uma frase falsificada mora quase sempre em
+`## Justificativa`, em `## Trade-offs`, numa alternativa descartada ou nas consequências —
+e a coluna do `NÃO DEVE` protege exatamente esses textos.
+
+**A colisão é aparente, e a natureza das duas coisas a dissolve.** A coluna do `NÃO DEVE`
+impede **reescrever o que se pensou**, que é o que faria a decisão de ontem parecer a de
+hoje. Uma afirmação falsificada não é raciocínio sendo reescrito: é afirmação sobre o
+estado do mundo, verdadeira quando escrita e falsa depois, por ato de terceiro. Substituí-la
+apaga o que se pensava; deixá-la intacta faz o ADR afirmar o falso. A marca aditiva não faz
+nem uma coisa nem outra.
+
+Quatro limites governam essa marca:
+
+- A afirmação original permanece **byte a byte**. O patch NÃO DEVE alterar um caractere
+  dela, e o que ele acrescenta vem **depois**, nunca no lugar.
+- A marca DEVE trazer **o fato inteiro** quando o que derrubou a afirmação vive fora de
+  `docs/adr/`, `docs/features/**` e `docs/architecture/**`. Uma marca que aponte para
+  documento que o processo poda depende de texto que vai deixar de existir.
+- O patch NÃO DEVE alcançar afirmação na seção `## Decisão`, nem a que dá título ao ADR.
+  Ali a queda é de decisão, e o caminho é substituição, subsunção, emenda ou divisão — a
+  mesma fronteira que a emenda já usa.
+- A linha em `## Patches aplicados` entra no mesmo commit, como em todo patch.
+
+```mermaid
+flowchart TD
+    A["afirmação que uma decisão<br/>posterior tornou falsa"] --> B{"está no ## Decisão,<br/>ou dá título ao ADR?"}
+    B -->|" sim "| C["ADR novo: substituição,<br/>subsunção, emenda ou divisão"]
+    B -->|" não "| D["patch aditivo: a frase fica,<br/>a marca datada entra depois"]
+```
 
 ### A seção `## Patches aplicados`
 

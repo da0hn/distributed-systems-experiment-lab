@@ -2601,6 +2601,78 @@ descartada ali e adotada por esta decisão — e o ADR-0010 não foi tocado.
 `### Neutras` do ADR-0008 permanece **byte a byte**, porque nenhuma forma autoriza tocá-lo
 — e é exatamente esse impasse que a linha existe para resolver.
 
+#### `E-71` fecha em patch aditivo, e a frase falsificada permanece, escolhida em 2026-08-14
+
+**Escolhida em 2026-08-14, no regime de delegação de processo documental.** A saída é a
+primeira da tabela — o patch ganha um motivo a mais —, **com uma correção de forma que a
+tabela não previa: o patch é aditivo, e nunca substitutivo.**
+
+**Por que a primeira saída, na forma tabulada, não funcionava.** A tabela "O que é patch,
+e o que não é"
+([`adr/README.md`](adr/README.md#o-que-é-patch-e-o-que-não-é)) proíbe patch sobre "a
+justificativa que sustentava a decisão", "alternativa descartada, ou o motivo dela" e
+"trade-off, consequência ou escopo". Os dezessete trechos levantados por varredura estão
+exatamente nessas seções. Acrescentar um quarto motivo do lado do `PODE` colidiria com
+quatro linhas do lado do `NÃO DEVE`, e a fronteira deixaria de ser objetiva.
+
+**As duas coisas são diferentes em natureza, e é isso que dissolve a colisão.** A coluna
+do `NÃO DEVE` protege contra **reescrever o que se pensou** — é o que faria a decisão de
+ontem parecer a de hoje. Uma frase falsificada não é raciocínio sendo reescrito: é
+afirmação sobre o **estado do mundo**, verdadeira quando escrita e falsa depois, por ato
+de terceiro. Corrigi-la por substituição apagaria o que se pensava; deixá-la intacta faz o
+documento afirmar o falso. O patch aditivo não faz nem uma coisa nem outra.
+
+**O idioma já existe neste repositório, e é a lápide.** O `AGENTS.md` da raiz mantém o
+heading dos quatro serviços e escreve embaixo que a contagem não vale mais; o
+[`adr/README.md`](adr/README.md#esta-página-tem-um-teto-de-514-linhas-e-ele-não-é-escolha)
+mantém a seção do teto de 514 linhas e a declara lápide. O que faltava era autorização
+para usá-la dentro de ADR aceito.
+
+**A regra.** Um patch PODE acrescentar, imediatamente depois de uma afirmação que uma
+decisão posterior tornou falsa, uma marca datada dizendo que ela caiu e o que a derrubou.
+Quatro limites a mantêm objetiva:
+
+- A afirmação original permanece **byte a byte**. O patch NÃO DEVE alterar um único
+  caractere dela, e o que ele acrescenta vem depois, nunca no lugar.
+- A marca DEVE trazer **o fato inteiro**, e não só o ponteiro, quando o que derrubou a
+  afirmação vive fora de `docs/adr/`, `docs/features/**` e `docs/architecture/**`. Uma
+  marca que aponte para linha desta fila depende de texto que o processo manda apagar.
+- O patch NÃO DEVE alcançar afirmação na seção `## Decisão` nem a que dá título ao ADR.
+  Ali a queda é de decisão, e o caminho é substituição, subsunção, emenda ou divisão — a
+  mesma fronteira que a emenda já usa, e não uma linha nova de formato diferente.
+- A linha em `## Patches aplicados` entra no mesmo commit, como em todo patch.
+
+```mermaid
+flowchart TD
+    A["afirmação de ADR aceito<br/>que uma decisão posterior tornou falsa"] --> B{"ela está no<br/>## Decisão, ou dá<br/>título ao ADR?"}
+    B -->|" sim "| C["ADR novo: substituição,<br/>subsunção, emenda ou divisão"]
+    B -->|" não "| D["patch aditivo:<br/>a frase fica, a marca entra depois"]
+    D --> E["a marca traz o fato inteiro<br/>se a origem não é família citável"]
+    D --> F["linha em ## Patches aplicados,<br/>no mesmo commit"]
+```
+
+**A segunda saída foi recusada porque não conserta nada do que já quebrou.** Exigir ADR de
+toda decisão de fila que alcance ADR aceito só governa o futuro: os casos já fechados sem
+ADR continuariam sem forma, e são eles que motivaram esta linha. Ela ainda reverteria,
+para uma classe larga, o regime de 2026-08-04 que tirou a obrigatoriedade do ADR.
+
+**A terceira saída foi recusada por um fato que não existia quando esta linha foi
+escrita.** Uma forma cujo portador é a linha da fila poria, no cabeçalho de um ADR aceito,
+um `Alterado por` apontando para documento que o processo poda. É exatamente o modo de
+falha que a regra de fonte citável passou a proibir — e ela foi escrita depois do
+enunciado desta linha, em
+[`AGENTS.md`, Ao trabalhar aqui](../AGENTS.md#ao-trabalhar-aqui).
+
+**O que este fecho não faz.** Ele não aplica patch nenhum: autoriza a forma. Os oito casos
+falsificados por fecho desta fila passam a ter caminho; os oito falsificados por outro ADR
+aceito já tinham, e continuam com o dele. O trecho fora de ADR, no `AGENTS.md` da raiz,
+segue sendo edição direta.
+
+**O enunciado acima não é podado, e o motivo é técnico.** A âncora dele é citada de
+documento estável — o
+[feature card da detecção de divergência](features/deteccao-de-divergencia-entre-fontes/feature-card.md#integrações-e-contratos-afetados)
+aponta para ela. Podar a narrativa quebraria a citação sem avisar ninguém.
+
 #### `E-72` — doze citações quebradas esperam sob uma premissa que já caiu
 
 Aberta em 2026-08-11, ao conferir se a baseline de citações tinha entrada obsoleta.
