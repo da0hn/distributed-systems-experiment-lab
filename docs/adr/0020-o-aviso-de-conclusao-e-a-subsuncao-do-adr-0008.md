@@ -19,7 +19,9 @@ O [ADR-0008](0008-os-dois-planos-em-processos-separados.md#decisão) fixa, na se
 "Decisão", sem qualificar: "O Control Plane NÃO DEVE chamar o Lab Plane." O
 "## Contexto" do mesmo ADR define o Control Plane como o sistema sob teste
 ([ADR-0008, Contexto](0008-os-dois-planos-em-processos-separados.md#contexto)). O
-diagrama da mesma seção desenha essa aresta com o rótulo `proibido`.
+diagrama que desenha essa aresta com o rótulo `proibido` está em "## Decisão", não em
+"## Contexto"
+([ADR-0008, Decisão](0008-os-dois-planos-em-processos-separados.md#decisão)).
 
 O card
 [deteccao-de-divergencia-entre-fontes](../features/deteccao-de-divergencia-entre-fontes/feature-card.md)
@@ -93,10 +95,6 @@ flowchart TD
     Q -->|" não "| PR["proibido — ADR-0008,<br/>Decisão, sem exceção"]
 ```
 
-O diagrama de "Decisão" do ADR-0008 marca a aresta Control Plane → Lab Plane como
-`proibido`; este ADR não o redesenha, e a leitura combinada dos dois é: `proibido`,
-exceto o aviso de conclusão nas três condições acima.
-
 ## Justificativa
 
 **A cadeia de evidência que sustenta a subsunção.** O ADR-0008 não argumenta a
@@ -111,23 +109,22 @@ entre os dois processos.
 A proibição do ADR-0008 é a generalização dessa regra, escrita sem a qualificação que a
 origem carregava. "O passo NÃO DEVE chamar o runtime" virou "o Control Plane NÃO DEVE
 chamar o Lab Plane" quando os dois planos passaram a rodar em processos separados —
-generalização correta para a chamada de passo, cuja verificabilidade o ADR-0008 queria
-garantir sem import a escrever. O aviso de conclusão não é essa chamada: nenhuma
+generalização correta para a chamada de passo, pela mesma verificabilidade sem import
+citada acima. O aviso de conclusão não é essa chamada: nenhuma
 fronteira de passo o invoca, ele não devolve controle a uma sequência de passos em
-curso, e não carrega fato que o runtime interprete como resultado de um passo — existe
-**depois** de a janela medida encerrar, fora de qualquer tentativa em andamento. Por
-isso o recorte não contradiz o primeiro fundamento: o risco que ele nomeia é o sistema
-medido participar da execução de um passo como se fosse o runtime, e o aviso não
-participa de passo nenhum — é emitido depois que todos os passos já terminaram.
+curso, e não carrega fato que o runtime interprete como resultado de um passo — ele
+existe **depois de a janela medida encerrar, fora de qualquer tentativa em andamento**.
+Por isso o recorte não contradiz o primeiro fundamento: o risco que ele nomeia é o
+sistema medido participar da execução de um passo como se fosse o runtime, e o aviso
+não participa de passo nenhum.
 
 **Por que o segundo fundamento reforça a subsunção, e não a derruba.** O gatilho que
 ele nomeia é específico — manter a transação aberta entre chamadas —, o mesmo mecanismo
 de passo do ADR-0001, e não qualquer mensagem no sentido inverso. O aviso não mantém
-transação aberta, e existe depois de a janela medida encerrar, fora de tentativa
-alguma: não é o gatilho que o bullet descreve, e o remédio que ele prescreve — mudar a
-topologia antes do mecanismo — está amarrado a esse gatilho. O bullet aponta de novo
-para a direção de dependência do ADR-0001: os **dois** fundamentos apontam para a mesma
-regra sobre passo, e a cadeia fica mais forte.
+transação aberta: não é o gatilho que o bullet descreve, e o remédio que ele prescreve —
+mudar a topologia antes do mecanismo — está amarrado a esse gatilho. O bullet aponta de
+novo para a direção de dependência do ADR-0001: os **dois** fundamentos apontam para a
+mesma regra sobre passo, e a cadeia fica mais forte.
 
 **As três exigências da subsunção**
 ([`README.md`, Substituição e
@@ -148,13 +145,11 @@ subsunção](README.md#substituição-e-subsunção-são-coisas-diferentes)):
   ([`README.md`, A emenda](README.md#a-emenda-terceira-forma-ao-lado-da-substituição-e-da-subsunção)),
   porque isso apagaria a informação que `Alterado por: subsunção` existe para carregar
   — se a regra antiga ainda vale. Este ADR não se apoia nessa alternativa: ele separa
-  "casos que ela tratava como um só", a definição literal da subsunção na mesma página
-  ([`README.md`, Substituição e
-  subsunção](README.md#substituição-e-subsunção-são-coisas-diferentes)), sem reescrever
-  a proibição em si.
+  "casos que ela tratava como um só" — a definição literal da subsunção, citada acima —,
+  sem reescrever a proibição em si.
 
-Por que emenda e substituição não servem — com o argumento a favor de cada uma antes do
-motivo técnico da recusa — está em "Alternativas consideradas".
+Por que emenda e substituição não servem, com o argumento a favor de cada uma, está em
+"Alternativas consideradas".
 
 ## Consequências
 
@@ -217,9 +212,12 @@ pedido de permissão ampla.
 
 ### Deixar a contradição registrada só no card, sem ADR
 
-**Descartada.** A favor: nenhum documento novo. Perde porque um card NÃO PODE
-contradizer ADR aceito
-([`AGENTS.md`, ao trabalhar aqui](../../AGENTS.md#ao-trabalhar-aqui)); o caminho é um
+**Descartada.** A favor: nenhum documento novo. Perde porque, por inteiro — nem
+`AGENTS.md` nem `docs/AGENTS.md` são família citável, e o próprio `AGENTS.md` deixa esse
+estatuto como pergunta em aberto —: "um card NÃO PODE contradizer um ADR aceito. A
+contradição é decisão arquitetural nova: ela entra na fila no mesmo turno em que é
+vista, e o card é alinhado ao que o ADR que sair dela disser"
+([cortesia, `docs/AGENTS.md`, Feature Card](../AGENTS.md#feature-card)). O caminho é um
 ADR — que recorte a proibição, ou a mantenha e obrigue `R4` a mudar de desenho.
 
 ### O aviso trafegar pelo broker em vez de HTTP
@@ -252,10 +250,10 @@ e qualificar a proibição contradiz. A divisão perde porque o que sai por ela 
 o mesmo conteúdo normativo"
 ([`README.md`, A divisão de um ADR
 aceito](README.md#a-divisão-de-um-adr-aceito-decidida-em-2026-08-11)), e aqui o
-conteúdo normativo é o que muda. O patch perde porque "NÃO DEVE alterar o que foi
-decidido"
+conteúdo normativo é o que muda. O patch perde porque a tabela do README classifica "a
+decisão, na seção `## Decisão`" como o que `NÃO DEVE ser patch`
 ([`README.md`, O que é patch, e o que não
-é](README.md#o-que-é-patch-e-o-que-não-é)).
+é](README.md#o-que-é-patch-e-o-que-não-é)) — e é essa seção que muda aqui.
 
 ## Quando esta decisão deixa de valer
 
@@ -267,12 +265,12 @@ uma leitura alargada deste.
 
 ## O que este ADR desfaz fora de si
 
-| Documento                                                                                                                                                            | O que muda                                                                                                                                                                                                                                                                                                                                                                          |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [ADR-0008](0008-os-dois-planos-em-processos-separados.md#decisão)                                                                                                    | **subsunção**, registrada em `## Decisão` e `## Justificativa` deste ADR: "O Control Plane NÃO DEVE chamar o Lab Plane" continua valendo por inteiro para a chamada de passo, e passa a admitir o aviso de conclusão nas três condições da seção "Decisão" deste ADR. Rastro no cabeçalho, `Última atualização` e `Alterado por`, no mesmo commit.                                  |
-| [`features/deteccao-de-divergencia-entre-fontes/feature-card.md`](../features/deteccao-de-divergencia-entre-fontes/feature-card.md#integrações-e-contratos-afetados) | "Integrações e contratos afetados" passa a citar este ADR como o que resolveu a tensão com `R4`. "Riscos e decisões pendentes" perde o bullet que registrava essa tensão, sem citação nova — a tensão deixou de ser risco. "Links" troca a nota do ADR-0008, de "tensionado por R4" para "tensão com R4 resolvida pelo ADR-0020", e ganha uma linha própria para este ADR.          |
-| [`features/deteccao-de-divergencia-entre-fontes/example-mapping.md`](../features/deteccao-de-divergencia-entre-fontes/example-mapping.md#a-tensão-com-o-adr-0008)    | a pergunta sobre a tensão com o ADR-0008 sai de "Perguntas em aberto"; o conteúdo dela passa para a nova subseção "A tensão com o ADR-0008", em "Alternativas descartadas nas decisões de 2026-08-14", com o desfecho; "Adiado de propósito" e "O que não virou cenário, e por quê" passam a contar três lacunas, não quatro.                                                       |
-| [`architecture/integrations.md`](../architecture/integrations.md#matriz)                                                                                             | a linha `system-under-test` → `lab-plane` deixa de descrever a decisão como "tensiona a letra do ADR-0008, sem resolução", e passa a citar este ADR como o que a permitiu. A linha `lab-plane` → `system-under-test` da chamada de passo, cujo mecanismo já dizia "sentido inverso proibido", ganha a ressalva "exceto o aviso de conclusão", e a evidência passa a citar este ADR. |
+| Documento                                                                                                                                                            | O que muda                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [ADR-0008](0008-os-dois-planos-em-processos-separados.md#decisão)                                                                                                    | **subsunção**, registrada em `## Decisão` e `## Justificativa` deste ADR: "O Control Plane NÃO DEVE chamar o Lab Plane" continua valendo por inteiro para a chamada de passo, e passa a admitir o aviso de conclusão nas três condições da seção "Decisão" deste ADR. Rastro no cabeçalho, `Última atualização` e `Alterado por`, no mesmo commit.                                                                                                                                                                                                                                                                                                     |
+| [`features/deteccao-de-divergencia-entre-fontes/feature-card.md`](../features/deteccao-de-divergencia-entre-fontes/feature-card.md#integrações-e-contratos-afetados) | "Integrações e contratos afetados" passa a citar este ADR como o que resolveu a tensão com `R4`. "Riscos e decisões pendentes" perde o bullet que registrava essa tensão, sem citação nova — a tensão deixou de ser risco. "Links" troca a nota do ADR-0008, de "tensionado por R4" para "tensão com R4 resolvida pelo ADR-0020", e ganha uma linha própria para este ADR.                                                                                                                                                                                                                                                                             |
+| [`features/deteccao-de-divergencia-entre-fontes/example-mapping.md`](../features/deteccao-de-divergencia-entre-fontes/example-mapping.md#a-tensão-com-o-adr-0008)    | a pergunta sobre a tensão com o ADR-0008 sai de "Perguntas em aberto"; o conteúdo dela passa para a nova subseção "A tensão com o ADR-0008", em "Alternativas descartadas nas decisões de 2026-08-14", com o desfecho; "Adiado de propósito" e "O que não virou cenário, e por quê" passam a contar três lacunas, não quatro.                                                                                                                                                                                                                                                                                                                          |
+| [`architecture/integrations.md`](../architecture/integrations.md#matriz)                                                                                             | a linha `system-under-test` → `lab-plane` deixa de descrever a decisão como "tensiona a letra do ADR-0008, sem resolução", e passa a citar este ADR como o que a permitiu. A linha `lab-plane` → `system-under-test` da chamada de passo, cujo mecanismo já dizia "sentido inverso proibido", ganha a ressalva "exceto o aviso de conclusão", e a evidência passa a citar este ADR. O parágrafo de abertura de ["A topologia decidida, e o que falta dela"](../architecture/integrations.md#a-topologia-decidida-e-o-que-falta-dela) deixa de dizer só que o aviso foi "decidido sem ADR", e passa a citar este ADR como o que autoriza a aresta hoje. |
 
 ## Patches aplicados
 

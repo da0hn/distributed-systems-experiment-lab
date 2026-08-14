@@ -95,8 +95,10 @@ O diagrama abaixo mostra **apenas o que falta**: os elementos e as travessias qu
 0010, 0011, 0012, 0014 e 0016 fixaram, mais o aviso de conclusão e a consulta de
 confirmação que o
 [feature card, Regras de negócio](../features/deteccao-de-divergencia-entre-fontes/feature-card.md#regras-de-negócio)
-decidiu sem ADR — e que nenhum arquivo da árvore implementa. Ele não repete nenhuma aresta
-do diagrama anterior.
+decidiu sem ADR. A permissão para a aresta do aviso, hoje, vem do
+[ADR-0020](../adr/0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md#decisão), que
+recorta a proibição do ADR-0008 para admiti-la — nenhum arquivo da árvore implementa
+qualquer coisa deste diagrama. Ele não repete nenhuma aresta do diagrama anterior.
 
 ```mermaid
 flowchart TB
