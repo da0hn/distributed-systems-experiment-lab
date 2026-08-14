@@ -31,7 +31,7 @@ flowchart LR
 ### R3 — A calibração valida o denominador
 
 - **Exemplo 3.1** — Calibração com 100 tentativas: `commits = 100`,
-  `value_final − value_initial = 100`. Os números batem, e a execução medida pode rodar.
+  `final_value − initial_value = 100`. Os números batem, e a execução medida pode rodar.
 - **Exemplo 3.2, erro** — `commits = 100` e a diferença dá 97. O instrumento está errado:
   ou a contagem de `AFTER_COMMIT` não corresponde a commits reais, ou algo escreveu no
   recurso fora dos workers. A plataforma recusa o relatório inteiro, e nenhum resultado

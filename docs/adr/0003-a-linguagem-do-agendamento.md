@@ -521,7 +521,7 @@ entende sem aprender nada. O escalonador que a executa guarda um inteiro, contra
 na decisão escolhida. O argumento de legibilidade é legítimo.
 
 Ela perde por sobre-especificar. Os itens 3 e 4 fixam uma ordem entre as escritas que o
-oráculo do ADR-0002 não observa: nas duas ordens o `value_final` é o mesmo e `lost_operations`
+oráculo do ADR-0002 não observa: nas duas ordens o `final_value` é o mesmo e `lost_operations`
 vale um. Uma execução que contrariasse a lista falharia sem que nada de errado tivesse
 acontecido. Ela também não sobrevive ao eixo de escala: um agendamento sobre cinquenta
 workers tem cem linhas escritas à mão, e cada uma nomeia um índice que nenhum documento
@@ -669,3 +669,15 @@ alcançava, e a herança da carga volta à mesa.
 O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
+
+- **2026-08-14** — `## Alternativas consideradas`: os dois identificadores do oráculo
+  exato deixam de ser tradução palavra a palavra e passam a ter a ordem do inglês, sem
+  que nenhum número, relação ou argumento mude: `value_initial` vira `initial_value` e
+  `value_final` vira `final_value`. decidido pela pessoa em 2026-08-14, logo depois do
+  patch do mesmo dia que grafou os identificadores em inglês: `value_initial` e
+  `value_final` preservavam a ordem portuguesa, em que o adjetivo segue o substantivo, e
+  por isso não eram inglês. A grafia antiga sobrevive em `adr/arquivo/`, que nunca é
+  editado, e por isso a uniformidade não é alcançável. **A alteração excede o limite
+  ordinário do patch**, que NÃO DEVE alcançar `## Decisão`, a justificativa, a
+  alternativa descartada nem a consequência — ela foi autorizada explicitamente, e fica
+  registrada aqui em vez de ficar sem rastro

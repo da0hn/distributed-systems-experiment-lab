@@ -75,9 +75,9 @@ erDiagram
     calibration {
         uuid execution_id PK "1 para 1 com a execucao de papel CALIBRATION"
         bigint commits "NOT NULL"
-        bigint value_initial "NOT NULL"
-        bigint value_final "NOT NULL"
-        boolean matched "GENERATED, commits igual a value_final menos value_initial"
+        bigint initial_value "NOT NULL"
+        bigint final_value "NOT NULL"
+        boolean matched "GENERATED, commits igual a final_value menos initial_value"
     }
     report {
         uuid report_id PK "sem DEFAULT"
@@ -94,8 +94,8 @@ erDiagram
     verdict_exact_count {
         uuid report_id PK "1 para 1 com o relatorio"
         bigint commits "NOT NULL"
-        bigint value_initial "NOT NULL"
-        bigint value_final "NOT NULL"
+        bigint initial_value "NOT NULL"
+        bigint final_value "NOT NULL"
         bigint lost_operations "NOT NULL, CHECK: commits menos a diferenca de value"
     }
     verdict_capacity_predicate {
@@ -239,7 +239,7 @@ em código a espalhar procedimento pelo schema de um instrumento de medida.
 | `report.digest` guarda um resumo criptográfico da definição e dos slots                                                             | nenhum resumo: o relatório vale pelo que o banco contém naquele instante                             | um relatório copiado para fora do banco deixa de ser conferível contra a origem                                                                                                |
 | A definição de experimento vive **neste** schema, e não no `lab_plane`                                                              | a definição no instrumento, e só o resultado no caderno                                              | `experiment` e `round` saem daqui, e o relatório passa a referenciar por identificador sem constraint, atravessando a fronteira de schema                                      |
 | O identificador de `experiment`, `round` e `run` é `uuid` atribuído pela aplicação                                                  | `bigint` por ordinal, como o do sistema medido                                                       | o discriminador deixa de ser o mesmo valor que atravessa o CDC, e a tradução no consumidor ganha uma conversão                                                                 |
-| `value_initial`, `value_final`, `lost_operations`, `predicate_sum` e `declared_capacity` são `bigint`; só as taxas são `numeric`    | `numeric` em todas, por simetria                                                                     | os `CHECK` de fórmula passam a comparar decimais, e a igualdade exata do oráculo do contador vira comparação com tolerância                                                    |
+| `initial_value`, `final_value`, `lost_operations`, `predicate_sum` e `declared_capacity` são `bigint`; só as taxas são `numeric`    | `numeric` em todas, por simetria                                                                     | os `CHECK` de fórmula passam a comparar decimais, e a igualdade exata do oráculo do contador vira comparação com tolerância                                                    |
 
 ## Trade-offs
 

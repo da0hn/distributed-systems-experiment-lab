@@ -135,9 +135,9 @@ erDiagram
     calibration_result {
         uuid execution_id PK "uma linha por calibracao"
         bigint commits "passagens por AFTER_COMMIT, por tentativa"
-        bigint value_initial "lido do stream, nunca por SELECT cruzado"
-        bigint value_final "lido do stream, nunca por SELECT cruzado"
-        boolean matched "commits igual a value_final menos value_initial"
+        bigint initial_value "lido do stream, nunca por SELECT cruzado"
+        bigint final_value "lido do stream, nunca por SELECT cruzado"
+        boolean matched "commits igual a final_value menos initial_value"
         timestamptz materialized_at "adaptador de relogio; sem DEFAULT"
     }
 ```

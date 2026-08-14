@@ -319,7 +319,7 @@ duas regras aprovadas juntas, e não sobre o modelo.
 **A calibração precisa ser provável depois de um reinício?** O
 [ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador)
 exige que toda execução medida seja precedida por calibração em que `commits` iguale
-`value_final − value_initial`. Sob esta aposta, o resultado da calibração é acontecido, e
+`final_value − initial_value`. Sob esta aposta, o resultado da calibração é acontecido, e
 o banco do instrumento não guarda prova de que a exigência foi cumprida. Se a exigência é
 sobre a ordem das execuções dentro de um processo vivo, o modelo a atende; se ela é sobre
 o relatório poder ser auditado depois, o modelo não a atende, e a resposta muda o que é

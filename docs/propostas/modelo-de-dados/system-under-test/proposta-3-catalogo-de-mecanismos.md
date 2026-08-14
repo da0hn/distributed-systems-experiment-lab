@@ -111,7 +111,7 @@ entrar no WAL não existe para o instrumento.
 
 | Tabela                | Ativa, o que entra no stream                                                                                              | Quem lê hoje                                                                                                             |
 |-----------------------|---------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| `resource`            | `INSERT` do estado inicial e um `UPDATE` por commit                                                                       | o oráculo exato: `value_initial` e `value_final`                                                                         |
+| `resource`            | `INSERT` do estado inicial e um `UPDATE` por commit                                                                       | o oráculo exato: `initial_value` e `final_value`                                                                         |
 | `allocation`          | um `INSERT` por alocação aceita                                                                                           | o oráculo do predicado, somando os `INSERT`                                                                              |
 | `outbox`              | `INSERT` **dentro** da transação do `UPDATE` de `resource`, e um `UPDATE` de `published_at` **fora** dela                 | nenhum oráculo decidido; a moldura `BEGIN`/`COMMIT` é a evidência de que a escrita foi atômica                           |
 | `inbox`               | um `INSERT` por entrega aceita; a entrega repetida aborta na chave e **não** produz evento nenhum                         | nenhum oráculo decidido; a contagem de eventos de domínio contra a de linhas de `inbox` mede a deduplicação sem `SELECT` |
@@ -121,7 +121,7 @@ entrar no WAL não existe para o instrumento.
 **A segunda representação do estado não corrompe nenhum dos dois oráculos, por três
 motivos independentes.** O evento de CDC carrega a identidade da relação, e o oráculo
 exato filtra por `resource` — uma linha de projeção não é uma linha de `resource`. O
-projetor nunca escreve `resource`, e por isso não move `value_initial` nem `value_final`.
+projetor nunca escreve `resource`, e por isso não move `initial_value` nem `final_value`.
 E a projeção **não** carrega `Σ amount`: materializar a soma numa coluna foi descartado
 pelo
 [ADR-0013](../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#o-sistema-medido-materializar-a-soma-numa-coluna),

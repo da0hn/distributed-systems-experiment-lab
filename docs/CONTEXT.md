@@ -32,14 +32,17 @@ Feature Cards nomeiam os mesmos conceitos com palavras portuguesas, e **nenhuma 
 por linha muda**: a evidência de cada entrada continua apontando para o texto português
 que estabeleceu o conceito. A tabela de de/para é a ponte entre os dois.
 
-**Três identificadores deixaram de seguir o parágrafo acima em 2026-08-14, por decisão
-explícita da pessoa.** `perdidas`, `value_inicial` e `sucessos` foram grafados em inglês
-no corpus inteiro — ADRs aceitos inclusive, cada um com a linha dele em
-`## Patches aplicados` —, e passaram a ser `lost_operations`, `value_initial` e
-`successes`. As linhas de de/para deles continuam na tabela, e não são resíduo: a grafia
-portuguesa sobrevive em `adr/arquivo/`, que nunca é editado, e "atualizações perdidas" e
-"operações perdidas" seguem sendo prosa, e não identificador. O parágrafo acima continua
-descrevendo todo o resto do corpus.
+**Quatro identificadores deixaram de seguir o parágrafo acima em 2026-08-14, por decisão
+explícita da pessoa.** `perdidas`, `sucessos`, `value_inicial` e `value_final` foram
+grafados em inglês no corpus inteiro — ADRs aceitos inclusive, cada um com a linha dele em
+`## Patches aplicados` —, e passaram a ser `lost_operations`, `successes`, `initial_value`
+e `final_value`. Os dois últimos passaram antes por `value_initial` e `value_final`, e a
+correção veio no mesmo dia: aquela forma preservava a ordem portuguesa, em que o adjetivo
+segue o substantivo, e por isso era tradução palavra a palavra, e não inglês. As linhas de
+de/para deles continuam na tabela, e não são resíduo: a grafia portuguesa sobrevive em
+`adr/arquivo/`, que nunca é editado, e "atualizações perdidas" e "operações perdidas"
+seguem sendo prosa, e não identificador. O parágrafo acima continua descrevendo todo o
+resto do corpus.
 
 Os rótulos de estado — `estabelecido`, `proposto`, `aposentado` — continuam em
 português. Eles descrevem o processo deste repositório e nunca viram identificador.
@@ -120,7 +123,8 @@ test`, e é a primeira linha da tabela abaixo.
 | `oráculo do predicado`       | `predicate oracle`      |
 | `sucessos`                   | `successes`             |
 | `perdidas`                   | `lost_operations`       |
-| `value_inicial`              | `value_initial`         |
+| `value_inicial`              | `initial_value`         |
+| `value_final`                | `final_value`           |
 | `violações`                  | `violations`            |
 | `tentativa lançada`          | `launched attempt`      |
 | `taxa de violação`           | `violation rate`        |
@@ -455,7 +459,7 @@ _Evidência_:
 `docs/adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão`
 
 **exact oracle** — `estabelecido`
-O oráculo do contador, que produz `lost_operations = commits − (value_final − value_initial)`.
+O oráculo do contador, que produz `lost_operations = commits − (final_value − initial_value)`.
 _Evite_: counter oracle, numeric oracle.
 _Evidência_: `docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md:135-141`
 
@@ -538,7 +542,7 @@ agiu. _Evidência_:
 
 **calibration** — `estabelecido`
 A execução que precede toda execução medida, com uma estratégia sem perda, em que
-`commits` iguala `value_final − value_initial`. A estratégia é `ATOMIC_UPDATE`.
+`commits` iguala `final_value − initial_value`. A estratégia é `ATOMIC_UPDATE`.
 _Evite_: warm-up, baseline. _Não
 é_: o controle negativo. A calibração verifica o instrumento; o controle negativo
 mede a exposição que a carga oferece.

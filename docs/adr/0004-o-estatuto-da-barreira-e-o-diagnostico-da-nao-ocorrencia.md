@@ -53,11 +53,11 @@ um zero. Nada no repositório diz o que um zero significa.
 Quatro restrições vêm de decisões já tomadas.
 
 **O oráculo do ADR-0002 é uma contagem, não um predicado.**
-`lost_operations = commits − (value_final − value_initial)`, onde `commits` conta passagens pela
+`lost_operations = commits − (final_value − initial_value)`, onde `commits` conta passagens pela
 fronteira `AFTER_COMMIT`. Uma contagem tem denominador, e portanto tem taxa.
 
 **Toda execução medida exige calibração antes.** O ADR-0002 exige uma execução com uma
-estratégia sem perda, em que `commits` iguale `value_final − value_initial`.
+estratégia sem perda, em que `commits` iguale `final_value − initial_value`.
 
 **A cláusula de honestidade do ADR-0001 é normativa e está `Aceito`.** "Toda anomalia
 reproduzida com barreiras DEVE aparecer **também** sem barreiras, sob carga alta. Uma
@@ -624,3 +624,13 @@ significa que a igualdade declarada não implica a igualdade observada, e o vere
 O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
+
+- **2026-08-14** — `## Contexto`: os dois identificadores do oráculo exato deixam de ser
+  tradução palavra a palavra e passam a ter a ordem do inglês, sem que nenhum número,
+  relação ou argumento mude: `value_initial` vira `initial_value` e `value_final` vira
+  `final_value`. decidido pela pessoa em 2026-08-14, logo depois do patch do mesmo dia
+  que grafou os identificadores em inglês: `value_initial` e `value_final` preservavam a
+  ordem portuguesa, em que o adjetivo segue o substantivo, e por isso não eram inglês. A
+  grafia antiga sobrevive em `adr/arquivo/`, que nunca é editado, e por isso a
+  uniformidade não é alcançável. A alteração cabe em `erro material: termo grafado mal`,
+  e não toca decisão, justificativa, alternativa nem consequência

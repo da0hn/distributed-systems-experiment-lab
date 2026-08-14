@@ -23,7 +23,7 @@ da seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 
 ### R5 a R9 — O oráculo e o denominador
 
-- 100 incrementos, 10 workers: `commits = 100`, `value_final = 63`, `lost_operations = 37`.
+- 100 incrementos, 10 workers: `commits = 100`, `final_value = 63`, `lost_operations = 37`.
 - Uma operação que commita, falha e tenta de novo incrementa **duas** vezes; contar por
   operação esconderia o segundo incremento.
 - Uma tentativa que alcança `AFTER_COMMIT` e falha depois **entra** em `commits` e
@@ -32,7 +32,7 @@ da seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 - Com `successes` no denominador, uma perda real seria cancelada por falha injetada depois
   do commit (`commits = 100`, `successes = 94`: os 6 são dual write, não perda), e o
   relatório ficaria verde sobre um banco inconsistente (**contraexemplo**).
-- Derivar `value_final` do **log de observações** mediria o instrumento com o instrumento
+- Derivar `final_value` do **log de observações** mediria o instrumento com o instrumento
   (**contraexemplo**). O
   [`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md)
   retomou o mecanismo por outro caminho, e o contraexemplo continua de pé: o WAL é escrito
@@ -71,8 +71,8 @@ elas vêm.
 
 ### R12 a R16 — O contrato de estratégia (ADR-0006)
 
-- **E3.4, calibração** — `ATOMIC_UPDATE` calibra: `commits` iguala `value_final −
-  value_initial`, pois o `UPDATE` é a única operação sobre a linha, sem leitura antes.
+- **E3.4, calibração** — `ATOMIC_UPDATE` calibra: `commits` iguala `final_value −
+  initial_value`, pois o `UPDATE` é a única operação sobre a linha, sem leitura antes.
 - **E3.5/E3.6, controle positivo** — `PESSIMISTIC` roda sem execução de controle:
   coincidências sempre zero, pois o lock torna a janela inalcançável; uma violação
   aponta para o banco ou fabricação no instrumento, nunca para a estratégia.
@@ -103,7 +103,7 @@ elas vêm.
 | P5  | R11 exige pool maior que workers — quem verifica, e quando?       | nova                                      |
 | P6  | `capacity` existe, `increment` não a lê — intencional?            | nova                                      |
 | P7  | Três estratégias podem empatar em taxa zero — o que isso conclui? | [`Q-0004-5`](../../questions/Q-0004-5.md) |
-| P8  | A proibição de derivar de stream alcança `value_final`?           | nova, com o `ADR-0010`                    |
+| P8  | A proibição de derivar de stream alcança `final_value`?           | nova, com o `ADR-0010`                    |
 | P9  | A emissão ao vivo entra na janela medida — usar buffer local?     | nova, com o `ADR-0010`                    |
 | P10 | Um experimento de clock skew pode ler `updated_at` como insumo?   | nova, com as decisões de 2026-08-06       |
 

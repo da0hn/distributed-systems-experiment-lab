@@ -308,13 +308,13 @@ Três consequências, fixadas pelos ADRs 0001 e 0002, mudam o que se pode propor
 diante:
 
 - **O oráculo exato
-  é `lost_operations = commits − (value_final − value_initial)`**, onde `commits`
+  é `lost_operations = commits − (final_value − initial_value)`**, onde `commits`
   conta passagens pela fronteira `AFTER_COMMIT`, por tentativa. Não é `successes` —
   contar retornos de operação cancela perda real contra falha injetada depois do commit.
   Está em
   [ADR-0002](docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato).
 - **Toda execução medida exige calibração antes**, com uma estratégia sem perda, em que
-  `commits` DEVE igualar `value_final − value_initial` — em
+  `commits` DEVE igualar `final_value − initial_value` — em
   [ADR-0002](docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador).
   **A estratégia é `ATOMIC_UPDATE`**, e esta linha dizia que ela não tinha sido decidida.
   O

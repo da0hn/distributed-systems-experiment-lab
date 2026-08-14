@@ -533,7 +533,7 @@ citações existentes continuem resolvendo.
 **Dois pontos do que se lê abaixo foram emendados por ADR aceito, e o ADR vale.** O
 oráculo exato não é `100 − value`: o
 [ADR-0002](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato) fixou
-`lost_operations = commits − (value_final − value_initial)`, onde `commits` conta passagens
+`lost_operations = commits − (final_value − initial_value)`, onde `commits` conta passagens
 pela fronteira `AFTER_COMMIT` — contar retorno de operação cancelaria perda real contra
 falha injetada depois do commit. E os dois valores não vêm mais de um `SELECT`: desde o
 [ADR-0010](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) o

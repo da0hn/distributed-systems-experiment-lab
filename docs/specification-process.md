@@ -31,7 +31,7 @@ diferentes no mesmo documento:
 | O que está escrito lá                                       | O que é              |
 |-------------------------------------------------------------|----------------------|
 | "o passo é a unidade de execução, e não o método linear"    | decisão arquitetural |
-| `lost_operations = commits − (value_final − value_initial)` | regra de negócio     |
+| `lost_operations = commits − (final_value − initial_value)` | regra de negócio     |
 | a tabela de cinco condições que classifica um veredito zero | tabela de decisão    |
 
 Só a primeira tem alternativas plausíveis e impacto arquitetural duradouro. As outras

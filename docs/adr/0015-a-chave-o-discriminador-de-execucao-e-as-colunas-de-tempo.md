@@ -198,7 +198,7 @@ excluiria isso na leitura literal; o precedente são o
 
 ### Neutras
 
-Os dois oráculos não mudam: `value_final`, `value_initial` e `Σ amount` seguem vindo do
+Os dois oráculos não mudam: `final_value`, `initial_value` e `Σ amount` seguem vindo do
 WAL, pelos ADRs
 [0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) e
 [0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão).
@@ -321,6 +321,18 @@ argumento que a sustentava.
   decidido pela pessoa em 2026-08-14, para que a grafia case com as propostas de modelo
   de dados e com a regra de que todo identificador deste laboratório é escrito em
   inglês, de `D-ARQ-06`. A grafia portuguesa sobrevive em `adr/arquivo/`, que nunca é
+  editado, e por isso a uniformidade não é alcançável. **A alteração excede o limite
+  ordinário do patch**, que NÃO DEVE alcançar `## Decisão`, a justificativa, a
+  alternativa descartada nem a consequência — ela foi autorizada explicitamente, e fica
+  registrada aqui em vez de ficar sem rastro
+
+- **2026-08-14** — `## Consequências`: os dois identificadores do oráculo exato deixam
+  de ser tradução palavra a palavra e passam a ter a ordem do inglês, sem que nenhum
+  número, relação ou argumento mude: `value_initial` vira `initial_value` e
+  `value_final` vira `final_value`. decidido pela pessoa em 2026-08-14, logo depois do
+  patch do mesmo dia que grafou os identificadores em inglês: `value_initial` e
+  `value_final` preservavam a ordem portuguesa, em que o adjetivo segue o substantivo, e
+  por isso não eram inglês. A grafia antiga sobrevive em `adr/arquivo/`, que nunca é
   editado, e por isso a uniformidade não é alcançável. **A alteração excede o limite
   ordinário do patch**, que NÃO DEVE alcançar `## Decisão`, a justificativa, a
   alternativa descartada nem a consequência — ela foi autorizada explicitamente, e fica

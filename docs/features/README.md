@@ -51,7 +51,7 @@ antes**, no mesmo dia:
 
 | Regra                                              | O que faltava                                                                 | Onde foi decidido                                                                                                               |
 |----------------------------------------------------|-------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| `R18` de `deteccao-de-atualizacao-perdida`         | de onde vem `value_initial`, já que a única evidência era o arquivo congelado | [`E-86`](../fila-de-decisoes.md#e-86-fecha-em-o-estado-inicial-é-escrito-com-a-captura-aberta-escolhida-em-2026-08-12)          |
+| `R18` de `deteccao-de-atualizacao-perdida`         | de onde vem `initial_value`, já que a única evidência era o arquivo congelado | [`E-86`](../fila-de-decisoes.md#e-86-fecha-em-o-estado-inicial-é-escrito-com-a-captura-aberta-escolhida-em-2026-08-12)          |
 | `R7` de `deteccao-de-protecao-inerte`              | onde vive o nível de isolamento, que o ADR-0002 recusa por escrito decidir    | [`E-87`](../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12)   |
 | `R4` de `streaming-e-replay-do-log-de-observacoes` | como o fim de uma execução chega ao `lab-journal` e ao frontend               | [`E-88`](../fila-de-decisoes.md#e-88-fecha-em-evento-terminal-pelo-broker-e-o-stream-fecha-depois-dele-escolhida-em-2026-08-12) |
 
