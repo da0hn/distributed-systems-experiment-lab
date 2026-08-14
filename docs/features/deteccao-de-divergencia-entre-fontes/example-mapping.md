@@ -26,7 +26,7 @@ sequenceDiagram
     participant SUT as system-under-test
     participant OR as oráculo, no lab-plane
     Note over SUT,OR: janela medida — a execução ainda está em curso
-    OR--xSUT: consulta recusada ou impossível — R1
+    Note over OR: R1 — o oráculo não emite a consulta enquanto a janela está aberta
     Note over SUT,OR: execução silencia
     OR->>SUT: consulta o endpoint — R1
     SUT-->>OR: consolidado por recurso, mais órfãs — R2
@@ -46,7 +46,7 @@ sequenceDiagram
 | R1    | uma execução que acabou de silenciar                                                             | o oráculo consulta o endpoint      | a consulta acontece fora da janela medida, e não altera o tempo medido do experimento                                                     |
 | R2    | um recurso com `capacity = 100`, três alocações somando `70`, e nenhuma alocação órfã            | o endpoint é consultado            | ele devolve, para aquele recurso, `value_final`, `capacity = 100`, `soma = 70`, `contagem = 3`; a contagem de órfãs do consolidado é zero |
 | R2    | uma alocação sem `resource_id` correspondente na tabela de recursos, ao lado de recursos normais | o endpoint é consultado            | a contagem de órfãs do consolidado é maior que zero — separada dos recursos, porque a órfã não pertence a nenhum deles                    |
-| R3    | o stream de CDC relata `soma = 70`, e o endpoint relata `soma = 65` para o mesmo recurso         | o oráculo compara as duas leituras | a execução não produz veredito válido, e a divergência é reportada no frontend                                                            |
+| R3    | o stream de CDC relata `soma = 65`, e o endpoint relata `soma = 70` para o mesmo recurso         | o oráculo compara as duas leituras | a execução não produz veredito válido, e a divergência é reportada no frontend                                                            |
 | R3    | o stream de CDC e o endpoint concordam em todos os recursos tocados pela execução                | o oráculo compara as duas leituras | a execução produz veredito normalmente, sem reporte de divergência                                                                        |
 
 **O primeiro exemplo de `R3` acima é justamente o caso que as guardas de**
@@ -54,10 +54,11 @@ sequenceDiagram
 **não capturam.** `R8` invalida com `fonte incompleta` só quando há buraco na
 sequência de LSN; `R9` invalida com `fonte atrasada` só quando a marca de fim não é
 reconhecida dentro do limite de espera. Nenhuma das duas exige que a soma relatada
-**corresponda** ao valor final: um stream que chegou até `70`, sem buraco e com a marca
-de fim reconhecida, passa pelas duas guardas mesmo relatando um número que diverge do
-que o endpoint confirma. Ver a pergunta em aberto sobre quando a leitura do stream está
-completa, abaixo.
+**corresponda** ao valor final: um stream que chegou até `65`, sem buraco na sequência
+e com a marca de fim reconhecida — completo, pelo critério que as duas guardas
+verificam —, passa por elas mesmo relatando menos do que o endpoint confirma (`70`),
+que é a direção que a perda no transporte produz. Ver a pergunta em aberto sobre se a
+guarda de contiguidade cobre este caso, abaixo.
 
 ### Contraexemplo — a objeção que a proposta não vence
 
@@ -156,28 +157,41 @@ identificadores, ou as linhas" voltaria sem resposta escrita.
 - **Se a guarda de contiguidade de LSN**, que a soma do predicado já exige antes de
   somar
   ([ADR-0013, Decisão](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)),
-  também precisa cobrir a leitura do stream que alimenta esta comparação. Nenhuma regra
-  acima o afirma nem o nega.
+  também precisa cobrir a leitura do stream que alimenta esta comparação. É esta a
+  pergunta que o primeiro exemplo de `R3` na tabela acima ilustra — um stream completo
+  pelo critério de `R8`/`R9`, mas divergindo do endpoint —, como a nota logo abaixo da
+  tabela detalha. Nenhuma regra acima o afirma nem o nega.
+- **A direção oposta — stream relatando mais do que o endpoint — é produzível por
+  duplicação, e não só por perda.** "O transporte PODE duplicar, reordenar ou perder
+  mensagem", em regra aprovada por pessoa
+  ([distincao-entre-higiene-e-invalidacao, Problema e resultado
+  esperado](../distincao-entre-higiene-e-invalidacao/feature-card.md#problema-e-resultado-esperado)).
+  Duas coisas não estão escritas em documento nenhum, e nenhuma delas é decidida aqui:
+  se `R3` alcança a divergência produzida por duplicação, ou só a produzida por perda;
+  e se a guarda de contiguidade de LSN de `R8` detecta duplicação, ou só detecta buraco
+  na sequência. A segunda importa porque, se `R8` já pega os dois casos, o resíduo que
+  esta capacidade reivindica encolhe.
 - **Quando a leitura do stream está completa, no oráculo, para esta comparação.** `R1`
   fixa a hora da consulta ao **endpoint** — depois que a execução silencia — e nenhuma
   regra acima fixa a hora em que a leitura do stream pode ser considerada pronta para a
-  comparação de `R3`. Comparar um consolidado final contra um stream ainda em trânsito
-  diverge em execução sã. É esta lacuna que deixa passar o primeiro exemplo de `R3` na
-  tabela acima — `soma = 70` no stream contra `soma = 65` no endpoint —, que `R8` e `R9`
-  de
-  [deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)
-  não capturam, como a nota logo abaixo da tabela detalha. Bloqueia o `.feature`: sem a
-  condição de término, um cenário de `R3` não sabe quando afirmar o resultado.
+  comparação de `R3`, antes de `R9` reconhecer a marca de fim. Comparar um consolidado
+  final contra um stream genuinamente ainda em trânsito diverge em execução sã, por
+  motivo distinto do exemplo de `R3` acima — que é sobre uma perda que `R8`/`R9` não
+  capturam, e não sobre uma leitura incompleta. Bloqueia o `.feature`: sem a condição de
+  término, um cenário de `R3` não sabe quando afirmar o resultado.
 - **A objeção que descartou "Chamada HTTP ao próprio system under test" no ADR-0010
-  incide sobre `R3`, e não está respondida.** O motivo dado ali — "o instrumento
-  passaria a depender dele para medi-lo" — descreve, antes de tudo, o caso direto: um
-  defeito no código do endpoint produz um consolidado errado, `R3` o compara contra um
-  stream correto, a divergência é falsa, e um veredito bom é destruído sem que nada no
-  sistema medido tenha falhado. O caso inverso, mais raro, é a coincidência: um bug no
-  endpoint produz um consolidado que concorda com uma leitura de stream igualmente
-  errada, e `R3` não teria como distinguir isso de um veredito correto. É diferente do
-  contraexemplo acima, que é sobre corrupção **dentro** do banco; esta é sobre um erro
-  **no código do endpoint**. Nenhuma regra acima o afirma nem o nega.
+  incide sobre `R3`, e não está respondida.** O motivo dado ali
+  ([ADR-0010, Chamada HTTP ao próprio system under
+  test](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#chamada-http-ao-próprio-system-under-test))
+  — "o instrumento passaria a depender dele para medi-lo" — descreve, antes de tudo, o
+  caso direto: um defeito no código do endpoint produz um consolidado errado, `R3` o
+  compara contra um stream correto, a divergência é falsa, e um veredito bom é
+  destruído sem que nada no sistema medido tenha falhado. O caso inverso, mais raro, é
+  a coincidência: um bug no endpoint produz um consolidado que concorda com uma leitura
+  de stream igualmente errada, e `R3` não teria como distinguir isso de um veredito
+  correto. É diferente do contraexemplo acima, que é sobre corrupção **dentro** do
+  banco; esta é sobre um erro **no código do endpoint**. Nenhuma regra acima o afirma
+  nem o nega.
 - **Se a recusa da consulta, do lado do endpoint, deve virar regra própria.** `R1`
   obriga o **oráculo** a não consultar antes da quiescência; ela não obriga o endpoint a
   recusar uma consulta prematura por conta própria — hoje nada garante isso caso o
@@ -194,25 +208,30 @@ identificadores, ou as linhas" voltaria sem resposta escrita.
 
 ## Adiado de propósito
 
-| Item                                | Gatilho que o retoma                                                       |
-|-------------------------------------|----------------------------------------------------------------------------|
-| O `.feature` desta capacidade       | a decisão do formato do resultado de divergência, e de quem é o endpoint   |
-| A forma concreta do endpoint        | a decisão de rota, método e payload, seguida da criação do contrato formal |
-| O alcance da guarda de contiguidade | a decisão sobre se ela cobre também a leitura que alimenta a comparação    |
+| Item                                | Gatilho que o retoma                                                                                                                       |
+|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| O `.feature` desta capacidade       | a decisão do formato do resultado, do caminho até o frontend, da forma concreta do endpoint, e de quando a leitura do stream está completa |
+| A forma concreta do endpoint        | a decisão de rota, método e payload, seguida da criação do contrato formal                                                                 |
+| O alcance da guarda de contiguidade | a decisão sobre se ela cobre também a leitura que alimenta a comparação, e se distingue perda de duplicação                                |
 
 ## O que não virou cenário, e por quê
 
 R1, R2 e R3 estão `aprovada`, e nenhuma virou cenário Gherkin nesta rodada — não porque a
-regra esteja em debate, mas porque encenar exige um `Então` concreto, e duas lacunas
-tornam isso impossível sem inventar.
+regra esteja em debate, mas porque encenar exige um `Então` concreto, e quatro lacunas
+de [Perguntas em aberto](#perguntas-em-aberto), marcadas `Bloqueia o .feature`, tornam
+isso impossível sem inventar.
 
 - **R1** tem um `Então` inteiramente temporal — antes ou depois da quiescência — e não
-  depende de nenhuma das duas lacunas abertas. Ela poderia virar cenário isolada, mas um
-  `.feature` de uma regra só, enquanto as outras duas do mesmo card ficam de fora,
-  fragmenta a especificação sem ganho: o adiamento é do arquivo inteiro, não da regra.
+  depende de nenhuma das quatro lacunas que bloqueiam o `.feature`. Ela depende, porém,
+  de uma quinta — se a recusa do lado do endpoint deve virar regra própria —, que
+  bloqueia o critério de pronto de `R1`, e não o `Então` do cenário. Ela poderia virar
+  cenário isolada, mas um `.feature` de uma regra só, enquanto as outras duas do mesmo
+  card ficam de fora, fragmenta a especificação sem ganho: o adiamento é do arquivo
+  inteiro, não da regra.
 - **R2** tem um `Então` que descreve a forma do consolidado, mas a forma concreta do
-  endpoint — rota, payload — é `Pergunta em aberto`; um cenário precisaria descrever um
+  endpoint — rota, payload — é uma das quatro; um cenário precisaria descrever um
   payload que ninguém decidiu.
-- **R3** tem um `Então` que descreve o resultado da divergência, e o formato desse
-  resultado é `Pergunta em aberto`; um cenário precisaria afirmar sobre um formato que
-  ainda não existe.
+- **R3** tem um `Então` que descreve o resultado da divergência, e as outras três o
+  bloqueiam: o formato do resultado, o caminho até o frontend, e quando a leitura do
+  stream está completa para a comparação; um cenário precisaria afirmar sobre coisas
+  que ninguém decidiu.

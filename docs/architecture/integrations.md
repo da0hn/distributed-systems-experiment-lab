@@ -319,21 +319,22 @@ e passou a ser a forma que o evento de CDC carrega até o oráculo. A concessão
 
 ## Decisões de fronteira ainda abertas, e onde elas vivem
 
-Esta página registra estado, e não decide nada. As seis decisões abaixo mudam a
+Esta página registra estado, e não decide nada. As sete decisões abaixo mudam a
 topologia desta matriz quando fecharem — a forma do `deploy/` saiu desta lista em
 2026-08-13, decidida pelo
 [ADR-0019](../adr/0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md#decisão)
 e pendente só de implementação do lado do `homelab-infrastructure`, já refletida na
 matriz acima.
 
-| O que decide                                             | Onde está registrada                                                                                                          | Efeito aqui                                                                                                                              |
-|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| o slot de replicação permanente do conector              | nenhum ADR aceito a alcança                                                                                                   | fixa o que Debezium Server → WAL cria no banco                                                                                           |
-| onde vive a configuração do Debezium Server              | [ADR-0012, negativas](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)                   | decide se o conector chega ao cluster, e como                                                                                            |
-| qual sink de RabbitMQ, AMQP 0-9-1 ou protocolo de stream | [ADR-0012, neutras](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#neutras)                       | decide qual fenômeno de saturação o grupo B reproduz                                                                                     |
-| onde o `lab-plane` guarda quais execuções estão ativas   | [ADR-0012, negativas](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)                   | cria a primeira tabela do schema `lab_plane`, hoje vazio                                                                                 |
-| de quem é o endpoint de confirmação                      | [`E-96`, enunciado](../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única) | muda a origem da linha `lab-plane` → `system-under-test` da consulta de confirmação, se o endpoint deixar de pertencer ao sistema medido |
-| a forma concreta do endpoint — rota, método, payload     | [card](../features/deteccao-de-divergencia-entre-fontes/feature-card.md#fora-de-escopo)                                       | fixa o `Contrato` da linha `lab-plane` → `system-under-test` da consulta de confirmação, hoje `forma não decidida`                       |
+| O que decide                                             | Onde está registrada                                                                                        | Efeito aqui                                                                                                                              |
+|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| o slot de replicação permanente do conector              | nenhum ADR aceito a alcança                                                                                 | fixa o que Debezium Server → WAL cria no banco                                                                                           |
+| onde vive a configuração do Debezium Server              | [ADR-0012, negativas](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas) | decide se o conector chega ao cluster, e como                                                                                            |
+| qual sink de RabbitMQ, AMQP 0-9-1 ou protocolo de stream | [ADR-0012, neutras](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#neutras)     | decide qual fenômeno de saturação o grupo B reproduz                                                                                     |
+| onde o `lab-plane` guarda quais execuções estão ativas   | [ADR-0012, negativas](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas) | cria a primeira tabela do schema `lab_plane`, hoje vazio                                                                                 |
+| de quem é o endpoint de confirmação                      | [card](../features/deteccao-de-divergencia-entre-fontes/feature-card.md#riscos-e-decisões-pendentes)        | muda a origem da linha `lab-plane` → `system-under-test` da consulta de confirmação, se o endpoint deixar de pertencer ao sistema medido |
+| a forma concreta do endpoint — rota, método, payload     | [card](../features/deteccao-de-divergencia-entre-fontes/feature-card.md#fora-de-escopo)                     | fixa o `Contrato` da linha `lab-plane` → `system-under-test` da consulta de confirmação, hoje `forma não decidida`                       |
+| o caminho pelo qual a divergência chega ao frontend      | [example mapping](../features/deteccao-de-divergencia-entre-fontes/example-mapping.md#perguntas-em-aberto)  | acrescenta a aresta `lab-plane` → `frontend`, ou carga às arestas `lab-plane` → `lab-journal` → `frontend`                               |
 
 **Uma delas não tem registro que esta página possa citar.** O slot permanente do conector
 não aparece em ADR aceito nenhum, e por isso a linha declara a ausência em vez de apontar

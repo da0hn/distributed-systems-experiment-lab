@@ -15,9 +15,9 @@ oráculo
 Parte desse risco já é guardada, com os rótulos `fonte incompleta` e `fonte atrasada` —
 `R8` e `R9` de
 [deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio).
-O que essas guardas não cobrem — stream sem buraco, dentro do prazo, mas divergindo do
-que o sistema medido confirma — é o que esta proposta cobre; a delimitação está em Fora
-de escopo.
+Se essas guardas não alcançarem essa perda — `Pergunta em aberto` abaixo —, o resíduo
+que esta proposta cobre é: stream sem buraco, dentro do prazo, mas divergindo do que o
+sistema medido confirma; delimitação em Fora de escopo.
 
 O resultado esperado é um segundo testemunho, por caminho distinto do WAL: o sistema
 medido expõe um endpoint que relata o que ocorreu no próprio schema. O oráculo consulta
@@ -37,7 +37,7 @@ sequenceDiagram
     SUT-->>OR: consolidado por recurso, mais órfãs
     OR->>OR: compara stream x endpoint
     alt divergência
-        Note over OR: veredito inválido — caminho até o<br/>frontend não decidido, ver Riscos e decisões pendentes
+        Note over OR: veredito inválido — caminho até o<br/>frontend é decisão aberta de topologia, ver Example Mapping
     else concordância
         Note over OR: veredito válido da execução
     end
@@ -46,18 +46,18 @@ sequenceDiagram
 ## Atores e gatilho
 
 - **O oráculo, no `lab-plane`** — consulta o endpoint depois que a execução silencia.
-- **O sistema medido** — expõe o endpoint, sem ser confiado cegamente: a fonte do
-  número é o stream; o endpoint é segundo testemunho.
-- **O frontend** — exibe a divergência, quando ela existir.
+- **O sistema medido** — expõe o endpoint, sem confiança cega: a fonte do número é o
+  stream; o endpoint é segundo testemunho.
+- **O frontend** — exibe a divergência, se ela existir.
 
-Gatilho: fim de uma execução medida, quando a janela medida encerra.
+Gatilho: fim da execução medida, quando a janela encerra.
 
 ## Escopo
 
-- A consulta ao endpoint, **somente** depois que a execução silencia.
+- A consulta ao endpoint, **somente** depois da quiescência.
 - O consolidado por recurso: valor final, capacidade, soma das alocações e contagem de
   alocações, mais a contagem de alocações órfãs.
-- A comparação entre a leitura do stream de CDC e a leitura do endpoint.
+- A comparação entre a leitura do stream e a leitura do endpoint.
 - A invalidação do veredito da execução quando as duas leituras divergirem.
 - O reporte da divergência no frontend.
 
@@ -98,8 +98,9 @@ repete. Sem contrato: nasce só quando a interface existir
 `SELECT` cruzado, pois quem lê o schema é o dono dele
 ([ADR-0010, Decisão](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)).
 Quatro trechos ficam desatualizados, sem serem tocados — `### Negativas`,
-`## Justificativa`, o primeiro item de `## Trade-offs`, e "Chamada HTTP", descartada
-ali e adotada aqui —, listados no
+`## Justificativa`, o primeiro item de `## Trade-offs`, e "Chamada HTTP", título da
+alternativa no ADR-0010: aqui se adota a consulta ao endpoint, sem transporte
+decidido —, listados no
 [fecho de `E-96`](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13),
 terceiro caso de
 [`E-71`](../../fila-de-decisoes.md#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito).
@@ -117,20 +118,20 @@ flowchart LR
 
 O caminho de `OR` até o frontend fica fora do diagrama: nenhuma aresta do
 [ADR-0011](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff)
-leva um veredito até lá, e desenhá-la decidiria por conta própria — lacuna em Riscos e
-decisões pendentes.
+leva um veredito até lá — decisão aberta de topologia, no
+[Example Mapping](example-mapping.md#perguntas-em-aberto).
 
 ## Riscos e decisões pendentes
 
 - **De quem é o endpoint.** `Pergunta em aberto`
   ([`E-96`](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única)).
-- **O resultado de `R3` já tem nome.** O instrumento já nomeia três rótulos, nunca
-  vereditos do sistema medido: `fontes divergentes` — as duas fontes alcançaram o
+- **O resultado de `R3` já tem nome.** O instrumento nomeia três rótulos, nunca
+  veredito do sistema medido: `fontes divergentes` — as duas fontes alcançaram o
   commit final e discordam; `fonte atrasada` — uma não alcançou o ponto a tempo;
-  `fonte incompleta` — buraco na sequência de LSN, sem veredito. A ordem de conferência
-  é LSN, depois commit final, depois concordância. `Pergunta em aberto`: se `R3`
-  produz `fontes divergentes`, e onde entra o endpoint, fonte nova nessa ordem. A
-  composição num relatório único segue aberta
+  `fonte incompleta` — buraco na sequência de LSN, sem veredito. Ordem de conferência:
+  LSN, commit final, concordância. `Pergunta em aberto`: se `R3` produz `fontes
+  divergentes`, e onde entra o endpoint nessa ordem. Composição num relatório único
+  segue aberta
   ([capacidade conhecida e não especificada](../README.md#capacidade-conhecida-e-não-especificada)).
   Detalhada no [Example Mapping](example-mapping.md#perguntas-em-aberto).
 - **Se a guarda de contiguidade do ADR-0013 cobre a perda que motiva esta proposta.**
