@@ -557,10 +557,39 @@ Quatro limites governam essa marca:
 
 ```mermaid
 flowchart TD
-    A["afirmação que uma decisão<br/>posterior tornou falsa"] --> B{"está no ## Decisão,<br/>ou dá título ao ADR?"}
-    B -->|" sim "| C["ADR novo: substituição,<br/>subsunção, emenda ou divisão"]
-    B -->|" não "| D["patch aditivo: a frase fica,<br/>a marca datada entra depois"]
+    A["afirmação que uma decisão<br/>posterior tornou falsa"] --> B{"o próprio ADR<br/>já declara a queda?"}
+    B -->|" sim "| N["nada a fazer:<br/>quem lê o arquivo descobre"]
+    B -->|" não "| Q{"está no ## Decisão,<br/>ou dá título ao ADR?"}
+    Q -->|" sim "| C["ADR novo: substituição,<br/>subsunção, emenda ou divisão"]
+    Q -->|" não "| D["patch aditivo: a frase fica,<br/>a marca datada entra depois"]
+    D --> N
 ```
+
+### A queda declarada não é prosa falsa, decidido em 2026-08-14
+
+**Uma afirmação falsa cujo ADR declara a própria queda não é defeito, e não recebe
+patch.** O dano que se persegue é um só: quem lê o ADR sozinho não descobre que a frase
+caiu. Quando o próprio arquivo declara a queda, esse leitor descobre, e o dano não
+existe.
+
+**Sem esta regra a correção nunca convergiria.** O patch aditivo produz, por construção,
+uma queda declarada — a frase fica, e a marca entra depois. Contá-la como defeito faria
+cada caso consertado nascer como caso novo, e a varredura seguinte acharia tantos quantos
+a anterior tivesse consertado.
+
+Duas exigências, e nenhuma além delas:
+
+- A declaração DEVE viver **no próprio ADR**. Quatro lugares servem: o campo
+  `Alterado por` do cabeçalho, a seção `## Patches aplicados`, um adendo, e a marca
+  aditiva ao lado da frase. Uma declaração que viva fora do arquivo NÃO conta — o leitor
+  do ADR sozinho continuaria sem saber.
+- A declaração DEVE **nomear a afirmação que caiu**, pelo texto dela ou pela seção em que
+  está, para que o leitor consiga emparelhar as duas.
+
+**O cabeçalho é o lugar mais comum, e omiti-lo inverteria a regra.** Toda emenda e toda
+subsunção são obrigadas a escrever um `Alterado por` que nomeia a regra alterada e a
+seção de origem. Uma regra que não contasse esse campo classificaria como defeito
+exatamente o rastro que o lifecycle obriga a escrever.
 
 ### A seção `## Patches aplicados`
 
