@@ -154,3 +154,20 @@ Nenhuma das três fecha estas, e escolher um desenho não as responde.
 8. **Retenção e crescimento do log de observações**, que cresce por fronteira atravessada.
 9. **O contrato entre o frontend e o `lab-journal`**, ausente e registrado como `Q-INT-1`
    em [`integrations.md`](../../../architecture/integrations.md#perguntas-em-aberto).
+
+## A segunda pergunta não espera a escolha, ela a precede
+
+A segunda da lista acima não é uma pendência como as outras, e tratá-la como pendência
+custa caro. **Escolher um destes desenhos decide a composição global por via oblíqua**,
+porque as três a assumiram de formas diferentes para conseguir modelar, e cada desenho
+carrega a assunção dele na estrutura.
+
+A proposta 1 a decide de forma irreversível, no DDL. A proposta 2 a deixa aberta, ao
+custo de o banco nunca poder respondê-la. A proposta 3 a dissolve, afirmando que ela não
+existe. Nenhuma das três é neutra, e nenhuma pode ser adotada "sem prejuízo" da decisão
+que falta.
+
+**A ordem que evita isso é decidir a composição primeiro, e escolher o desenho depois.**
+Feita nessa ordem, a decisão é explícita e tem o argumento dela registrado. Feita na
+ordem inversa, ela acontece de qualquer jeito — só que dentro de uma escolha de
+modelagem, sem argumento próprio, e sem ninguém perceber que foi tomada.
