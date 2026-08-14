@@ -78,7 +78,9 @@ porque decorre da fronteira, e não da forma da tabela.
 ## O que muda esta pasta
 
 - a coluna `version`, quando a estratégia `OPTIMISTIC` nascer;
-- a forma da tabela de execuções ativas, quando `E-35` e `E-50` fecharem;
+- a forma da tabela de execuções ativas — colunas, chave e migração —, que o fecho de
+  [`E-35`](../../adr/fila-de-decisoes.md#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10)
+  deixou explicitamente sem escolher;
 - onde a definição de experimento vive, quando `E-57` fechar.
 
 Uma mudança aqui **NÃO DEVE** alterar o ADR-0015. Se ela mudar como o instrumento mede,
