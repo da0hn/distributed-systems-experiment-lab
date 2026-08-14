@@ -7158,6 +7158,47 @@ fez por este critério ficam confirmadas — o `## Contexto` do ADR-0009 e as qu
 do ADR-0007. Ele não alcança a outra suspeita, a do `## Contexto` do ADR-0008 sobre a
 árvore sem `pom.xml`: ali o que falta é a segunda evidência, e não este critério.
 
+### `E-106` — a permissão do sentido inverso é estreita, e ninguém decidiu se deveria ser
+
+**Levantada em 2026-08-14**, ao escrever o ADR que recorta a proibição do ADR-0008. Aquela
+decisão permite **uma** mensagem do sistema medido para o `lab-plane`: o aviso de que a
+execução terminou, sem dado de domínio, disparado e esquecido, e cuja falha de entrega não
+altera nada no sistema medido. Toda outra mensagem continua proibida. **O escopo é
+estreito de propósito, e não por análise** — ninguém examinou se ele deveria ser maior.
+
+**O caso concreto que motiva a pergunta.** Uma execução pode morrer por erro
+irrecuperável do próprio experimento, e não por término normal. Hoje o sistema medido não
+tem como dizer isso: um erro irrecuperável e um término normal produzem o mesmo silêncio,
+até o limite de espera estourar. O instrumento então classifica como falha de medição uma
+execução que falhou de um modo que ele gostaria de saber distinguir.
+
+**Por que a resposta não é óbvia.** Um segundo aviso passaria o mesmo teste que o primeiro
+— não é mecanismo de passo, não mantém transação aberta, existe fora da janela medida. Mas
+um aviso de erro carrega **fato sobre o que aconteceu**, e a primeira das três condições da
+permissão proíbe carregar dado de domínio. Não está claro se "esta execução morreu" é dado
+de domínio ou é sinal de controle, e é essa fronteira que ninguém traçou.
+
+```mermaid
+flowchart TD
+    E["a execução termina"] --> Q{"terminou como?"}
+    Q -->|" normal "| A["aviso de conclusão — permitido hoje"]
+    Q -->|" erro irrecuperável "| B["silêncio, hoje"]
+    B --> C["limite de espera estoura"]
+    C --> D["falha de medição, indistinguível<br/>de execução que nunca avisou"]
+```
+
+**Três saídas, e nenhuma foi examinada.**
+
+| Saída                                                | A favor                                                                       | Contra                                                                                                     |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| a permissão fica como está, com um aviso só          | o recorte permanece mínimo, e cada alargamento futuro é decidido por si       | o erro irrecuperável continua indistinguível do silêncio, e o relatório perde uma classificação útil       |
+| um segundo aviso entra, para término anormal         | o instrumento passa a separar execução que morreu de execução que sumiu       | exige decidir se "morreu" é dado de domínio, e a primeira condição da permissão proíbe dado de domínio     |
+| a permissão passa a nomear a classe, e não a lista   | toda mensagem sem dado de domínio e sem retorno entra, sem ADR novo a cada    | devolve à letra do ADR-0008 a ambiguidade que o recorte tirou, e o teste volta a depender de julgamento    |
+
+**Esta linha não recomenda nenhuma.** O ADR que a originou declara, na própria seção de
+consequências negativas, que qualquer alargamento exige decisão própria da pessoa e que
+ele não a antecipa nem a pressupõe.
+
 ## De onde esta fila veio
 
 As duas origens continuam no repositório, e as duas viram lápide pela decisão `C-2`.
