@@ -1,16 +1,23 @@
 # Detecção de divergência entre fontes — Example Mapping
 
 Companheiro de [`feature-card.md`](feature-card.md). As três primeiras regras vêm da
-decisão da pessoa em 2026-08-13, registrada no
-[fecho de `E-96`](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13),
-sobre o
-[enunciado da mesma linha](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única).
+decisão da pessoa em 2026-08-13, que escolheu especificar esta capacidade por Feature
+Card e Example Mapping, sem ADR, sobre um enunciado que perguntava se o sistema medido
+expõe endpoint de confirmação e o que muda quando a fonte deixa de ser única.
 **Duas regras novas, `R4` e `R5`, e o refinamento de `R1` e `R3`, vêm de seis decisões
 que a pessoa tomou em 2026-08-14** — o resíduo exato da comparação, a relação entre
 rótulo e veredito, o nome do rótulo, o desenho do aviso de conclusão e a consulta
-indevida. Essas decisões vivem numa fila que não é família citável
-([`AGENTS.md`, ao trabalhar aqui](../../../AGENTS.md#ao-trabalhar-aqui)); por isso o
-conteúdo delas está trazido por inteiro nesta página, em vez de citado.
+indevida.
+
+**As sete decisões foram tomadas na linha `E-96` da fila, e nenhum link desta página
+aponta para lá.** A regra da raiz admite três famílias como fonte citável —
+`docs/adr/`, `docs/features/**` e `docs/architecture/**` — e manda que quem precise de
+informação de fora dessas famílias traga o texto inteiro para dentro do próprio
+documento ([cortesia](../../../AGENTS.md#ao-trabalhar-aqui)). A fila é o pior caso
+dessa regra: o processo poda a narrativa de uma linha quando ela fecha, e um link para
+âncora podada quebra em silêncio — o verificador só o acusa na execução seguinte à
+poda, quando o estrago já está no commit. Por isso o conteúdo das sete decisões está
+trazido por inteiro nesta página, e a linha é referida pelo identificador, sem link.
 
 ## História
 
@@ -133,9 +140,9 @@ LSN corrompido, que derruba a desduplicação e a conferência de contiguidade j
 
 ### Contraexemplo — a objeção que a proposta não vence
 
-O `E-96` registra uma objeção de 2026-08-09 contra uma segunda fonte de leitura do mesmo
-banco: "as duas leem o mesmo banco, e nenhuma detecta erro do banco"
-([`E-96`, enunciado](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única)).
+A linha `E-96` da fila registra uma objeção de 2026-08-09 contra uma segunda fonte de
+leitura do mesmo banco: "as duas leem o mesmo banco, e nenhuma detecta erro do banco".
+O texto da objeção está aqui por inteiro, e não há link para a fila.
 O contraexemplo real é o oposto do que a leitura ingênua sugere, porque a segunda fonte
 não lê "o mesmo banco": o stream lê o **WAL**, e o endpoint lê o **schema atual**.
 Qualquer alteração que passe pelo caminho normal de escrita SQL — certa ou errada, por
@@ -168,9 +175,8 @@ flowchart LR
 
 > **O enunciado do `E-96` ofereceu três formas para o endpoint** — consolidado por
 > recurso, conjunto de identificadores, e as linhas —, cada uma com poder de detecção
-> diferente. A pessoa escolheu a primeira no fecho, e as outras duas não aparecem na
-> decisão; nenhum motivo foi dado por escrito para descartá-las
-> ([fecho de `E-96`](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13)).
+> diferente. A pessoa escolheu a primeira no fecho de 2026-08-13, e as outras duas não
+> aparecem na decisão; nenhum motivo foi dado por escrito para descartá-las.
 
 Registrado aqui porque `R2` fixa a forma escolhida sem explicar por que as outras duas
 ficaram de fora — sem este registro, a pergunta "por que não o conjunto de
@@ -267,8 +273,10 @@ admitir o aviso de conclusão de `R4`, nas três condições que a Decisão daqu
   o aviso não mede nada — ele é sinal de controle, e não leitura. Ninguém decidiu.
   Bloqueia o `.feature` do ramo de estouro em `R4`.
 - **A forma concreta do endpoint e do callback** — rota, método, payload. Nenhum
-  contrato nasce agora, pela regra de que contrato só existe quando a interface existir
-  ([`contracts/README.md`](../../contracts/README.md#estado-nenhum-contrato-existe)).
+  contrato nasce agora: o inventário de contratos deste repositório declara que nenhum
+  existe, e que cada um só nasce quando a interface que ele descreve existir no código
+  ou for entregue na mesma mudança
+  ([cortesia](../../contracts/README.md#estado-nenhum-contrato-existe)).
   Bloqueia o `.feature` e a implementação.
 - **Qual identidade a execução carrega, e se é o mesmo discriminador que já particiona
   o stream de CDC.** Se for, o discriminador ganha um segundo papel — rótulo de
@@ -295,10 +303,10 @@ admitir o aviso de conclusão de `R4`, nas três condições que a Decisão daqu
 - **O que `R3` e `R5` fazem com a contagem de órfãs de `R2` não foi decidido.** Ela
   entra no consolidado, mas se uma divergência só nela já produz o rótulo, ou se ela
   conta como algo distinto, não foi fixado — nem se uma consulta indevida que só toca
-  órfãs é catalogada do mesmo jeito. Toca
-  [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu),
-  aberta — quatro saídas foram propostas ao longo da linha, duas já contraditas pela
-  resposta de 2026-08-13, e nenhuma foi formalmente escolhida —, e a `Pergunta em aberto` do
+  órfãs é catalogada do mesmo jeito. Toca a linha `E-74` da fila, que pergunta quem
+  verifica a órfã de `allocation` e segue aberta — quatro saídas foram propostas ao
+  longo dela, duas já contraditas pela resposta de 2026-08-13, e nenhuma foi
+  formalmente escolhida —, e a `Pergunta em aberto` do
   [ADR-0015](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id)
   sobre quem verifica a órfã — `R2` introduz uma quinta saída possível sem decidi-la.
 

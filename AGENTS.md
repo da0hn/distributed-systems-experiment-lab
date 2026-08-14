@@ -308,13 +308,13 @@ Três consequências, fixadas pelos ADRs 0001 e 0002, mudam o que se pode propor
 diante:
 
 - **O oráculo exato
-  é `perdidas = commits − (value_final − value_inicial)`**, onde `commits`
-  conta passagens pela fronteira `AFTER_COMMIT`, por tentativa. Não é `sucessos` —
+  é `lost_operations = commits − (value_final − value_initial)`**, onde `commits`
+  conta passagens pela fronteira `AFTER_COMMIT`, por tentativa. Não é `successes` —
   contar retornos de operação cancela perda real contra falha injetada depois do commit.
   Está em
   [ADR-0002](docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato).
 - **Toda execução medida exige calibração antes**, com uma estratégia sem perda, em que
-  `commits` DEVE igualar `value_final − value_inicial` — em
+  `commits` DEVE igualar `value_final − value_initial` — em
   [ADR-0002](docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador).
   **A estratégia é `ATOMIC_UPDATE`**, e esta linha dizia que ela não tinha sido decidida.
   O
@@ -464,6 +464,16 @@ são estado, e por isso ficam:
   registrado e não feito, sem dono e sem prazo. A existência delas **NÃO DEVE** ser
   invocada como precedente para escrever mais uma. **Este parágrafo traz o número em vez
   de apontar para onde ele está contado, e é a regra aplicada a si mesma.**
+  **O link sobrevive ou não conforme o alvo, e o critério é a permanência do heading, e
+  não a estabilidade do documento.** Decidido em 2026-08-14. Depois de trazer o texto
+  para dentro, quem escreve **PODE** deixar o link como cortesia — marcado com a palavra
+  `cortesia`, para o leitor não o confundir com evidência — quando o heading do alvo
+  permanecer, como em `docs/AGENTS.md`, `docs/specification-process.md` e
+  `docs/contracts/README.md`. Quem escreve **NÃO DEVE** deixar link algum para
+  `docs/fila-de-decisoes.md`: ali o processo manda apagar a narrativa quando a linha
+  fecha, e a referência fica pelo identificador da linha em texto puro. A distinção
+  existe porque as duas famílias falham de modos diferentes — o texto de um documento
+  instável mas permanente apenas envelhece, e o de uma linha podada deixa de existir.
   **Pergunta em aberto:** a regra não diz o que fazer com este arquivo, com
   `docs/AGENTS.md` e com as skills — eles também mudam com frequência, e hoje são
   citados por documentos de `docs/architecture/`.
