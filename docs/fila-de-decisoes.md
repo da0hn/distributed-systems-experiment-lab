@@ -6497,6 +6497,69 @@ formato do resultado da divergência, e não diz se a resposta muda caso o rótu
 seja `fontes divergentes`, que já existe no vocabulário. As três são anteriores ao
 Gherkin da `R3`, e nenhuma tem dono hoje.
 
+### `E-98` — o ADR-0012 já desduplica e já detecta buraco, e o resíduo da `R3` encolhe
+
+**Levantada em revisão independente da detecção de divergência, em 2026-08-14.** Ela é
+contradição entre artefato de capacidade e ADR aceito, e por isso entra aqui como decisão
+arquitetural nova, pela regra de
+[`AGENTS.md`](../AGENTS.md#ao-trabalhar-aqui).
+
+**A `R3` continua aprovada, e não é ela que está em causa.** A pessoa a aprovou em
+2026-08-13, e nada aqui a toca. O que esta linha pergunta é **qual resíduo sobra para ela**
+depois do que outro documento já obriga.
+
+**O ADR-0012 obriga três coisas antes do veredito, e duas delas são exatamente o que a
+`R3` diz existir para pegar.** A decisão diz, literalmente: "Todo evento que atravessa esse
+caminho DEVE preservar o LSN que o servidor PostgreSQL lhe atribuiu antes de qualquer
+transporte existir. O `lab-plane` DEVE usar esse LSN para ordenar, desduplicar e detectar
+buraco na sequência antes de calcular o veredito", em
+[ADR-0012](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão).
+A justificativa do mesmo ADR tabula os três fenômenos e o que o LSN resolve em cada um:
+duplicata, "descartar o evento já visto, pelo LSN"; reordenação, "ordenar os eventos pelo
+LSN"; perda, "detectar o buraco na sequência de LSN e invalidar o veredito". E acrescenta:
+"A terceira linha sustenta a decisão inteira."
+
+**Daí decorre que o exemplo que motiva a capacidade é impossível sob ADR aceito.** O card
+declara que o risco motivador é a perda de evento no transporte entre o WAL e o oráculo, e
+o Example Mapping o ilustra com um stream **completo** — sem buraco na sequência — que
+relata menos que o consolidado. Sob o ADR-0012 esse par não coexiste: o LSN nasce antes do
+transporte, então um evento perdido no transporte deixa buraco, e o buraco já invalida a
+execução pela `R8` de
+[detecção de proteção inerte](features/deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio).
+Pela mesma razão, um stream relatando **mais** que o consolidado é duplicata, e a
+desduplicação é `DEVE` separado, que roda antes do veredito.
+
+```mermaid
+flowchart TD
+    P["evento perdido<br/>entre o WAL e o oráculo"] --> L{"o LSN sobreviveu<br/>ao transporte?"}
+    L -->|" sim "| B["buraco na sequência"] --> R8["R8 já invalida,<br/>com fonte incompleta"]
+    L -->|" não "| S["sequência parece contígua,<br/>e falta evento"] --> R3["resíduo possível da R3"]
+    D["evento duplicado"] --> DD["o ADR-0012 manda desduplicar<br/>pelo LSN, antes do veredito"]
+```
+
+**A única condição que o ADR-0012 deixa aberta é a sobrevivência do próprio LSN.** A
+justificativa dele encerra o argumento com a ressalva "desde que o LSN sobreviva ao
+transporte inteiro", e as consequências negativas registram que **não existe teste** que o
+prove. É aí, e aparentemente só aí, que a comparação da `R3` teria o que detectar.
+
+**Três saídas, e nenhuma é escolhida aqui.**
+
+- **A `R3` cobre só o caso em que o LSN não sobrevive ao transporte.** O card encolhe para
+  esse resíduo, e passa a declará-lo. A objeção é que o resíduo depende de uma falha que
+  nenhum documento afirma ser possível, e o card passaria a existir para um caso hipotético.
+- **A `R3` é redundante com o que o ADR-0012 já manda, e o card encolhe muito mais.** A
+  objeção é que a pessoa aprovou a regra sabendo do risco de transporte, e reduzir a
+  capacidade por inferência desfaz por conta própria uma regra aprovada por pessoa.
+- **O ADR-0012 recebe uma das formas do
+  [lifecycle](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07)**, porque
+  a obrigação de desduplicar e detectar buraco passa a conviver com uma segunda fonte que
+  ele não previa. A objeção é que nada no ADR-0012 se tornou falso — ele continua correto,
+  e o que mudou foi o que existe ao lado dele.
+
+**O que esta linha não decide.** Ela não escolhe entre as três, não altera a `R3`, não
+toca o corpo do ADR-0012, e não afirma que a capacidade deixa de existir. A pergunta é uma
+só: qual resíduo sobra, e ninguém a respondeu.
+
 ## De onde esta fila veio
 
 As duas origens continuam no repositório, e as duas viram lápide pela decisão `C-2`.
