@@ -236,6 +236,20 @@ ignorar a nota. Exigir que o endpoint recuse a consulta foi recusado — obrigar
 sistema medido a saber o que é janela medida, e o agnosticismo do desenho vale também
 aqui.
 
+### A tensão com o ADR-0008
+
+O ADR-0008 fixa, sem qualificar a chamada de passo, que "O Control Plane NÃO DEVE
+chamar o Lab Plane"
+([ADR-0008, Decisão](../../adr/0008-os-dois-planos-em-processos-separados.md#decisão)),
+e o `## Contexto` do mesmo ADR define o Control Plane como o sistema medido. O aviso de
+`R4` trafega exatamente nesse sentido — do sistema medido para o `lab-plane`. Deixar a
+tensão sem resposta foi recusado — um card NÃO PODE contradizer ADR aceito
+([`AGENTS.md`, ao trabalhar aqui](../../../AGENTS.md#ao-trabalhar-aqui)). **A pessoa
+resolveu isto em 2026-08-14**, pelo
+[ADR-0020](../../adr/0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md#decisão): a
+proibição do ADR-0008 continua valendo por inteiro para a chamada de passo, e passa a
+admitir o aviso de conclusão de `R4`, nas três condições que a Decisão daquele ADR fixa.
+
 ## Perguntas em aberto
 
 - **De quem é o endpoint de confirmação.** Ele vive no sistema medido e só existe para
@@ -252,21 +266,6 @@ aqui.
   contrato nasce agora, pela regra de que contrato só existe quando a interface existir
   ([`contracts/README.md`](../../contracts/README.md#estado-nenhum-contrato-existe)).
   Bloqueia o `.feature` e a implementação.
-- **`R4` tensiona a letra do ADR-0008, e nem este card nem quem o revisa decidem
-  isso.** O ADR-0008 fixa, sem qualificar a chamada de passo, que "O Control Plane NÃO
-  DEVE chamar o Lab Plane"
-  ([ADR-0008, Decisão](../../adr/0008-os-dois-planos-em-processos-separados.md#decisão)),
-  e o `## Contexto` do mesmo ADR define o Control Plane como o sistema medido. O aviso
-  de `R4` trafega exatamente nesse sentido — do sistema medido para o `lab-plane`. A
-  leitura de que a proibição vale só para execução de passo não está no texto do
-  ADR-0008: ela vem de uma frase diferente, "o runtime chama a operação, e a operação
-  nunca chama o runtime", que descreve o mecanismo de passo, não a chamada em si. Um
-  card não pode contradizer ADR aceito
-  ([`AGENTS.md`, ao trabalhar aqui](../../../AGENTS.md#ao-trabalhar-aqui);
-  [`docs/AGENTS.md`, Feature Card](../../AGENTS.md#feature-card)), e esta contradição
-  não é decidida aqui: vai à pessoa, que escolhe se `R4` muda de desenho ou se o
-  ADR-0008 recebe uma das formas do lifecycle. Bloqueia o `.feature` do ramo em que o
-  aviso chega.
 - **Qual identidade a execução carrega, e se é o mesmo discriminador que já particiona
   o stream de CDC.** Se for, o discriminador ganha um segundo papel — rótulo de
   partição e identidade de execução; se não, existem dois identificadores para a mesma
@@ -301,34 +300,34 @@ aqui.
 
 ## Adiado de propósito
 
-| Item                          | Gatilho que o retoma                                                                                                                   |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| O `.feature` desta capacidade | a decisão de quem é o endpoint, da forma concreta do endpoint e do callback, do rótulo do estouro, e da tensão entre `R4` e o ADR-0008 |
-| A forma concreta do endpoint  | a decisão de rota, método e payload, seguida da criação do contrato formal                                                             |
+| Item                          | Gatilho que o retoma                                                                                |
+|-------------------------------|-----------------------------------------------------------------------------------------------------|
+| O `.feature` desta capacidade | a decisão de quem é o endpoint, da forma concreta do endpoint e do callback, e do rótulo do estouro |
+| A forma concreta do endpoint  | a decisão de rota, método e payload, seguida da criação do contrato formal                          |
 
 ## O que não virou cenário, e por quê
 
 R1 a R5 estão `aprovada`, e nenhuma virou cenário Gherkin nesta rodada — não porque a
-regra esteja em debate, mas porque encenar exige um `Então` concreto, e quatro lacunas de
-[Perguntas em aberto](#perguntas-em-aberto) — quem é o endpoint, o rótulo do estouro, a
-forma concreta do endpoint e do callback, e a tensão entre `R4` e o ADR-0008 — tornam
-isso impossível sem inventar, para ao menos uma regra de cada vez.
+regra esteja em debate, mas porque encenar exige um `Então` concreto, e três lacunas de
+[Perguntas em aberto](#perguntas-em-aberto) — quem é o endpoint, o rótulo do estouro, e a
+forma concreta do endpoint e do callback — tornam isso impossível sem inventar, para ao
+menos uma regra de cada vez.
 
 - **R1** tem um `Então` inteiramente temporal — antes ou depois de receber o aviso — e
-  não depende de nenhuma das quatro lacunas. O bloqueio que a recusa do endpoint impunha a
+  não depende de nenhuma das três lacunas. O bloqueio que a recusa do endpoint impunha a
   ela, na rodada anterior, caiu: `R5` resolveu isso. Ela poderia virar cenário isolada,
   mas um `.feature` de uma regra só, enquanto as outras quatro do mesmo card ficam de
   fora, fragmenta a especificação sem ganho — o adiamento é do arquivo inteiro.
 - **R2** tem um `Então` que descreve a forma do consolidado, mas a forma concreta do
-  endpoint — rota, payload — é uma das quatro lacunas.
+  endpoint — rota, payload — é uma das três lacunas.
 - **R3** tem um `Então` que descreve o rótulo `fontes divergentes`. O caminho até o
   frontend, que a bloqueava na rodada anterior, foi decidido em 2026-08-14: nenhuma das
-  quatro lacunas restantes a bloqueia diretamente. Ela seria a primeira candidata a
+  três lacunas restantes a bloqueia diretamente. Ela seria a primeira candidata a
   cenário se o arquivo fosse fragmentado por regra — recusado pelo mesmo motivo de
   sempre, e explicado no item de `R1` acima.
-- **R4** tem dois ramos: o aviso chegando dentro do limite, que a tensão com o ADR-0008
-  bloqueia — não cabe a este ciclo escrever um cenário sobre um mecanismo cuja
-  legalidade arquitetural está em disputa —; e o limite estourando, que depende também
-  do rótulo do estouro, ainda sem nome.
+- **R4** tem dois ramos. O aviso chegando dentro do limite dependia da tensão com o
+  ADR-0008, resolvida pelo [ADR-0020](../../adr/0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md);
+  o que ainda bloqueia esse ramo é a forma concreta do aviso HTTP, uma das três lacunas
+  restantes. O limite estourando depende também do rótulo do estouro, ainda sem nome.
 - **R5** tem um `Então` que descreve o registro e a catalogação, mas depende da forma
   concreta do endpoint para descrever como o instante é registrado.

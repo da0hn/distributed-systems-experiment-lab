@@ -118,11 +118,10 @@ Quatro trechos ficam desatualizados, intocados, no
 terceiro caso de
 [`E-71`](../../fila-de-decisoes.md#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito).
 
-**`R4` tensiona a letra do ADR-0008, e este card não resolve isso** — ele fixa que o
-sistema medido, o Control Plane daquele ADR, NÃO DEVE chamar o `lab-plane`
-([ADR-0008, Decisão](../../adr/0008-os-dois-planos-em-processos-separados.md#decisão)),
-e o aviso trafega nesse sentido. `Pergunta em aberto`, no
-[Example Mapping](example-mapping.md#perguntas-em-aberto).
+**`R4` tensionava a letra do ADR-0008; a tensão foi resolvida em 2026-08-14** pelo
+[ADR-0020](../../adr/0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md#decisão),
+que subsume a proibição: ela continua valendo por inteiro para a chamada de passo, e
+passa a admitir o aviso de conclusão nas três condições que a Decisão daquele ADR fixa.
 
 ```mermaid
 flowchart LR
@@ -151,8 +150,6 @@ mensagem terminal no RabbitMQ, persistida e emitida por SSE pelo `lab-journal`, 
   identidade a execução carrega** — mesmo discriminador do CDC, ou um segundo
   identificador. Ninguém decidiu; detalhado no
   [Example Mapping](example-mapping.md#perguntas-em-aberto).
-- **`R4` tensiona a letra do ADR-0008**, sem resolução — ver
-  [Integrações e contratos afetados](#integrações-e-contratos-afetados).
 - **A objeção contra "Chamada HTTP" incide sobre `R3`, e o que `R3`/`R5` fazem com a
   órfã de `R2`** seguem sem resposta — a segunda toca
   [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu),
@@ -173,13 +170,14 @@ consulta antes do aviso é registrada, catalogada, sem veredito.
   e
   [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13)
 - [`ADR-0008`](../../adr/0008-os-dois-planos-em-processos-separados.md), `Aceito` —
-  tensionado por `R4`
+  tensão com `R4` resolvida pelo `ADR-0020`
 - [`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md),
   `Aceito`
 - [`ADR-0012`](../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md),
   `Aceito`
 - [`ADR-0013`](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md),
   `Aceito`
+- [`ADR-0020`](../../adr/0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md), `Aceito`
 - [`E-71`](../../fila-de-decisoes.md#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito)
 - [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu)
 - [`architecture/integrations.md`](../../architecture/integrations.md#matriz)

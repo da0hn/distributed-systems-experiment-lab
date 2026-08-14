@@ -9,7 +9,7 @@
   [`decisoes-pendentes.md`](arquivo/proposta-2026-08-03/decisoes-pendentes.md), e
   `D-ARQ-01` por consequência.
 
-- **Última atualização:** 2026-08-13
+- **Última atualização:** 2026-08-14
 - **Alterado por:** [ADR-0009](0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md)
   — emenda; a região de pacote `dev.da0hn.lab.controlplane` (seção "Decisão", tabela de
   pacotes, `:70`) passa a `dev.da0hn.lab.sut`.
@@ -38,6 +38,12 @@
   [`AGENTS.md`](../../AGENTS.md#este-repositório-é-entregue-no-homelab) já nomeia: um
   experimento que sobe deliberadamente uma segunda instância roda sob `selfHeal` —
   `Pergunta em aberto` em `E-95`.
+- **Alterado por:**
+  [ADR-0020](0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md) — subsunção; a
+  frase "O Control Plane NÃO DEVE chamar o Lab Plane" (seção "Decisão") continua
+  valendo por inteiro para a chamada de passo, e passa a admitir o aviso de conclusão
+  do sistema medido — callback HTTP, disparado e esquecido, fora da janela medida —,
+  nas três condições que a seção "Decisão" daquele ADR fixa.
 
 ## Contexto
 

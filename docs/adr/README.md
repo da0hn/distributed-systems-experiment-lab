@@ -133,6 +133,7 @@ O motivo do arquivamento e o que sobreviveu estão em
 | [0017](0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md) | A persistência antecipada do log de observações, e o buffer que a alimenta | `Aceito` |
 | [0018](0018-cada-controle-roda-sob-o-seu-proprio-nivel.md)                                | Cada controle roda sob o seu próprio nível                                 | `Aceito` |
 | [0019](0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md)                    | A entrega sai do `deploy/`, e a imagem ganha tag semântica                 | `Aceito` |
+| [0020](0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md)                            | O aviso de conclusão, e a subsunção da proibição do ADR-0008               | `Aceito` |
 
 O planejamento está em [`../plano-do-laboratorio.md`](../plano-do-laboratorio.md). Ele
 **não decide nada** — é a análise que define quais decisões precisam ser tomadas e em
