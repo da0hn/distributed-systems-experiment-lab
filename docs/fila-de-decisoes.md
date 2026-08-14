@@ -6560,6 +6560,110 @@ prove. É aí, e aparentemente só aí, que a comparação da `R3` teria o que d
 toca o corpo do ADR-0012, e não afirma que a capacidade deixa de existir. A pergunta é uma
 só: qual resíduo sobra, e ninguém a respondeu.
 
+#### `E-98` fecha em a comparação cobre só o LSN que não sobrevive, escolhida em 2026-08-14
+
+**Escolhida pela pessoa em 2026-08-14**, no dia seguinte ao da regra que ela aprovou.
+
+**A comparação entre as duas leituras existe para uma falha só: a do próprio LSN.** Quando
+o identificador que o servidor atribui não sobrevive ao transporte inteiro — corrompido,
+reescrito ou perdido —, a sequência que chega ao oráculo **parece contígua** e falta
+evento. Nenhuma das três obrigações do
+[ADR-0012](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
+alcança esse caso, porque as três operam **sobre** o LSN: ordenar por ele, desduplicar por
+ele, e conferir a contiguidade dele. Um identificador corrompido derruba as três ao mesmo
+tempo, e derruba em silêncio.
+
+```mermaid
+flowchart TD
+    F["falha entre o WAL<br/>e o oráculo"] --> L{"o LSN sobreviveu<br/>ao transporte?"}
+    L -->|" sim "| J["o ADR-0012 já resolve:<br/>ordena, desduplica, detecta buraco"]
+    L -->|" não "| R["a sequência parece contígua,<br/>e o conteúdo não bate"]
+    R --> C["é aqui, e só aqui, que a comparação<br/>com o consolidado detecta"]
+```
+
+**A escolha vale para as duas direções da divergência, e isso responde a pergunta da
+duplicação.** Um stream relatando **menos** que o consolidado é evento que sumiu; um
+relatando **mais** é evento contado duas vezes. As duas passam despercebidas pela **mesma**
+causa — o LSN corrompido derruba a desduplicação e a conferência de contiguidade juntas —,
+e por isso a comparação alcança as duas sem que nenhuma regra nova precise dizê-lo.
+
+**O custo foi nomeado antes da escolha, e ela foi feita mesmo assim.** A capacidade passa a
+existir para uma falha que **nenhum documento deste repositório afirma já ter ocorrido**, e
+o próprio ADR-0012 registra, nas
+[consequências negativas](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas),
+que não existe teste que prove a sobrevivência do LSN. A comparação é, portanto, a única
+verificação que aquela ressalva tem hoje — e é isso que a torna defensável apesar do custo.
+
+**Duas alternativas foram recusadas.** Arquivar a capacidade por redundância foi recusado
+porque desfaria uma regra aprovada por pessoa um dia antes, e porque jogaria fora junto a
+detecção de defeito no próprio somatório do oráculo, que o LSN não alcança. Emendar o
+ADR-0012 foi recusado porque nada nele se tornou falso: ele continua correto, e alterá-lo
+para acomodar vizinhança nova abriria precedente para reabrir ADR sem que nenhuma
+afirmação dele tenha caído.
+
+**O que continua sem decisão.** Quando a leitura do stream é final para a comparação; se o
+resultado dela é o rótulo `fontes divergentes`, já estabelecido; e se o endpoint deve
+recusar consulta feita dentro da janela medida. Nenhuma das três é fechada por esta linha.
+
+### `E-99` — como os formatos de veredito e os rótulos do instrumento convivem
+
+**Levantada em 2026-08-14**, ao comparar as três propostas de modelo do caderno de
+laboratório: as três assumiram composições diferentes para conseguir modelar, e escolher um
+desenho decidiria a composição por via oblíqua, sem argumento próprio.
+
+**Quatro coisas de tipos diferentes saem de uma execução medida.** Um número, quando o
+oráculo exato conta operações perdidas. Um booleano, quando o oráculo do predicado diz se a
+invariante foi violada. Uma taxa com limite superior de confiança, que não é caso particular
+de nenhum dos dois. E um rótulo de falha do instrumento — `fonte incompleta`, `fonte
+atrasada` ou `fontes divergentes` —, que **não é veredito nenhum**: ele diz que a medição
+falhou, e não que o sistema medido falhou.
+
+**Confundir as duas naturezas invalida a conclusão.** Um rótulo de instrumento apresentado
+ao lado de um veredito, no mesmo plano, faz falha de medição parecer resultado de
+consistência.
+
+#### `E-99` fecha em o rótulo do instrumento suprime o veredito, escolhida em 2026-08-14
+
+**Escolhida pela pessoa em 2026-08-14.** O relatório tem **duas camadas, e a de cima é a
+validade da medição**.
+
+**Primeira camada: a medição é válida, ou não é.** Se o instrumento falhou, sai **só o
+rótulo**, e **nenhum veredito é emitido**. Não sai veredito acompanhado de ressalva, nem
+veredito marcado como suspeito: não sai veredito.
+
+**Segunda camada, e ela só existe se a primeira passar.** O veredito sai no formato do
+oráculo que o produziu, **marcado com qual oráculo o produziu**. A marcação é obrigatória, e
+não decorativa: sem ela, um número de operações perdidas e uma taxa de violação são ambos
+números, e nada no relatório os separa.
+
+```mermaid
+flowchart TD
+    E["a execução termina"] --> V{"a medição<br/>é válida?"}
+    V -->|" não "| R["sai o rótulo do instrumento,<br/>e nenhum veredito"]
+    V -->|" sim "| O["sai o veredito, marcado<br/>com o oráculo que o produziu"]
+    O --> N["número de operações perdidas"]
+    O --> B["booleano de violação"]
+    O --> T["taxa com limite de confiança"]
+```
+
+**A precedência entre os três rótulos já estava fixada, e esta linha não a altera.** A
+contiguidade da sequência é conferida primeiro; depois pergunta-se se as duas fontes
+alcançaram o commit final; e só então se elas concordam.
+
+**Duas alternativas foram recusadas.** O envelope único, em que todo resultado sai na mesma
+forma com um campo dizendo o tipo, foi recusado porque põe falha de instrumento e resultado
+de consistência no mesmo plano — exatamente a confusão que invalida a conclusão. Um
+relatório por oráculo, sem composição nenhuma, foi recusado porque uma execução que roda os
+dois produziria dois documentos sem relação declarada, e o caderno precisaria guardá-los sem
+saber que são da mesma execução.
+
+**O que esta linha NÃO decide, e não deve ser inferido dela.** Quantos formatos de veredito
+existem ao todo continua aberto, e três questões encaminhadas ainda mudam esse escopo — o
+eixo pontual contra contínuo no tempo, um formato que não é caso particular dos outros, e o
+que a incerteza publicada afirma. Também continua aberto se **um relatório pode misturar
+oráculos**, isto é, se uma execução que roda o contador e o predicado publica um documento
+ou dois. Nenhum documento deve enumerar o conjunto de formatos enquanto essas não fecharem.
+
 ## De onde esta fila veio
 
 As duas origens continuam no repositório, e as duas viram lápide pela decisão `C-2`.

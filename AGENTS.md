@@ -185,11 +185,20 @@ oráculo do predicado produz um booleano
 O
 [ADR-0004](docs/adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-veredito-de-uma-execução-medida-é-uma-taxa)
 acrescentou a taxa com limite de confiança, que não é caso particular de nenhum dos
-dois. Como esses formatos convivem num relatório único continua **decisão aberta**, e o
-E4 não tem card exatamente por isso, em
-[capacidade conhecida e não
-especificada](docs/features/README.md#capacidade-conhecida-e-não-especificada). Não
-conte formatos e não trate a lista como fechada.
+dois.
+
+**O relatório tem duas camadas, e a de cima é a validade da medição.** Decidido em
+2026-08-14. Se o instrumento falhou, sai **só o rótulo** — `fonte incompleta`, `fonte
+atrasada` ou `fontes divergentes` — e **nenhum veredito é emitido**; não existe veredito
+com ressalva. Se a medição é válida, o veredito sai no formato do oráculo que o produziu,
+**marcado com qual oráculo o produziu** — sem a marca, um número de perdas e uma taxa de
+violação são ambos números, e nada os separa.
+
+**O que continua aberto é o outro eixo, e ele não deve ser inferido do primeiro.** Quantos
+formatos de veredito existem ao todo, e se um relatório pode misturar oráculos, seguem sem
+decisão; o E4 não tem card por causa disso, em [capacidade conhecida e não
+especificada](docs/features/README.md#capacidade-conhecida-e-não-especificada). Não conte
+formatos e não trate a lista como fechada.
 
 **O grupo de controle é
 obrigatório.** A estratégia `NONE` não é um estado provisório: se

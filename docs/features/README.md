@@ -150,8 +150,18 @@ O E4 está no MVP
 ([`../plano-do-laboratorio.md`](../plano-do-laboratorio.md#e4--optimistic-under-contention))
 e **não tem card**, porque o formato de veredito dele não foi decidido.
 
-**A composição global dos formatos de veredito não foi decidida, e esta seção é o dono
-dessa afirmação.** O que está decidido é o formato local de cada oráculo já
+**A relação entre o rótulo do instrumento e o veredito foi decidida em 2026-08-14, e o
+resto da composição não.** O relatório tem duas camadas, e a de cima é a validade da
+medição: se o instrumento falhou, sai só o rótulo — `fonte incompleta`, `fonte atrasada`
+ou `fontes divergentes` — e nenhum veredito é emitido, sem ressalva e sem marca de
+suspeita; se a medição é válida, o veredito sai no formato do oráculo que o produziu,
+marcado com qual oráculo o produziu. O envelope único foi recusado por pôr falha de
+medição e resultado de consistência no mesmo plano, e um relatório por oráculo sem
+composição foi recusado por produzir dois documentos sem relação declarada para a mesma
+execução.
+
+**Esta seção continua dona da afirmação de que o resto não foi decidido.** O que está
+decidido além das duas camadas é o formato local de cada oráculo já
 especificado, e nada além disso: a contagem exata do contador, pelo
 [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato); o
 predicado booleano da capacidade, pelo
@@ -159,9 +169,12 @@ predicado booleano da capacidade, pelo
 e a taxa de violação com limite superior de confiança, pelo
 [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-veredito-de-uma-execução-medida-é-uma-taxa).
 
-**Quantos formatos existem ao todo, como eles convivem e o que um relatório publica
-continua aberto.** Nenhum documento deste repositório enumera esse conjunto, e um que o
-enumere está errado enquanto a decisão não for tomada. Questões encaminhadas mudam o
+**Quantos formatos existem ao todo, e se um relatório pode misturar oráculos, continua
+aberto.** Nenhum documento deste repositório enumera esse conjunto, e um que o
+enumere está errado enquanto a decisão não for tomada. A decisão das duas camadas **não
+responde** nenhuma das duas: ela diz o que acontece com o veredito quando a medição
+falha, e não quantos formatos existem nem se uma execução que roda dois oráculos publica
+um documento ou dois. Questões encaminhadas mudam o
 escopo dela antes que seja tomada: [`Q-0002-3`](../questions/Q-0002-3.md) acrescenta o
 eixo pontual contra contínuo no tempo, [`Q-0004-5`](../questions/Q-0004-5.md) acrescenta
 um formato que não é caso particular dos outros, e
