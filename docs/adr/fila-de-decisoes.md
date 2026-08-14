@@ -2272,6 +2272,18 @@ de fila que falsifica prosa de ADR aceito sem gerar ADR. O levantamento original
 o que tinha achado até `E-5`; medir se há mais casos, além destes dois, continua fazendo
 parte da saída que for escolhida.
 
+**Um terceiro caso apareceu em 2026-08-13, e esta linha o registra sem medir se há
+mais.** O
+[fecho de `E-96`](#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13)
+fechou sem ADR e tornou desatualizada prosa das
+[consequências negativas do ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#negativas):
+a frase que declara "a detecção cruzada acaba" e que o rótulo `fontes divergentes` "perde
+as duas leituras que comparava" deixou de ser verdade, e o ADR-0010 não foi tocado — o
+mesmo impasse que abre esta linha, pelo mesmo motivo: nenhuma forma do lifecycle alcança
+decisão de fila que falsifica prosa de ADR aceito sem gerar ADR. O levantamento original
+mediu só o que tinha achado até `E-5`; medir se há mais casos, além destes três, continua
+fazendo parte da saída que for escolhida.
+
 | Saída                                                             | O que ela faz                                                                                                                        |
 |-------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | o patch ganha um motivo a mais, escrito                           | consertar afirmação que uma decisão posterior falsificou passa a ser patch legítimo, com a linha de `## Patches aplicados` de sempre |
@@ -6022,6 +6034,55 @@ concreto que motivou a proposta é a perda no transporte, e contra ele ela funci
 ela cria restrição futura sobre o que o sistema medido expõe, e o trade-off é explícito.
 Ela também torna desatualizada uma consequência de ADR aceito, e a forma de registrar isso
 é do [lifecycle](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
+
+#### `E-96` fecha em card e example mapping, sem ADR, escolhida em 2026-08-13
+
+**Escolhida pela pessoa em 2026-08-13**, no mesmo dia da proposta. Ela decidiu três coisas
+além do enunciado original, e recusou o artefato recomendado.
+
+**Quando o endpoint é consultado.** Depois que a execução silencia, e nunca dentro da
+janela que o experimento mede. Consultá-lo durante a execução põe carga e lock no sistema
+medido, e o experimento passaria a medir também a confirmação.
+
+**O que o endpoint retorna.** Um consolidado por recurso — o valor final, a capacidade, a
+soma das alocações e a contagem de alocações —, mais a contagem de alocações órfãs.
+
+**O que a divergência produz.** Ela invalida o veredito daquela execução, e é reportada no
+frontend.
+
+**O artefato é Feature Card e Example Mapping, e a recomendação de ADR foi recusada.** A
+recomendação acima — a proposta atende aos quatro critérios do
+[índice](README.md#uma-decisão-merece-adr-quando) — foi oferecida à pessoa, e ela a
+recusou por escrito: nenhum ADR nasce desta linha, e o corpo do
+[ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) não é tocado. O
+resultado vive em
+[`deteccao-de-divergencia-entre-fontes/feature-card.md`](../features/deteccao-de-divergencia-entre-fontes/feature-card.md)
+e em
+[`deteccao-de-divergencia-entre-fontes/example-mapping.md`](../features/deteccao-de-divergencia-entre-fontes/example-mapping.md).
+
+**Este fecho torna desatualizada prosa de um ADR aceito, sem gerar ADR — e cria o terceiro
+caso conhecido do diagnóstico de
+[`E-71`](#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito).** As
+[consequências negativas do ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#negativas)
+afirmam que "a detecção cruzada acaba", que o rótulo `fontes divergentes` "perde as duas
+leituras que comparava" e que o consolidado publicado pelo sistema medido "confere, mas
+não é independente dele". Esta decisão restaura a detecção cruzada com exatamente aquele
+consolidado. O ADR-0010 segue byte a byte — nenhuma forma do lifecycle foi acionada —, e
+`E-71` continua sendo a dona do diagnóstico e da lista de saídas; esta linha não a fecha,
+não altera o enunciado dela e não escolhe entre as saídas dela.
+
+**O que continua sem decisão, e não foi inventado.**
+
+- **De quem é o endpoint.** Ele vive no sistema medido e só existe para medi-lo, o que
+  tensiona a exigência de o sistema medido ser ingênuo. `Pergunta em aberto`.
+- **O formato do resultado da divergência.** Não é número, não é booleano e não é taxa —
+  é resultado de formato novo, e como os formatos convivem num relatório único continua
+  decisão aberta, em
+  [capacidade conhecida e não especificada](../features/README.md#capacidade-conhecida-e-não-especificada).
+  `Pergunta em aberto`.
+- **A forma concreta do endpoint** — rota, método, payload. Nenhum contrato nasce agora:
+  a regra deste repositório é que contrato nasce quando a interface existir
+  ([`contracts/README.md`](../contracts/README.md#estado-nenhum-contrato-existe)).
 
 ## De onde esta fila veio
 
