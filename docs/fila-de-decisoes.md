@@ -6965,6 +6965,64 @@ e o desenho continua lá afirmando o contrário. Ele não entrou no inventário 
 varredura porque aquela varredura leu prosa, e este trecho é rótulo de aresta dentro de um
 bloco Mermaid.
 
+#### `E-104` fecha em subsunção, e a proibição fica com a chamada de passo, escolhida em 2026-08-14
+
+**Escolhida pela pessoa em 2026-08-14**: o aviso de conclusão permanece, e a proibição do
+ADR-0008 passa a nomear a chamada de passo. **A forma escolhida foi a emenda, e a emenda
+não estava disponível** — a fronteira dela é objetiva e a exclui: "A regra emendada NÃO
+DEVE ser a que dá título ao ADR, nem a que está na seção `## Decisão`"
+([`adr/README.md`, A emenda](adr/README.md#a-emenda-terceira-forma-ao-lado-da-substituição-e-da-subsunção)),
+e a frase está no `## Decisão`. A escolha de forma é processo documental, delegada, e a
+decisão de arquitetura da pessoa fica intacta.
+
+**A subsunção é a forma, e a cadeia de evidência é que a determina.** O ADR-0008 **não
+justifica** a proibição em lugar nenhum: a `## Justificativa` argumenta processos
+separados, região de pacote e idioma, e nunca o sentido inverso. O único fundamento dela
+está em
+[ADR-0008, Positivas](adr/0008-os-dois-planos-em-processos-separados.md#positivas): "A
+direção proibida do ADR-0001 (`:93-95`) deixa de depender de verificação". E o ADR-0001,
+naquelas linhas, decide outra coisa: "O runtime chama o passo. O passo NÃO DEVE chamar o
+runtime"
+([ADR-0001, Decisão](adr/0001-o-passo-como-unidade-de-execucao.md#decisão)). **A proibição
+do ADR-0008 é a generalização de uma regra sobre o mecanismo de passo, escrita sem a
+qualificação que a origem carregava.**
+
+```mermaid
+flowchart TD
+    A["ADR-0001: o passo<br/>NÃO DEVE chamar o runtime"] -->|" generalizada em "| B["ADR-0008: o Control Plane<br/>NÃO DEVE chamar o Lab Plane"]
+    B --> C{"o aviso de conclusão<br/>cabe na regra?"}
+    C -->|" pela letra, sim "| D["contradição com card aceito"]
+    C -->|" pelo fundamento, não "| E["ADR novo separa os dois casos:<br/>subsunção"]
+    E --> F["chamada de passo:<br/>proibição inteira, sem mudança"]
+    E --> G["aviso de conclusão:<br/>permitido, sem resultado e sem efeito"]
+```
+
+**A definição da subsunção descreve este caso literalmente**: ela "acontece quando a regra
+antiga continua correta no caso que ela enxergava, e o ADR novo separa casos que ela
+tratava como um só"
+([`adr/README.md`, Substituição e subsunção](adr/README.md#substituição-e-subsunção-são-coisas-diferentes)).
+O ADR-0008 tratou "chamada" como um caso só. O ADR novo separa a chamada de passo, onde a
+proibição continua inteira, do aviso de conclusão, que não carrega resultado, não retorna
+valor ao sistema medido e não pode alterá-lo.
+
+**As outras quatro formas foram recusadas, cada uma por uma regra escrita.** O adendo,
+porque ele "NÃO DEVE contradizer o corpo", e qualificar a proibição contradiz. A divisão,
+porque o que sai por ela vale "com o mesmo conteúdo normativo", e aqui o conteúdo é
+justamente o que muda. O patch, porque ele "NÃO DEVE alterar o que foi decidido". A
+substituição, porque o `Estado` do ADR-0008 passaria a dizer que a decisão dos dois planos
+em processos separados saiu de vigor, e ela não saiu — objeção que o próprio
+[`adr/README.md`](adr/README.md#a-emenda-terceira-forma-ao-lado-da-substituição-e-da-subsunção)
+registra, com este ADR como exemplo.
+
+**O ADR novo é o `ADR-0020`, e ele nasce `Aceito`.** O ADR-0008 permanece `Aceito` e
+recebe no cabeçalho `Última atualização` e `Alterado por`, nomeando a regra subsumida e a
+seção de origem, no mesmo commit em que o ADR novo nasce.
+
+**O que continua sem decisão.** Se a permissão alcança qualquer mensagem do sistema medido
+para o `lab-plane`, ou só o aviso de conclusão sem resultado — o ADR-0020 precisa dizer
+qual, porque a subsunção exige nomear em que caso a regra antiga continua valendo sem
+mudança.
+
 ## De onde esta fila veio
 
 As duas origens continuam no repositório, e as duas viram lápide pela decisão `C-2`.
