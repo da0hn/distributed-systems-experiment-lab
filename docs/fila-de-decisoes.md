@@ -6664,6 +6664,125 @@ que a incerteza publicada afirma. Também continua aberto se **um relatório pod
 oráculos**, isto é, se uma execução que roda o contador e o predicado publica um documento
 ou dois. Nenhum documento deve enumerar o conjunto de formatos enquanto essas não fecharem.
 
+### `E-100` — como o instrumento sabe que a execução terminou, e o que dispara a comparação
+
+**Proposta pela pessoa em 2026-08-14.** Na letra dela: o sistema medido recebe uma URL de
+callback ou uma fila de callback e avisa quando terminou todo o processo; ao receber essa
+confirmação, o instrumento chama o endpoint de confirmação. E o ponto que sustenta o
+desenho: **o callback e o endpoint são agnósticos para o sistema medido** — do ponto de
+vista dele, ele está fornecendo dados e avisando o cliente do próprio sistema.
+
+**O problema que ela resolve.** A regra aprovada manda consultar o endpoint depois que a
+execução silencia, e nada dizia como o instrumento sabe que ela silenciou. Sem esse sinal,
+o instrumento adivinha — e adivinhar cedo consulta um consolidado em movimento.
+
+**O que torna o desenho forte, e não é óbvio.** O aviso viaja por um caminho **independente
+do WAL**. A comparação existe para o caso em que o LSN não sobrevive ao transporte; um
+sinal de conclusão que trafegasse dentro do próprio stream seria inútil exatamente na
+falha para a qual a capacidade foi criada.
+
+**A objeção levantada, e o desenho em que ela desaparece.** O arquivo de instruções da raiz
+diz que "O runtime chama a operação; a operação nunca chama o runtime", e a
+[matriz](architecture/integrations.md#matriz) comprime isso, na fronteira entre os dois
+planos, como "sentido inverso proibido". A regra de origem fala de **execução de passo**, e
+um aviso de conclusão não é execução de passo — a frase da matriz é mais larga do que a
+regra que ela cita. O que permanece é o acoplamento de falha: se o aviso bloquear, repetir
+ou lançar exceção quando o destino não responde, o comportamento do sistema medido passa a
+depender do instrumento, e isso é a confusão entre os dois planos. A objeção desaparece
+num desenho só: **disparado e esquecido, fora da janela medida, e a impossibilidade de
+entregá-lo NÃO DEVE alterar nada no sistema medido**.
+
+#### `E-100` fecha em callback HTTP, com limite de espera, escolhida em 2026-08-14
+
+**Escolhida pela pessoa em 2026-08-14**, no mesmo dia da proposta, em quatro partes.
+
+**O aviso vai por URL de callback, em HTTP, e não por fila.** Uma fila compartilharia o
+mesmo broker por onde o stream de CDC trafega, e a comparação existe para detectar falha
+desse transporte — um aviso que morre junto com o stream não avisa nada no caso que
+importa. O custo aceito é o instrumento passar a expor porta HTTP para receber.
+
+**Quem recebe o aviso e consulta o endpoint é o instrumento**, e não o caderno de
+laboratório. É o oráculo que compara as duas leituras, e ele roda no instrumento;
+consultar de lá mantém o consolidado e a comparação no mesmo processo, e não cria aresta
+nova entre o caderno e o sistema medido.
+
+**O aviso que não chega tem limite de espera, e o estouro é falha de medição.** Estourado
+o limite, a execução termina sem veredito, do mesmo modo que já acontece quando a marca de
+fim não é reconhecida no stream. Presumir que o transporte do aviso é confiável seria
+inconsistente com uma capacidade que existe porque transporte falha.
+
+```mermaid
+sequenceDiagram
+    participant SUT as system-under-test
+    participant LP as lab-plane
+    Note over SUT,LP: janela medida
+    SUT-->>LP: aviso de conclusão, por HTTP, disparado e esquecido
+    Note over LP: fora da janela medida
+    LP->>SUT: consulta o endpoint de confirmação
+    SUT-->>LP: consolidado por recurso
+    LP->>LP: compara com a soma do stream
+```
+
+**Duas alternativas foram recusadas.** A marca de fim no stream como reserva do aviso
+perdido foi recusada porque, no caso em que o LSN não sobrevive, a marca também pode não
+ser reconhecida — a reserva falharia junto com o que deveria cobrir. Consultar por conta
+própria passado o limite foi recusado porque consultar sem saber que terminou é o que a
+regra de consultar só depois do silêncio proíbe.
+
+**O que continua sem decisão.** Qual rótulo o estouro do limite produz — se é o mesmo
+`fonte atrasada`, que já nomeia a fonte que não alcançou o ponto declarado no tempo
+declarado, ou um novo. E a frase da matriz "sentido inverso proibido", que agora é mais
+larga do que a regra que ela cita, precisa ser qualificada.
+
+### `E-101` — o resultado da comparação entre as duas leituras já tem nome
+
+**Levantada em revisão independente, em 2026-08-14.** A regra aprovada diz que uma
+divergência entre o consolidado e a leitura do stream invalida o veredito, e os artefatos a
+chamavam de "divergência", tratando o resultado como formato novo. O vocabulário do
+repositório já dá `fontes divergentes` por **estabelecido desde 2026-08-05**, definido como
+"as duas fontes de observação alcançaram o commit final e **discordam**", e a ordem de
+conferência entre os três rótulos do instrumento já põe a concordância por último.
+
+#### `E-101` fecha em o resultado é `fontes divergentes`, escolhida em 2026-08-14
+
+**Escolhida pela pessoa em 2026-08-14.** O resultado da comparação **é** o rótulo já
+estabelecido, e não um formato novo. Um conceito passa a ter um nome só.
+
+**A precedência entre os três não muda, porque ela já cobria este caso.** A contiguidade da
+sequência é conferida primeiro, e produz `fonte incompleta`; depois pergunta-se se as duas
+fontes alcançaram o commit final, e a falha produz `fonte atrasada`; só então pergunta-se
+se elas concordam, e a discordância produz `fontes divergentes`.
+
+**O rótulo não é veredito, e é isso que o encaixa na decisão das duas camadas.** Ele diz
+que a medição falhou, e não que o sistema medido falhou — então ele **suprime** o veredito,
+em vez de conviver com ele.
+
+### `E-102` — uma consulta feita dentro da janela medida não deveria ocorrer
+
+**Levantada em revisão independente, em 2026-08-14.** O critério de pronto exigia que a
+consulta prematura fosse "recusada ou impossível pela arquitetura". Recusar obrigaria o
+sistema medido a saber se a janela medida está aberta, e "impossível pela arquitetura" não
+é asserção que teste nenhum prove.
+
+#### `E-102` fecha em o endpoint registra a hora, e a ocorrência invalida, escolhida em 2026-08-14
+
+**Escolhida pela pessoa em 2026-08-14.** Ela declarou primeiro que isso **não deveria
+ocorrer**, e que, ocorrendo, precisa ser catalogado e apresentado no relatório final.
+
+**O endpoint não recusa nada, e registra o instante de cada consulta que recebe.** Registrar
+quando foi chamado é coisa que qualquer sistema faz, e não exige que o sistema medido saiba
+o que é janela medida — o agnosticismo do desenho do aviso de conclusão vale aqui igual.
+
+**Quem detecta é o relatório, cruzando esses instantes com a janela medida.** A detecção
+não depende da peça que falhou: um instrumento com defeito no controle de quando consultar
+é justamente o que não reportaria o próprio defeito.
+
+**A ocorrência é falha de medição, e não ressalva.** Uma consulta dentro da janela pôs
+carga e lock no sistema medido durante a medição, então ela é catalogada, apresentada no
+relatório, e **nenhum veredito é emitido**. Catalogar sem invalidar foi recusado porque um
+veredito acompanhado de ressalva é o que a decisão das duas camadas acabou de recusar, e
+quem lê o número tende a ignorar a nota.
+
 ## De onde esta fila veio
 
 As duas origens continuam no repositório, e as duas viram lápide pela decisão `C-2`.
