@@ -2234,6 +2234,313 @@ linha** — o job passa, e os cinco continuam medidos e visíveis a cada execuç
 bloqueia nenhuma linha da primeira, e o desfecho padrão dela é lacuna aceita — o que
 significa que a lista pode ficar como está indefinidamente sem que nada quebre.
 
+#### O inventário dos trechos falsificados, levantado por varredura
+
+**A varredura procurou uma coisa só: afirmação que um ADR aceito ainda faz e que uma
+decisão posterior tornou falsa.** Quatro formas contam: a escolha dada por não feita e já
+feita, o bloqueio dado por vigente e já derrubado, a consequência dada por encerrada e já
+restaurada, e a frase escrita no futuro cujo ADR de destino já existe e já decidiu. Ela
+cobriu `docs/adr/NNNN-*.md`, os quatro arquivos de instrução — `AGENTS.md` da raiz,
+[`docs/AGENTS.md`](AGENTS.md), [`docs/README.md`](README.md) e
+[`specification-process.md`](specification-process.md) — e os fechos desta fila. Ela **não**
+cobriu `docs/adr/arquivo/**`, que é registro congelado e nunca vigente.
+
+**Três coisas ela não alcança, e nomeá-las é parte do resultado.** A primeira é a queda já
+**declarada** no cabeçalho do ADR alterado: ela não engana quem lê, e por isso ficou de
+fora — o [ADR-0007](adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md) tem quatro
+seções nessa condição, todas nomeadas pela emenda do ADR-0017 no cabeçalho dele. A segunda
+é divergência entre o que um ADR decidiu e o que o código faz, que é implementação faltando
+e não prosa falsa. A terceira é **ausência**: uma varredura mede o que achou, e a contagem
+abaixo não é o total do repositório.
+
+**Os três casos que esta linha já registrava não se repetem aqui** — `E-5` contra o
+`### Neutras` do ADR-0008, `E-56` contra o `### Positivas` do ADR-0015 e `E-96` contra o
+`### Negativas` do ADR-0010.
+
+**Nem todo caso abaixo é da espécie que dá título a `E-71`.** Oito foram falsificados por
+**outro ADR aceito**, que não registrou emenda nem patch no alvo — espécie que o lifecycle
+alcança e ninguém acionou. Oito foram falsificados por **fecho desta fila sem ADR**, que é
+a espécie de `E-71`, para a qual nenhuma forma existe. E um vive **fora de ADR**, no
+`AGENTS.md` da raiz, onde nenhuma cerimônia é exigida e o conserto é edição direta.
+
+| ADR e seção                                                                                                            | O que a frase afirma                                                              | O que a tornou falsa                                                                                                                           |
+|------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| [ADR-0001, `### Negativas`](adr/0001-o-passo-como-unidade-de-execucao.md#negativas)                                    | o conjunto de entradas amostradas da prova de equivalência não foi definido       | [ADR-0002](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-critério-de-igualdade-entre-dois-traços-de-sql) o declarou por operação           |
+| [ADR-0001, `### Negativas`](adr/0001-o-passo-como-unidade-de-execucao.md#negativas)                                    | o compartilhamento por colaborador injetado continua sem guarda                   | [ADR-0006](adr/0006-a-forma-da-estrategia-de-concorrencia.md#pessimistic-é-a-estratégia-de-controle-positivo) deu a guarda e fechou `Q-0001-2` |
+| [ADR-0002, `### Negativas`](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#negativas)                                 | a calibração é um requisito sem procedimento, até outro ADR nomear a estratégia   | [ADR-0006](adr/0006-a-forma-da-estrategia-de-concorrencia.md#atomic_update-é-a-estratégia-de-calibração) nomeou `ATOMIC_UPDATE`                |
+| [ADR-0002, `### Negativas`](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#negativas)                                 | a migração que cria `version` vem junto do ADR de estratégias                     | [ADR-0006](adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão) não a trouxe, e a pôs no commit que introduzir a estratégia              |
+| [ADR-0002, `### Negativas`](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#negativas)                                 | o ADR-0001 é aceito e não pode ser corrigido                                      | [a revogação da imutabilidade](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) permitiu o patch                             |
+| [ADR-0010, `### Negativas`](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#negativas)                | a fonte do oráculo de capacidade fica sem decisão, e o E5 não tem fonte           | [ADR-0013](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão) pôs `Σ amount` na soma dos `INSERT` do WAL       |
+| [ADR-0010, `### Negativas`](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#negativas)                | se a proibição do ADR-0002 alcança a leitura direta não está decidido             | [ADR-0013](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão) fixou o critério de proveniência                 |
+| [ADR-0010, `## Trade-offs`](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#trade-offs)               | o custo aceito foi a fonte do oráculo de capacidade ficar sem mecanismo declarado | [ADR-0013](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão) declarou o mecanismo                             |
+| [ADR-0012, `### Negativas`](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)         | `max_slot_wal_keep_size` continua sem decisão                                     | [fecho de `E-30`](#e-30-fecha-em-limite-finito-com-alerta-escolhida-em-2026-08-10): valor finito, com alerta                                   |
+| [ADR-0012, `### Negativas`](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)         | onde o `lab-plane` guarda quais discriminadores estão ativos não está decidido    | [fecho de `E-35`](#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10): tabela no schema `lab_plane`                                    |
+| [ADR-0013, `### Negativas`](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas)       | o rótulo da execução invalidada por buraco de LSN não foi decidido                | [fecho de `E-45`](#e-45-fecha-em-fonte-incompleta-escolhida-em-2026-08-10): `fonte incompleta`                                                 |
+| [ADR-0013, `### Negativas`](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas)       | onde a conferência de contiguidade vive no código não foi decidido                | [fecho de `E-46`](#e-46-fecha-no-consumidor-do-broker-escolhida-em-2026-08-10): no consumidor do broker                                        |
+| [ADR-0013, `### Negativas`](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas)       | a condição de término da soma do oráculo do predicado não foi decidida            | [fecho de `E-47`](#e-47-fecha-na-sentinela-escolhida-em-2026-08-10): a sentinela de fim                                                        |
+| [ADR-0014, `### Negativas`](adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#negativas) | de onde a contagem de coincidências lê os dados é pergunta em aberto              | [fecho de `E-51`](#e-51-fecha-em-guarda-de-completude-escolhida-em-2026-08-12): do log, sobre stream atestado                                  |
+| [ADR-0016, `### Negativas`](adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#negativas)                        | a monotonicidade do instante de ocorrência segue sem decisão                      | [fecho de `E-52`](#e-52-fecha-em-a-ordem-vem-do-cursor-e-o-instante-é-rótulo-escolhida-em-2026-08-12): ela sai da lista                        |
+| [ADR-0016, `### Negativas`](adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#negativas)                        | como o stream sinaliza que uma execução terminou não foi decidido                 | [fecho de `E-88`](#e-88-fecha-em-evento-terminal-pelo-broker-e-o-stream-fecha-depois-dele-escolhida-em-2026-08-12): evento terminal            |
+| [`AGENTS.md` da raiz, `### Decisões`](../AGENTS.md#decisões)                                                           | qual estratégia calibra o denominador ainda não foi decidido                      | [ADR-0006](adr/0006-a-forma-da-estrategia-de-concorrencia.md#atomic_update-é-a-estratégia-de-calibração) nomeou `ATOMIC_UPDATE`                |
+
+**Cada caso abaixo carrega as duas transcrições literais.** A primeira é a frase falsa; a
+segunda, a decisão que a falsificou. Sem as duas o caso não estaria aqui.
+
+**1 — [ADR-0001, `### Negativas`](adr/0001-o-passo-como-unidade-de-execucao.md#negativas).**
+
+> **A prova de equivalência é por amostragem.** O teste cobre as entradas que ele executa.
+> Uma divergência que só apareça fora delas continua invisível, e o conjunto amostrado
+> ainda não foi definido.
+
+Falsificada pelo
+[ADR-0002, `### O critério de igualdade entre dois traços de SQL`](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-critério-de-igualdade-entre-dois-traços-de-sql):
+
+> O conjunto de entradas amostradas é declarado por operação, e DEVE conter uma entrada
+> para cada ramo do predicado da operação, mais um estado inicial diferente de zero.
+
+**2 — [ADR-0001, `### Negativas`](adr/0001-o-passo-como-unidade-de-execucao.md#negativas).**
+
+> **Uma rota de compartilhamento continua sem guarda.** As três camadas protegem o escopo
+> entre passos, e não protegem o estado alcançado por colaborador injetado.
+
+Falsificada pelo
+[ADR-0006, `### PESSIMISTIC é a estratégia de controle positivo`](adr/0006-a-forma-da-estrategia-de-concorrencia.md#pessimistic-é-a-estratégia-de-controle-positivo):
+
+> Coincidências DEVEM ser zero em toda execução, pois o lock impede a janela de existir.
+> Uma violação aponta para o banco ou fabricação no instrumento, nunca para a estratégia.
+> Fecha `Q-0001-2`.
+
+O [índice de questões](questions/README.md#índice) registra
+[`Q-0001-2`](questions/Q-0001-2.md) como `resolvida por ADR-0006`, e o arquivo dela abre
+nomeando a subseção acima.
+
+**3 — [ADR-0002, `### Negativas`](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#negativas).**
+
+> **A calibração depende de uma estratégia que este ADR não pode nomear.** Ela exige uma
+> estratégia sem perda, e a lista de estratégias é decisão de outro ADR. Até lá, a
+> calibração é um requisito sem procedimento.
+
+Falsificada pelo
+[ADR-0006, `### ATOMIC_UPDATE é a estratégia de calibração`](adr/0006-a-forma-da-estrategia-de-concorrencia.md#atomic_update-é-a-estratégia-de-calibração):
+
+> Um único `UPDATE ... SET value = value + 1` satisfaz o ADR-0002 R3 sem coordenação de
+> aplicação: o PostgreSQL serializa toda escrita concorrente na linha.
+
+O `### Positivas` do mesmo ADR-0006 diz a frase inversa na letra: "a calibração do
+ADR-0002 R3 ganha procedimento".
+
+**4 — [ADR-0002, `### Negativas`](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#negativas).**
+
+> **O E3 exige uma migração de esquema antes de rodar.** O `OPTIMISTIC` precisa de
+> `version`, e a coluna não existe. A migração vem junto do ADR de estratégias.
+
+Falsificada pelo
+[ADR-0006, `## Decisão`](adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão), que é
+o ADR de estratégias e não trouxe a migração:
+
+> **colunas adicionais** (`OPTIMISTIC` exige `version` em `Resource`; a migração nasce no
+> mesmo commit que introduz a estratégia, quando a arquitetura mínima existir — fila,
+> posição 10; `Q-INT-5`)
+
+É o caso da frase no futuro: o ADR de destino existe, decidiu, e decidiu **contra** o que a
+frase previa.
+
+**5 — [ADR-0002, `### Negativas`](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#negativas).**
+
+> **O ADR-0001 mostra um `SELECT` de uma coluna que não existe.** O esboço ilustrativo dele
+> lê `version`, e o esquema desta decisão não a tem. O ADR-0001 é aceito e não pode ser
+> corrigido; quem ler os dois na ordem encontra a divergência.
+
+Falsificada por
+[`adr/README.md`, `## A revogação da imutabilidade`](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07):
+
+> **O corpo de um ADR aceito PODE ser corrigido por patch.** A regra de que ele nunca era
+> editado foi revogada nesta data, por decisão explícita da pessoa.
+
+A primeira metade do trecho continua verdadeira — o esboço lê mesmo uma coluna ausente. O
+que caiu é a segunda: o ADR-0001 **pode** ser corrigido, e o `## Patches aplicados` dele
+existe e está vazio.
+
+**6 — [ADR-0010, `### Negativas`](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#negativas).**
+
+> **A fonte do oráculo de capacidade fica sem decisão. `Pergunta em aberto`.** [...] O E5
+> depende deste oráculo, e nenhuma fonte lhe foi dada.
+
+Falsificada pelo
+[ADR-0013, `## Decisão`](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão):
+
+> O oráculo do predicado obtém `Σ amount` do WAL, somando os eventos de `INSERT` de
+> `allocation`. Somar eventos não é o que a proibição descreve.
+
+**7 — [ADR-0010, `### Negativas`](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#negativas).**
+
+> **Se a proibição alcança também a leitura direta não está decidido. `Pergunta em
+> aberto`.**
+
+Falsificada pelo
+[ADR-0013, `## Decisão`](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão):
+
+> A proibição do ADR-0002 alcança **fonte produzida pelo instrumento**, e nada além disso.
+> O critério é de **proveniência**, e não de operação.
+
+**8 — [ADR-0010, `## Trade-offs`](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#trade-offs).**
+
+> O benefício **replicação lógica sem abrir exceção à regra de schema** foi aceito em troca
+> do custo **a fonte do oráculo de capacidade fica sem mecanismo declarado**.
+
+Falsificado pelo mesmo trecho do
+[ADR-0013, `## Decisão`](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
+citado no caso 6. O custo listado no trade-off deixou de ser pago, e o par que ele descreve
+já não é o par que está em vigor.
+
+**9 — [ADR-0012, `### Negativas`](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas).**
+
+> A mitigação natural, `max_slot_wal_keep_size`, é parâmetro de cluster e continua sem
+> decisão.
+
+Falsificada pelo
+[fecho de `E-30`](#e-30-fecha-em-limite-finito-com-alerta-escolhida-em-2026-08-10):
+
+> **A escolha.** `max_slot_wal_keep_size` recebe **valor finito**, e a retenção do slot
+> ganha **alerta**.
+
+**10 — [ADR-0012, `### Negativas`](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas).**
+
+> Onde o `lab-plane` guarda quais discriminadores estão ativos não está decidido. Em
+> memória, um reinício apaga a resposta, e a execução seguinte descarta às cegas.
+
+Falsificada pelo
+[fecho de `E-35`](#e-35-fecha-em-tabela-no-lab_plane-escolhida-em-2026-08-10):
+
+> A lista de quais execuções estão ativas passa a viver numa **tabela do schema
+> `lab_plane`**, que se torna a primeira tabela daquele schema — hoje vazio de propósito.
+
+**11 — [ADR-0013, `### Negativas`](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas).**
+
+> **Pergunta em aberto.** Se a execução invalidada por buraco de LSN recebe o rótulo **fonte
+> atrasada** — estabelecido no glossário para o estouro do limite de espera — ou um rótulo
+> distinto, não foi decidido.
+
+Falsificada pelo
+[fecho de `E-45`](#e-45-fecha-em-fonte-incompleta-escolhida-em-2026-08-10):
+
+> **Escolhido pela pessoa em 2026-08-10**, pela criação de um terceiro rótulo, e o nome
+> dele é `fonte incompleta`. Ele nomeia a fonte que alcançou o ponto declarado e chegou com
+> buraco na sequência de LSN.
+
+**12 — [ADR-0013, `### Negativas`](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas).**
+
+> **Pergunta em aberto.** Onde a conferência de contiguidade vive no código não foi
+> decidido.
+
+Falsificada pelo
+[fecho de `E-46`](#e-46-fecha-no-consumidor-do-broker-escolhida-em-2026-08-10):
+
+> A conferência de contiguidade de LSN vive no consumidor do broker. Ele entrega ao oráculo
+> um stream já atestado, e todo leitor a jusante dele herda a guarda sem reimplementá-la.
+
+**13 — [ADR-0013, `### Negativas`](adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#negativas).**
+
+> **Pergunta em aberto.** Se a espera pelo LSN do commit final, decidida em `O19` para o
+> oráculo exato, alcança também o oráculo do predicado não foi decidido.
+
+Falsificada pelo
+[fecho de `E-47`](#e-47-fecha-na-sentinela-escolhida-em-2026-08-10):
+
+> O sistema medido escreve uma marca de fim depois que todos os workers terminam, e o
+> oráculo soma até reconhecer o evento dessa marca no stream. O LSN da marca é o "LSN do
+> commit final" que `O19` nomeia, obtido sem consultar relógio.
+
+O mesmo fecho descarta por escrito a saída que a frase dava por indecidida: "Estender
+`O19`, esperando o LSN do commit final sob limite de tempo, não diz ao oráculo que o stream
+acabou".
+
+**14 — [ADR-0014, `### Negativas`](adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#negativas).**
+
+> **Pergunta em aberto.** De onde a contagem de coincidências do ADR-0004 lê os dados —
+> deste log, ou de estrutura própria. Se ler o log e uma observação se perder em trânsito, a
+> contagem cai a zero e a ordem 3 da classificação do zero produziria `protegido` sobre
+> banco violado — falso negativo silencioso.
+
+Falsificada pelo
+[fecho de `E-51`](#e-51-fecha-em-guarda-de-completude-escolhida-em-2026-08-12), que decide
+as duas metades:
+
+> **A contagem de coincidências só vale sobre stream atestado como completo.** [...]
+> Derivar a contagem de outra fonte contraria o ADR-0004, que decidiu o log como fonte, e
+> seria decisão arquitetural nova sobre ADR aceito.
+
+**15 — [ADR-0016, `### Negativas`](adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#negativas).**
+
+> **O instante de ocorrência e a monotonicidade dele seguem sem decisão** (`Q-0004-3`,
+> pendente): esta decisão tira o relógio da **ordem**, e não do registro.
+
+Falsificada, na metade da monotonicidade, pelo
+[fecho de `E-52`](#e-52-fecha-em-a-ordem-vem-do-cursor-e-o-instante-é-rótulo-escolhida-em-2026-08-12):
+
+> A monotonicidade sai da lista. **Qual relógio** e **qual resolução** continuam abertos, e
+> a regra que os alcança é a de sempre: o tempo é injetável.
+
+A outra metade — de onde vem o instante — continua aberta, e
+[`Q-0004-3`](questions/Q-0004-3.md) registra o escopo reduzido no próprio arquivo.
+
+**16 — [ADR-0016, `### Negativas`](adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#negativas).**
+
+> **Comportamento não decidido:** o que o stream faz quando o `Last-Event-ID` aponta para um
+> cursor que não existe, e como ele sinaliza que uma execução terminou.
+
+Falsificada, na segunda metade, pelo
+[fecho de `E-88`](#e-88-fecha-em-evento-terminal-pelo-broker-e-o-stream-fecha-depois-dele-escolhida-em-2026-08-12):
+
+> **Como o stream sinaliza ao frontend.** O `lab-journal` entrega o evento terminal ao
+> cliente, carregando o cursor do último evento da execução, e **só então** fecha o stream.
+
+A primeira metade continua aberta, em `P1` do
+[Example Mapping de streaming e replay](features/streaming-e-replay-do-log-de-observacoes/example-mapping.md#perguntas-em-aberto).
+
+**17 — [`AGENTS.md` da raiz, `### Decisões`](../AGENTS.md#decisões).** Este é o único alvo
+fora de ADR, e é o irmão do caso da coluna `version` que já foi consertado no mesmo
+arquivo.
+
+> **Toda execução medida exige calibração antes**, com uma estratégia sem perda, em que
+> `commits` DEVE igualar `value_final − value_inicial` — em ADR-0002. Qual é essa estratégia
+> ainda não foi decidido.
+
+Falsificada pelo
+[ADR-0006, `### ATOMIC_UPDATE é a estratégia de calibração`](adr/0006-a-forma-da-estrategia-de-concorrencia.md#atomic_update-é-a-estratégia-de-calibração),
+pelo mesmo trecho citado no caso 3. O conserto aqui não depende de forma nenhuma do
+lifecycle: um arquivo de instrução não é ADR aceito.
+
+##### SUSPEITAS NÃO CONFIRMADAS
+
+Nenhuma das quatro tem as duas evidências, e por isso nenhuma virou caso.
+
+- **[ADR-0008, `## Contexto`](adr/0008-os-dois-planos-em-processos-separados.md#contexto)** —
+  "A árvore versionada não tem `pom.xml` nem classe Java, e o pacote raiz nunca foi
+  escolhido." Hoje a árvore tem os dois. **Falta a segunda evidência:** quem tornou a frase
+  falsa foi a escrita de código, e não uma decisão — e um `## Contexto` que retrata o estado
+  da data em que foi escrito não é o fenômeno que esta varredura procura. Quem decidir que é,
+  decide junto que todo `## Contexto` do repositório passa a ser conferido contra a árvore.
+- **[ADR-0009, `## Contexto`](adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md#contexto)** —
+  "Os dois ADRs afetados são `Aceito`, e o corpo de um ADR `Aceito` NÃO DEVE ser editado". A
+  mesma revogação do caso 5 a derrubou. **Falta o critério:** o próprio ADR-0009 declara a
+  queda em `## Patches aplicados` — "O texto do corpo continua afirmando que o corpo de um
+  ADR aceito NÃO DEVE ser editado — essa era a regra em 2026-08-05" —, e o que separa uma
+  queda **declarada** de uma **silenciosa** não está escrito em documento nenhum. Foi por
+  esse mesmo critério não escrito que as quatro seções do ADR-0007 ficaram de fora.
+- **[ADR-0012, `### Negativas`](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)** —
+  "Onde vive a configuração do Debezium Server não está decidido". O
+  [ADR-0019](adr/0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md#decisão) pôs
+  os manifests no `homelab-infrastructure` e ligou a replicação lógica no cluster
+  compartilhado. **Falta o fecho:** `E-31` continua sem fechar, e nada no ADR-0019 nomeia
+  onde a configuração do conector vive.
+- **[ADR-0012, `### Negativas`](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)** —
+  "**O teste não existe.**" **Falta o oposto:** nada o falsificou, e `git ls-files` continua
+  sem mostrar o teste da cadeia de LSN. A suspeita entrou porque o título do
+  [fecho de `E-32`](#e-32-fecha-na-cadeia-inteira-e-o-teste-ganha-uma-segunda-asserção) se lê
+  como se o teste tivesse nascido; o que fechou foi a **forma** dele, e o próprio ADR-0012 já
+  cita esse fecho ao lado da frase.
+
 #### `E-71` — uma decisão sem ADR falsificou prosa de um ADR aceito
 
 Aberta em 2026-08-11, ao conferir o que o fecho de `E-5` alterou fora de si.
@@ -6134,6 +6441,61 @@ as saídas dela.
 - **A forma concreta do endpoint** — rota, método, payload. Nenhum contrato nasce agora:
   a regra deste repositório é que contrato nasce quando a interface existir
   ([`contracts/README.md`](contracts/README.md#estado-nenhum-contrato-existe)).
+
+### `E-97` — a divergência é reportada no frontend, e o ADR-0011 não tem essa aresta
+
+**Levantada em revisão independente da detecção de divergência, em 2026-08-14.** Ela é
+contradição entre artefato de capacidade e ADR aceito, e por isso entra aqui como decisão
+arquitetural nova, pela regra de
+[`AGENTS.md`](../AGENTS.md#ao-trabalhar-aqui) — não como defeito de redação.
+
+**A decisão da pessoa disse o destino, e não disse o caminho.** O
+[fecho de `E-96`](#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13)
+registra que a divergência "invalida o veredito daquela execução, e é reportada no
+frontend". Nenhuma palavra dele diz por qual serviço o reporte trafega, e a pergunta não
+foi feita à pessoa naquele turno.
+
+**Os artefatos preencheram a lacuna sozinhos, e o desenho que escolheram não existe no
+ADR-0011.** Os três diagramas da capacidade desenhavam uma aresta do oráculo, que roda no
+`lab-plane`, direto para o frontend. A decisão de topologia diz, literalmente, que "O
+frontend NÃO DEVE falar com um back-end único: manda comando ao `lab-plane`, lê histórico e
+streaming do `lab-journal`, sem `Backend For Frontend`", em
+[ADR-0011](adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff);
+o diagrama daquela seção tem cinco arestas, e nenhuma sai do `lab-plane` em direção ao
+frontend. As arestas foram retiradas dos artefatos no mesmo turno em que a contradição foi
+vista, e o caminho ficou `Pergunta em aberto` até esta linha fechar. **Retirar a aresta não
+escolhe nenhuma das saídas abaixo** — ela apenas deixa de afirmar uma que ninguém decidiu.
+
+```mermaid
+flowchart LR
+    OR["oráculo, no lab-plane"]
+    LJ[("lab-journal")]
+    FE["frontend"]
+    OR -->|" saída A: aresta que o ADR-0011 não tem "| FE
+    OR -->|" saída B "| LJ
+    LJ -->|" leitura, aresta que o ADR-0011 já tem "| FE
+```
+
+**Saída A — o `lab-plane` reporta direto ao frontend.** Ela é a mais curta, e o resultado
+chega sem intermediário. A objeção é que ela acrescenta uma sexta aresta à topologia
+decidida, e o ADR-0011 escolheu deliberadamente quais existem: o frontend lê de um lugar
+só, e é o `lab-journal`. Adotá-la obriga uma das formas do
+[lifecycle](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) sobre o
+ADR-0011, e não apenas uma linha de card.
+
+**Saída B — a divergência atravessa o `lab-journal`, como o resto do que a execução
+produz.** Ela não toca a topologia: a aresta `lab-plane` → `lab-journal` já existe, e a
+aresta `lab-journal` → frontend também. A objeção é que nenhum documento deste repositório
+prevê hoje um **resultado de oráculo** atravessando o caderno — o que trafega por ali é
+observação, pelo
+[ADR-0014](adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#decisão).
+Adotá-la exige dizer o que a divergência é quando chega ao caderno, e isso esbarra na
+pergunta de formato que o fecho de `E-96` deixou aberta.
+
+**O que esta linha não decide, e não inventa.** Ela não escolhe entre A e B, não fixa o
+formato do resultado da divergência, e não diz se a resposta muda caso o rótulo produzido
+seja `fontes divergentes`, que já existe no vocabulário. As três são anteriores ao
+Gherkin da `R3`, e nenhuma tem dono hoje.
 
 ## De onde esta fila veio
 

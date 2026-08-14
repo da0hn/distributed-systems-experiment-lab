@@ -307,7 +307,11 @@ diante:
 - **Toda execução medida exige calibração antes**, com uma estratégia sem perda, em que
   `commits` DEVE igualar `value_final − value_inicial` — em
   [ADR-0002](docs/adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador).
-  Qual é essa estratégia ainda não foi decidido.
+  **A estratégia é `ATOMIC_UPDATE`**, e esta linha dizia que ela não tinha sido decidida.
+  O
+  [ADR-0006](docs/adr/0006-a-forma-da-estrategia-de-concorrencia.md#atomic_update-é-a-estratégia-de-calibração)
+  a nomeou: um `UPDATE ... SET value = value + 1` satisfaz a exigência sem coordenação de
+  aplicação, porque não há janela entre ler e escrever quando não há leitura.
 - **`version` não existe no esquema, e não é por falta de decisão.** O
   [ADR-0006](docs/adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão) já fixou que
   `OPTIMISTIC` a exige em `resource`, e fixou junto o portão: ela entra no commit que
