@@ -106,6 +106,20 @@ CLASS_LIMITS = {
     # aprovadas; com elas, ele cobrava menos de um cenário por regra.
     "bdd": 5500,
     "plano de implementação": 7000,
+    # `docs/propostas/**`. Uma proposta de modelagem cresce por DECISÃO ASSUMIDA, e
+    # assumir decisão é o trabalho dela — a pessoa exigiu que o modelo represente o
+    # sistema na versão final, o que obriga cada proposta a escolher o que ainda não foi
+    # decidido e a declarar cada escolha. O teto do genérico media outra coisa: ele é
+    # calibrado para o Feature Card, cujo estouro significa "cobre mais de uma
+    # capacidade". Aqui o estouro não significa isso — uma proposta cobre um schema, e
+    # dividi-la produziria "parte 1" e "parte 2" sem costura natural, o que piora o
+    # debate em vez de melhorá-lo.
+    #
+    # A saída NÃO é isentar, e o precedente seguido é o do `plano analítico`: um teto
+    # deliberadamente apertado devolve significado ao vermelho, enquanto um `EXCEDE`
+    # permanente treina todo mundo a ignorá-lo. O número passa por folga estreita a
+    # maior proposta escrita até agora, e reprova de novo se ela crescer.
+    "proposta de modelagem": 11000,
     # Tudo o que nenhuma classe acima alcança. Calibrado para o Feature Card.
     "genérico": 4000,
 }
@@ -162,6 +176,7 @@ ADR_ROUTING_FORM = Path(
     "docs/adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md"
 )
 ARCHITECTURE_ROOT = Path("docs/architecture")
+PROPOSALS_ROOT = Path("docs/propostas")
 ROUTER_PATH = Path("docs/README.md")
 
 CLASS_BY_NAME = {
@@ -404,6 +419,11 @@ def classify(relative_path: Path) -> str:
         and Path("docs") in relative_path.parents
     ):
         return "índice"
+    # Depois do índice de propósito: o `README.md` de `docs/propostas/` é inventário, e
+    # inventário é isento pela classe `índice`. O que esta linha alcança é a proposta em
+    # si e a comparação entre elas.
+    if PROPOSALS_ROOT in relative_path.parents:
+        return "proposta de modelagem"
     if ARCHITECTURE_ROOT in relative_path.parents:
         return "arquitetura"
     if is_adr(relative_path):

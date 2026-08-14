@@ -5341,6 +5341,36 @@ região descontada **de propósito** dentro de um artefato já medido, e não so
 [`E-78`](#e-78--o-esquemasmd-vira-pasta-com-um-arquivo-por-serviço) é o caso concreto de
 um arquivo cujo teto próprio estourou, e a saída escolhida ali não foi teto nenhum.
 
+### A classe `proposta de modelagem`, decidida pelo agente e registrada aqui
+
+**A pasta `docs/propostas/**` ganhou classe própria, com teto de 11.000 caracteres de
+prosa.** Antes ela caía no genérico, cujos 4.000 são calibrados para o Feature Card.
+
+O gatilho foi concreto. A pessoa pediu três propostas de modelo de dados por sistema e
+exigiu que cada uma representasse o sistema na **versão final**, o que obriga a proposta
+a escolher o que ainda não foi decidido e a declarar cada escolha numa tabela própria.
+Sob essa exigência, cinco de cinco propostas estouraram o genérico — 4.830, 5.406, 6.170,
+6.675 e 10.338 —, e o único arquivo que passou foi a comparação, com 3.983 contra 4.000:
+o teto tinha deixado de medir o texto e passado a moldá-lo.
+
+**O estouro aqui não significa o que significa num card.** No Feature Card ele significa
+"cobre mais de uma capacidade", e a saída é dividir. Uma proposta cobre um schema, e não
+tem costura por onde dividir — "parte 1" e "parte 2" piorariam o debate que ela existe
+para sustentar.
+
+**A saída NÃO foi isentar.** O precedente seguido é o do teto próprio do plano analítico,
+registrado nesta mesma seção: um teto apertado devolve significado ao vermelho, enquanto
+um `EXCEDE` permanente treina todo mundo a ignorá-lo. Os 11.000 passam a maior proposta
+escrita por folga estreita, e reprovam de novo se ela crescer.
+
+**O `README.md` da pasta continua isento**, pela classe `índice`, porque é inventário. O
+classificador da pasta vem depois do de índice de propósito.
+
+**Quem decidiu foi o agente, e não a pessoa.** Ela delegou explicitamente a decisão sobre
+como a documentação funciona, e esta é uma delas. O registro fica aqui porque a regra
+deste repositório manda a mudança de teto passar pela fila, e não porque a decisão esteja
+pendente.
+
 ## O que apura a âncora citada antes de uma redução
 
 **Fechada em 2026-08-08, por decisão explícita da pessoa.** Terceira das quatro perguntas
