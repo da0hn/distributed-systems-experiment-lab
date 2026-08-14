@@ -7138,10 +7138,20 @@ flowchart TD
 ```
 
 **A fronteira é objetiva, e tem duas exigências.** A declaração DEVE viver **no próprio
-ADR** — em `## Patches aplicados`, em adendo ou na marca aditiva ao lado da frase. E ela
-DEVE nomear a afirmação que caiu, pelo texto dela ou pela seção em que está, para que o
-leitor consiga emparelhar as duas. Uma declaração que viva fora do arquivo não conta: o
-leitor do ADR sozinho continuaria sem saber.
+ADR** — no campo `Alterado por` do cabeçalho, em `## Patches aplicados`, em adendo ou na
+marca aditiva ao lado da frase. E ela DEVE nomear a afirmação que caiu, pelo texto dela ou
+pela seção em que está, para que o leitor consiga emparelhar as duas. Uma declaração que
+viva fora do arquivo não conta: o leitor do ADR sozinho continuaria sem saber.
+
+**O cabeçalho entrou nessa lista depois, e o caso que o pôs lá é instrutivo.** Esta linha
+nasceu sem ele, e horas depois um trecho foi apontado como décimo oitavo caso de prosa
+falsificada: o diagrama da seção `## Decisão` do ADR-0008 desenha o oráculo lendo o
+PostgreSQL direto, com o rótulo "SELECT após a quiescência", e o ADR-0010 proibiu esse
+`SELECT` depois. **Ele não é caso**, e a prova está no cabeçalho do próprio ADR-0008: o
+`Alterado por` do ADR-0010 já diz que "a aresta `SELECT após a quiescência` do diagrama da
+seção Decisão deixa de valer". A queda está declarada, no arquivo, nomeando a aresta
+exata. Uma regra que omitisse o cabeçalho classificaria como defeito exatamente o rastro
+que o lifecycle **obriga** a escrever em toda emenda e em toda subsunção.
 
 **O que este fecho confirma, e o que ele não alcança.** As duas exclusões que a varredura
 fez por este critério ficam confirmadas — o `## Contexto` do ADR-0009 e as quatro seções
