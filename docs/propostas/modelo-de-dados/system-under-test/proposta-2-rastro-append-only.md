@@ -17,7 +17,7 @@ O oráculo não consulta este schema. Ele lê o WAL por replicação lógica, pe
 e o que ele calcula depende do que cada evento carrega. Um `UPDATE` sobre uma linha
 mutável carrega a tupla nova, nunca o número que a transação **leu**. Daí a atualização
 perdida só existir como escalar agregado, `perdidas = commits − (value_final −
-value_inicial)`
+value_initial)`
 ([ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)),
 e nunca como o par de tentativas que colidiu.
 

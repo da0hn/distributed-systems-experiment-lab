@@ -50,43 +50,43 @@ recriado. Esta proposta ataca os três.
 
 ```mermaid
 erDiagram
-    livro ||--o{ entrada : "apensa"
-    forma ||--o{ entrada : "declara a forma de"
-    livro {
-        uuid livro_id PK "execution_id do instrumento, ou a constante do caderno"
-        text natureza "execucao ou caderno; imutavel"
-        bytea hash_de_genese "elo anterior da primeira entrada deste livro"
-        timestamptz aberto_em "adaptador de relogio; sem DEFAULT"
+    ledger ||--o{ entry : "apensa"
+    form ||--o{ entry : "declara a forma de"
+    ledger {
+        uuid ledger_id PK "execution_id do instrumento, ou a constante do caderno"
+        text nature "run ou journal; imutavel"
+        bytea genesis_hash "elo anterior da primeira entrada deste livro"
+        timestamptz opened_at "adaptador de relogio; sem DEFAULT"
     }
-    entrada {
-        uuid livro_id PK "1a coluna da chave; e o livro a que a entrada pertence"
-        bigint numero_de_sequencia PK "2a coluna; e o cursor do replay, sem coluna a mais"
-        bytea hash_da_entrada UK "identidade endereçada por conteudo; unica no schema"
-        bytea hash_anterior "elo da cadeia; na primeira entrada, o hash_de_genese"
-        text tipo_de_entrada FK "o envelope: observacao, veredito, publicacao, selo"
-        int versao_de_forma FK "versao sob a qual o documento foi escrito"
-        text emissor "quem assinou: oraculo exato, oraculo do predicado, frontend"
-        bytea documento "os bytes exatos que o digest cobre; opaco ao banco"
-        bytea hash_do_documento "digest so do documento, sem o envelope"
-        bytea hash_sucedido "a entrada que esta sucede; sem chave estrangeira"
-        timestamptz registrado_em "adaptador de relogio; entra no digest da entrada"
+    entry {
+        uuid ledger_id PK "1a coluna da chave; e o livro a que a entrada pertence"
+        bigint sequence_number PK "2a coluna; e o cursor do replay, sem coluna a mais"
+        bytea entry_hash UK "identidade endereçada por conteudo; unica no schema"
+        bytea previous_hash "elo da cadeia; na primeira entrada, o genesis_hash"
+        text entry_kind FK "o envelope: observation, verdict, publication, seal"
+        int form_version FK "versao sob a qual o documento foi escrito"
+        text issuer "quem assinou: exact oracle, predicate oracle, frontend"
+        bytea document "os bytes exatos que o digest cobre; opaco ao banco"
+        bytea document_hash "digest so do documento, sem o envelope"
+        bytea superseded_hash "a entrada que esta sucede; sem chave estrangeira"
+        timestamptz recorded_at "adaptador de relogio; entra no digest da entrada"
     }
-    forma {
-        text tipo_de_entrada PK "1a coluna da chave"
-        int versao PK "2a coluna; cresce, e nunca e reescrita"
-        bytea esquema "a forma, nos bytes em que foi registrada"
-        bytea hash_da_forma "o documento cita este digest para se dizer autodescritivo"
+    form {
+        text entry_kind PK "1a coluna da chave"
+        int version PK "2a coluna; cresce, e nunca e reescrita"
+        bytea schema "a forma, nos bytes em que foi registrada"
+        bytea form_hash "o documento cita este digest para se dizer autodescritivo"
     }
 ```
 
-Três tabelas, e nenhuma descreve um experimento. `livro` é o livro-razão, `entrada` é o
-fato apensado, e `forma` registra as versões sob as quais um documento pôde ser escrito.
+Três tabelas, e nenhuma descreve um experimento. `ledger` é o livro-razão, `entry` é o
+fato apensado, e `form` registra as versões sob as quais um documento pôde ser escrito.
 
-**Existe um livro por execução, e um livro só para o caderno.** O `livro_id` de um livro de
-execução **é** o discriminador do instrumento — o `execution_id`, nome que o instrumento dá
-ao valor que o sistema medido chama de `partition_id`
+**Existe um livro por execução, e um livro só para o caderno.** O `ledger_id` de um livro
+de execução **é** o discriminador do instrumento — o `execution_id`, nome que o
+instrumento dá ao valor que o sistema medido chama de `partition_id`
 ([ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-nome-assimétrico-do-discriminador-e-a-tradução-num-ponto-único)).
-Não há coluna de execução na `entrada`: a pertinência é o livro, e por isso "de qual
+Não há coluna de execução na `entry`: a pertinência é o livro, e por isso "de qual
 execução veio" é o que o banco sabe sem abrir documento nenhum.
 
 **O cursor do replay e o número de sequência do livro são a mesma coluna.** O ADR-0016
@@ -104,18 +104,18 @@ O selo é a última entrada do livro, e fechá-lo não muda estado: não existe 
 estado a atualizar.
 
 **A cadeia é conferível por dois mecanismos que falham diferente.** A sequência contígua
-denuncia entrada ausente; o `hash_anterior` denuncia entrada trocada, quebrando o elo de
+denuncia entrada ausente; o `previous_hash` denuncia entrada trocada, quebrando o elo de
 todas as seguintes. O primeiro sozinho não enxerga substituição; o segundo sozinho não
 distingue fim de truncamento. É a guarda de contiguidade que o
 [ADR-0013](../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
 exige do WAL, aplicada ao transporte da observação, que não carrega LSN
 ([ADR-0014](../../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#negativas)).
 
-**Correção é entrada nova.** `hash_sucedido` aponta para a entrada superada, e a superada
+**Correção é entrada nova.** `superseded_hash` aponta para a entrada superada, e a superada
 permanece. Quem lê aplica a sucessão; o banco não a resolve.
 
 **A composição global dos formatos de veredito é publicação, e não relacionamento.** Uma
-publicação é uma entrada no livro do caderno cujo documento lista os `hash_da_entrada` que
+publicação é uma entrada no livro do caderno cujo documento lista os `entry_hash` que
 entraram naquela leitura, na ordem em que entraram. A curva do E4 e a comparação entre os
 três níveis de isolamento
 ([card](../../../features/comparacao-entre-niveis-de-isolamento/feature-card.md#escopo))
@@ -137,39 +137,39 @@ flowchart TB
 
 ## O que o diagrama não expressa
 
-**A chave é `(livro_id, numero_de_sequencia)`, e a ordem inversa seria um defeito.** Toda
+**A chave é `(ledger_id, sequence_number)`, e a ordem inversa seria um defeito.** Toda
 leitura é por livro: o replay varre cursores de uma execução, e a conferência percorre um
 livro do começo ao fim. Com o número de sequência à frente, as entradas de uma execução
-ficariam espalhadas pela B-tree. O `livro_id` é um UUIDv7 derivado pelo instrumento, e o
+ficariam espalhadas pela B-tree. O `ledger_id` é um UUIDv7 derivado pelo instrumento, e o
 prefixo de instante põe cada livro novo no fim da árvore, como no sistema medido
 ([`schemas/sut.md`](../../../architecture/schemas/sut.md#o-que-o-diagrama-do-sut-não-desenha)).
 
 **Dois índices aditivos, e a ausência do terceiro é a decisão.** O `UNIQUE` sobre
-`hash_da_entrada` é global ao schema, porque um endereço de conteúdo não pertence a um
+`entry_hash` é global ao schema, porque um endereço de conteúdo não pertence a um
 livro — é assim que uma publicação resolve entrada de outro livro sem chave estrangeira. O
-segundo é parcial, sobre `hash_sucedido`, e serve a quem aplica a sucessão. **Um GIN sobre
-`documento` não existe, e não existirá:** é a porta pela qual a consulta sobre o interior
-de um veredito voltaria.
+segundo é parcial, sobre `superseded_hash`, e serve a quem aplica a sucessão. **Um GIN
+sobre `document` não existe, e não existirá:** é a porta pela qual a consulta sobre o
+interior de um veredito voltaria.
 
 **Nenhuma coluna tem `DEFAULT`, e o motivo não é estilo.** O digest cobre o envelope
-inteiro, `registrado_em` inclusive, e um valor escolhido pelo banco depois de a aplicação
+inteiro, `recorded_at` inclusive, e um valor escolhido pelo banco depois de a aplicação
 calcular o digest ficaria fora dele. O endereçamento por conteúdo **força** a regra de
 relógio injetável: `now()` não é só proibido, é impossível sem quebrar a cadeia — e
-`gen_random_uuid()` também, porque `livro_id` vem do instrumento.
+`gen_random_uuid()` também, porque `ledger_id` vem do instrumento.
 
 **Nenhum trigger.** Um trigger que calculasse o elo poria a correção da cadeia dentro do
 banco, e quem confere o export fora dele verificaria uma regra que não enxerga.
 
-**Uma chave estrangeira existe, outra não.** `entrada` referencia `livro` e `forma`; as
+**Uma chave estrangeira existe, outra não.** `entry` referencia `ledger` e `form`; as
 duas ligações são internas ao `lab_journal` e nenhuma toca a janela medida — o caderno é
 alimentado depois do broker
 ([ADR-0016](../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#no-lab-journal-a-ordem-é-serial-persiste-depois-emite)).
 O lock que a tirou do sistema medido
 ([ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id))
-não alcança um schema onde nada é medido. Já `hash_sucedido` **não** tem chave estrangeira:
-a entrada superada PODE viver num livro ainda não reimportado.
+não alcança um schema onde nada é medido. Já `superseded_hash` **não** tem chave
+estrangeira: a entrada superada PODE viver num livro ainda não reimportado.
 
-**`documento` é `bytea`, e não `jsonb`.** O `jsonb` reordena chave, normaliza número e
+**`document` é `bytea`, e não `jsonb`.** O `jsonb` reordena chave, normaliza número e
 descarta espaço: o valor relido não é o valor que o digest cobre. Guardar os bytes exatos
 torna a ausência de consulta ao interior **física**, e não apenas disciplinar.
 
@@ -177,28 +177,28 @@ torna a ausência de consulta ao interior **física**, e não apenas disciplinar
 esquema: o papel `lab_journal` DEVE receber `INSERT` e `SELECT`, e NÃO DEVE receber
 `UPDATE` nem `DELETE`. Esquema não impede um `UPDATE`; um `REVOKE` impede.
 
-**Não existe tabela de projeção, e a ausência é a proposta.** Nada de `veredito`,
-`experimento` ou `relatorio` — cada uma seria um segundo lugar onde o mesmo fato vive,
+**Não existe tabela de projeção, e a ausência é a proposta.** Nada de `verdict`,
+`experiment` ou `report` — cada uma seria um segundo lugar onde o mesmo fato vive,
 livre para divergir do documento que o digest protege.
 
 ## Decisões assumidas
 
 | O que assumi                                                                                                                                 | Alternativa que ficou de fora                                           | O que muda no modelo se a pessoa decidir o contrário                                                                                                                    |
 |----------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| A composição global dos formatos de veredito é uma **publicação**: entrada cujo documento fixa, por hash, quais entradas entraram na leitura | tabela de relatório com chave estrangeira para cada veredito componente | entram uma tabela `relatorio` e uma de junção; a curva do E4 e a comparação entre níveis ganham estrutura própria, e cada formato novo exige migração                   |
-| O cursor do replay **é** o `numero_de_sequencia` do livro                                                                                    | coluna `cursor` separada, atribuída só às entradas de observação        | o que não é observação deixa de ocupar posição no cursor, o buraco de sequência deixa de significar perda, e a contiguidade precisa de outro eixo                       |
+| A composição global dos formatos de veredito é uma **publicação**: entrada cujo documento fixa, por hash, quais entradas entraram na leitura | tabela de relatório com chave estrangeira para cada veredito componente | entram uma tabela `report` e uma de junção; a curva do E4 e a comparação entre níveis ganham estrutura própria, e cada formato novo exige migração                      |
+| O cursor do replay **é** o `sequence_number` do livro                                                                                        | coluna `cursor` separada, atribuída só às entradas de observação        | o que não é observação deixa de ocupar posição no cursor, o buraco de sequência deixa de significar perda, e a contiguidade precisa de outro eixo                       |
 | Existe **um livro por execução**, mais um livro único para o caderno                                                                         | um livro-razão global único para todo o `lab-journal`                   | o cursor deixa de ser monotônico por execução, contrariando o ADR-0016, e o export de uma execução deixa de ser uma cadeia fechada                                      |
-| O evento terminal do stream é a entrada de tipo **selo**, última do livro                                                                    | coluna `encerrado_em` no `livro`, escrita no fim da execução            | reaparece o `UPDATE` que o desenho não tem, e o fim da execução deixa de ser um fato assinado por alguém                                                                |
-| `documento` guarda os **bytes exatos** que o digest cobre                                                                                    | `jsonb`, consultável                                                    | o digest passa a exigir canonicalização declarada, a conferência do export depende de reproduzir a serialização do banco, e a consulta ao interior volta a ser possível |
+| O evento terminal do stream é a entrada de tipo **selo**, última do livro                                                                    | coluna `closed_at` no `ledger`, escrita no fim da execução              | reaparece o `UPDATE` que o desenho não tem, e o fim da execução deixa de ser um fato assinado por alguém                                                                |
+| `document` guarda os **bytes exatos** que o digest cobre                                                                                     | `jsonb`, consultável                                                    | o digest passa a exigir canonicalização declarada, a conferência do export depende de reproduzir a serialização do banco, e a consulta ao interior volta a ser possível |
 | A autoridade do emissor é concedida no **caminho de escrita**, e o banco só registra o nome declarado                                        | assinatura digital por chave, verificável dentro do banco               | entram par de chaves, rotação e um lugar para a chave pública; a regra de tecnologia por conveniência exigiria dispensa escrita por inteiro                             |
-| `registrado_em` vem do adaptador de relógio e **entra no digest**                                                                            | `DEFAULT now()`, como o ADR-0015 admitiu para metadado de CRUD          | o instante fica fora do digest e a entrada deixa de ser verificável por inteiro; some a única medida de quando a travessia terminou                                     |
-| `livro_id` de um livro de execução **é** o `execution_id` do instrumento                                                                     | identificador próprio do caderno, ligado ao `execution_id` por coluna   | entram uma coluna e um índice; duas execuções passam a poder dividir um livro, e a pertinência deixa de ser estrutural                                                  |
+| `recorded_at` vem do adaptador de relógio e **entra no digest**                                                                              | `DEFAULT now()`, como o ADR-0015 admitiu para metadado de CRUD          | o instante fica fora do digest e a entrada deixa de ser verificável por inteiro; some a única medida de quando a travessia terminou                                     |
+| `ledger_id` de um livro de execução **é** o `execution_id` do instrumento                                                                    | identificador próprio do caderno, ligado ao `execution_id` por coluna   | entram uma coluna e um índice; duas execuções passam a poder dividir um livro, e a pertinência deixa de ser estrutural                                                  |
 | A definição de experimento vive **neste** schema, no livro do caderno                                                                        | a definição no `lab_plane`, e o caderno guardando só o resultado        | o livro do caderno perde metade do conteúdo, e a publicação cita uma definição que este banco não guarda — o export deixa de bastar por si                              |
 | As versões de forma vivem em tabela **neste** banco, e não só em Git                                                                         | o esquema de cada documento versionado no repositório                   | um banco recriado a partir do export passa a depender do repositório para validar documento antigo, e o documento deixa de ser autodescritivo                           |
-| Correção e retratação são a mesma coisa: entrada nova que **sucede**                                                                         | um tipo `retratacao`, que anula sem substituir                          | entra a distinção entre "isto está errado" e "isto foi substituído por aquilo", e quem lê passa a precisar de duas regras                                               |
+| Correção e retratação são a mesma coisa: entrada nova que **sucede**                                                                         | um tipo `retraction`, que anula sem substituir                          | entra a distinção entre "isto está errado" e "isto foi substituído por aquilo", e quem lê passa a precisar de duas regras                                               |
 | A calibração é entrada como qualquer outra, e recusar o relatório é do **leitor**                                                            | coluna de validade na execução, escrita quando `commits` diverge        | o banco passa a interpretar o resultado da calibração, e a fórmula do ADR-0002 entra no schema — o oposto da aposta                                                     |
 | O algoritmo do digest e a canonicalização do envelope são declarados uma vez, para o schema inteiro                                          | algoritmo por entrada, em campo próprio                                 | entra uma coluna de algoritmo, e conferir uma cadeia passa a exigir suportar todos os que já apareceram nela                                                            |
-| O append é serializado por livro pelo `UNIQUE` da chave: dois appends concorrentes colidem, e um repete                                      | um contador do último número no `livro`, atualizado a cada entrada      | volta o `UPDATE`, e com ele um ponto de contenção; o modelo deixa de ser apensável em sentido estrito                                                                   |
+| O append é serializado por livro pelo `UNIQUE` da chave: dois appends concorrentes colidem, e um repete                                      | um contador do último número no `ledger`, atualizado a cada entrada     | volta o `UPDATE`, e com ele um ponto de contenção; o modelo deixa de ser apensável em sentido estrito                                                                   |
 
 ## Trade-offs
 
@@ -213,21 +213,21 @@ número que o oráculo publicou, e não o que uma migração deixou lá.
 **O resultado voltar a caber num diff foi aceito em troca de duas cópias e de uma cerimônia
 de export.** Um livro selado exporta como arquivo de entradas em ordem de sequência, e o
 arquivo se confere sozinho: recalcula-se cada digest, refazem-se os elos, compara-se o hash
-do selo. Basta então versionar em Git **uma linha** por execução — `livro_id`, último
+do selo. Basta então versionar em Git **uma linha** por execução — `ledger_id`, último
 número e hash do selo — para o resultado voltar a aparecer em diff e a ser revisado em PR,
 sem que o volume do log de observações entre no repositório. Um banco recriado se reimporta
 do arquivo, e a linha versionada prova que o que voltou é o que saiu — os três custos que o
 [ADR-0011](../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#negativas)
 nomeou.
 
-**E cobra caro.** A reimportação DEVE preservar `numero_de_sequencia` e `hash_anterior`
-exatamente, o que proíbe renumeração e obriga a importar `forma` antes de `entrada`. O
+**E cobra caro.** A reimportação DEVE preservar `sequence_number` e `previous_hash`
+exatamente, o que proíbe renumeração e obriga a importar `form` antes de `entry`. O
 arquivo é uma segunda cópia, e só livro selado se exporta com segurança. E a linha
 versionada só prova alguma coisa se o arquivo existir em algum lugar: sem ele, resta um
 hash que ninguém confere contra nada.
 
 **Nenhuma migração tocar resultado publicado foi aceito em troca de o esquema não validar
-nada.** Documento malformado entra, e só é detectado por quem o lê contra a `forma`
+nada.** Documento malformado entra, e só é detectado por quem o lê contra a `form`
 declarada: um emissor que escrever lixo produz entrada íntegra e inútil.
 
 **O append estritamente apensável foi aceito em troca de contenção por livro.** Dois

@@ -80,7 +80,7 @@ provisionada junto do conector, que roda em processo próprio, pela
 
 | Evento no WAL                             | O que o oráculo extrai                                       | Evidência                                                                                                                                          |
 |-------------------------------------------|--------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `INSERT` de `resource`, fora da janela    | `value_inicial`, a `capacity` declarada, e a partição existe | [ADR-0010](../../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)                                                      |
+| `INSERT` de `resource`, fora da janela    | `value_initial`, a `capacity` declarada, e a partição existe | [ADR-0010](../../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)                                                      |
 | `UPDATE` de `resource.value`              | a série inteira de valores; o último é `value_final`         | [ADR-0010](../../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)                                                      |
 | `INSERT` de `allocation`                  | `Σ amount`, somado sob a guarda de contiguidade de LSN       | [ADR-0013](../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)                                             |
 | `UPDATE` de `resource.capacity` para zero | a marca de fim, e com ela a condição de término da soma      | [ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#a-janela-medida-não-se-correlaciona-ao-stream-por-tempo) |
@@ -100,7 +100,7 @@ propriedade da fórmula, e não da fonte.
 |----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | qual worker escreveu cada evento             | não há coluna de autor; a atribuição vem da timeline, que NÃO DEVE alimentar veredito                                            |
 | tentativa abortada, deadlock, `40001`        | transação que não commita não entra no WAL; a curva do E4 é contada no runtime                                                   |
-| `commits − sucessos`, o dual write           | os dois números são do instrumento — [ADR-0009](../../../adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md#decisão) |
+| `commits − successes`, o dual write          | os dois números são do instrumento — [ADR-0009](../../../adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md#decisão) |
 | leitura defasada, stale read, projeção velha | leitura não escreve, e não há segunda representação do estado no núcleo                                                          |
 | a duração de cada passo                      | `updated_at` marca a escrita, e nenhuma estratégia a lê como token                                                               |
 

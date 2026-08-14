@@ -130,36 +130,36 @@ erDiagram
 ```
 
 A máquina de estados de `RUN_INTENT` é o coração da aposta. Ela tem exatamente três saídas
-de `EM_EXECUCAO`, e elas são as três da `R7` de
+de `RUNNING`, e elas são as três da `R7` de
 [`distincao-entre-higiene-e-invalidacao`](../../../features/distincao-entre-higiene-e-invalidacao/feature-card.md#regras-de-negócio):
 a sentinela de fim, o limite de espera e o cancelamento pela pessoa. A lista de execuções
-ativas não é uma segunda tabela — ela é a projeção das linhas em `EM_EXECUCAO`.
+ativas não é uma segunda tabela — ela é a projeção das linhas em `RUNNING`.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> PLANEJADA
-    PLANEJADA --> ADMITIDA : validação do ADR-0003 passa
-    PLANEJADA --> RECUSADA : ciclo, papel, endereço ou encontro inválido
-    ADMITIDA --> EM_EXECUCAO : o runtime assume a execução
-    EM_EXECUCAO --> CONCLUIDA : sentinela de fim
-    EM_EXECUCAO --> EXPIRADA : limite de espera
-    EM_EXECUCAO --> CANCELADA : cancelamento pela pessoa
-    RECUSADA --> [*]
-    CONCLUIDA --> [*]
-    EXPIRADA --> [*]
-    CANCELADA --> [*]
+    [*] --> PLANNED
+    PLANNED --> ADMITTED : validação do ADR-0003 passa
+    PLANNED --> REJECTED : ciclo, papel, endereço ou encontro inválido
+    ADMITTED --> RUNNING : o runtime assume a execução
+    RUNNING --> COMPLETED : sentinela de fim
+    RUNNING --> EXPIRED : limite de espera
+    RUNNING --> CANCELLED : cancelamento pela pessoa
+    REJECTED --> [*]
+    COMPLETED --> [*]
+    EXPIRED --> [*]
+    CANCELLED --> [*]
 ```
 
 O plano tem uma máquina menor, e ela é só o portão de admissão do conjunto.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> RASCUNHO
-    RASCUNHO --> ADMITIDO : todas as execuções do ciclo admitidas
-    RASCUNHO --> RECUSADO : qualquer execução recusada
-    ADMITIDO --> ENCERRADO : nenhuma execução em EM_EXECUCAO
-    RECUSADO --> [*]
-    ENCERRADO --> [*]
+    [*] --> DRAFT
+    DRAFT --> ADMITTED : todas as execuções do ciclo admitidas
+    DRAFT --> REJECTED : qualquer execução recusada
+    ADMITTED --> CLOSED : nenhuma execução em RUNNING
+    REJECTED --> [*]
+    CLOSED --> [*]
 ```
 
 ## O que o diagrama não expressa
@@ -176,7 +176,7 @@ qualquer carga". Uma chave que começasse pelo nome do papel obrigaria a varredu
 nunca com o `run_id` — a tradução de `partition_id` para `execution_id` acontece nele, e
 não no banco, pelo
 [ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-nome-assimétrico-do-discriminador-e-a-tradução-num-ponto-único).
-Um índice parcial sobre `run_intent(state)` restrito a `EM_EXECUCAO`, porque essa leitura
+Um índice parcial sobre `run_intent(state)` restrito a `RUNNING`, porque essa leitura
 acontece uma vez por evento consumido e o resto da tabela é ruído para ela. Um `UNIQUE`
 sobre `(arm_id, run_kind)`, que impede duas execuções medidas no mesmo braço. Um `UNIQUE`
 sobre `(plan_id, isolation_level, strategy_label)`, que impede o mesmo braço declarado
@@ -211,7 +211,7 @@ comum; um `ALTER TYPE` prende a lista de estados a uma cerimônia própria, e a 
 crescer antes de o instrumento existir.
 
 **Não há histórico de transição, e a ausência é a decisão.** Quem quiser saber quando uma
-execução saiu de `EM_EXECUCAO` lê o caderno, e não este schema.
+execução saiu de `RUNNING` lê o caderno, e não este schema.
 
 ## Decisões assumidas
 
@@ -223,9 +223,9 @@ execução saiu de `EM_EXECUCAO` lê o caderno, e não este schema.
 | A expansão nomeia o participante por `(papel, índice no papel)`.                                     | A expansão guarda um identificador de worker.                             | O índice sai, e o modelo passa a depender de uma identidade de worker que nenhuma decisão criou.                                                                 |
 | As quatro execuções do ciclo nascem com o plano, na admissão.                                        | Cada execução é criada quando a anterior termina.                         | O ciclo de quatro deixa de ser inspecionável antes da primeira execução, e a recusa antecipada perde três quartos do alvo.                                       |
 | O controle positivo aponta para uma `WORKLOAD` própria; as outras três partilham a do plano.         | Cada execução declara a própria carga.                                    | `WORKLOAD` some, `ROLE_INTENT` pendura em `RUN_INTENT`, e a igualdade de carga entre controle negativo e medida deixa de ser verificável por igualdade de chave. |
-| A lista de execuções ativas é a projeção `RUN_INTENT` em `EM_EXECUCAO`.                              | Uma tabela própria, só com discriminador e estado.                        | Nasce `ACTIVE_EXECUTION`, `RUN_INTENT` perde a máquina de estados, e as duas passam a poder divergir.                                                            |
+| A lista de execuções ativas é a projeção `RUN_INTENT` em `RUNNING`.                                  | Uma tabela própria, só com discriminador e estado.                        | Nasce `ACTIVE_EXECUTION`, `RUN_INTENT` perde a máquina de estados, e as duas passam a poder divergir.                                                            |
 | A invalidação de uma execução não é durável: ela é acontecido, e vai para o caderno.                 | Uma coluna `invalidated` em `RUN_INTENT`.                                 | Um reinício deixa de reapresentar como válida uma execução já corrompida, e o schema passa a guardar um fato da execução.                                        |
-| O motivo de uma recusa de admissão não é durável; só o estado `RECUSADO` fica.                       | Uma tabela `ADMISSION_DEFECT`, com a restrição culpada.                   | Nasce a tabela, e quem relê um plano recusado passa a saber por quê sem repetir a validação.                                                                     |
+| O motivo de uma recusa de admissão não é durável; só o estado `REJECTED` fica.                       | Uma tabela `ADMISSION_DEFECT`, com a restrição culpada.                   | Nasce a tabela, e quem relê um plano recusado passa a saber por quê sem repetir a validação.                                                                     |
 | O tipo da falha injetada é rótulo opaco, com payload opaco ao lado.                                  | Um conjunto fechado de tipos, validado pelo banco.                        | A coluna vira enumeração, e o instrumento passa a rejeitar tipo desconhecido na escrita, e não na admissão.                                                      |
 | O endereço de fronteira é repetido como três colunas, e não vira tabela própria.                     | Uma tabela `FRONTIER`, referenciada por chave estrangeira.                | Cinco chaves estrangeiras novas e um `JOIN` a mais em cada leitura de agendamento.                                                                               |
 | A calibração é um `RUN_INTENT` como os outros, e o resultado dela não é durável.                     | Guardar o veredito da calibração ao lado da intenção.                     | O instrumento passa a guardar acontecido, e a `R6` de `distincao-entre-higiene-e-invalidacao` é contrariada de frente.                                           |
@@ -312,14 +312,14 @@ transcrito para o caderno, nenhum documento deste repositório responde.
 
 **A `R7` diz que uma execução sai da lista de ativas por exatamente três caminhos, e a
 invalidação da `R1` não é um deles.** Uma execução invalidada continua sendo consumida até
-que uma das três saídas ocorra, e este modelo a mantém em `EM_EXECUCAO` por isso. Se essa
+que uma das três saídas ocorra, e este modelo a mantém em `RUNNING` por isso. Se essa
 é a leitura pretendida, ou se a invalidação deveria ser uma quarta saída, é pergunta sobre
 duas regras aprovadas juntas, e não sobre o modelo.
 
 **A calibração precisa ser provável depois de um reinício?** O
 [ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador)
 exige que toda execução medida seja precedida por calibração em que `commits` iguale
-`value_final − value_inicial`. Sob esta aposta, o resultado da calibração é acontecido, e
+`value_final − value_initial`. Sob esta aposta, o resultado da calibração é acontecido, e
 o banco do instrumento não guarda prova de que a exigência foi cumprida. Se a exigência é
 sobre a ordem das execuções dentro de um processo vivo, o modelo a atende; se ela é sobre
 o relatório poder ser auditado depois, o modelo não a atende, e a resposta muda o que é
