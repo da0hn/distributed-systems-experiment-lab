@@ -2260,6 +2260,18 @@ ADR-0008 — é da regra.**
 levantamento dos fechos sem artefato achou `E-5` com esta natureza; se há outros, medi-los
 faz parte da saída que for escolhida.
 
+**Um segundo caso apareceu em 2026-08-13, e esta linha registra os dois — sem medir se há
+mais.** O fecho de
+[`E-56`](#e-56-fecha-em-bigint-nas-três-escolhida-em-2026-08-13) fechou sem ADR e
+falsificou `### Positivas` do
+[ADR-0015](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#positivas): a
+frase "o `CREATE TABLE` continua bloqueado pelo tipo SQL de `value`, `capacity` e
+`amount`, dono de `E-56`" deixou de ser verdade, e o ADR-0015 não foi tocado — o mesmo
+impasse que abre esta linha, pelo mesmo motivo: nenhuma forma do lifecycle alcança decisão
+de fila que falsifica prosa de ADR aceito sem gerar ADR. O levantamento original mediu só
+o que tinha achado até `E-5`; medir se há mais casos, além destes dois, continua fazendo
+parte da saída que for escolhida.
+
 | Saída                                                             | O que ela faz                                                                                                                        |
 |-------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | o patch ganha um motivo a mais, escrito                           | consertar afirmação que uma decisão posterior falsificou passa a ser patch legítimo, com a linha de `## Patches aplicados` de sempre |
@@ -3379,6 +3391,112 @@ marca as três como lacuna, e a migração não tem o que copiar.
 
 **Sem recomendação.** Se `amount` é sempre inteiro nunca foi enunciado em documento algum,
 e a resposta muda o conjunto de alternativas.
+
+##### A apuração de 2026-08-13, antes de perguntar
+
+**A pergunta que a linha deixou pendente foi procurada em documento, e nenhum a enuncia.**
+Todo exemplo é inteiro: o card do E5 descreve `allocate(resourceId, amount)` sem qualificar
+o argumento
+([`feature-card.md`](../features/deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)),
+e a amostragem da prova de equivalência usa `amount` 6 contra somas 0, 4 e 6
+([`example-mapping.md`](../features/deteccao-de-protecao-inerte/example-mapping.md#r6--os-três-ramos-do-predicado)).
+**Ausência de enunciado não é decisão**, e é por isso que a pergunta continua sendo da
+pessoa.
+
+**Uma terceira alternativa, que a linha não tinha.**
+
+- **C — `numeric` sem escala nas três.** Exata como as duas primeiras, sem teto prático, e
+  a única que admite `amount` fracionário sem decisão nova. **Objeção:** ela paga o
+  terceiro custo abaixo.
+
+**O achado que muda a comparação, e que o documento arquivado não podia ter.** A
+recomendação de `bigint` é de 2026-08-03, quando o oráculo lia o banco por `SELECT`. Hoje
+ele não lê: `Σ amount` é somada **no oráculo**, sobre os eventos de `INSERT` que atravessam
+o WAL e o broker, pela decisão do
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão).
+O tipo da coluna deixou de ser forma de armazenamento e passou a decidir **como o valor
+chega ao somador**. `bigint` e `integer` atravessam como número; um `numeric` depende de
+configuração de decodificação no conector, e onde a configuração do Debezium Server vive é
+a própria [`E-31`](#e-31--onde-vive-a-configuração-do-debezium-server), aberta. **Que forma
+exata o conector dá a cada tipo é `Pergunta em aberto`** — nenhum arquivo deste repositório
+a mede, e nenhum conector roda.
+
+**As três colunas não têm o mesmo papel, e a linha as trata juntas por herança do
+rascunho.** `value` serve ao oráculo exato, que subtrai `value_final − value_inicial` e
+compara com a contagem de commits
+([ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)); `capacity` e
+`amount` servem ao predicado. Um desfecho que fixe tipos diferentes dos dois lados da
+fronteira é possível, e decisão nenhuma o proíbe.
+
+**A recomendação de 2026-08-13 é `A`, e o argumento não é o arquivado.** Não é "`integer`
+estoura em `2^31`": é que são três os defeitos que o instrumento não pode introduzir no
+caminho medido — inexatidão no subtraendo do oráculo exato, exceção do banco dentro da
+janela que o experimento mede, e dependência de configuração de conector no caminho do
+veredito. `A` não tem nenhum dos três, `B` tem o segundo e `C` tem o terceiro. O
+fracionário não é fenômeno distribuído: ele entra por decisão nova quando um experimento o
+exigir.
+
+#### `E-56` fecha em `bigint` nas três, escolhida em 2026-08-13
+
+**Escolhida pela pessoa em 2026-08-13, em `A` — `bigint` nas três colunas —
+`resource.value`, `resource.capacity` e `allocation.amount` —, um tipo só nas três.**
+Nenhum ADR nasce deste fecho: a pessoa escolheu registrar a decisão em dois lugares só, a
+linha de fecho aqui e
+[`schemas/sut.md`](../architecture/schemas/sut.md#o-que-o-diagrama-do-sut-não-desenha),
+pelo mesmo motivo que já tirou a forma do esquema do corpo do ADR-0015, no fecho de
+[`E-55`](#e-55-fecha-na-divisão-entre-o-adr-e-um-documento-de-arquitetura-escolhida-em-2026-08-11):
+a forma das tabelas tem dono próprio no processo, e o corpo de um ADR aceito não é o lugar
+onde ela vive.
+
+**O argumento que sustenta `A` é o da apuração acima**: os três defeitos que o
+instrumento não pode introduzir no caminho medido — inexatidão no subtraendo do oráculo
+exato, exceção do banco dentro da janela medida, e dependência de configuração de
+conector no caminho do veredito.
+
+**As alternativas descartadas, com o motivo de cada uma.**
+
+- **B — `integer` nas três.** Descartada porque o estouro em `2^31` vira exceção do banco
+  **dentro da janela que o experimento mede**, e o veredito sai contaminado por defeito do
+  instrumento — o segundo dos três defeitos da apuração acima.
+- **C — `numeric` sem escala nas três.** Alternativa levantada em 2026-08-13, que a linha
+  não tinha ao abrir. Descartada porque acopla o caminho do veredito à decodificação de
+  decimal no conector de CDC — o terceiro dos três defeitos da apuração acima.
+- **Tipos separados por papel — `value` de um lado, `capacity`/`amount` do outro.**
+  Oferecida e recusada: a pessoa escolheu um tipo só nas três, o que mantém a soma do
+  predicado no mesmo tipo do limite que ela compara.
+- **ADR novo.** Oferecida e recusada: a forma de uma tabela tem dono próprio no processo
+  desde o fecho de
+  [`E-55`](#e-55-fecha-na-divisão-entre-o-adr-e-um-documento-de-arquitetura-escolhida-em-2026-08-11),
+  e um ADR só para um tipo de coluna reintroduziria forma de tabela no corpo de um ADR.
+- **Adendo ao ADR-0015.** Oferecida e recusada. O
+  [adendo](README.md#o-adendo-quarta-forma-e-a-única-que-acrescenta-seção) serve para
+  quando um ADR aceito cita um documento que vai deixar de existir, e não é esse o caso: o
+  ADR-0015 não cita um documento morto, cita uma linha desta fila que fechou. Um adendo
+  aqui reintroduziria a forma da tabela no corpo do ADR-0015, o que o fecho de `E-55` já
+  tirou de lá.
+
+**Uma consequência que este fecho fixa, e que nenhum documento enunciava antes de
+2026-08-13: `amount` passa a ser sempre inteiro.** Todo exemplo já era inteiro — a
+apuração acima procurou o enunciado e não achou nenhum —, e a ausência deixa de ser
+`Pergunta em aberto` para virar consequência da escolha. O fracionário não é fenômeno
+distribuído: ele passa a exigir decisão nova, quando um experimento o exigir.
+
+**Uma afirmação do ADR-0015 ficou desatualizada, e o corpo dele não é corrigido — este
+fecho cria o segundo caso conhecido de
+[`E-71`](#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito), que já registra os
+dois.** Em
+[`## Consequências` / `### Positivas`](0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#positivas),
+o ADR-0015 diz que "o `CREATE TABLE` continua bloqueado pelo tipo SQL de `value`,
+`capacity` e `amount`, dono de `E-56`". Este fecho torna essa frase falsa: `E-56` fechou, e
+o `CREATE TABLE` deixou de estar bloqueado por ela. `E-71` é a dona do porquê nenhuma
+forma do lifecycle alcança esse impasse, e este parágrafo não reconstrói esse diagnóstico.
+O que fica aqui é o fato local: a frase do ADR-0015 citada acima ficou falsa, e este fecho
+a registra sem corrigi-la.
+
+**O que este fecho fixa, e onde a forma completa vive.** `resource.value`,
+`resource.capacity` e `allocation.amount` são `bigint`. O `erDiagram` atualizado vive em
+[`schemas/sut.md`](../architecture/schemas/sut.md#o-que-o-diagrama-do-sut-não-desenha), que
+é o dono da forma das tabelas.
 
 #### `E-57` — a definição de experimento tem dois donos declarados
 
@@ -4521,6 +4639,48 @@ antes da soma, valeria aqui na mesma forma ou em outra — também não decidido
 
 **Sem recomendação.** A terceira continua sendo a única sem obstáculo declarado, e continua
 sendo a que não verifica nada.
+
+##### A apuração de 2026-08-13, e a pergunta prévia respondida
+
+**A pessoa decidiu o estatuto da órfã em 2026-08-13, e não decidiu a saída.** Na letra
+dela: a órfã **é achado, e entra no relatório**. Ela NÃO invalida a execução. Isso a separa
+do buraco de contiguidade de LSN, que o
+[ADR-0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
+trata por invalidação — um buraco descarta a execução, e uma órfã produz resultado.
+
+**A pergunta prévia era essa, e ela reduz o conjunto de saídas.** Antes de escolher quem
+verifica, era preciso saber o que a órfã é. Duas das saídas dependiam da resposta oposta:
+
+| Saída                                             | O que a resposta de 2026-08-13 faz com ela                        |
+|---------------------------------------------------|-------------------------------------------------------------------|
+| semeadura correta por construção, sem verificação | **contradiz a resposta** — ninguém relata o que ninguém detecta   |
+| reconstruir o conjunto pelo stream                | **é a única que mede o que commitou**, e não o que foi pretendido |
+
+**Uma quarta saída foi levantada no mesmo turno, e caiu na mesma resposta.** Ela testava a
+pertinência de `allocation.resource_id` ao conjunto de `resource.id` derivado do `seed`,
+que o componente de identidade do
+[ADR-0011](0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-componente-de-identidade)
+produz **antes** da execução. Ela dispensava `SELECT` e dispensava reconstruir estado a
+partir de eventos. **A objeção que a mata:** o conjunto derivado do `seed` é o conjunto
+pretendido, e não o que commitou. Um `INSERT` de `resource` que não commitou deixa o id
+dentro do conjunto derivado e fora da tabela, e a verificação aprovaria a órfã exatamente
+no caso que a resposta acabou de tornar achado.
+
+**A decisão que a resposta cria, e que documento nenhum tem.** Se a órfã entra no
+relatório, ela é resultado observável, e o formato dele não é nenhum dos que existem: o
+oráculo exato produz número
+([ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)), o do predicado
+produz booleano
+([ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-do-predicado)) e o
+[ADR-0004](0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-veredito-de-uma-execução-medida-é-uma-taxa)
+acrescentou a taxa com limite de confiança. Como esses formatos convivem num relatório
+único já era decisão aberta, e é por isso que o E4 não tem card, em
+[capacidade conhecida e não especificada](../features/README.md#capacidade-conhecida-e-não-especificada).
+A órfã acrescenta um item a essa lista, e ninguém a decidiu. `Pergunta em aberto`.
+
+**O que continua sem decisão nesta linha.** Reconstruir um conjunto a partir de eventos
+está liberado como somar está? A guarda de contiguidade de LSN vale aqui na mesma forma ou
+em outra? As duas seguem exatamente como o parágrafo acima as deixou.
 
 #### `E-75` — a citação por linha a bloco Mermaid envelhece a cada edição do alvo
 
@@ -5802,6 +5962,66 @@ medida, um defeito no caminho apareceria nos dois lados e se cancelaria.
 instrução, guarda executável ou dado versionado, é da escolha; e o que conta como
 artefato de um fecho é de
 [`E-91`](#e-91-fecha-em-instrução-e-verificador-contam-como-artefato-escolhida-em-2026-08-12).
+
+## A confirmação cruzada do veredito, proposta em 2026-08-13
+
+### `E-96` — o sistema medido expõe endpoint de confirmação, e a fonte deixa de ser única
+
+**Proposta pela pessoa em 2026-08-13**, ao decidir o estatuto da órfã em
+[`E-74`](#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu). Na letra dela:
+o sistema medido expõe endpoint para o `lab-plane` avaliar o que de fato ocorreu; esse
+endpoint **NÃO DEVE** ser confiado cegamente, e serve para confirmar o que o stream
+entregou; havendo inconsistência entre os dois, ela **DEVE** ser reportada no frontend.
+
+```mermaid
+flowchart LR
+    SUT["system-under-test"]
+    W[("WAL")]
+    T["conector e broker"]
+    OR["oráculo, no lab-plane"]
+    FE["frontend"]
+    SUT --> W --> T --> OR
+    SUT -->|" endpoint de confirmação, proposto "| OR
+    OR -->|" divergência entre as duas leituras "| FE
+```
+
+**Esta linha existe porque a proposta reverte um custo que um ADR aceito assumiu.** As
+[consequências negativas do ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#negativas)
+declaram que a detecção cruzada acaba, que o rótulo `fontes divergentes` perde as duas
+leituras que ele comparava, e que "o consolidado que o system under test publica confere,
+mas não é independente dele". A proposta restaura a detecção cruzada, e o faz com o mesmo
+consolidado que aquele parágrafo desqualificou.
+
+**A letra da decisão do ADR-0010 não é contrariada, e isso precisa ser dito com precisão.**
+Ela proíbe o oráculo de fazer `SELECT` no schema do sistema medido, e manda ler o WAL por
+replicação lógica
+([ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)). Um
+endpoint do próprio sistema medido não é `SELECT` cruzado — quem lê o schema é o dono
+dele. A fonte do número continua sendo o stream, e o endpoint é segundo testemunho.
+
+**A objeção de 2026-08-09 responde a outra pergunta.** "Não é independente" derruba a
+segunda fonte como **árbitro**: as duas leem o mesmo banco, e nenhuma detecta erro do
+banco. Ela não a derruba como **detector de discordância**, porque os dois caminhos são
+distintos, e um evento perdido entre o WAL e o oráculo aparece como divergência. O risco
+concreto que motivou a proposta é a perda no transporte, e contra ele ela funciona.
+
+**Quatro coisas que a proposta não decide, e nenhuma é pequena.**
+
+- **Quando o endpoint é consultado.** Consultá-lo dentro da janela medida põe carga e lock
+  no sistema medido, e o experimento passa a medir também a confirmação.
+- **O que o endpoint expõe.** Um consolidado por recurso, o conjunto de identificadores,
+  ou as linhas — cada forma dá um poder de detecção diferente.
+- **O que a divergência produz.** Ela não é número, não é booleano e não é taxa. É
+  resultado de formato novo, e a composição dos formatos já era decisão aberta, em
+  [capacidade conhecida e não especificada](../features/README.md#capacidade-conhecida-e-não-especificada).
+- **De quem é o endpoint.** Ele vive no sistema medido e só existe para medir, o que
+  tensiona a exigência de o medido ser ingênuo.
+
+**Recomendação: escrever ADR.** A proposta atende aos quatro critérios do
+[índice](README.md#uma-decisão-merece-adr-quando) — há alternativas, o impacto é durável,
+ela cria restrição futura sobre o que o sistema medido expõe, e o trade-off é explícito.
+Ela também torna desatualizada uma consequência de ADR aceito, e a forma de registrar isso
+é do [lifecycle](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 
 ## De onde esta fila veio
 

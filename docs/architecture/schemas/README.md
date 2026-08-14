@@ -79,7 +79,6 @@ porque decorre da fronteira, e não da forma da tabela.
 
 - a coluna `version`, quando a estratégia `OPTIMISTIC` nascer;
 - a forma da tabela de execuções ativas, quando `E-35` e `E-50` fecharem;
-- o tipo SQL de `value`, `capacity` e `amount`, quando `E-56` fechar;
 - onde a definição de experimento vive, quando `E-57` fechar.
 
 Uma mudança aqui **NÃO DEVE** alterar o ADR-0015. Se ela mudar como o instrumento mede,

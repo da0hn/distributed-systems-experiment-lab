@@ -13,12 +13,12 @@ erDiagram
 
 ### O que o diagrama do `lab_plane` não desenha
 
-**Deste lado quase nada tem forma.** `NOME_DE_TABELA_NAO_DECIDIDO` é o mesmo tipo de
-token que `TIPO_NAO_DECIDIDO` no diagrama do `sut`: não é nome de tabela, e nada deste
-repositório se chama assim. A existência da tabela foi decidida; nome, colunas, chave e
-migração continuam `Pergunta em aberto` — inclusive se ela carrega o discriminador. Não
-existe tabela desenhada para as quatro colunas de tempo, e não existe decisão sobre em
-qual banco a definição de experimento vive.
+**Deste lado quase nada tem forma.** `NOME_DE_TABELA_NAO_DECIDIDO` é um token de
+placeholder: não é nome de tabela, e nada deste repositório se chama assim. A existência
+da tabela foi decidida; nome, colunas, chave e migração continuam `Pergunta em aberto` —
+inclusive se ela carrega o discriminador. Não existe tabela desenhada para as quatro
+colunas de tempo, e não existe decisão sobre em qual banco a definição de experimento
+vive.
 
 | O que não aparece no desenho   | O que foi decidido                                                                                                                  | Evidência                                                                                                                                                                                                                                                |
 |--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
