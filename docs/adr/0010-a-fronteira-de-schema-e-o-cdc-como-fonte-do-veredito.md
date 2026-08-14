@@ -30,7 +30,7 @@ O ADR-0008 declara, no diagrama da
 [seção Decisão](0008-os-dois-planos-em-processos-separados.md#decisão), a aresta
 `SELECT após a quiescência` do Lab Plane direto ao PostgreSQL do system under test. O
 oráculo exato do [ADR-0002](0002-o-dominio-minimo-e-os-dois-oraculos.md) é `perdidas =
-commits − (value_final − value_inicial)`, lidos do banco antes do primeiro worker e
+commits − (value_final − value_initial)`, lidos do banco antes do primeiro worker e
 depois do último
 ([`0002-o-dominio-minimo-e-os-dois-oraculos.md`](0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)),
 sem derivar estado de um log
@@ -67,7 +67,7 @@ atributo `REPLICATION` (`local/postgres-init.sql:18`) já antecipam esta decisã
 separados do ADR-0008 permanece; muda como o oráculo obtém o número.
 
 **O oráculo NÃO DEVE fazer `SELECT` no schema do `system-under-test`. Ele DEVE ler o WAL
-por replicação lógica.** `value_inicial` passa a ser o valor do `INSERT` que cria o
+por replicação lógica.** `value_initial` passa a ser o valor do `INSERT` que cria o
 estado inicial da execução. `value_final` passa a ser o último valor de
 `resource.value` visto no stream. Nenhum dos dois vem mais de um `SELECT`.
 
@@ -110,7 +110,7 @@ ninguém decidiu: `Pergunta em aberto`.
 
 - A fronteira de schema do dia zero fica sem exceção nenhuma; nenhum serviço precisa de
   `GRANT` no schema de outro.
-- `value_inicial` e `value_final` passam a vir da mesma fonte: o estado inicial é
+- `value_initial` e `value_final` passam a vir da mesma fonte: o estado inicial é
   inserido antes de cada execução, e não pressuposto, e o CDC captura esse `INSERT`
   ([`decisoes-pendentes.md`](arquivo/proposta-2026-08-03/decisoes-pendentes.md#o20-fecha-o-estado-inicial-é-criado-dentro-da-janela-de-captura)).
 - A guarda contra atraso do CDC sobrevive, agora checando a completude de uma só fonte,
@@ -134,9 +134,9 @@ ninguém decidiu: `Pergunta em aberto`.
 - **Se a proibição alcança também a leitura direta não está decidido. `Pergunta em
   aberto`
   ([`E-37`](../fila-de-decisoes.md#e-37--o-que-a-proibição-de-derivar-estado-de-stream-alcança)).**
-  `value_inicial` vem do `INSERT` do estado inicial; `value_final`, do último evento do
+  `value_initial` vem do `INSERT` do estado inicial; `value_final`, do último evento do
   stream — nenhum dos dois soma, diferente da reconstrução que o predicado exige. `O20`
-  já trata a leitura direta de `value_inicial` como aceitável, sem declarar se ela
+  já trata a leitura direta de `value_initial` como aceitável, sem declarar se ela
   escapa da proibição do ADR-0002.
 - **A emissão ao vivo entra na janela medida, sem alternativa escolhida. `Pergunta em
   aberto`.** O ADR-0008 já registra que a latência de rede entra na medida de todo
@@ -197,6 +197,7 @@ O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidad
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
 
-| Data       | Seção do corpo | O que mudou                                                                                                                                                                                                                                                                                                | Por quê                                                                                                                             |
-|------------|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| 2026-08-10 | `### Neutras`  | a citação ao fecho de `E-12` na fila virou âncora para `0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão`; as duas citações à fila sobre o estado do esqueleto e sobre `E-18` foram removidas, por já estarem evidenciadas no `## Contexto` e na própria `## Decisão` deste ADR | documentos estáveis deixam de citar a fila de decisões, que cresce, funde e poda linha a linha; a decisão e o argumento não mudaram |
+| Data       | Seção do corpo                                   | O que mudou                                                                                                                                                                                                                                                                                                                                                                           | Por quê                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+|------------|--------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-10 | `### Neutras`                                    | a citação ao fecho de `E-12` na fila virou âncora para `0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão`; as duas citações à fila sobre o estado do esqueleto e sobre `E-18` foram removidas, por já estarem evidenciadas no `## Contexto` e na própria `## Decisão` deste ADR                                                                            | documentos estáveis deixam de citar a fila de decisões, que cresce, funde e poda linha a linha; a decisão e o argumento não mudaram                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 2026-08-14 | `## Contexto`, `## Decisão` e `## Consequências` | os identificadores da fórmula do oráculo exato passam a ser grafados em inglês, sem que nenhum número, relação ou argumento mude: `perdidas` vira `lost_operations`, `value_inicial` vira `value_initial` e `sucessos` vira `successes`; `value_final` já se grafava assim. As palavras "atualizações perdidas" e "operações perdidas", que são prosa e não identificador, permanecem | decidido pela pessoa em 2026-08-14, para que a grafia case com as propostas de modelo de dados e com a regra de que todo identificador deste laboratório é escrito em inglês, de `D-ARQ-06`. A grafia portuguesa sobrevive em `adr/arquivo/`, que nunca é editado, e por isso a uniformidade não é alcançável. **A alteração excede o limite ordinário do patch**, que NÃO DEVE alcançar `## Decisão`, a justificativa, a alternativa descartada nem a consequência — ela foi autorizada explicitamente, e fica registrada aqui em vez de ficar sem rastro |

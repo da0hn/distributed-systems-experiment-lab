@@ -521,7 +521,7 @@ entende sem aprender nada. O escalonador que a executa guarda um inteiro, contra
 na decisão escolhida. O argumento de legibilidade é legítimo.
 
 Ela perde por sobre-especificar. Os itens 3 e 4 fixam uma ordem entre as escritas que o
-oráculo do ADR-0002 não observa: nas duas ordens o `value_final` é o mesmo e `perdidas`
+oráculo do ADR-0002 não observa: nas duas ordens o `value_final` é o mesmo e `lost_operations`
 vale um. Uma execução que contrariasse a lista falharia sem que nada de errado tivesse
 acontecido. Ela também não sobrevive ao eixo de escala: um agendamento sobre cinquenta
 workers tem cem linhas escritas à mão, e cada uma nomeia um índice que nenhum documento
@@ -653,7 +653,18 @@ alcançava, e a herança da carga volta à mesa.
 
 ## Patches aplicados
 
-Nenhum patch aplicado.
+- **2026-08-14** — `## Alternativas consideradas`: os identificadores da fórmula do
+  oráculo exato passam a ser grafados em inglês, sem que nenhum número, relação ou
+  argumento mude: `perdidas` vira `lost_operations`, `value_inicial` vira
+  `value_initial` e `sucessos` vira `successes`; `value_final` já se grafava assim. As
+  palavras "atualizações perdidas" e "operações perdidas", que são prosa e não
+  identificador, permanecem. decidido pela pessoa em 2026-08-14, para que a grafia case
+  com as propostas de modelo de dados e com a regra de que todo identificador deste
+  laboratório é escrito em inglês, de `D-ARQ-06`. A grafia portuguesa sobrevive em
+  `adr/arquivo/`, que nunca é editado, e por isso a uniformidade não é alcançável. **A
+  alteração excede o limite ordinário do patch**, que NÃO DEVE alcançar `## Decisão`, a
+  justificativa, a alternativa descartada nem a consequência — ela foi autorizada
+  explicitamente, e fica registrada aqui em vez de ficar sem rastro
 
 O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o

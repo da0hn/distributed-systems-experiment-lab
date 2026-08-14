@@ -533,7 +533,7 @@ citações existentes continuem resolvendo.
 **Dois pontos do que se lê abaixo foram emendados por ADR aceito, e o ADR vale.** O
 oráculo exato não é `100 − value`: o
 [ADR-0002](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato) fixou
-`perdidas = commits − (value_final − value_inicial)`, onde `commits` conta passagens
+`lost_operations = commits − (value_final − value_initial)`, onde `commits` conta passagens
 pela fronteira `AFTER_COMMIT` — contar retorno de operação cancelaria perda real contra
 falha injetada depois do commit. E os dois valores não vêm mais de um `SELECT`: desde o
 [ADR-0010](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) o
@@ -546,7 +546,7 @@ proibido sem exceção.
 - **Estado inicial:** um `Resource` com `value = 0`.
 - **Estímulo:** 100 operações de incremento, 10 workers, mesmo recurso, sem proteção.
 - **Resultado esperado:** `value` final **menor** que 100.
-- **Detecção:** o oráculo é exato. `perdidas = 100 - value`. Não é um predicado que pode
+- **Detecção:** o oráculo é exato. `lost_operations = 100 - value`. Não é um predicado que pode
   ou não ser violado; é uma contagem.
 - **Interface:** timeline mostrando dois `READ version=N` antes de dois
   `WRITE version=N+1`, com o segundo marcado como sobrescrita.
@@ -683,7 +683,7 @@ ambíguo inverteria isso — e um instrumento em que não se confia não produz 
 nenhum.
 
 Esse parágrafo vale para a violação observada, e o ADR-0004 recortou o alcance dele. O
-oráculo continua exato quando conta uma perda: `perdidas` não é uma estimativa. O
+oráculo continua exato quando conta uma perda: `lost_operations` não é uma estimativa. O
 **resultado zero**, esse sim, passou a carregar um limite de confiança e um veredito
 classificado, porque um zero não é uma observação — é a ausência de uma. A separação
 entre as duas leituras é o que o ADR-0004 acrescentou, e ela é a razão de a contagem de

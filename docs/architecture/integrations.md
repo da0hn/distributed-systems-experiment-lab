@@ -170,7 +170,7 @@ o CDC alcança os dois oráculos. O que continua separado é o eixo abaixo, e a 
 declara assim:
 
 1. **O contador do oráculo exato está decidido, e não implementado.** `commits`,
-   `value_inicial` e `value_final` vêm do WAL por replicação lógica, e nunca de um
+   `value_initial` e `value_final` vêm do WAL por replicação lógica, e nunca de um
    `SELECT` no schema do sistema medido —
    [ADR-0010](../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
    Nenhum consumidor existe.

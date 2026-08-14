@@ -23,14 +23,14 @@ da seção 6 do [`plano-do-laboratorio.md`](../../plano-do-laboratorio.md).
 
 ### R5 a R9 — O oráculo e o denominador
 
-- 100 incrementos, 10 workers: `commits = 100`, `value_final = 63`, `perdidas = 37`.
+- 100 incrementos, 10 workers: `commits = 100`, `value_final = 63`, `lost_operations = 37`.
 - Uma operação que commita, falha e tenta de novo incrementa **duas** vezes; contar por
   operação esconderia o segundo incremento.
 - Uma tentativa que alcança `AFTER_COMMIT` e falha depois **entra** em `commits` e
-  **não** em `sucessos`; uma que esgota tentativas sem alcançar a fronteira não entra em
+  **não** em `successes`; uma que esgota tentativas sem alcançar a fronteira não entra em
   nenhum dos dois.
-- Com `sucessos` no denominador, uma perda real seria cancelada por falha injetada depois
-  do commit (`commits = 100`, `sucessos = 94`: os 6 são dual write, não perda), e o
+- Com `successes` no denominador, uma perda real seria cancelada por falha injetada depois
+  do commit (`commits = 100`, `successes = 94`: os 6 são dual write, não perda), e o
   relatório ficaria verde sobre um banco inconsistente (**contraexemplo**).
 - Derivar `value_final` do **log de observações** mediria o instrumento com o instrumento
   (**contraexemplo**). O
@@ -72,7 +72,7 @@ elas vêm.
 ### R12 a R16 — O contrato de estratégia (ADR-0006)
 
 - **E3.4, calibração** — `ATOMIC_UPDATE` calibra: `commits` iguala `value_final −
-  value_inicial`, pois o `UPDATE` é a única operação sobre a linha, sem leitura antes.
+  value_initial`, pois o `UPDATE` é a única operação sobre a linha, sem leitura antes.
 - **E3.5/E3.6, controle positivo** — `PESSIMISTIC` roda sem execução de controle:
   coincidências sempre zero, pois o lock torna a janela inalcançável; uma violação
   aponta para o banco ou fabricação no instrumento, nunca para a estratégia.

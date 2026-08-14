@@ -46,7 +46,7 @@ Uma entrada tem quatro partes, e só essas quatro: **termo**, **definição brev
 
 | O que aparece na conversa                        | Onde ele vive                                   |
 |--------------------------------------------------|-------------------------------------------------|
-| alternativa de nome, com o argumento de cada uma | linha da `../../../docs/fila-de-decisoes.md`         |
+| alternativa de nome, com o argumento de cada uma | linha da `../../../docs/fila-de-decisoes.md`    |
 | decisão de vocabulário, proposta ou tomada       | a mesma linha da fila; ADR quando ela o merecer |
 | ata de como o termo foi debatido                 | a linha da fila, e nunca o glossário            |
 | pergunta em aberto e backlog de termos           | `docs/questions/`, ou o `example-mapping.md`    |
@@ -78,8 +78,8 @@ limites entre conceitos.
 ### Cruze com o código
 
 Quando o usuário afirmar como algo funciona, verifique se o código concorda. Se encontrar
-uma contradição, mostre-a: "O código conta `perdidas` a partir de `commits`, mas você
-acabou de dizer que a contagem vem de `sucessos` — qual dos dois está certo?"
+uma contradição, mostre-a: "O código conta `lost_operations` a partir de `commits`, mas você
+acabou de dizer que a contagem vem de `successes` — qual dos dois está certo?"
 
 ### Atualize docs/CONTEXT.md na hora
 

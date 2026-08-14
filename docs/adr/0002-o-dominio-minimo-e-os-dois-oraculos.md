@@ -18,11 +18,11 @@
   estuda" ([seção "O oráculo exato"](#o-oráculo-exato)) passa a grupo C, escrita parcial.
 - **Alterado por:**
   [ADR-0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) — emenda; a
-  regra de que `value_inicial` e `value_final` são "lidos do banco"
+  regra de que `value_initial` e `value_final` são "lidos do banco"
   ([seção "O oráculo exato"](#o-oráculo-exato)) e o `SELECT` cruzado de schema, nas seções
   "O oráculo lê o banco, e NÃO DEVE ler o log de observações" e "O oráculo do predicado",
   deixam de valer.
-  `value_inicial` passa a vir do `INSERT` do estado inicial, e `value_final` do último
+  `value_initial` passa a vir do `INSERT` do estado inicial, e `value_final` do último
   evento de `resource.value` no WAL, por replicação lógica; a fonte do oráculo de
   capacidade fica sem decisão, registrada como pergunta em aberto.
 - **Alterado por:**
@@ -164,11 +164,11 @@ execuções — questão encaminhada à definição de Experiment como
 O oráculo do contador produz uma contagem, e não um veredito booleano:
 
 ```
-perdidas = commits − (value_final − value_inicial)
+lost_operations = commits − (value_final − value_initial)
 ```
 
 `commits` é o número de passagens pela fronteira `AFTER_COMMIT`, contadas por tentativa.
-`value_inicial` e `value_final` são lidos do banco, antes de o primeiro worker começar e
+`value_initial` e `value_final` são lidos do banco, antes de o primeiro worker começar e
 depois de o último terminar.
 
 O denominador DEVE ser `commits`. Ele NÃO DEVE ser o número de operações submetidas nem
@@ -192,20 +192,20 @@ sequenceDiagram
     RT ->> RT: commits = commits + 1
     RT -->> OP: falha injetada
     OP ->> RT: operação reportou falha
-    RT ->> RT: sucessos permanece igual
+    RT ->> RT: successes permanece igual
     Note over RT: commits alimenta o oráculo do contador
-    Note over RT: a diferença commits − sucessos mede o dual write
+    Note over RT: a diferença commits − successes mede o dual write
 ```
 
-O `sucessos` continua contado, e muda de oráculo. Ele conta as execuções de operação que
-reportaram sucesso ao Lab Plane, e a diferença `commits − sucessos` mede o dual write —
+O `successes` continua contado, e muda de oráculo. Ele conta as execuções de operação que
+reportaram sucesso ao Lab Plane, e a diferença `commits − successes` mede o dual write —
 o fenômeno do grupo B que a etapa 6 estuda. Cada número mede um fenômeno.
 
 ### A calibração do denominador
 
 Toda execução DEVE ser precedida por uma execução de calibração com uma estratégia que
 não perca incremento nenhum. Nessa execução, `commits` DEVE ser exatamente igual a
-`value_final − value_inicial`.
+`value_final − value_initial`.
 
 Quando os dois números divergirem, o defeito é do instrumento, e nenhum resultado
 daquela execução vale. A plataforma DEVE recusar o relatório.
@@ -318,7 +318,7 @@ COMMITTED`, `REPEATABLE READ` e `SERIALIZABLE`. O isolamento é parâmetro da de
 experimento, e tem ADR próprio na fila.
 
 **Quem estabelece o estado inicial, e como o banco volta ao ponto de partida entre duas
-execuções.** O oráculo lê `value_inicial`; ele não o cria. A restrição de que o
+execuções.** O oráculo lê `value_initial`; ele não o cria. A restrição de que o
 identificador seja função da semente vale para qualquer resposta. Ver
 [`Q-0002-4`](../questions/Q-0002-4.md).
 
@@ -351,14 +351,14 @@ mostraria perda crescente onde há apenas retry crescente.
 **Por que o denominador é `commits`, e não o número de operações que reportaram
 sucesso.** Um escalar não separa dois efeitos de sinais opostos. A atualização perdida
 faz o banco aplicar menos do que a aplicação acredita, e o commit seguido de falha
-injetada faz o banco aplicar mais. Com `sucessos` no denominador, os dois se cancelam, e
+injetada faz o banco aplicar mais. Com `successes` no denominador, os dois se cancelam, e
 uma execução com o mesmo número de perdas e de injeções publica zero sobre um banco
 inconsistente. A `AFTER_COMMIT` é a fronteira que o ADR-0001 criou para produzir esse
 caso na etapa 6, de modo que o cancelamento não é raro: é o desenho do experimento.
 
 Contar passagens pela fronteira desfaz o cancelamento porque o denominador passa a medir
 o que o banco recebeu, e não o que a aplicação acredita. O que a aplicação acredita
-continua sendo medido, em `sucessos`, e a distância entre os dois números vira a medida
+continua sendo medido, em `successes`, e a distância entre os dois números vira a medida
 do dual write. Cada fenômeno ganha o seu número em vez de dividir um.
 
 **Por que a passagem pela fronteira é aceitável como entrada do Lab Plane, e a
@@ -440,7 +440,7 @@ modo que retirar a coluna não edita um ADR aceito.
   incremento que ficou no banco aparece no denominador, e a perda real não é abatida por
   ele.
 - A etapa 6 ganha um oráculo que nenhum ADR havia previsto. A diferença
-  `commits − sucessos` conta os dual writes diretamente, sem instrumentação nova.
+  `commits − successes` conta os dual writes diretamente, sem instrumentação nova.
 - O instrumento passa a ter uma verificação própria. A execução de calibração falha
   quando a contagem de passagens estiver errada, em vez de deixar o erro entrar no
   relatório.
@@ -633,7 +633,7 @@ amostrada é declarada e versionada junto do teste.
 
 ### Alternativa G — recusar a combinação de oráculo exato com falha depois do commit
 
-O denominador continua sendo `sucessos`, e a plataforma rejeita qualquer experimento que
+O denominador continua sendo `successes`, e a plataforma rejeita qualquer experimento que
 declare uma falha em `AFTER_COMMIT` junto do oráculo exato. A combinação que produz o
 cancelamento deixa de ser expressável.
 
@@ -648,15 +648,15 @@ incrementos que sobrevivem a essa separação é o resultado. A alternativa G en
 plataforma que recusa o experimento em vez de medi-lo, e a recusa não é temporária: o
 dual write é um dos cinco grupos do escopo, não um caso de borda.
 
-### Alternativa H — manter `sucessos` no denominador e publicar dois números
+### Alternativa H — manter `successes` no denominador e publicar dois números
 
 A fórmula não muda. O relatório acrescenta `commits sem sucesso reportado` ao lado de
-`perdidas`, e quem lê corrige um pelo outro.
+`lost_operations`, e quem lê corrige um pelo outro.
 
 **Descartada.** A alternativa H custa menos que a decisão: nenhuma calibração, nenhuma
 mudança no que o oráculo consome, e nenhum efeito fica escondido do leitor atento.
 
-Ela perde porque a correção fica com quem lê. `perdidas` continua sendo um número
+Ela perde porque a correção fica com quem lê. `lost_operations` continua sendo um número
 enviesado, publicado com o nome do fenômeno que ele deixou de medir, e a soma que o
 conserta é uma operação que o leitor precisa saber que existe. Um relatório cuja
 primeira linha está errada até que alguém a some com a terceira é pior que um relatório
@@ -699,7 +699,7 @@ estado errado existe durante uma janela e some depois. Ver
 
 Reveja a calibração do denominador quando a execução de calibração passar a reprovar por
 motivo que não seja defeito do runtime. O sinal é uma estratégia declarada sem perda que
-produza `commits` diferente de `value_final − value_inicial` por causa do banco, e não
+produza `commits` diferente de `value_final − value_initial` por causa do banco, e não
 do instrumento — um `UPDATE` que o PostgreSQL descarte depois de o commit retornar, por
 exemplo. A calibração estaria acusando o instrumento por um comportamento do sistema sob
 teste.
@@ -711,8 +711,9 @@ O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidad
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
 
-| Data       | Seção do corpo                              | O que mudou                                                                                                                                                                                                                      | Por quê                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-|------------|---------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 2026-08-11 | Cabeçalho, entrada `Alterado por: ADR-0010` | a citação por linha `:156-157`, ao lado de "seção 'O oráculo exato'", virou âncora `#o-oráculo-exato`                                                                                                                            | o mesmo commit que emenda este ADR pelo ADR-0015 acrescentou **dez** linhas de cabeçalho acima de `## Contexto`, deslocando o corpo inteiro (`## Vocabulário` saiu de `:32` para `:42`). A citação **já era imprecisa antes deste commit**: `:156-157` eram a cerca de código e a fórmula `perdidas = commits − (value_final − value_inicial)`, e a regra citada entre aspas, "lidos do banco", estava em `:161`. O deslocamento somou a isso levar `:156-157` para dentro de "A identidade das entidades…", noutra seção — e a âncora conserta as duas coisas de uma vez |
-| 2026-08-11 | Cabeçalho, entrada `Alterado por: ADR-0009` | a citação por linha `:175`, ao lado de "seção 'O oráculo exato'", virou âncora `#o-oráculo-exato`                                                                                                                                | o mesmo defeito da linha acima, e medido do mesmo jeito: `:175` é hoje `participant DB as PostgreSQL`, dentro do `sequenceDiagram` do oráculo do contador, e a frase citada entre aspas vive em `:202`. A seção já estava nomeada ao lado do número, e a âncora dispensa o número                                                                                                                                                                                                                                                                                         |
-| 2026-08-12 | Cabeçalho, entrada `Alterado por: ADR-0015` | o ponteiro à forma do schema medido apontava para o arquivo `esquemas.md`, com a âncora `#o-schema-do-sistema-medido-sut`; passa a `../architecture/schemas/sut.md`, com a mesma âncora, e o texto do link acompanha o nome novo | o fecho de [`E-78`](../fila-de-decisoes.md#e-78--o-esquemasmd-vira-pasta-com-um-arquivo-por-serviço) trocou o arquivo por uma pasta com um arquivo por serviço, **sem lápide**: o caminho antigo deixou de existir, e a âncora deixaria de resolver                                                                                                                                                                                                                                                                                                                       |
+| Data       | Seção do corpo                                                                                                                                                                                                        | O que mudou                                                                                                                                                                                                                                                                                                                                                                           | Por quê                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-08-11 | Cabeçalho, entrada `Alterado por: ADR-0010`                                                                                                                                                                           | a citação por linha `:156-157`, ao lado de "seção 'O oráculo exato'", virou âncora `#o-oráculo-exato`                                                                                                                                                                                                                                                                                 | o mesmo commit que emenda este ADR pelo ADR-0015 acrescentou **dez** linhas de cabeçalho acima de `## Contexto`, deslocando o corpo inteiro (`## Vocabulário` saiu de `:32` para `:42`). A citação **já era imprecisa antes deste commit**: `:156-157` eram a cerca de código e a fórmula `perdidas = commits − (value_final − value_inicial)`, e a regra citada entre aspas, "lidos do banco", estava em `:161`. O deslocamento somou a isso levar `:156-157` para dentro de "A identidade das entidades…", noutra seção — e a âncora conserta as duas coisas de uma vez |
+| 2026-08-11 | Cabeçalho, entrada `Alterado por: ADR-0009`                                                                                                                                                                           | a citação por linha `:175`, ao lado de "seção 'O oráculo exato'", virou âncora `#o-oráculo-exato`                                                                                                                                                                                                                                                                                     | o mesmo defeito da linha acima, e medido do mesmo jeito: `:175` é hoje `participant DB as PostgreSQL`, dentro do `sequenceDiagram` do oráculo do contador, e a frase citada entre aspas vive em `:202`. A seção já estava nomeada ao lado do número, e a âncora dispensa o número                                                                                                                                                                                                                                                                                         |
+| 2026-08-12 | Cabeçalho, entrada `Alterado por: ADR-0015`                                                                                                                                                                           | o ponteiro à forma do schema medido apontava para o arquivo `esquemas.md`, com a âncora `#o-schema-do-sistema-medido-sut`; passa a `../architecture/schemas/sut.md`, com a mesma âncora, e o texto do link acompanha o nome novo                                                                                                                                                      | o fecho de [`E-78`](../fila-de-decisoes.md#e-78--o-esquemasmd-vira-pasta-com-um-arquivo-por-serviço) trocou o arquivo por uma pasta com um arquivo por serviço, **sem lápide**: o caminho antigo deixou de existir, e a âncora deixaria de resolver                                                                                                                                                                                                                                                                                                                       |
+| 2026-08-14 | `## Decisão`, `## Justificativa`, `## Consequências`, `## Alternativas consideradas`, `## Quando esta decisão deixa de valer` e o cabeçalho; o título `### Alternativa H` acompanha, e nenhuma âncora dele era citada | os identificadores da fórmula do oráculo exato passam a ser grafados em inglês, sem que nenhum número, relação ou argumento mude: `perdidas` vira `lost_operations`, `value_inicial` vira `value_initial` e `sucessos` vira `successes`; `value_final` já se grafava assim. As palavras "atualizações perdidas" e "operações perdidas", que são prosa e não identificador, permanecem | decidido pela pessoa em 2026-08-14, para que a grafia case com as propostas de modelo de dados e com a regra de que todo identificador deste laboratório é escrito em inglês, de `D-ARQ-06`. A grafia portuguesa sobrevive em `adr/arquivo/`, que nunca é editado, e por isso a uniformidade não é alcançável. **A alteração excede o limite ordinário do patch**, que NÃO DEVE alcançar `## Decisão`, a justificativa, a alternativa descartada nem a consequência — ela foi autorizada explicitamente, e fica registrada aqui em vez de ficar sem rastro                |

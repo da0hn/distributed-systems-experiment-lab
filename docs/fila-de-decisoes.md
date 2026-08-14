@@ -749,7 +749,7 @@ fila.** Ele dizia que buscar "a mesma linha em **todas** as execuções" é oper
 do laboratório, porque comparar `NONE`, `PESSIMISTIC` e `OPTIMISTIC` é comparar a mesma
 entidade lógica entre execuções. **Não é uma consulta.** O oráculo do
 [ADR-0002](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md) calcula
-`perdidas = commits − (value_final − value_inicial)` **dentro** de cada execução, e a
+`lost_operations = commits − (value_final − value_initial)` **dentro** de cada execução, e a
 comparação entre estratégias acontece depois, sobre números já calculados, no relatório.
 Nenhum caminho quente junta execuções numa consulta só; isso é inspeção manual em `psql`,
 e ela pode pagar uma varredura.
@@ -1407,7 +1407,7 @@ e o nome delas, continua com `E-35`.
 O [ADR-0010](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) nasceu `Aceito`
 em 2026-08-06 deixando lacunas marcadas como `Pergunta em aberto`. Duas delas precisam de
 linha aqui, porque **uma pergunta dentro de um ADR aceito não pode ser respondida editando
-o ADR**. Uma terceira, a fonte do `value_inicial`, foi apurada como aberta **por engano** —
+o ADR**. Uma terceira, a fonte do `value_initial`, foi apurada como aberta **por engano** —
 ela fechou em 2026-08-05, e o parágrafo de `E-36` registra onde.
 
 #### `E-36` — a emissão ao vivo entra na janela que o experimento mede
@@ -1420,7 +1420,7 @@ e nunca foi escolhida:** emissão não bloqueante, em que o passo enfileira num 
 e um remetente próprio esvazia. O custo dela é perder o buffer quando o `lab-plane` cai —
 e a etapa 6 mata o processo de propósito. A linha decide qual das duas.
 
-**Não confundir com o `value_inicial`, que já tem fonte.** Esta linha nasceu de uma
+**Não confundir com o `value_initial`, que já tem fonte.** Esta linha nasceu de uma
 apuração que o tratava como aberto; ele não é. `O20` fechou em 2026-08-05 pelo estado
 inicial ser **inserido** antes de cada execução, e capturado como qualquer outro evento —
 o registro está em
@@ -2503,7 +2503,7 @@ fora de ADR, e é o irmão do caso da coluna `version` que já foi consertado no
 arquivo.
 
 > **Toda execução medida exige calibração antes**, com uma estratégia sem perda, em que
-> `commits` DEVE igualar `value_final − value_inicial` — em ADR-0002. Qual é essa estratégia
+> `commits` DEVE igualar `value_final − value_initial` — em ADR-0002. Qual é essa estratégia
 > ainda não foi decidido.
 
 Falsificada pelo
@@ -3822,7 +3822,7 @@ exata o conector dá a cada tipo é `Pergunta em aberto`** — nenhum arquivo de
 a mede, e nenhum conector roda.
 
 **As três colunas não têm o mesmo papel, e a linha as trata juntas por herança do
-rascunho.** `value` serve ao oráculo exato, que subtrai `value_final − value_inicial` e
+rascunho.** `value` serve ao oráculo exato, que subtrai `value_final − value_initial` e
 compara com a contagem de commits
 ([ADR-0002](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)); `capacity` e
 `amount` servem ao predicado. Um desfecho que fixe tipos diferentes dos dois lados da
@@ -4115,10 +4115,10 @@ reescrita agora.
 **As outras duas são editáveis, e por isso ficam sem categoria.** Nenhuma está em corpo de
 ADR aceito, e nenhuma é alcançada pela dívida de `E-44`:
 
-| Onde vive                                                                                           | O que ela cita | Por que o conserto exige decisão                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-|-----------------------------------------------------------------------------------------------------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [`../README.md`, rastro de alterações](adr/README.md#o-rastro-de-alterações-emendado-em-2026-08-04) | `0002:95-96`   | a célula afirma falar da delegação de `version`, e `:95-96` já caía em `## Problema` antes deste commit; qual trecho sustenta a afirmação é escolha                                                                                                                                                                                                                                                                                                                                           |
-| [esta fila, `D-DOM-05`](#d-dom-05--se-verdict-vira-quatro-termos)                                   | `0002:186-190` | **está em prosa, e não em bloco Mermaid** — e o intervalo nunca apontou para o que a frase afirma. Ela sustenta "o booleano do predicado de capacidade", e `:186-190` são a cauda do `sequenceDiagram` do oráculo do **contador** mais o parágrafo de `sucessos`; o predicado vive em `### O oráculo do predicado`. Não falta escolher qual intervalo deslocado é o certo: falta decidir se o alvo passa a ser a âncora daquela seção, que é o que `C-1` exige de prosa alcançável por título |
+| Onde vive                                                                                           | O que ela cita | Por que o conserto exige decisão                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+|-----------------------------------------------------------------------------------------------------|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`../README.md`, rastro de alterações](adr/README.md#o-rastro-de-alterações-emendado-em-2026-08-04) | `0002:95-96`   | a célula afirma falar da delegação de `version`, e `:95-96` já caía em `## Problema` antes deste commit; qual trecho sustenta a afirmação é escolha                                                                                                                                                                                                                                                                                                                                            |
+| [esta fila, `D-DOM-05`](#d-dom-05--se-verdict-vira-quatro-termos)                                   | `0002:186-190` | **está em prosa, e não em bloco Mermaid** — e o intervalo nunca apontou para o que a frase afirma. Ela sustenta "o booleano do predicado de capacidade", e `:186-190` são a cauda do `sequenceDiagram` do oráculo do **contador** mais o parágrafo de `successes`; o predicado vive em `### O oráculo do predicado`. Não falta escolher qual intervalo deslocado é o certo: falta decidir se o alvo passa a ser a âncora daquela seção, que é o que `C-1` exige de prosa alcançável por título |
 
 **Sem recomendação.** Consertá-las por conta própria seria escolher o alvo, e escolher o
 alvo de uma citação é decidir o que a afirmação se apoia. As duas ficam como estão até a
@@ -4310,7 +4310,7 @@ Aberta em 2026-08-12, na triagem das regras pendentes do card do E1.
 **O problema.** A regra `R18` de
 [detecção de atualização perdida](features/deteccao-de-atualizacao-perdida/feature-card.md#regras-de-negócio)
 diz que o estado inicial **DEVE** ser inserido antes de cada execução, e não
-pressuposto, para que `value_inicial` venha do mesmo stream que `value_final`. A única
+pressuposto, para que `value_initial` venha do mesmo stream que `value_final`. A única
 evidência dela é o item `O20` de
 [decisões pendentes arquivadas](adr/arquivo/proposta-2026-08-03/decisoes-pendentes.md#o20-fecha-o-estado-inicial-é-criado-dentro-da-janela-de-captura)
 , e aquele arquivo é **arquivo congelado**: ele registra o que se pensava em 2026-08-03
@@ -4325,13 +4325,13 @@ o mérito. `R18` não tem esse dono a montante. Aprová-la seria **tomar a decis
 primeira vez dentro de um card**, e a coluna `Aprovada por` registra que a pessoa
 confirmou a regra, nunca que a arquitetura foi decidida ali.
 
-**O que está em jogo.** O oráculo exato é `perdidas = commits − (value_final −
-value_inicial)`, do
+**O que está em jogo.** O oráculo exato é `lost_operations = commits − (value_final −
+value_initial)`, do
 [ADR-0002](adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato) . Se
-`value_inicial` vier de fora do stream — de uma migração, de um `SELECT` no schema
+`value_initial` vier de fora do stream — de uma migração, de um `SELECT` no schema
 medido, ou de um valor presumido —, os dois lados da subtração deixam de ter a mesma
 origem, e o veredito passa a somar a diferença entre duas fontes com a perda que ele
-quer medir. **O ADR-0002 exige `value_inicial` e não diz de onde ele vem.** Um `SELECT`
+quer medir. **O ADR-0002 exige `value_initial` e não diz de onde ele vem.** Um `SELECT`
 cruzado está fora por outro motivo, que é a fronteira do
 [ADR-0010](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) — o que
 sobra em aberto é o resto.
@@ -4345,10 +4345,10 @@ flowchart LR
   subgraph dentro["dentro da janela de captura"]
     INS["INSERT antes da execução<br/>vira evento no WAL"]
   end
-  MIG --> V["value_inicial"]
+  MIG --> V["value_initial"]
   PRES --> V
   INS --> V
-  V --> O["perdidas = commits − (value_final − value_inicial)"]
+  V --> O["lost_operations = commits − (value_final − value_initial)"]
   W["WAL — replicação lógica"] --> VF["value_final"]
   INS -.-> W
   VF --> O
@@ -4357,7 +4357,7 @@ flowchart LR
 **Esta linha não duplica [`Q-0002-4`](questions/Q-0002-4.md) , e o recorte é o que as
 separa.** Aquela questão pergunta **quem** escreve o estado inicial e **como o banco
 volta ao ponto de partida** entre duas execuções, e ela foi escrita a partir do
-ADR-0002, quando o oráculo ainda "lê `value_inicial` antes do primeiro worker" — por
+ADR-0002, quando o oráculo ainda "lê `value_initial` antes do primeiro worker" — por
 `SELECT`, portanto. Esta linha pergunta outra coisa: **se essa escrita precisa ser
 observável no stream**, o que só passou a fazer diferença depois que o
 [ADR-0010](adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) tirou o
@@ -4370,12 +4370,12 @@ esta, e quem fechar esta NÃO DEVE presumir que respondeu a limpeza entre execu�
 **Escolhida pela pessoa em 2026-08-12.**
 
 **O que fica decidido.** O `INSERT` do estado inicial acontece com a replicação lógica
-**já ativa**, e o oráculo obtém `value_inicial` do primeiro evento daquele
-`partition_id` no stream. Os dois lados de `perdidas = commits − (value_final −
-value_inicial)` passam a vir da mesma fonte, e nenhum deles é constante no código do
+**já ativa**, e o oráculo obtém `value_initial` do primeiro evento daquele
+`partition_id` no stream. Os dois lados de `lost_operations = commits − (value_final −
+value_initial)` passam a vir da mesma fonte, e nenhum deles é constante no código do
 oráculo.
 
-**A alternativa descartada, e o motivo.** Presumir `value_inicial` da convenção de
+**A alternativa descartada, e o motivo.** Presumir `value_initial` da convenção de
 criação era mais barata e não mudava protocolo nenhum. Perde porque transforma metade da
 subtração em constante: um setup alterado produziria número errado sem sinal, que é o
 falso negativo silencioso que a `R18` existe para impedir.
@@ -5993,7 +5993,7 @@ antes que este item seja decidido.
 #### O que a proposta não contradiz, e o que ela reforça
 
 **O oráculo do ADR-0002 já é uma contagem, e não um booleano.**
-`perdidas = commits − (value_final − value_inicial)` mede magnitude. Uma taxa é a mesma
+`lost_operations = commits − (value_final − value_initial)` mede magnitude. Uma taxa é a mesma
 contagem dividida pelo número de tentativas, e nada no ADR-0002 precisa mudar para
 produzi-la. O domínio mínimo foi escolhido de um jeito que serve às duas promessas.
 

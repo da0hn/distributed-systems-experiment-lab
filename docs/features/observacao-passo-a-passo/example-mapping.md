@@ -62,7 +62,7 @@ Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
   `AFTER_COMMIT` é a primeira depois dele.
 - **Exemplo 9.2, consistência** — Uma falha injetada em `AFTER_COMMIT` acontece com a
   transação já aplicada. É esse par — commit aplicado, operação reportando falha — que a
-  etapa 6 estuda, e é por isso que o oráculo do ADR-0002 conta `commits` e não `sucessos`.
+  etapa 6 estuda, e é por isso que o oráculo do ADR-0002 conta `commits` e não `successes`.
 
 ### R10 — A prova de equivalência entre resoluções
 

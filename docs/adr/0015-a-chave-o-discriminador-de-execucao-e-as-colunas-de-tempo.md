@@ -198,7 +198,7 @@ excluiria isso na leitura literal; o precedente são o
 
 ### Neutras
 
-Os dois oráculos não mudam: `value_final`, `value_inicial` e `Σ amount` seguem vindo do
+Os dois oráculos não mudam: `value_final`, `value_initial` e `Σ amount` seguem vindo do
 WAL, pelos ADRs
 [0010](0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão) e
 [0013](0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão).
@@ -312,3 +312,16 @@ recorte registrado no fecho de
 O regime de patch está em [`README.md`](README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07).
 Um patch conserta citação, caminho ou erro material; ele NÃO DEVE alterar a decisão nem o
 argumento que a sustentava.
+
+- **2026-08-14** — `## Consequências`: os identificadores da fórmula do oráculo exato
+  passam a ser grafados em inglês, sem que nenhum número, relação ou argumento mude:
+  `perdidas` vira `lost_operations`, `value_inicial` vira `value_initial` e `sucessos`
+  vira `successes`; `value_final` já se grafava assim. As palavras "atualizações
+  perdidas" e "operações perdidas", que são prosa e não identificador, permanecem.
+  decidido pela pessoa em 2026-08-14, para que a grafia case com as propostas de modelo
+  de dados e com a regra de que todo identificador deste laboratório é escrito em
+  inglês, de `D-ARQ-06`. A grafia portuguesa sobrevive em `adr/arquivo/`, que nunca é
+  editado, e por isso a uniformidade não é alcançável. **A alteração excede o limite
+  ordinário do patch**, que NÃO DEVE alcançar `## Decisão`, a justificativa, a
+  alternativa descartada nem a consequência — ela foi autorizada explicitamente, e fica
+  registrada aqui em vez de ficar sem rastro
