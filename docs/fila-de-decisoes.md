@@ -2528,6 +2528,10 @@ Nenhuma das quatro tem as duas evidências, e por isso nenhuma virou caso.
   ADR aceito NÃO DEVE ser editado — essa era a regra em 2026-08-05" —, e o que separa uma
   queda **declarada** de uma **silenciosa** não está escrito em documento nenhum. Foi por
   esse mesmo critério não escrito que as quatro seções do ADR-0007 ficaram de fora.
+  **A frase anterior caiu em 2026-08-14**: o critério passou a existir, pelo fecho de
+  [`E-105`](#e-105-fecha-em-queda-declarada-no-próprio-adr-não-é-prosa-falsa-escolhida-em-2026-08-14),
+  e por ele estas duas exclusões ficam confirmadas — a declaração vive no próprio ADR e
+  nomeia a afirmação que caiu.
 - **[ADR-0012, `### Negativas`](adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)** —
   "Onde vive a configuração do Debezium Server não está decidido". O
   [ADR-0019](adr/0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md#decisão) pôs
@@ -7094,6 +7098,55 @@ seção de origem, no mesmo commit em que o ADR novo nasce.
 para o `lab-plane`, ou só o aviso de conclusão sem resultado — o ADR-0020 precisa dizer
 qual, porque a subsunção exige nomear em que caso a regra antiga continua valendo sem
 mudança.
+
+### `E-105` — o que separa a queda declarada da silenciosa nunca foi escrito
+
+**Levantada em 2026-08-14.** A varredura dos trechos falsificados excluiu casos por um
+critério que ela mesma declarou não existir: o das
+[suspeitas não confirmadas](#suspeitas-não-confirmadas) diz, sobre o `## Contexto` do
+ADR-0009, que "o que separa uma queda **declarada** de uma **silenciosa** não está escrito
+em documento nenhum", e que "foi por esse mesmo critério não escrito que as quatro seções
+do ADR-0007 ficaram de fora".
+
+**O caso concreto.** O ADR-0009 afirma no corpo que o corpo de um ADR aceito NÃO DEVE ser
+editado, e a revogação da imutabilidade derrubou isso. Mas o próprio ADR-0009 declara a
+queda em `## Patches aplicados`. A frase falsa e o aviso de que ela caiu vivem no mesmo
+arquivo.
+
+#### `E-105` fecha em queda declarada no próprio ADR não é prosa falsa, escolhida em 2026-08-14
+
+**Escolhida em 2026-08-14, no regime de delegação de processo documental.**
+
+**O dano que a varredura persegue é um só: quem lê o ADR sozinho não descobre que a frase
+caiu.** Quando o próprio arquivo declara a queda, esse leitor descobre — e o dano não
+existe. Não é indulgência com o texto falso; é que o texto deixou de enganar alguém.
+
+**Sem essa regra o inventário nunca convergiria, e isso é decisivo.** A forma que conserta
+uma afirmação falsificada é o patch aditivo, decidido no mesmo dia
+([`adr/README.md`, O patch aditivo](adr/README.md#o-patch-aditivo-decidido-em-2026-08-14)):
+a frase fica, e uma marca datada entra depois dela. O resultado do conserto é, por
+construção, uma queda declarada. Contá-la como defeito faria cada caso consertado nascer
+como caso novo, e a varredura seguinte acharia tantos quantos a anterior consertou.
+
+```mermaid
+flowchart TD
+    A["afirmação de ADR aceito<br/>que uma decisão posterior tornou falsa"] --> B{"o próprio ADR<br/>declara a queda?"}
+    B -->|" não "| C["caso: quem lê só o ADR<br/>não sabe que caiu"]
+    B -->|" sim "| D["não é caso:<br/>o leitor descobre no mesmo arquivo"]
+    C --> E["patch aditivo"]
+    E --> D
+```
+
+**A fronteira é objetiva, e tem duas exigências.** A declaração DEVE viver **no próprio
+ADR** — em `## Patches aplicados`, em adendo ou na marca aditiva ao lado da frase. E ela
+DEVE nomear a afirmação que caiu, pelo texto dela ou pela seção em que está, para que o
+leitor consiga emparelhar as duas. Uma declaração que viva fora do arquivo não conta: o
+leitor do ADR sozinho continuaria sem saber.
+
+**O que este fecho confirma, e o que ele não alcança.** As duas exclusões que a varredura
+fez por este critério ficam confirmadas — o `## Contexto` do ADR-0009 e as quatro seções
+do ADR-0007. Ele não alcança a outra suspeita, a do `## Contexto` do ADR-0008 sobre a
+árvore sem `pom.xml`: ali o que falta é a segunda evidência, e não este critério.
 
 ## De onde esta fila veio
 
