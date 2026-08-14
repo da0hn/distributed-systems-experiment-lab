@@ -25,20 +25,24 @@ uma única regra de negócio dentro**. A árvore versionada é a prova do que ex
 índice é o dono do que cada capacidade cobre, e a coluna `Regras` é a dona de quantas
 regras cada uma tem.
 
-**Setenta e quatro regras foram aprovadas por pessoa.** Setenta e uma delas em
-2026-08-12, exceto a
-`R19` de [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md#regras-de-negócio),
-de 2026-08-06
+**Setenta e quatro regras foram aprovadas por pessoa**, em três datas. Setenta em
+2026-08-12; a
+`R19` de [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md#regras-de-negócio)
+em 2026-08-06
 ([E-76, fecho](../fila-de-decisoes.md#e-76-fecha-em-a-regra-desce-para-o-feature-card-escolhida-em-2026-08-12));
-as três de
-[deteccao-de-divergencia-entre-fontes](deteccao-de-divergencia-entre-fontes/feature-card.md#regras-de-negócio),
+e as três de
+[deteccao-de-divergencia-entre-fontes](deteccao-de-divergencia-entre-fontes/feature-card.md#regras-de-negócio)
 em 2026-08-13.
 Seis cards têm a coluna `Regras` marcando `todas aprovadas`; a de
 `execucao-de-experimento` passa a misturar aprovada e pendente, pelas `R16` e `R17`
 que o [`ADR-0018`](../adr/0018-cada-controle-roda-sob-o-seu-proprio-nivel.md)
 acrescentou — as quinze regras dela já aprovadas continuam contadas nas setenta e quatro.
 
-**O critério foi a procedência, e ele separou dois grupos.** Sessenta e sete regras
+**O critério foi a procedência, e ele separou em dois grupos as setenta aprovadas em
+2026-08-12.** As outras quatro ficam fora desta apuração, e não porque escapem do
+critério: a `R19` foi aprovada seis dias antes, e as três da detecção de divergência
+transcrevem uma decisão que a pessoa tomou no mesmo dia, antes de o card existir.
+Sessenta e sete regras
 apenas transcrevem decisão que já vivia em ADR aceito, em fecho da fila ou em guardrail
 da raiz — aprová-las confirmou a fidelidade da transcrição, sem redecidir o mérito. As
 outras três não tinham dono a montante, e **cada uma exigiu que a pessoa decidisse
