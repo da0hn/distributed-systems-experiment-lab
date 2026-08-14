@@ -19,8 +19,7 @@ O [ADR-0008](0008-os-dois-planos-em-processos-separados.md#decisão) fixa, na se
 "Decisão", sem qualificar: "O Control Plane NÃO DEVE chamar o Lab Plane." O
 "## Contexto" do mesmo ADR define o Control Plane como o sistema sob teste
 ([ADR-0008, Contexto](0008-os-dois-planos-em-processos-separados.md#contexto)). O
-diagrama que desenha essa aresta com o rótulo `proibido` está em "## Decisão", não em
-"## Contexto"
+diagrama que desenha essa aresta com o rótulo `proibido` está em "## Decisão"
 ([ADR-0008, Decisão](0008-os-dois-planos-em-processos-separados.md#decisão)).
 
 O card
@@ -57,10 +56,8 @@ decide isto: "O runtime chama o passo. O passo NÃO DEVE chamar o runtime."
 
 - A proibição do ADR-0008 está escrita sem qualificação — "O Control Plane NÃO DEVE
   chamar o Lab Plane" — e alcançaria, pela letra, qualquer mensagem nesse sentido.
-- Os dois fundamentos registrados para ela — em "Consequências" e em "Quando esta
-  decisão deixa de valer", citados acima — apontam para a mesma regra sobre o
-  mecanismo de passo
-  ([ADR-0001, Decisão](0001-o-passo-como-unidade-de-execucao.md#decisão)).
+- Os dois fundamentos da proibição estão em "Consequências" e em "Quando esta decisão
+  deixa de valer", citados acima.
 - O aviso de conclusão que `R4` exige não é chamada de passo: não entrega resultado,
   não devolve controle ao runtime, e nenhuma fronteira o consulta.
 - Um card NÃO PODE contradizer ADR aceito; sem separar os dois casos, a capacidade fica
@@ -110,13 +107,12 @@ A proibição do ADR-0008 é a generalização dessa regra, escrita sem a qualif
 origem carregava. "O passo NÃO DEVE chamar o runtime" virou "o Control Plane NÃO DEVE
 chamar o Lab Plane" quando os dois planos passaram a rodar em processos separados —
 generalização correta para a chamada de passo, pela mesma verificabilidade sem import
-citada acima. O aviso de conclusão não é essa chamada: nenhuma
-fronteira de passo o invoca, ele não devolve controle a uma sequência de passos em
-curso, e não carrega fato que o runtime interprete como resultado de um passo — ele
-existe **depois de a janela medida encerrar, fora de qualquer tentativa em andamento**.
-Por isso o recorte não contradiz o primeiro fundamento: o risco que ele nomeia é o
-sistema medido participar da execução de um passo como se fosse o runtime, e o aviso
-não participa de passo nenhum.
+citada acima. O aviso de conclusão não é essa chamada: nenhuma fronteira de passo o
+invoca, ele não devolve controle a uma sequência de passos em curso, e não carrega fato
+que o runtime interprete como resultado de um passo — ele existe **depois de a janela
+medida encerrar, fora de qualquer tentativa em andamento**. Por isso o recorte não
+contradiz o primeiro fundamento: o risco que ele nomeia é o sistema medido participar da
+execução de um passo como se fosse o runtime, e o aviso não participa de passo nenhum.
 
 **Por que o segundo fundamento reforça a subsunção, e não a derruba.** O gatilho que
 ele nomeia é específico — manter a transação aberta entre chamadas —, o mesmo mecanismo
@@ -148,9 +144,6 @@ subsunção](README.md#substituição-e-subsunção-são-coisas-diferentes)):
   "casos que ela tratava como um só" — a definição literal da subsunção, citada acima —,
   sem reescrever a proibição em si.
 
-Por que emenda e substituição não servem, com o argumento a favor de cada uma, está em
-"Alternativas consideradas".
-
 ## Consequências
 
 ### Positivas
@@ -174,8 +167,8 @@ Por que emenda e substituição não servem, com o argumento a favor de cada uma
 - **Pergunta em aberto.** Se a permissão deveria alcançar mensagens além do aviso de
   conclusão — por exemplo, um segundo aviso informando um erro irrecuperável do próprio
   experimento — não foi decidido. O escopo é estreito de propósito: só o aviso de
-  conclusão, nas três condições de "Decisão". Alargamento exige decisão própria da
-  pessoa, e este ADR não a antecipa.
+  conclusão, nas três condições de "Decisão"; alargar é a alternativa recusada em
+  "Alternativas consideradas".
 
 ### Neutras
 
@@ -184,9 +177,8 @@ Por que emenda e substituição não servem, com o argumento a favor de cada uma
 
 ## Trade-offs
 
-- O benefício **`R4` deixa de contradizer ADR aceito, com fundamento na própria cadeia
-  de evidência do ADR-0008** foi aceito em troca do custo **a proibição do ADR-0008
-  deixa de ser lida numa frase só, e passa a exigir a leitura deste ADR também**.
+- Ganhar **`R4` sem contradizer ADR aceito** custou **a proibição do ADR-0008 exigir a
+  leitura deste ADR também**.
 
 ## Alternativas consideradas
 
@@ -212,21 +204,26 @@ pedido de permissão ampla.
 
 ### Deixar a contradição registrada só no card, sem ADR
 
-**Descartada.** A favor: nenhum documento novo. Perde porque, por inteiro — nem
-`AGENTS.md` nem `docs/AGENTS.md` são família citável, e o próprio `AGENTS.md` deixa esse
-estatuto como pergunta em aberto —: "um card NÃO PODE contradizer um ADR aceito. A
-contradição é decisão arquitetural nova: ela entra na fila no mesmo turno em que é
-vista, e o card é alinhado ao que o ADR que sair dela disser"
-([cortesia, `docs/AGENTS.md`, Feature Card](../AGENTS.md#feature-card)). O caminho é um
-ADR — que recorte a proibição, ou a mantenha e obrigue `R4` a mudar de desenho.
+**Descartada.** A favor: nenhum documento novo. Perde porque "um card NÃO PODE
+contradizer um ADR aceito. A contradição é decisão arquitetural nova: ela entra na fila
+de decisões no mesmo turno em que é vista, e o card é alinhado ao que o ADR que sair
+dela disser" continua valendo. A regra é citada por inteiro porque nem `AGENTS.md` nem
+`docs/AGENTS.md` são família citável, e o próprio `AGENTS.md` deixa esse estatuto em
+aberto; o texto vive em `docs/AGENTS.md`, seção "Feature Card"
+([cortesia](../AGENTS.md#feature-card)). O caminho é um ADR — que recorte a proibição,
+ou a mantenha e obrigue `R4` a mudar de desenho.
 
 ### O aviso trafegar pelo broker em vez de HTTP
 
 **Descartada.** A favor: nenhuma chamada direta, e o sentido proibido sumiria da
 topologia sem tocar em ADR aceito. Perde porque o sistema medido ganharia dependência
-de broker por propósito experimental — tensiona a exigência de ele ser ingênuo — e a
-regra de tecnologia por conveniência exigiria dispensa nova, escrita por inteiro
-([`AGENTS.md`, Regras estruturais que valem sempre](../../AGENTS.md#regras-estruturais-que-valem-sempre)).
+de broker por propósito experimental — tensiona a exigência de ele ser ingênuo —, e "uma
+dispensa registrada não é precedente, e a próxima precisa ser escrita por inteiro": a
+regra de tecnologia por conveniência já foi dispensada duas vezes para o broker, e
+exigiria dispensa nova aqui também, escrita por inteiro. O texto vive em `AGENTS.md`,
+seção "Regras estruturais que valem sempre", que não é família citável — o link é
+cortesia
+([cortesia](../../AGENTS.md#regras-estruturais-que-valem-sempre)).
 
 ### O `lab-plane` descobrir o fim da execução por conta própria
 
@@ -257,11 +254,10 @@ decisão, na seção `## Decisão`" como o que `NÃO DEVE ser patch`
 
 ## Quando esta decisão deixa de valer
 
-Revise esta decisão se uma mensagem do sistema medido para o `lab-plane`, além do aviso
-de conclusão, precisar existir — uma regra de negócio nova, aprovada por pessoa,
-exigindo que o sistema medido notifique o instrumento de algo além de "esta execução
-terminou". O escopo estreito para de bastar, e a extensão exige um ADR próprio, nunca
-uma leitura alargada deste.
+Revise esta decisão se uma regra de negócio nova, aprovada por pessoa, exigir que o
+sistema medido notifique o `lab-plane` de algo além de "esta execução terminou" — o
+alargamento que "Alargar a permissão", em "Alternativas consideradas", recusa por ora.
+A extensão exige um ADR próprio, nunca uma leitura alargada deste.
 
 ## O que este ADR desfaz fora de si
 

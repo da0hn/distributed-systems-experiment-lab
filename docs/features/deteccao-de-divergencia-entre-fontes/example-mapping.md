@@ -244,11 +244,11 @@ chamar o Lab Plane"
 e o `## Contexto` do mesmo ADR define o Control Plane como o sistema medido. O aviso de
 `R4` trafega exatamente nesse sentido — do sistema medido para o `lab-plane`. Deixar a
 tensão sem resposta foi recusado — "um card NÃO PODE contradizer um ADR aceito. A
-contradição é decisão arquitetural nova: ela entra na fila no mesmo turno em que é
-vista, e o card é alinhado ao que o ADR que sair dela disser", regra trazida por
-inteiro porque nem `AGENTS.md` nem `docs/AGENTS.md` são família citável, e o próprio
-`AGENTS.md` deixa esse estatuto em aberto; o texto vive em `docs/AGENTS.md`, seção
-"Feature Card" ([cortesia](../../AGENTS.md#feature-card)). **A pessoa
+contradição é decisão arquitetural nova: ela entra na fila de decisões no mesmo turno em
+que é vista, e o card é alinhado ao que o ADR que sair dela disser" continua valendo. A
+regra é citada por inteiro porque nem `AGENTS.md` nem `docs/AGENTS.md` são família
+citável, e o próprio `AGENTS.md` deixa esse estatuto em aberto; o texto vive em
+`docs/AGENTS.md`, seção "Feature Card" ([cortesia](../../AGENTS.md#feature-card)). **A pessoa
 resolveu isto em 2026-08-14**, pelo
 [ADR-0020](../../adr/0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md#decisão): a
 proibição do ADR-0008 continua valendo por inteiro para a chamada de passo, e passa a
