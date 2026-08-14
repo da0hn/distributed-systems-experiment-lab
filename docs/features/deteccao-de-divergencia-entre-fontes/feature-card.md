@@ -12,21 +12,23 @@ desde o
 O risco que motivou esta proposta é a perda de evento no transporte entre o WAL e o
 oráculo
 ([`E-96`, enunciado](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única)).
-Os ADRs aceitos já guardam parte desse risco com sintoma, e não em silêncio — a
-delimitação exata está em Riscos e decisões pendentes.
+Parte desse risco já é guardada, com os rótulos `fonte incompleta` e `fonte atrasada` —
+`R8` e `R9` de
+[deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio).
+O que essas guardas não cobrem — stream sem buraco, dentro do prazo, mas divergindo do
+que o sistema medido confirma — é o que esta proposta cobre; a delimitação está em Fora
+de escopo.
 
-O resultado esperado é um segundo testemunho, por um caminho distinto do WAL: o
-sistema medido expõe um endpoint que relata o que ocorreu no próprio schema. O
-oráculo o consulta depois que a execução silencia, e compara o consolidado devolvido
-contra o que o stream de CDC entregou. Uma divergência invalida o veredito daquela
-execução, e é reportada no frontend.
+O resultado esperado é um segundo testemunho, por caminho distinto do WAL: o sistema
+medido expõe um endpoint que relata o que ocorreu no próprio schema. O oráculo consulta
+depois que a execução silencia, e compara o consolidado contra o que o stream entregou.
+Divergência invalida o veredito, e é reportada no frontend.
 
 ```mermaid
 sequenceDiagram
     participant SUT as system-under-test
     participant W as WAL
     participant OR as oráculo, no lab-plane
-    participant FE as frontend
     Note over SUT,OR: janela medida — workers executam a operação
     SUT->>W: escreve (INSERT/UPDATE)
     W->>OR: eventos de CDC, via conector e broker
@@ -35,9 +37,9 @@ sequenceDiagram
     SUT-->>OR: consolidado por recurso, mais órfãs
     OR->>OR: compara stream x endpoint
     alt divergência
-        OR->>FE: reporta divergência, sem veredito válido
+        Note over OR: veredito inválido — caminho até o<br/>frontend não decidido, ver Riscos e decisões pendentes
     else concordância
-        OR->>FE: veredito da execução
+        Note over OR: veredito válido da execução
     end
 ```
 
@@ -45,14 +47,14 @@ sequenceDiagram
 
 - **O oráculo, no `lab-plane`** — consulta o endpoint depois que a execução silencia.
 - **O sistema medido** — expõe o endpoint, sem ser confiado cegamente: a fonte do
-  número continua sendo o stream; o endpoint é segundo testemunho.
+  número é o stream; o endpoint é segundo testemunho.
 - **O frontend** — exibe a divergência, quando ela existir.
 
-Gatilho: fim de uma execução medida, depois que a janela medida encerra.
+Gatilho: fim de uma execução medida, quando a janela medida encerra.
 
 ## Escopo
 
-- A consulta ao endpoint, e ela acontece **somente** depois que a execução silencia.
+- A consulta ao endpoint, **somente** depois que a execução silencia.
 - O consolidado por recurso: valor final, capacidade, soma das alocações e contagem de
   alocações, mais a contagem de alocações órfãs.
 - A comparação entre a leitura do stream de CDC e a leitura do endpoint.
@@ -70,6 +72,12 @@ Gatilho: fim de uma execução medida, depois que a janela medida encerra.
   aberta, e não a este card.
 - Qualquer alteração ao ADR-0010: a letra dele não é contrariada, e o corpo não é
   tocado por este card.
+- A contiguidade de LSN e a marca de fim, guardas de `R8`/`R9` de
+  [deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio),
+  já invalidadas antes desta comparação; esta capacidade só atua depois delas.
+- Quando a leitura do stream está completa para ser comparada — `R1` fixa a hora da
+  consulta ao endpoint, não a do stream. `Pergunta em aberto`, no
+  [Example Mapping](example-mapping.md#perguntas-em-aberto).
 
 ## Regras de negócio
 
@@ -86,12 +94,12 @@ dela vive na [matriz](../../architecture/integrations.md#matriz), e este card n�
 repete. Sem contrato: nasce só quando a interface existir
 ([`contracts/README.md`](../../contracts/README.md#estado-nenhum-contrato-existe)).
 
-**A letra do ADR-0010 não é contrariada** — um endpoint do próprio sistema medido não
-é `SELECT` cruzado, porque quem lê o schema é o dono dele
+**A letra do ADR-0010 não é contrariada** — endpoint do próprio sistema medido não é
+`SELECT` cruzado, pois quem lê o schema é o dono dele
 ([ADR-0010, Decisão](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)).
-Quatro trechos dele ficam desatualizados, sem serem tocados — `### Negativas`,
-`## Justificativa`, o primeiro item de `## Trade-offs`, e a alternativa "Chamada HTTP",
-descartada ali e adotada aqui —, listados no
+Quatro trechos ficam desatualizados, sem serem tocados — `### Negativas`,
+`## Justificativa`, o primeiro item de `## Trade-offs`, e "Chamada HTTP", descartada
+ali e adotada aqui —, listados no
 [fecho de `E-96`](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13),
 terceiro caso de
 [`E-71`](../../fila-de-decisoes.md#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito).
@@ -102,34 +110,47 @@ flowchart LR
     W[("WAL")]
     T["conector e broker"]
     OR["oráculo, no lab-plane"]
-    FE["frontend"]
     SUT -->|" escreve "| W --> T --> OR
     SUT -->|" endpoint, depois da quiescência "| OR
-    OR -->|" divergência "| FE
     SUT -.->|" SELECT cruzado do lab-plane — continua proibido "| OR
 ```
+
+O caminho de `OR` até o frontend fica fora do diagrama: nenhuma aresta do
+[ADR-0011](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#comando-no-lab-plane-leitura-no-lab-journal-sem-bff)
+leva um veredito até lá, e desenhá-la decidiria por conta própria — lacuna em Riscos e
+decisões pendentes.
 
 ## Riscos e decisões pendentes
 
 - **De quem é o endpoint.** `Pergunta em aberto`
-  ([`E-96`, enunciado](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única)).
-- **O formato do resultado de divergência.** `Pergunta em aberto`; ver
-  [capacidade conhecida e não especificada](../README.md#capacidade-conhecida-e-não-especificada).
-- **Se a guarda de contiguidade do ADR-0013 cobre a perda no transporte que motiva esta
-  proposta.** `Pergunta em aberto`, detalhada no
-  [Example Mapping](example-mapping.md#perguntas-em-aberto).
-- **A objeção contra "Chamada HTTP" incide sobre `R3`, e não está respondida.**
-  `Pergunta em aberto`, detalhada no [Example Mapping](example-mapping.md#perguntas-em-aberto).
-- **O que `R3` faz com a contagem de órfãs de `R2` não foi decidido**, e toca
+  ([`E-96`](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única)).
+- **O resultado de `R3` já tem nome.** O instrumento já nomeia três rótulos, nunca
+  vereditos do sistema medido: `fontes divergentes` — as duas fontes alcançaram o
+  commit final e discordam; `fonte atrasada` — uma não alcançou o ponto a tempo;
+  `fonte incompleta` — buraco na sequência de LSN, sem veredito. A ordem de conferência
+  é LSN, depois commit final, depois concordância. `Pergunta em aberto`: se `R3`
+  produz `fontes divergentes`, e onde entra o endpoint, fonte nova nessa ordem. A
+  composição num relatório único segue aberta
+  ([capacidade conhecida e não especificada](../README.md#capacidade-conhecida-e-não-especificada)).
+  Detalhada no [Example Mapping](example-mapping.md#perguntas-em-aberto).
+- **Se a guarda de contiguidade do ADR-0013 cobre a perda que motiva esta proposta.**
+  `Pergunta em aberto`, no [Example Mapping](example-mapping.md#perguntas-em-aberto).
+- **A objeção contra "Chamada HTTP" incide sobre `R3`, sem resposta.** `Pergunta em
+  aberto`, no [Example Mapping](example-mapping.md#perguntas-em-aberto).
+- **O que `R3` faz com a órfã de `R2` não foi decidido**, e toca
   [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu),
-  aberta. Detalhada no [Example Mapping](example-mapping.md#perguntas-em-aberto).
+  aberta — no [Example Mapping](example-mapping.md#perguntas-em-aberto).
+- **Se a recusa do lado do endpoint deve virar regra própria.** `R1` obriga o oráculo;
+  o endpoint recusar por conta própria não está decidido. `Pergunta em aberto`, no
+  [Example Mapping](example-mapping.md#perguntas-em-aberto).
 
 ## Critérios de pronto
 
-R1 a R3 verificadas por teste. R1: consulta antes da quiescência **DEVE** ser recusada
-ou impossível pela arquitetura. R2: o consolidado contém as quatro grandezas por
-recurso mais a contagem de órfãs. R3: endpoint e stream discordando **DEVE** terminar
-sem veredito válido, com divergência exibida no frontend.
+R1 a R3 verificadas por teste. R1: o oráculo **NÃO DEVE** emitir a consulta antes da
+quiescência — verificado travando a execução em curso e checando ausência de chamada.
+R2: o consolidado contém as quatro grandezas por recurso mais a contagem de órfãs. R3:
+endpoint e stream discordando **DEVE** terminar sem veredito válido, com divergência
+exibida no frontend.
 
 ## Links
 
