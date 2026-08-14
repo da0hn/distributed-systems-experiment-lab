@@ -428,6 +428,28 @@ são estado, e por isso ficam:
   alcance — dentro de um bloco Mermaid, por exemplo. O que não puder ser confirmado é
   `Pergunta em aberto`, nunca fato. O verificador é `scripts/check_citations.py`, e ele
   roda no workflow `docs`.
+- **Só três famílias são citáveis como fonte: `docs/adr/`, `docs/features/**` e
+  `docs/architecture/**`.** É a irmã da regra anterior, e responde uma pergunta
+  diferente — aquela diz como citar, esta diz o que pode ser citado. Nenhum documento
+  cita como fonte um documento instável, aquele que sofre alteração recorrente; quando a
+  informação não estiver em nenhuma das três famílias, quem cita **DEVE** trazer a
+  informação inteira para dentro do próprio texto, em vez de apontar para fora. O caso
+  que motivou a regra é a fila de decisões: ela é podada por processo, e quando uma
+  linha fecha, a narrativa sai do arquivo — um documento permanente que aponta para lá
+  depende de um texto que o próprio processo manda apagar. O defeito é silencioso: nada
+  acusa no momento da remoção, e o verificador de citações só aponta a âncora quebrada na
+  execução **seguinte**, quando o estrago já está no commit. É o mesmo modo de falha da
+  citação por número de linha, um grau pior — aquela envelhece porque o número deixa de
+  apontar para o texto certo, e esta envelhece porque o texto inteiro deixa de existir.
+  A regra vale para escrita nova: existem hoje 198 citações partindo de documento
+  estável para documento instável — 87 dos ADRs, 82 de `docs/features/`, 26 de
+  `docs/architecture/` e 3 de `docs/questions/` —, e o tratamento delas é trabalho
+  registrado e não feito, sem dono e sem prazo. A existência delas **NÃO DEVE** ser
+  invocada como precedente para escrever mais uma. **Este parágrafo traz o número em vez
+  de apontar para onde ele está contado, e é a regra aplicada a si mesma.**
+  **Pergunta em aberto:** a regra não diz o que fazer com este arquivo, com
+  `docs/AGENTS.md` e com as skills — eles também mudam com frequência, e hoje são
+  citados por documentos de `docs/architecture/`.
 - **Um ADR aceito não é imutável por decreto, e também não é editável à vontade.** As
   alterações permitidas são as do
   [lifecycle](docs/adr/README.md#a-emenda-e-o-adendo-decididos-em-2026-08-05) e as da

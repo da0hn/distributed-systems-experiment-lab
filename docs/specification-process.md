@@ -79,24 +79,27 @@ debate — ela é o único lugar em que uma objeção ainda cabe sem custar um d
 
 ### Quando um fecho da fila está coberto, decidido em 2026-08-12
 
-Duas escolhas da pessoa, tomadas em 2026-08-12, respondem o que acontece **depois** que
-uma linha da fila fecha.
+Duas escolhas da pessoa respondiam o que acontece **depois** que uma linha da fila
+fecha. **A primeira caiu. A segunda continua valendo, e o corpo dela está abaixo
+inteiro.**
 
-**A citação a um fecho é provisória.** Um documento **PODE** citar um fecho de
-[`fila-de-decisoes.md`](fila-de-decisoes.md#o-que-esta-fila-enfileira) enquanto não
-existir artefato próprio daquela decisão. Quando o artefato nascer, a citação **DEVE**
-migrar para ele, e só então o fecho fica podável. A origem é
-[`E-90`](fila-de-decisoes.md#e-90-fecha-em-citação-a-esta-fila-é-provisória-escolhida-em-2026-08-12).
+**A citação provisória a um fecho deixou de existir.** Esta seção autorizava um
+documento a citar um fecho da fila enquanto não existisse artefato próprio daquela
+decisão, com migração assim que ele nascesse. A autorização caiu. Quem responde o que
+qualquer documento PODE citar como fonte é
+[`AGENTS.md`](../AGENTS.md#ao-trabalhar-aqui): só `docs/adr/`, `docs/features/**` e
+`docs/architecture/**` são famílias estáveis. A fila fica fora por construção — ela é
+podada por processo, e a poda apaga justamente o texto que a citação apontava —, e
+nenhuma exceção foi escrita para ela: a estrutura de pastas já a exclui.
 
-O motivo é que a fila cresce, funde e poda linha a linha, e um documento estável não
-deveria depender de um alvo que se move. Enquanto o artefato não existe, porém, apagar a
-citação deixa a afirmação sem evidência — e evidência ausente é pior que
-evidência móvel.
+O motivo que sustentava a autorização continua verdadeiro: apagar a citação deixa a
+afirmação sem evidência, e evidência ausente é pior que evidência móvel. O que mudou foi
+a saída. Quem precisa da informação **DEVE** trazê-la inteira para dentro do próprio
+texto, e assim ela não depende de alvo nenhum.
 
-**Quatro lugares cobrem um fecho, e não dois.** ADR e Feature Card são os dois óbvios.
-Um **arquivo de instrução** e um **script verificador** que aplique a regra também
-contam. A origem é
-[`E-91`](fila-de-decisoes.md#e-91-fecha-em-instrução-e-verificador-contam-como-artefato-escolhida-em-2026-08-12).
+**Quatro lugares cobrem um fecho, e não dois. Isto não foi revogado.** ADR e Feature
+Card são os dois óbvios. Um **arquivo de instrução** e um **script verificador** que
+aplique a regra também contam.
 
 O critério é o enforcement, e não o formato. Uma regra que um verificador recusa vincula
 mais do que uma regra escrita num artefato que nenhum processo executa. Escrever um card
@@ -106,9 +109,9 @@ eles divergiriam na primeira edição de um deles.
 ```mermaid
 flowchart TD
   F["a linha da fila fecha"] --> Q{"onde a regra vive?"}
-  Q -->|" ADR ou Feature Card "| A["coberto,<br/>e a citação migra para lá"]
+  Q -->|" ADR ou Feature Card "| A["coberto,<br/>e a citação aponta para lá"]
   Q -->|" arquivo de instrução<br/>ou verificador "| B["coberto,<br/>pelo enforcement"]
-  Q -->|" só no fecho "| C["descoberto:<br/>a citação ao fecho<br/>continua legítima"]
+  Q -->|" só no fecho "| C["descoberto:<br/>quem precisar da informação<br/>traz o texto inteiro"]
   A --> P["o fecho fica podável"]
   B --> P
   C --> E["o fecho permanece"]
@@ -119,6 +122,24 @@ flowchart TD
 por instrução ou por verificador alcança regra de processo, de escrita e de vocabulário.
 Comportamento observável continua exigindo o artefato que os
 [quatro critérios](#adr--só-decisão-arquitetural-durável) indicarem.
+
+**As duas regras colidem, e a colisão está registrada e não resolvida.** Nem todo
+arquivo de instrução que cobre um fecho pertence a uma das três famílias citáveis —
+este arquivo, `docs/AGENTS.md` e as skills não pertencem. A pergunta em aberto vive em
+[`AGENTS.md`](../AGENTS.md#ao-trabalhar-aqui), e não é respondida aqui.
+
+Hoje existem 198 citações partindo de documento estável para a fila, sem migração:
+
+| Origem               | Citações |
+|----------------------|----------|
+| `docs/adr/`          | 87       |
+| `docs/architecture/` | 26       |
+| `docs/features/`     | 82       |
+| `docs/questions/`    | 3        |
+| **Total**            | **198**  |
+
+O tratamento delas é trabalho registrado e não feito. Ninguém está encarregado dele, e a
+existência delas **NÃO DEVE** ser invocada como precedente para escrever mais uma.
 
 ## Os cinco artefatos, e quando cada um entra
 

@@ -28,6 +28,14 @@ exemplo. A política é a da raiz, em
 `scripts/check_citations.py`. Escreva Pergunta em aberto quando a evidência não
 existir. Nunca transforme uma hipótese em fato.
 
+Cite só as três famílias citáveis como fonte: `docs/adr/`, `docs/features/**` e
+`docs/architecture/**`. Nenhum documento cita como fonte um documento instável,
+aquele que sofre alteração recorrente — a fila de decisões é o exemplo, porque é
+podada por processo. Quando a informação não estiver em nenhuma das três
+famílias, traga-a inteira para dentro do próprio texto em vez de apontar para
+fora. O racional é da raiz, em
+[`AGENTS.md`](../../../AGENTS.md#ao-trabalhar-aqui); não o repita aqui.
+
 Registre cada objeção, alternativa descartada ou pendência no Example Mapping no
 mesmo turno em que surgir. Quando for ADR, use a skill adr (.claude/skills/adr/).
 
