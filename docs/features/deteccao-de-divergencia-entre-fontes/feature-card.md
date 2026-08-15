@@ -1,9 +1,9 @@
 # Feature Card — Detecção de divergência entre fontes
 
-Estado: `especificado, não implementado` · Origem:
-[`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13),
-decisão sem ADR; refinada em 2026-08-14, registrado no
-[Example Mapping](example-mapping.md#regras).
+Estado: `especificado, não implementado` · Origem: a decisão da pessoa de especificar
+esta capacidade em Feature Card e Example Mapping, **sem ADR** — a recomendação de
+escrever um foi recusada por escrito, e o corpo do ADR-0010 não é tocado; refinada em
+2026-08-14, registrado no [Example Mapping](example-mapping.md#regras).
 
 ## Problema e resultado esperado
 
@@ -84,9 +84,10 @@ Gatilho: o sistema medido chama o callback, fora da janela medida.
 - A forma concreta do endpoint e do callback — rota, método, payload — e qualquer
   contrato formal: nasce quando a interface existir
   ([`contracts/README.md`](../../contracts/README.md#estado-nenhum-contrato-existe)).
-- Quem verifica a órfã de `allocation` —
-  [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu),
-  aberta, e não este card.
+- Quem verifica a órfã de `allocation`, que segue sem decisão e não é deste card. Sem
+  chave estrangeira, a integridade passou a ser do código, e a verificação ficou sem
+  lugar quando o Lab Plane perdeu o `SELECT` no schema do sistema medido. A órfã é
+  achado que entra no relatório, e não invalida a execução.
 - Qualquer alteração ao ADR-0010, e a contiguidade de LSN e a marca de fim — guardas de
   `R8`/`R9` de
   [deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio),
@@ -94,13 +95,13 @@ Gatilho: o sistema medido chama o callback, fora da janela medida.
 
 ## Regras de negócio
 
-| #  | Regra                                                                                                                                                                                                                                                                                                                                                                                                                                | Evidência                                                                                                       | Aprovada por                                           |
-| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| R1 | O oráculo **DEVE** consultar o endpoint de confirmação somente ao receber o aviso de conclusão do sistema medido, e **NÃO DEVE** consultá-lo dentro da janela que o experimento mede.                                                                                                                                                                                                                                                | [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13) | pessoa, em 2026-08-13; gatilho precisado em 2026-08-14 |
-| R2 | O endpoint **DEVE** retornar um consolidado por recurso — o valor final, a capacidade, a soma das alocações e a contagem de alocações —, mais a contagem de alocações órfãs.                                                                                                                                                                                                                                                         | [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13) | pessoa, em 2026-08-13                                  |
-| R3 | Uma divergência entre o consolidado do endpoint e a leitura do stream de CDC **DEVE** produzir o rótulo `fontes divergentes` — nenhum veredito é emitido para a execução —, e o rótulo **DEVE** ser reportado no frontend.                                                                                                                                                                                                           | [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13) | pessoa, em 2026-08-13; precisada em 2026-08-14         |
-| R4 | O sistema medido **DEVE** avisar a conclusão do processo por um callback HTTP, disparado e esquecido, fora da janela medida; a impossibilidade de entregá-lo **NÃO DEVE** alterar nada no sistema medido. Esgotado um limite de espera sem o aviso chegar, a execução termina sem veredito — registrada, pelo par abertura/fechamento do broker, como execução que não produziu veredito, e não como veredito perdido no transporte. | [Example Mapping, O aviso de conclusão](example-mapping.md#o-aviso-de-conclusão)                                | pessoa, em 2026-08-14                                  |
-| R5 | O endpoint de confirmação **DEVE** registrar o instante de cada consulta recebida, e **NÃO DEVE** recusar nenhuma. O relatório final **DEVE** cruzar esses instantes com a janela medida; uma consulta registrada dentro dela é falha de medição — catalogada, apresentada no relatório, e sem veredito emitido.                                                                                                                     | [Example Mapping, A consulta indevida](example-mapping.md#a-consulta-indevida)                                  | pessoa, em 2026-08-14                                  |
+| #  | Regra                                                                                                                                                                                                                                                                                                                                                                                                                                | Evidência                                                                                                                                                                                                     | Aprovada por                                           |
+| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| R1 | O oráculo **DEVE** consultar o endpoint de confirmação somente ao receber o aviso de conclusão do sistema medido, e **NÃO DEVE** consultá-lo dentro da janela que o experimento mede.                                                                                                                                                                                                                                                | decisão da pessoa, sem ADR — consultar o endpoint dentro da janela medida poria carga e lock no sistema medido, e o experimento passaria a medir também a confirmação                                         | pessoa, em 2026-08-13; gatilho precisado em 2026-08-14 |
+| R2 | O endpoint **DEVE** retornar um consolidado por recurso — o valor final, a capacidade, a soma das alocações e a contagem de alocações —, mais a contagem de alocações órfãs.                                                                                                                                                                                                                                                         | decisão da pessoa, sem ADR — das três formas oferecidas para o endpoint (consolidado por recurso, conjunto de identificadores, as linhas), a escolhida foi a primeira; as outras duas não aparecem na decisão | pessoa, em 2026-08-13                                  |
+| R3 | Uma divergência entre o consolidado do endpoint e a leitura do stream de CDC **DEVE** produzir o rótulo `fontes divergentes` — nenhum veredito é emitido para a execução —, e o rótulo **DEVE** ser reportado no frontend.                                                                                                                                                                                                           | decisão da pessoa, sem ADR — o endpoint não é confiado cegamente, e serve para confirmar o que o stream entregou; a inconsistência entre as duas leituras invalida o veredito daquela execução                | pessoa, em 2026-08-13; precisada em 2026-08-14         |
+| R4 | O sistema medido **DEVE** avisar a conclusão do processo por um callback HTTP, disparado e esquecido, fora da janela medida; a impossibilidade de entregá-lo **NÃO DEVE** alterar nada no sistema medido. Esgotado um limite de espera sem o aviso chegar, a execução termina sem veredito — registrada, pelo par abertura/fechamento do broker, como execução que não produziu veredito, e não como veredito perdido no transporte. | [Example Mapping, O aviso de conclusão](example-mapping.md#o-aviso-de-conclusão)                                                                                                                              | pessoa, em 2026-08-14                                  |
+| R5 | O endpoint de confirmação **DEVE** registrar o instante de cada consulta recebida, e **NÃO DEVE** recusar nenhuma. O relatório final **DEVE** cruzar esses instantes com a janela medida; uma consulta registrada dentro dela é falha de medição — catalogada, apresentada no relatório, e sem veredito emitido.                                                                                                                     | [Example Mapping, A consulta indevida](example-mapping.md#a-consulta-indevida)                                                                                                                                | pessoa, em 2026-08-14                                  |
 
 ## Integrações e contratos afetados
 
@@ -113,10 +114,13 @@ interface existir
 
 **A letra do ADR-0010 não é contrariada** — quem lê o schema é o dono dele
 ([ADR-0010, Decisão](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)).
-Quatro trechos ficam desatualizados, intocados, no
-[fecho de `E-96`](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13),
-terceiro caso de
-[`E-71`](../../fila-de-decisoes.md#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito).
+Quatro trechos dele ficam desatualizados e permanecem intocados: as consequências
+negativas, a justificativa, o primeiro item dos trade-offs e a alternativa "Chamada HTTP
+ao próprio system under test", descartada ali e adotada aqui. A forma de corrigi-los é o
+patch aditivo — a afirmação original permanece byte a byte, e uma marca depois dela diz
+que caiu e o que a derrubou —, porque uma frase falsificada não é raciocínio sendo
+reescrito, e sim afirmação sobre o estado do mundo, verdadeira quando escrita e falsa
+depois, por ato de terceiro.
 
 **`R4` tensionava a letra do ADR-0008; a tensão foi resolvida em 2026-08-14** pelo
 [ADR-0020](../../adr/0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md#decisão),
@@ -151,9 +155,9 @@ mensagem terminal no RabbitMQ, persistida e emitida por SSE pelo `lab-journal`, 
   identificador. Ninguém decidiu; detalhado no
   [Example Mapping](example-mapping.md#perguntas-em-aberto).
 - **A objeção contra "Chamada HTTP" incide sobre `R3`, e o que `R3`/`R5` fazem com a
-  órfã de `R2`** seguem sem resposta — a segunda toca
-  [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu),
-  aberta. Ambas no [Example Mapping](example-mapping.md#perguntas-em-aberto).
+  órfã de `R2`** seguem sem resposta — a segunda toca a pergunta, ainda aberta, de quem
+  verifica a órfã de `allocation`. Ambas no
+  [Example Mapping](example-mapping.md#perguntas-em-aberto).
 
 ## Critérios de pronto
 
@@ -166,9 +170,6 @@ consulta antes do aviso é registrada, catalogada, sem veredito.
 ## Links
 
 - [Example Mapping](example-mapping.md)
-- [`E-96`, enunciado](../../fila-de-decisoes.md#e-96--o-sistema-medido-expõe-endpoint-de-confirmação-e-a-fonte-deixa-de-ser-única)
-  e
-  [`E-96`, fecho](../../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13)
 - [`ADR-0008`](../../adr/0008-os-dois-planos-em-processos-separados.md), `Aceito` —
   tensão com `R4` resolvida pelo `ADR-0020`
 - [`ADR-0010`](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md),
@@ -178,6 +179,4 @@ consulta antes do aviso é registrada, catalogada, sem veredito.
 - [`ADR-0013`](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md),
   `Aceito`
 - [`ADR-0020`](../../adr/0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md), `Aceito`
-- [`E-71`](../../fila-de-decisoes.md#e-71--uma-decisão-sem-adr-falsificou-prosa-de-um-adr-aceito)
-- [`E-74`](../../fila-de-decisoes.md#e-74--quem-verifica-a-órfã-de-allocation-e-o-obstáculo-que-caiu)
 - [`architecture/integrations.md`](../../architecture/integrations.md#matriz)
