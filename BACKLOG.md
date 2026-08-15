@@ -36,6 +36,13 @@ compila, empacota e sobe contra PostgreSQL.
 - **O SSE atrás do Cloudflare.** O gateway é reativo e não bufferiza o corpo, mas o
   Cloudflare pode: um stream bufferizado vira lote sem produzir erro nenhum. Falta o
   `Cache-Control: no-transform` no servidor, e ninguém testou o caminho inteiro.
+- **Como o instrumento alcança uma instância específica do sistema medido.** O `Service` do
+  Kubernetes escolhe uma instância por conexão, e o experimento que sobe o sistema medido
+  com duas instâncias precisa que a segunda chamada de um passo caia na mesma que abriu a
+  transação. Se cair na outra, a transação não existe lá, e a falha é indistinguível de um
+  fenômeno de consistência real. Falta escolher entre `Service` headless com DNS por pod,
+  endereço da instância carregado no identificador da sessão, ou um discovery com
+  metadados de instância. Isso não passa pelo `api-gateway`, que só serve o navegador.
 
 ## Instruções do repositório
 
