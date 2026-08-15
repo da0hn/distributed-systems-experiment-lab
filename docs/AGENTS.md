@@ -39,6 +39,12 @@ puro.
 **Um documento desta pasta não é contrato.** Se ele contradisser o código, o código está
 certo — e a contradição é defeito a corrigir, e não estado aceito.
 
+**Se o que você quer escrever não couber em nenhuma linha, ele não vira documento.**
+Nenhum caminho novo é inventado nesta pasta — o assunto vai para a conversa, e a pendência
+para o `backlog.md`. Uma funcionalidade se divide em três arquivos, e qual deles recebe o
+quê está em [Feature Card](#feature-card), [Example Mapping](#example-mapping) e
+[BDD](#bdd).
+
 ## O que nunca é editado
 
 Nenhum arquivo de `adr/` é criado, editado, emendado, dividido, patcheado ou substituído.
@@ -57,8 +63,8 @@ página ficaria melhor.
 
 | A mudança no código                                                                                      | O destino                   | O que escrever ali                                                     |
 |----------------------------------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|
-| uma feature do sistema nasce e ganha comportamento executável                                            | `features/<slug>/`          | o que a feature faz, e as regras que os testes provam                  |
-| uma feature que já tem página muda de comportamento                                                      | a página dela               | só a parte que mudou                                                   |
+| uma funcionalidade do sistema nasce e ganha comportamento executável                                     | `features/<slug>/`          | o que a funcionalidade faz, e as regras que os testes provam           |
+| uma funcionalidade que já tem página muda de comportamento                                               | a página dela               | só a parte que mudou                                                   |
 | um módulo do reactor, um serviço do `compose.yaml` ou uma rota do gateway nasce, muda de papel ou some   | `architecture/README.md`    | o papel do serviço e a posição dele na topologia                       |
 | uma restrição arquitetural nova passa a valer                                                            | `architecture/constraints/` | um arquivo por restrição, dizendo o que ela proíbe e o que ela protege |
 | uma migração Flyway muda a forma de um schema                                                            | `architecture/schemas/`     | a forma nova, no arquivo do serviço dono do schema                     |
@@ -81,7 +87,7 @@ implemente o código e diga na conversa qual página ficou para trás.
 
 ## O que escrever em cada destino
 
-Uma feature do sistema ocupa um diretório em `features/`, nomeado em kebab-case, com três
+Uma funcionalidade do sistema ocupa um diretório em `features/`, nomeado em kebab-case, com três
 arquivos: `feature-card.md`, `example-mapping.md` e `behavior.feature`.
 
 ### Feature Card
@@ -105,7 +111,7 @@ Caminho: `features/<slug>/feature-card.md`.
 - **Toda regra leva evidência com caminho e âncora GFM**, numa coluna própria; número de
   linha só quando o alvo não tiver título que o alcance, dentro de um bloco Mermaid por
   exemplo. A coluna ao lado diz quem aprovou a regra.
-- Ao criar uma feature, acrescente a linha dela em
+- Ao criar uma funcionalidade, acrescente a linha dela em
   [`features/README.md`](features/README.md), que é o índice dono da lista — e **não** em
   [`README.md`](README.md), que é roteador e não carrega inventário.
 

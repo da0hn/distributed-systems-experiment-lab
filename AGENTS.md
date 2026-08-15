@@ -65,6 +65,27 @@ precisar do detalhe, abra o arquivo indicado — ele é a autoridade, e esta tab
 deliberada.** Uma requisição feita à mão durante a janela medida entra no oráculo exato
 como commit real, e nada a distingue da carga do experimento.
 
+## Dentro de um módulo, onde cada coisa fica
+
+A tabela acima chega até a raiz de cada módulo, e para ali. Esta desce para dentro dele.
+`<serviço>` é um dos quatro módulos que viram imagem: `api-gateway`, `lab-plane`,
+`lab-journal` ou `system-under-test`.
+
+| A intenção                                                       | Onde ela se realiza                                                         |
+|------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| uma rota nova, ou mudar o prefixo de caminho de uma existente    | `api-gateway/src/main/resources/application.yml`, em `spring.cloud.gateway` |
+| uma tabela, coluna ou índice novo                                | `<serviço>/src/main/resources/db/migration/`, num `V<n>__<nome>.sql` novo   |
+| porta, datasource, perfil ou qualquer configuração de um serviço | `<serviço>/src/main/resources/application.yml`                              |
+| o código de um serviço                                           | `<serviço>/src/main/java/dev/da0hn/lab/application/`                        |
+| código que mais de um serviço usa                                | `shared/src/main/java/dev/da0hn/lab/shared/`                                |
+| um teste                                                         | `<serviço>/src/test/java/`                                                  |
+| a tela, o build dela, ou como o nginx a serve                    | `frontend/src/`, `frontend/vite.config.ts`, `frontend/nginx.conf`           |
+| uma dependência ou uma versão                                    | `pom.xml` da raiz quando vale para todos; `<serviço>/pom.xml` quando não    |
+
+**Uma migração já aplicada NÃO DEVE ser editada.** O Flyway guarda o checksum de cada
+uma, e alterar o arquivo faz a validação falhar em todo ambiente onde ela já rodou. A
+mudança vai numa migração nova.
+
 | Comando                           | O que ele faz                                         |
 |-----------------------------------|-------------------------------------------------------|
 | `mvn verify`                      | compila e sobe cada serviço contra PostgreSQL efêmero |
@@ -84,7 +105,7 @@ docs/
   backlog.md             instável; nunca referenciado
   architecture/          arquitetura, serviços e restrições arquiteturais
   adr/                   decisões arquiteturais, congeladas no tempo
-  features/              uma feature do sistema por diretório
+  features/              uma funcionalidade do sistema por diretório
   contracts/             contrato formal entre processos, quando existir
   diagrams/              o que o Mermaid não expressa, em `.excalidraw.svg`
 ```
@@ -108,8 +129,8 @@ não a impressão de que a página ficaria melhor.
 
 | A mudança no código                                                                                      | O destino                        | O que escrever ali                                                     |
 |----------------------------------------------------------------------------------------------------------|----------------------------------|------------------------------------------------------------------------|
-| uma feature do sistema nasce e ganha comportamento executável                                            | `docs/features/<nome>/`          | o que a feature faz, e as regras que os testes provam                  |
-| uma feature que já tem página muda de comportamento                                                      | a página dela                    | só a parte que mudou                                                   |
+| uma funcionalidade do sistema nasce e ganha comportamento executável                                     | `docs/features/<nome>/`          | o que a funcionalidade faz, e as regras que os testes provam           |
+| uma funcionalidade que já tem página muda de comportamento                                               | a página dela                    | só a parte que mudou                                                   |
 | um módulo do reactor, um serviço do `compose.yaml` ou uma rota do gateway nasce, muda de papel ou some   | `docs/architecture/README.md`    | o papel do serviço e a posição dele na topologia                       |
 | uma restrição arquitetural nova passa a valer                                                            | `docs/architecture/constraints/` | um arquivo por restrição, dizendo o que ela proíbe e o que ela protege |
 | um contrato entre processos é fixado: forma de evento, payload de fila, endpoint que outro serviço chama | `docs/contracts/`                | a forma do contrato, e quem está de cada lado                          |
