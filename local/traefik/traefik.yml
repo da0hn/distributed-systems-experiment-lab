@@ -1,0 +1,29 @@
+# Configuracao estatica do gateway local. O gateway e o mesmo Traefik que ja
+# roteia no homelab: usar dois motores diferentes faria o mapa de caminhos
+# existir em duas sintaxes, e um mapa duplicado diverge sem avisar.
+#
+# O provider e o de arquivo, e nao o do Docker. O do Docker leria os rotulos
+# de cada contêiner e exigiria montar o socket do daemon aqui dentro; o de
+# arquivo mantem o mapa inteiro num lugar so, legivel de cima a baixo e
+# comparavel com o IngressRoute do cluster.
+entryPoints:
+  web:
+    address: ":80"
+
+providers:
+  file:
+    filename: /etc/traefik/dynamic.yml
+    # Editar o mapa de rotas nao exige recriar o contêiner.
+    watch: true
+
+# Sem dashboard e sem API: este processo roteia, e nada mais. Um painel aqui
+# seria superficie a mais numa peca que existe para reproduzir o cluster.
+api:
+  dashboard: false
+
+ping: {}
+
+log:
+  level: INFO
+
+accessLog: {}

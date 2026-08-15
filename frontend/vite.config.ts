@@ -4,17 +4,26 @@ import react from '@vitejs/plugin-react';
 // O frontend fala com dois servicos, e nao com um BFF. E a decisao E-20 de
 // 2026-08-06: comando no lab-plane, leitura e streaming no lab-journal.
 //
-// Este proxy serve so ao `npm run dev` na maquina de quem desenvolve, onde
-// os dois processos estao em localhost. Na imagem quem rotea e o nginx, e no
-// cluster e o recurso de exposicao — os tres precisam declarar o mesmo mapa
-// de caminhos, e divergir entre eles quebra so em producao.
+// O que mudou em 2026-08-15 e que ele nao os endereca mais um a um. Existe um
+// gateway, o proprio Traefik que roteia no cluster, e o servico de destino e
+// escolhido pelo prefixo do caminho. Este proxy passou de duas entradas a
+// uma: tudo sob `/api` vai para o gateway, e quem sabe o mapa e ele.
+//
+// O ganho e que o mapa de caminhos deixou de existir em tres lugares. Antes
+// estava aqui, no nginx da imagem e no recurso de exposicao do cluster, em
+// tres sintaxes; hoje esta no gateway, e os dois ambientes leem a mesma
+// declaracao. Este arquivo nao carrega mais nenhuma rota.
 export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
     proxy: {
-      '/api/runs': { target: 'http://localhost:8080', changeOrigin: true },
-      '/api/journal': { target: 'http://localhost:8081', changeOrigin: true },
+      // A porta esta escrita aqui, e nao lida do ambiente. Ler exigiria
+      // `process.env` e, com ele, `@types/node` — dependencia nova para um
+      // numero que muda quando alguem edita `GATEWAY_PORT` no compose, o que
+      // nao acontece. O acoplamento e este: se aquele default mudar, este
+      // numero muda junto.
+      '/api': { target: 'http://localhost:8000', changeOrigin: true },
     },
   },
 });

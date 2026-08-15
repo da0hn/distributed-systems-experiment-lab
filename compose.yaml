@@ -92,9 +92,34 @@ services:
   frontend:
     build:
       context: ./frontend
-    ports:
-      - "5173:80"
+    # Sem porta publicada: o frontend e alcancado pelo gateway, como tudo o
+    # mais. Publicar uma segunda entrada aqui daria dois enderecos para a
+    # mesma tela, e um deles serviria os estaticos sem roteamento de API.
     depends_on:
+      - lab-plane
+      - lab-journal
+
+  # O gateway. Entrada unica: o navegador conhece um endereco, e o que muda e
+  # o prefixo do caminho. E o mesmo Traefik que roteia no homelab, e o mapa
+  # de rotas vive em local/traefik/dynamic.yml.
+  #
+  # O system-under-test nao esta atras dele de proposito. Continua com porta
+  # publicada aqui porque este arquivo e so desenvolvimento local, onde bater
+  # nele a mao e diagnostico; no cluster ele nao e exposto.
+  gateway:
+    image: traefik:v3.3
+    ports:
+      - "${GATEWAY_PORT:-8000}:80"
+    volumes:
+      - ./local/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./local/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      - frontend
       - lab-plane
       - lab-journal
 

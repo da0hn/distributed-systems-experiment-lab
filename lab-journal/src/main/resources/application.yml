@@ -18,8 +18,19 @@ spring:
 
 server:
   port: ${SERVER_PORT:8081}
+  servlet:
+    # Mesmo arranjo do lab-plane, e pelo mesmo motivo: o gateway nao remove o
+    # prefixo, entao o caminho publico e o interno coincidem. Aqui a regra
+    # pesa mais, porque o link do stream de observacoes e uma URL que este
+    # servico gera — sem o prefixo, o `EventSource` do frontend assinaria um
+    # caminho que o gateway nao conhece.
+    context-path: ${SERVER_CONTEXT_PATH:/api/lab-journal}
 
 management:
+  server:
+    # Fora do context-path, numa porta que o gateway nao roteia. Ver o
+    # comentario equivalente no lab-plane.
+    port: ${MANAGEMENT_PORT:9081}
   endpoints:
     web:
       exposure:

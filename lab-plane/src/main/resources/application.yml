@@ -19,8 +19,26 @@ spring:
 
 server:
   port: ${SERVER_PORT:8080}
+  servlet:
+    # O gateway nao remove o prefixo, entao o caminho publico e o interno sao
+    # o mesmo e o servico nao precisa saber que existe um gateway na frente.
+    # Se o Traefik removesse `/api/lab-plane`, toda URL absoluta gerada aqui
+    # — o `Location` de um 201, o link do stream — sairia sem o prefixo, e o
+    # cliente seguiria para um caminho inexistente sem nenhum erro na subida.
+    #
+    # O `/api` faz parte do prefixo: frontend e API dividem a mesma origem,
+    # e e o `/api` que separa a chamada de servico do arquivo estatico.
+    context-path: ${SERVER_CONTEXT_PATH:/api/lab-plane}
 
 management:
+  server:
+    # Porta propria, e nao um caminho dentro da porta do servico. Sob o
+    # context-path o Actuator cairia em `/api/lab-plane/actuator/**`, dentro
+    # do PathPrefix que o gateway publica — e `show-details: always` entrega
+    # o estado da conexao de banco a quem alcancar a URL. Numa porta que o
+    # gateway nao roteia, o probe continua funcionando de dentro e nada disso
+    # atravessa a fronteira.
+    port: ${MANAGEMENT_PORT:9080}
   endpoints:
     web:
       exposure:

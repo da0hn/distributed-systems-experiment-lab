@@ -22,6 +22,12 @@ spring:
     default-schema: sut
     create-schemas: true
 
+# Nao ha `servlet.context-path` aqui, e a ausencia e deliberada. O prefixo
+# existe nos outros dois porque eles ficam atras do gateway; este nao fica.
+# Expo-lo convidaria uma requisicao a mao durante a janela medida, que entra
+# no oraculo exato como commit real e nao se distingue da carga do
+# experimento — o veredito sairia errado sem nenhum erro aparecer. Ele e
+# alcancado so de dentro, pelo nome do servico.
 server:
   port: ${SERVER_PORT:8082}
 
