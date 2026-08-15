@@ -120,6 +120,14 @@ CLASS_LIMITS = {
     # permanente treina todo mundo a ignorá-lo. O número passa por folga estreita a
     # maior proposta escrita até agora, e reprova de novo se ela crescer.
     "proposta de modelagem": 11000,
+    # O `roadmap.md` diz o plano geral do projeto e NÃO referencia outro arquivo:
+    # ele se sustenta sozinho, por decisão. Um teto ali obriga a cortar o que o
+    # torna autossuficiente, e o corte devolve o leitor a documento nenhum.
+    "roadmap": None,
+    # O `backlog.md` guarda o que está sendo feito, para a próxima sessão continuar
+    # de onde a anterior parou. Ele cresce por pendência aberta e encolhe por
+    # pendência resolvida, e um teto obrigaria a apagar pendência viva para caber.
+    "backlog": None,
     # Tudo o que nenhuma classe acima alcança. Calibrado para o Feature Card.
     "genérico": 4000,
 }
@@ -184,6 +192,8 @@ CLASS_BY_NAME = {
     "behavior.feature": "bdd",
     "implementation-plan.md": "plano de implementação",
     "example-mapping.md": "example mapping",
+    "roadmap.md": "roadmap",
+    "backlog.md": "backlog",
 }
 
 # Um arquivo marcado como inativo não guia ninguém, e o limite existe para manter

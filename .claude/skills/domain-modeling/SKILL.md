@@ -10,6 +10,13 @@ description: "Constrói e afia o modelo de domínio de um projeto. Use quando a 
 > palavras. Pendência de definição vai para o `docs/backlog.md`, em uma linha, e não
 > vira documento.
 
+> **`docs/` FOI REFATORADA, e a estrutura agora é fechada.** Cinco pastas —
+> `architecture/`, `adr/`, `features/`, `contracts/` e `diagrams/` — mais `README.md`,
+> `roadmap.md`, `dicionario-de-dados.md` e `backlog.md`. Nenhum caminho novo é inventado,
+> e vários arquivos que esta página cita já não existem: `specification-process.md`,
+> `fila-de-decisoes.md`, `plano-do-laboratorio.md`, `CONTEXT.md`, `questions/` e
+> `audits/`. O índice da pasta é `docs/README.md`.
+
 # Modelagem de domínio
 
 Construa e afie ativamente o modelo de domínio do projeto enquanto o desenho acontece.

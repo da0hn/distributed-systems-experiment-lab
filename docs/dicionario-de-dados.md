@@ -93,6 +93,13 @@ do repositório é português, e a tabela abaixo é a ponte entre os dois.
 | `diagnóstico`                | `diagnosis`             | O que o instrumento afirma sobre a própria medida, ao lado do veredito sobre o sistema medido.                  |
 | `definição de experimento`   | `experiment definition` | Os parâmetros que a pessoa declara antes de rodar. É insumo da medição, e não registro dela.                    |
 | `invariante observada`       | `observed invariant`    | Uma regra que o laboratório verifica e que o sistema medido não impõe.                                          |
+| `fontes divergentes`         | `divergent sources`     | As duas fontes de observação alcançaram o commit final e discordam.                                             |
+| `fonte atrasada`             | `lagging source`        | Uma das fontes não alcançou o ponto declarado dentro do limite de espera.                                       |
+| `fonte incompleta`           | `incomplete source`     | A sequência de LSN da fonte tem buraco, e a execução é invalidada.                                              |
+
+Os três últimos nomeiam falha de medição do **instrumento**, e não veredito sobre o
+sistema medido. Eles nasceram em português, e o nome inglês foi escolhido aqui.
+
 
 ## Os termos que nasceram em inglês
 

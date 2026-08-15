@@ -12,8 +12,14 @@
 > está certa. Pendência de definição vai para o [`BACKLOG.md`](../BACKLOG.md) da raiz, em
 > uma linha.
 >
-> A triagem desta pasta — apagar, encolher ou manter, arquivo por arquivo — é da pessoa.
-> Nada foi apagado.
+> **A estrutura desta pasta é fechada, e ela foi refatorada.** Cinco pastas —
+> `architecture/`, `adr/`, `features/`, `contracts/` e `diagrams/` — mais `README.md`,
+> `roadmap.md`, `dicionario-de-dados.md` e `backlog.md`. Nenhum caminho novo é inventado.
+> O índice é [`README.md`](README.md).
+>
+> **Vários arquivos que esta página cita já não existem**: `specification-process.md`,
+> `fila-de-decisoes.md`, `plano-do-laboratorio.md`, `CONTEXT.md`, `questions/`, `audits/`
+> e `adr/arquivo/`. `docs/adr/` está congelado, e nada novo é escrito ali.
 
 Instruções operacionais para editar esta pasta. O contexto do projeto está no
 [`AGENTS.md` da raiz](../AGENTS.md); o mapa da pasta está em [`README.md`](README.md).

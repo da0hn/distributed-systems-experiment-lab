@@ -12,4 +12,19 @@
 # ocorrência do mesmo defeito, que é o oposto do que a baseline existe
 # para fazer. Consertou, apague a linha.
 
+fim-de-linha::docs/architecture/schemas/propostas/modelo-de-dados/lab-plane/proposta-escolhida/diagramas/proposta-escolhida-1.excalidraw.svg:CRLF
 tabelas::docs/adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md:coluna 2 em tabela de largura 283
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/lab-journal/proposta-1-o-caderno-conhece-cada-veredito.md:coluna 3 em tabela de largura 182
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/lab-journal/proposta-3-serie-de-medicoes.md:coluna 1 em tabela de largura 209
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/lab-journal/proposta-3-serie-de-medicoes.md:coluna 3 em tabela de largura 224
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/lab-plane/proposta-1-instrumento-amnesico.md:coluna 2 em tabela de largura 235
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/lab-plane/proposta-1-instrumento-amnesico.md:coluna 3 em tabela de largura 222
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/lab-plane/proposta-1-instrumento-amnesico.md:coluna 3 em tabela de largura 239
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/lab-plane/proposta-1-instrumento-amnesico.md:coluna 3 em tabela de largura 265
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/system-under-test/comparacao.md:coluna 2 em tabela de largura 130
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/system-under-test/proposta-1-dominio-nu.md:coluna 2 em tabela de largura 136
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/system-under-test/proposta-1-dominio-nu.md:coluna 3 em tabela de largura 154
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/system-under-test/proposta-1-dominio-nu.md:coluna 3 em tabela de largura 300
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/system-under-test/proposta-2-rastro-append-only.md:coluna 3 em tabela de largura 281
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/system-under-test/proposta-3-catalogo-de-mecanismos.md:coluna 1 em tabela de largura 194
+tabelas::docs/architecture/schemas/propostas/modelo-de-dados/system-under-test/proposta-3-catalogo-de-mecanismos.md:coluna 3 em tabela de largura 229
