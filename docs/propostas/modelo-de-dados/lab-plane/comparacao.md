@@ -85,6 +85,37 @@ quando ele é podado. Ela paga ainda dois custos que não são de recurso: uma s
 dados do sistema medido passa a viver dentro do schema do instrumento, e o desenho depende
 de o conector expor o elo do evento anterior, o que nenhum teste deste repositório provou.
 
+## O detalhamento das propostas 2 e 3 foi nivelado ao do caderno
+
+Feito em 2026-08-14, por escolha da pessoa, e não é mudança de modelo: nenhuma tabela
+nasceu, nenhuma sumiu, nenhuma coluna trocou de tipo. O que mudou é a quarta célula de
+cada linha do desenho. O diagrama do
+[caderno](../lab-journal/proposta-1-o-caderno-conhece-cada-veredito.md#o-modelo) escreve
+**marcador de chave, nome, tipo e uma nota com a constraint e a origem do valor**, e por
+isso ele determina a `CREATE TABLE` sem que nenhum DDL precise ser escrito ao lado. As
+duas propostas maiores daqui não escreviam o mesmo, e a lacuna custava mais deste lado:
+é o `lab_plane` que uma implementação cria primeiro. Uma coluna sem nulabilidade
+declarada, e um domínio enumerado em prosa sem o `CHECK` que o fecha, deixam a migração
+indeterminada — quem a escrevesse decidiria por conta própria o que o diagrama não disse,
+e a decisão ficaria no Flyway em vez de ficar na proposta.
+
+| Diagrama                                                                                     | Colunas tipadas | Nulabilidade declarada | `CHECK` |
+|----------------------------------------------------------------------------------------------|-----------------|------------------------|---------|
+| [caderno, proposta 1](../lab-journal/proposta-1-o-caderno-conhece-cada-veredito.md#o-modelo) | 89              | 63 de 89               | 20      |
+| [instrumento amnésico](proposta-1-instrumento-amnesico.md#o-modelo)                          | 4               | 2 de 4                 | 0       |
+| [plano durável](proposta-2-plano-duravel-execucao-efemera.md#o-modelo)                       | 55              | 55 de 55               | 20      |
+| [livro-razão](proposta-3-livro-razao-do-veredito.md#o-modelo)                                | 81              | 81 de 81               | 17      |
+
+**O nivelamento revelou o que a prosa não decidia, e nada disso foi inventado para caber
+no desenho.** Onde o repositório não fixa o conjunto de valores de uma coluna de domínio
+fechado, o diagrama declara `CHECK sem lista decidida` e nomeia a ausência — oito colunas
+na proposta 2, uma na proposta 3. Cada uma virou pergunta em aberto na própria proposta,
+e nenhuma virou valor escolhido por quem desenhou.
+
+**Duas colunas do instrumento amnésico seguem sem nulabilidade declarada**, e ficaram
+fora de propósito: a escolha alcançou as propostas 2 e 3. Corrigi-las é trabalho de uma
+linha, e ninguém está encarregado dele.
+
 ## As perguntas que sobrevivem a qualquer escolha
 
 - **Onde a definição de experimento vive.** As três a empurram para fora de si, e o

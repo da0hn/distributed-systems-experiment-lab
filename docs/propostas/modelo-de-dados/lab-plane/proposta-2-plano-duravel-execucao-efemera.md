@@ -110,6 +110,10 @@ proíbe, e é por isso que este canvas desenha um schema só.
 comum; um `ALTER TYPE` prende a lista de estados a uma cerimônia própria, e a lista vai
 crescer antes de o instrumento existir.
 
+**Oito colunas têm `CHECK` sem o conjunto de valores:** os cinco lados de fronteira,
+os dois níveis de isolamento e o destino da carga em `WORKLOAD.declared_for`. Nenhum
+documento deste repositório decidiu esses conjuntos, e o desenho não os inventa.
+
 **Não há histórico de transição, e a ausência é a decisão.** Quem quiser saber quando uma
 execução saiu de `RUNNING` lê o caderno, e não este schema.
 
@@ -215,6 +219,11 @@ invalidação da `R1` não é um deles.** Uma execução invalidada continua sen
 que uma das três saídas ocorra, e este modelo a mantém em `RUNNING` por isso. Se essa
 é a leitura pretendida, ou se a invalidação deveria ser uma quarta saída, é pergunta sobre
 duas regras aprovadas juntas, e não sobre o modelo.
+
+**A nulabilidade dos seletores foi assumida, e não decidida.** O desenho lê o nulo do
+seletor de tentativa, do payload de falha e das colunas de `F_fecha` como "vale para toda
+tentativa", "o tipo não pede payload" e "o veredito não pode ser zero". Nenhum documento a
+fixa: se o seletor ausente significar outra coisa, cinco colunas mudam.
 
 **A calibração precisa ser provável depois de um reinício?** O
 [ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador)

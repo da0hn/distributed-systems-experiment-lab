@@ -47,6 +47,10 @@ outro schema entra neste canvas. Os identificadores vão em inglês
 - **Ausência de trigger.** Nenhuma linha do livro-razão é atualizada, então um trigger de
   `updated_at` não teria o que atualizar. As duas materializações nascem uma vez, depois
   do fim da execução.
+- **`CHECK` sem lista decidida.** O desenho declara nulabilidade e domínio coluna a
+  coluna, e uma coluna fica com a constraint sem o conjunto: `run.isolation_level` é
+  domínio fechado, e nenhum documento deste repositório fixa quais níveis existem. A
+  constraint é declarada e os valores não são inventados.
 - **Ausência de chave estrangeira.** `run.serves_execution_id` e
   `boundary_record.fault_point_ordinal` referenciam sem constraint, e a órfã é verificada
   em vez de impedida. O motivo aqui não é o lock na janela medida, porque o livro-razão
@@ -117,6 +121,17 @@ fixou que a proibição alcança fonte produzida pelo instrumento, e que o WAL n
 delas. `cdc_event` é cópia do WAL escrita pelo instrumento. Se o oráculo somar dali, ele
 soma de uma tabela que o instrumento escreveu, e nenhum documento diz se a proveniência
 do WAL sobrevive à transcrição.
+
+**Quais níveis de isolamento existem?** `run.isolation_level` carrega `CHECK` porque a
+coluna é domínio fechado, e o conjunto não está escrito em lugar nenhum deste
+repositório. Enquanto ele não existir, a constraint é declarável e não é escrevível.
+
+**Quais colunas de `verdict` são obrigatórias, e sob qual oráculo?** A tabela materializa
+os três formatos decididos numa linha só, e o desenho marca `predicate_holds` e
+`predicate_sum` como nulos fora do oráculo do predicado. O que ele **não** resolve é a
+simetria: se as colunas do contador também são nulas fora dele, e se algum `CHECK`
+deveria casar o conjunto preenchido com o oráculo que produziu a linha. Sem esse casamento
+o banco aceita uma linha com metade de cada formato.
 
 **O elo de contiguidade existe?** `preceding_lsn` pressupõe que o conector exponha o LSN
 do evento imediatamente anterior. As
