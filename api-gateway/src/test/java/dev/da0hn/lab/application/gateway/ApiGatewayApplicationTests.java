@@ -31,7 +31,27 @@ class ApiGatewayApplicationTests {
         .collectList()
         .block();
 
-    assertThat(ids).containsExactlyInAnyOrder("lab-plane", "lab-journal", "frontend");
+    assertThat(ids).containsExactlyInAnyOrder("lab-plane", "lab-journal");
+  }
+
+  /**
+   * No route may match a path outside {@code /api}.
+   *
+   * <p>The edge proxy serves the interface and forwards only {@code /api} here,
+   * so a catch-all would be dead configuration in production and a trap in
+   * diagnostics: a request to this process's own port would answer 200 with
+   * whatever the catch-all points at, instead of the 404 that says the API
+   * route does not exist. The assertion is on the predicate because a route
+   * added later carries its own, and nothing else would notice.
+   */
+  @Test
+  void everyRouteIsScopedToTheApiPrefix() {
+    final List<String> predicates = this.routeLocator.getRoutes()
+        .map(route -> route.getPredicate().toString())
+        .collectList()
+        .block();
+
+    assertThat(predicates).allMatch(predicate -> predicate.contains("/api/"));
   }
 
   /**

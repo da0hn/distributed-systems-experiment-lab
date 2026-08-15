@@ -37,7 +37,7 @@ Declarados em `pom.xml`, sobre Spring Boot 4.1.0 e Java 25:
 | Módulo              | Papel                                  | Vira imagem |
 |---------------------|----------------------------------------|-------------|
 | `shared`            | biblioteca comum, sem ponto de entrada | não         |
-| `api-gateway`       | a entrada única de HTTP                | sim         |
+| `api-gateway`       | a repartição da API entre os serviços  | sim         |
 | `lab-plane`         | o instrumento que comanda e mede       | sim         |
 | `lab-journal`       | o caderno de laboratório               | sim         |
 | `system-under-test` | o sistema medido                       | sim         |
@@ -59,12 +59,14 @@ de imagens de `.github/workflows/build.yml`. Ele é compilado dentro dos outros,
 | `postgres`          | `postgres:18-alpine` | 5432          | `${POSTGRES_PORT:-5432}` |
 
 - **`traefik`** é o proxy de borda, e a entrada única da stack local. Ele casa um
-  hostname e entrega tudo ao gateway. Existe para que o caminho local tenha a mesma
-  forma do caminho no cluster — dois saltos até o serviço, com `X-Forwarded-*` no meio.
-- **`api-gateway`** é um Spring Cloud Gateway sobre WebFlux. Ele reparte por prefixo de
-  caminho e não remove prefixo nenhum.
+  hostname e faz a primeira divisão do caminho: `/api` vai ao gateway, e o resto vai
+  direto ao frontend. Existe para que o caminho local tenha a mesma forma do caminho no
+  cluster — os mesmos saltos até cada destino, com `X-Forwarded-*` no meio.
+- **`api-gateway`** é um Spring Cloud Gateway sobre WebFlux. Ele só recebe `/api`,
+  reparte por prefixo de caminho entre os serviços e não remove prefixo nenhum. Não há
+  rota de catch-all: um caminho que não casa recebe 404 daqui.
 - **`frontend`** é uma interface React 19 construída com Vite e servida por nginx. Ele
-  não publica porta: é alcançado pelo gateway, como o resto.
+  não publica porta: quem o alcança é o proxy de borda, e não o gateway.
 - **`lab-plane`** é o instrumento que comanda a execução. Ele tem schema próprio, e a
   migração `V1` dele cria apenas o schema.
 - **`lab-journal`** é o caderno de laboratório: a definição e o resultado de cada
@@ -95,8 +97,9 @@ flowchart TB
     LJ["lab-journal"]
     ST["system-under-test<br/>sem rota no gateway"]
     PG[("PostgreSQL 18<br/>wal_level=logical")]
-    B --> TR --> GW
-    GW -->|" /** "| FE
+    B --> TR
+    TR -->|" /api "| GW
+    TR -->|" o resto "| FE
     GW -->|" /api/lab-plane/** "| LP
     GW -->|" /api/lab-journal/** "| LJ
     LP -->|" JDBC, schema lab_plane "| PG

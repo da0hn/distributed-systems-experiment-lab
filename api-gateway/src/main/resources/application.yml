@@ -1,6 +1,14 @@
-# A entrada unica. O frontend conhece uma origem, e o prefixo do caminho
-# escolhe o servico — frontend e API dividem a mesma origem, entao nao ha CORS
-# nem preflight, e o SSE dispensa withCredentials.
+# A reparticao da API entre os servicos. Este processo NAO e a entrada da
+# stack, e nao serve a interface: quem recebe o navegador e o proxy de borda,
+# que manda `/api/...` para ca e o resto para o nginx do frontend.
+#
+# Frontend e API dividem a mesma origem porque aquele proxy e a unica porta
+# publicada — entao nao ha CORS, nao ha preflight, e o SSE dispensa
+# withCredentials. Isso nao depende de este processo servir os estaticos.
+#
+# O que justifica um modulo Spring aqui, e nao mais uma regra de caminho no
+# proxy de borda, e o que vem depois: autenticacao e regra especifica por
+# servico. Nada disso se aplica a um arquivo estatico.
 #
 # NENHUM filtro remove prefixo. Cada servico carrega o proprio prefixo em
 # `server.servlet.context-path`, entao o caminho publico e o interno sao o
@@ -66,16 +74,12 @@ spring:
               predicates:
                 - Path=/api/lab-journal/**
 
-            # O catch-all serve a interface. Um caminho sob /api que nao casou
-            # com as rotas acima cai aqui, e quem o recusa com 404 e o nginx
-            # do frontend — sem essa recusa o try_files entregaria o
+            # Nao ha catch-all, e a ausencia e o desenho. Tudo o que chega aqui
+            # veio sob /api, entao um caminho que nao casou com as rotas acima
+            # e uma rota de API inexistente, e o 404 deste processo diz isso.
+            # Um catch-all para o frontend transformaria esse erro num
             # index.html com 200, e um `fetch` que espera JSON quebraria no
-            # parse, longe da causa.
-            - id: frontend
-              uri: ${GATEWAY_FRONTEND_URI:http://localhost:5173}
-              order: 100
-              predicates:
-                - Path=/**
+            # parse — longe da causa.
 
 server:
   port: ${SERVER_PORT:8000}
