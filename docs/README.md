@@ -50,6 +50,8 @@ que não estará lá. É o único arquivo desta pasta que aparece acima sem link
 deliberado.
 
 **Um documento daqui não é contrato.** Onde ele contradisser a árvore, a árvore está
-certa. Nada aqui é mantido em sincronia com o código por iniciativa de um agente.
+certa — e a contradição é defeito a corrigir, e não estado aceito. O que obriga a
+atualizar cada caminho desta pasta está em [`AGENTS.md`](AGENTS.md), ao lado deste
+índice.
 
 As regras de trabalho do repositório estão no [`AGENTS.md`](../AGENTS.md) da raiz.

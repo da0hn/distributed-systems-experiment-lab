@@ -1,296 +1,212 @@
 # AGENTS.md — trabalhando dentro de `docs/`
 
-> **`docs/` É HISTÓRICO CONGELADO.** O modo de trabalho vigente do repositório é
-> **implementação primeiro**, e está no [`AGENTS.md` da raiz](../AGENTS.md) — ele
-> prevalece sobre tudo o que está nesta pasta. Este diretório foi escrito sob um processo
-> de especificação revogado, e boa parte dele descreve comportamento que nunca foi
-> implementado.
->
-> Em consequência: **NÃO DEVE** criar nem editar arquivo aqui por iniciativa própria;
-> **NÃO DEVE** citar daqui como evidência de comportamento; **NÃO DEVE** manter isto
-> sincronizado com o código. Quando um documento daqui contradisser a árvore, a árvore
-> está certa. Pendência de definição vai para o [`BACKLOG.md`](../BACKLOG.md) da raiz, em
-> uma linha.
->
-> **A estrutura desta pasta é fechada, e ela foi refatorada.** Cinco pastas —
-> `architecture/`, `adr/`, `features/`, `contracts/` e `diagrams/` — mais `README.md`,
-> `roadmap.md`, `dicionario-de-dados.md` e `backlog.md`. Nenhum caminho novo é inventado.
-> O índice é [`README.md`](README.md).
->
-> **Vários arquivos que esta página cita já não existem**: `specification-process.md`,
-> `fila-de-decisoes.md`, `plano-do-laboratorio.md`, `CONTEXT.md`, `questions/`, `audits/`
-> e `adr/arquivo/`. `docs/adr/` está congelado, e nada novo é escrito ali.
+Este arquivo faz duas coisas: diz **o que cada caminho de `docs/` guarda**, para que a
+busca comece no lugar certo, e diz **quando uma mudança de código obriga a atualizar um
+deles**.
 
-Instruções operacionais para editar esta pasta. O contexto do projeto está no
-[`AGENTS.md` da raiz](../AGENTS.md); o mapa da pasta está em [`README.md`](README.md).
+O modo de trabalho do repositório é implementação primeiro, e ele vive no
+[`AGENTS.md` da raiz](../AGENTS.md), que prevalece sobre tudo o que está aqui. Este
+arquivo não o reexplica.
 
-**Este arquivo não reexplica processo, lifecycle nem limite.** Cada regra abaixo é
-acionável e aponta para o documento dono: o processo vive em
-[`specification-process.md`](specification-process.md#a-decisão-vem-antes-do-artefato),
-as formas de alterar um ADR aceito em
-[`adr/README.md`](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07), e o
-enforcement de limite no `check_artifact_limits.py`.
+O [`README.md`](README.md) desta pasta é o índice de navegação, para quem **procura** um
+documento. Este arquivo é para quem vai **escrever** um.
 
-## A regra que vale antes de qualquer outra
+## O que cada caminho guarda, e onde aprofundar
 
-> **Nada que importa pode existir apenas na conversa.**
+Quando o destino for pasta, o `README.md` dela é a autoridade — abra-o antes de escrever
+qualquer coisa dentro dela. A tabela abaixo é ponto de partida de busca, e não descrição
+de conteúdo.
 
-O contexto é limpo entre sessões. Toda objeção, alternativa descartada ou pendência é
-escrita no arquivo **no mesmo turno em que é
-levantada**, antes de responder ou perguntar
-qualquer coisa. Uma objeção que fica só no chat desaparece no próximo compact, em silêncio.
+| Caminho                    | O que guarda                                                                            | Onde aprofundar                                                    |
+|----------------------------|-----------------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| `README.md`                | o índice de navegação da pasta; ele não carrega regra, estado nem inventário            | o próprio arquivo                                                  |
+| `roadmap.md`               | o plano geral em alto nível: a abstração, os cinco grupos de fenômenos e as doze etapas | o próprio arquivo                                                  |
+| `dicionario-de-dados.md`   | o de/para do vocabulário do laboratório: termo em inglês, explicação em português       | o próprio arquivo                                                  |
+| `backlog.md`               | o que está sendo feito, para a próxima sessão continuar; instável                       | o próprio arquivo                                                  |
+| `architecture/`            | os processos que o repositório sobe, o papel de cada um, os schemas e as restrições     | [`architecture/README.md`](architecture/README.md)                 |
+| `architecture/restricoes/` | uma restrição arquitetural por arquivo, dizendo o que ela proíbe e o que ela protege    | os arquivos da pasta                                               |
+| `architecture/schemas/`    | a forma do schema de cada serviço, e as propostas de modelo de dados                    | [`architecture/schemas/README.md`](architecture/schemas/README.md) |
+| `adr/`                     | as decisões arquiteturais já tomadas, congeladas no tempo                               | [`adr/README.md`](adr/README.md)                                   |
+| `features/`                | o comportamento de cada capacidade, um diretório por capacidade                         | [`features/README.md`](features/README.md)                         |
+| `contracts/`               | o contrato formal entre processos, quando existir                                       | [`contracts/README.md`](contracts/README.md)                       |
+| `diagrams/`                | o que o Mermaid não expressa, exportado em `.excalidraw.svg`; hoje está vazia           | —                                                                  |
 
-O destino depende do artefato: `## Questões em aberto` do ADR, ou a seção de perguntas
-em aberto do `example-mapping.md`.
+**`backlog.md` aparece acima sem link, e isso é deliberado.** Ele NÃO DEVE ser
+referenciado por documento nenhum: uma linha dele nasce e some conforme o trabalho anda,
+então um link para ele aponta para texto que não estará lá. Cite-o pelo caminho, em texto
+puro.
 
-## `features/` é fonte de verdade, junto dos ADRs
-
-Decidido em 2026-08-06. Um card não é resumo nem índice: **ele carrega tudo o que uma
-consulta precisa**, e quem o lê não deveria ter de abrir o ADR para saber o que o sistema
-faz. Por isso uma decisão arquitetural que mude comportamento entrega **ADR e card no
-mesmo commit**.
-
-A divisão de trabalho não muda: o ADR diz **por que** e o card diz **o quê**. O que muda é
-que a segunda metade deixou de ser opcional.
+**Um documento desta pasta não é contrato.** Se ele contradisser o código, o código está
+certo — e a contradição é defeito a corrigir, e não estado aceito.
 
 ## O que nunca é editado
 
-| Alvo                                | Por quê                                                                           |
-|-------------------------------------|-----------------------------------------------------------------------------------|
-| `adr/arquivo/**`                    | registra o que se pensava naquela data; editar apaga a evidência                  |
-| a **decisão** de um ADR `Aceito`    | para mudá-la, escreva um ADR novo e marque o antigo `Substituído por ADR-NNNN`    |
-| uma linha de `## Patches aplicados` | ela é o rastro que substituiu a proibição; removê-la apaga o que o rastro provava |
+Nenhum arquivo de `adr/` é criado, editado, emendado, dividido, patcheado ou substituído.
+A pasta existe para consultar o que já foi decidido, e para nada além disso. **Nenhum
+gatilho deste arquivo alcança ela.**
 
-**A imutabilidade do corpo foi revogada em 2026-08-07.** O corpo — tudo a partir da
-primeira seção `##` — PODE receber **patch**, que conserta citação, caminho ou erro
-material e NÃO DEVE alterar a decisão nem o argumento que a sustentava. Nenhum patch
-existe sem a linha dele em `## Patches aplicados`, no mesmo commit.
+Decisão arquitetural nova acontece na conversa, e vai para o código. Quando um ADR
+contradisser a árvore, a árvore está certa, e a divergência **não** se conserta ali: ela
+se conserta no destino que a tabela da próxima seção indicar.
 
-Seis formas alteram um ADR aceito — substituição, subsunção, emenda, adendo, divisão e
-patch —, cada uma com gatilho e limite próprios, e nenhuma outra é permitida. A regra
-completa está em
-[`adr/README.md`](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07) e em
-[A divisão de um ADR aceito](adr/README.md#a-divisão-de-um-adr-aceito-decidida-em-2026-08-11).
-Não a reproduza aqui nem em outro documento: aplique-a a partir de lá.
+## Quando o código muda, o destino aqui muda junto
 
-Um ADR `Proposto` **pode** ser editado livremente; o estado de cada um está no
-[índice de ADRs](adr/README.md#índice), que é o dono dele.
+**Atualizar o destino de uma linha desta tabela é obrigatório, e não conta como iniciativa
+própria.** O gatilho é código concreto que entrou na árvore — nunca a impressão de que a
+página ficaria melhor.
 
-## Qual artefato criar
+| A mudança no código                                                                                      | O destino                  | O que escrever ali                                                     |
+|----------------------------------------------------------------------------------------------------------|----------------------------|------------------------------------------------------------------------|
+| uma capacidade nova ganha comportamento executável                                                       | `features/<slug>/`         | o comportamento observável, e as regras que os testes provam           |
+| o comportamento de uma capacidade que já tem página muda                                                 | a página dela              | só a parte que mudou                                                   |
+| um módulo do reactor, um serviço do `compose.yaml` ou uma rota do gateway nasce, muda de papel ou some   | `architecture/README.md`   | o papel do serviço e a posição dele na topologia                       |
+| uma restrição arquitetural nova passa a valer                                                            | `architecture/restricoes/` | um arquivo por restrição, dizendo o que ela proíbe e o que ela protege |
+| uma migração Flyway muda a forma de um schema                                                            | `architecture/schemas/`    | a forma nova, no arquivo do serviço dono do schema                     |
+| um contrato entre processos é fixado: forma de evento, payload de fila, endpoint que outro serviço chama | `contracts/`               | a forma do contrato, e quem está de cada lado                          |
+| um termo do vocabulário do laboratório entra no código, ou muda de nome                                  | `dicionario-de-dados.md`   | a linha de/para, em português e em inglês                              |
+| o plano geral muda de rumo                                                                               | `roadmap.md`               | em alto nível, sem data e sem link                                     |
 
-```mermaid
-flowchart TD
-  P["o que preciso registrar?"] --> Q1{"descreve o que o<br/>sistema faz, e é<br/>verificável?"}
-  Q1 -->|" sim "| FC["Feature Card<br/>+ Example Mapping"]
-  Q1 -->|" não "| Q2{"tem alternativa<br/>plausível e impacto<br/>arquitetural duradouro?"}
-  Q2 -->|" sim "| ADR["ADR"]
-  Q2 -->|" não "| NADA["não vira documento<br/>registre no artefato<br/>que já existe"]
-  FC --> Q3{"a regra ainda<br/>está em debate?"}
-  Q3 -->|" sim "| EX["fica como exemplo<br/>e pergunta em aberto"]
-  Q3 -->|" não "| BDD["vira cenário Gherkin"]
-```
+**A atualização vai no MESMO commit da mudança de código que a disparou.** Um commit
+depois ela é esquecida, e uma página que descreve a árvore de ontem é pior que página
+nenhuma: ela é lida como se descrevesse a de hoje.
 
-O teste que separa os dois primeiros é uma tabela de quatro perguntas, e o dono dela é
-[`specification-process.md`](specification-process.md#adr--só-decisão-arquitetural-durável).
-Uma regra que caiba nas duas colunas indica um ADR carregando comportamento: escreva o
-ADR com o porquê, o card com o quê, e faça o card citar o ADR por caminho e âncora.
+**O que NÃO dispara nada:** refatoração que não muda comportamento observável; correção de
+defeito que restaura o comportamento já descrito; mudança de dependência, de versão ou de
+configuração de build; teste novo sobre comportamento que a página já descreve; e qualquer
+coisa em `adr/`.
 
-## Feature Card
+**Se a atualização exigir uma definição que você não tem, não invente.** Use
+`AskUserQuestion`. Se a resposta não vier agora, registre o tópico no `backlog.md`,
+implemente o código e diga na conversa qual página ficou para trás.
 
-Caminho: `features/<slug>/feature-card.md`. Slug em kebab-case, nomeando a capacidade.
+## O que escrever em cada destino
 
-Seções obrigatórias, nesta ordem: problema e resultado esperado; atores e gatilho;
-escopo; fora de escopo; regras de negócio; integrações e contratos afetados; riscos e
-decisões pendentes; critérios de pronto; links.
+Uma capacidade ocupa um diretório em `features/`, nomeado em kebab-case, com três
+arquivos: `feature-card.md`, `example-mapping.md` e `behavior.feature`.
 
-- **Máximo 5.500 caracteres de prosa.** Diagrama, bloco de código e tabela **não**
-  entram na contagem, e a isenção vale para todo artefato `.md` com limite. Um card
-  acima do limite cobre mais de uma capacidade — divida. O corte sai da prosa, **nunca
-  da evidência**. A troca de unidade foi decidida em 2026-08-06, e o racional está em
-  [`specification-process.md`](specification-process.md#feature-card--o-padrão).
-- **Quem conta é o script, e ele é o único medidor:**
+### Feature Card
+
+Caminho: `features/<slug>/feature-card.md`.
+
+- **Um card cobre uma capacidade**, nunca um endpoint, uma classe ou uma tarefa técnica. É
+  o oráculo que define o comportamento observável, e por isso E1 e E3 partilham um card.
+- Seções, nesta ordem: problema e resultado esperado; atores e gatilho; escopo; fora de
+  escopo; regras de negócio; integrações e contratos afetados; riscos e decisões
+  pendentes; critérios de pronto; links.
+- **Máximo 5.500 caracteres de prosa.** Diagrama, bloco de código e tabela não entram na
+  contagem. **Quem conta é o script, e nenhuma medição montada à mão vale** — nem `wc`, nem
+  contagem de palavras, nem tamanho bruto do arquivo:
 
   ```bash
   python .claude/skills/feature-planning/scripts/check_artifact_limits.py \
     --root . --file docs/features/<slug>/feature-card.md
   ```
 
-  Ele imprime a contagem de prosa e, entre parênteses, o tamanho bruto. **Nenhuma
-  medição montada à mão vale** — nem `wc`, nem contagem de palavras, nem tamanho bruto
-  do arquivo. Um número que não saiu do script não é evidência de limite.
-- **Um card cobre uma capacidade**, nunca um endpoint, uma classe ou uma tarefa técnica.
-- **Um card por oráculo, não por experimento.** É o oráculo que define o comportamento
-  observável. E1 e E3 partilham o oráculo exato e vivem num card só.
-- **Toda regra leva evidência com caminho e âncora GFM**, numa coluna própria da tabela:
-  o caminho do arquivo mais o slug do título, no formato do GitHub Flavored Markdown.
-  Cite por número de linha só quando o alvo não tiver título que a alcance, dentro de um
-  bloco Mermaid por exemplo. É a decisão `C-1`, na
-  [política de citação da raiz](../AGENTS.md#ao-trabalhar-aqui), e o verificador é
-  `scripts/check_citations.py`.
-- **Toda regra leva quem a aprovou**, numa segunda coluna própria, ao lado da evidência.
-  Aprova-se a **regra**, e não o card: ela nasce `pendente` e só uma pessoa a tira desse
-  estado. O card **NÃO DEVE** ganhar estado nem ato de aprovação — ele é o continente, e
-  muda a cada exemplo novo. A regra está em
-  [`specification-process.md`](specification-process.md#quem-aprova-o-que-decidido-em-2026-08-05).
-- **Uma regra `pendente` NÃO DEVE virar cenário Gherkin.** Escrever Gherkin sobre regra
-  não aprovada congela a versão errada dela, pelo mesmo motivo que vale para regra em
-  debate.
-- **Um card NÃO PODE contradizer um ADR aceito.** A contradição **é** decisão
-  arquitetural nova: ela entra na [fila de decisões](fila-de-decisoes.md) no mesmo
-  turno em que é vista, e o card é alinhado ao que o ADR que sair dela disser.
-- Um diagrama pesado demais para o card vai para o `example-mapping.md`, e o card faz
-  link. O ganho é foco, e não orçamento: o card carrega o que uma consulta precisa, e o
-  Example Mapping carrega o que uma discussão precisa.
-- Ao criar um card, acrescente a linha correspondente em
+- **Toda regra leva evidência com caminho e âncora GFM**, numa coluna própria; número de
+  linha só quando o alvo não tiver título que o alcance, dentro de um bloco Mermaid por
+  exemplo. A coluna ao lado diz quem aprovou a regra.
+- Ao criar uma capacidade, acrescente a linha dela em
   [`features/README.md`](features/README.md), que é o índice dono da lista — e **não** em
   [`README.md`](README.md), que é roteador e não carrega inventário.
 
-## Example Mapping
+### Example Mapping
 
-Caminho: `features/<slug>/example-mapping.md`. **Não tem limite de tamanho** — ele
-cresce por exemplo acrescentado, e acrescentar exemplo é o trabalho dele. A ausência de
-teto foi decidida em 2026-08-06, e o verificador o isenta por nome — o racional está em
-[`specification-process.md`](specification-process.md#example-mapping--onde-as-dúvidas-ficam-visíveis).
+Caminho: `features/<slug>/example-mapping.md`. **Ele não tem teto** — cresce por exemplo
+acrescentado, e acrescentar exemplo é o trabalho dele.
 
-Quatro blocos obrigatórios — história, regras, exemplos concretos, perguntas em aberto —
-e um quinto para o que foi **adiado de propósito**, com o gatilho que o retoma.
+Quatro blocos: história, regras, exemplos concretos e perguntas em aberto. O exemplo
+existe para revelar o que a regra não disse — fronteira, erro, repetição, concorrência,
+idempotência —, e um que apenas a reafirma em outras palavras não acrescenta nada. Use
+contraexemplo para registrar o que a regra deixa passar.
 
-- Os exemplos existem para revelar o que a regra não disse: fronteira, erro, autorização,
-  repetição, concorrência, idempotência e consistência. Um exemplo que apenas reafirma a
-  regra em outras palavras não acrescenta nada.
-- Use **contraexemplo** para registrar o que a regra deixa passar. É onde as lacunas do
-  repositório ficam visíveis.
-- Feche com uma seção **"O que não virou cenário, e por quê"**. Ela impede que uma regra
-  omitida do Gherkin pareça esquecimento.
+### BDD
 
-## BDD
+Caminho: `features/<slug>/behavior.feature`. Cabeçalho `# language: pt`.
 
-Caminho: `features/<slug>/behavior.feature`.
-
-- Cabeçalho `# language: pt`, e um comentário dizendo de onde as regras vêm.
 - **Comportamento externo e observável.** Nome de classe, de tabela e de coluna não
   aparecem num cenário; o veredito, a contagem e a recusa aparecem.
-- Poucos cenários. Por regra: o fluxo principal, uma falha relevante, e um caso de borda
+- Poucos cenários por regra: o fluxo principal, uma falha relevante, e um caso de borda
   quando ele mudar o resultado.
-- **Só exemplo estabilizado vira cenário.** Regra em debate fica no Example Mapping.
-  Escrever Gherkin sobre regra em debate congela a versão errada dela.
-- **Um `.feature` cujas regras ainda estejam `pendente` fica marcado como inativo, e não
-  é especificação viva.** Ele permanece na árvore, mas não sustenta teste, código nem
-  citação de comportamento; o estado das regras de cada capacidade está em
-  [`features/README.md`](features/README.md#índice).
 - Todo cenário leva a tag `@teste-ausente` enquanto não houver teste que o verifique.
   Quando o teste existir, troque a tag pelo identificador dele.
 - **Nenhuma dependência de BDD entra no projeto por causa disso.**
 
-## Contratos
+### `architecture/`
 
-Caminho: `contracts/openapi/` e `contracts/asyncapi/`.
+O `README.md` da pasta é o dono da topologia: os processos, o papel de cada um e a posição
+na rede. Cada afirmação dele foi conferida na árvore — `pom.xml`, `compose.yaml`,
+`Dockerfile`, os `application.yml`, as migrações Flyway e `local/`. Mantenha essa
+propriedade: o que não puder ser confirmado ali não entra.
 
-- **Um contrato é criado quando a interface
-  existir**, nunca antes. O inventário e os
-  gatilhos de cada um vivem em [`contracts/README.md`](contracts/README.md); não
-  replique aqui o estado deles.
-- **Não crie diretório
-  vazio.** Uma pasta `openapi/` sem conteúdo afirma que existem APIs
-  a documentar, e o repositório já pagou por esse erro uma vez.
+Uma **restrição** ganha arquivo próprio em `restricoes/`, e ela diz o que proíbe e o que
+protege. Uma restrição sem consequência observável não é restrição.
+
+Os **schemas** têm verificador próprio, que compara a forma desenhada com as migrações
+Flyway. Ele roda no CI, e a divergência aceita vive numa baseline:
+
+```bash
+python scripts/check_schema_sync.py --root . --baseline scripts/schema-sync-baseline.txt
+```
+
+### `contracts/`
+
+**Um contrato é criado quando a interface existir**, nunca antes. Caminhos:
+`contracts/openapi/` e `contracts/asyncapi/`.
+
+- **Não crie diretório vazio.** Uma pasta `openapi/` sem conteúdo afirma que existem APIs a
+  documentar, e o repositório já pagou por esse erro uma vez.
 - O que estiver formalizado num contrato **NÃO DEVE** ser repetido em Markdown.
-- Ao criar o primeiro, atualize [`contracts/README.md`](contracts/README.md).
+- Ao criar o primeiro, atualize [`contracts/README.md`](contracts/README.md), que é o dono
+  do inventário e dos gatilhos.
 
-## Integrações
+### `dicionario-de-dados.md`
 
-Caminho: `architecture/integrations.md`.
+Uma linha por termo, com o par português/inglês e uma frase dizendo o que ele é. **Os
+termos são em inglês, e as explicações em português**, porque todo identificador de código
+é escrito em inglês.
 
-- **A matriz é a dona do estado e da topologia das fronteiras.** Não replique aqui, nem
-  em card ou ADR, o que existe, o que foi decidido e o que continua hipótese: o estado
-  envelhece em silêncio na cópia.
-- **Nunca promova hipótese a fato sem evidência
-  nova.** Evidência é caminho e âncora GFM
-  na árvore versionada, ou num repositório externo nomeado.
-- Uma pergunta de integração recebe o identificador definido em
-  [`questions/README.md`](questions/README.md#identificador), que é o dono do formato.
+Um termo que nasceu em inglês e não tem par vai para a segunda tabela do arquivo, e não
+para a primeira.
 
-## ADR
+### `roadmap.md`
 
-Caminho: `adr/NNNN-titulo-em-kebab-case.md`. Para planejar um ADR no Claude Code, use
-a skill `adr`. Ela contém o template e o ciclo de vida, e é acionada tanto por
-`feature-planning` quanto por `domain-modeling`. O [`adr/README.md`](adr/README.md)
-mantém as convenções, o índice e o histórico da série.
-
-## Glossário de domínio
-
-Caminho: [`CONTEXT.md`](CONTEXT.md), que **já existe**. Para mantê-lo no Claude Code, use
-a skill `domain-modeling`. Ela desafia termo ambíguo, cruza a linguagem com o código e
-atualiza o arquivo no mesmo turno em que um termo é resolvido — nunca em lote. O formato
-está em `.claude/skills/domain-modeling/references/context-format.md`, e o papel do
-artefato em
-[`specification-process.md`](specification-process.md#glossário-de-domínio--contextmd).
-
-Ele é o **glossário canônico do vocabulário vigente**, e cada entrada carrega quatro
-coisas: termo, definição breve, status ou sinônimos, e link de origem.
-
-**O que não entra nele**, mesmo quando fala de vocabulário:
-
-| Conteúdo                              | Onde vive                                     |
-|---------------------------------------|-----------------------------------------------|
-| alternativa de nome, com o descartado | [fila de decisões](fila-de-decisoes.md)       |
-| decisão proposta e seu racional       | fila, e ADR quando a decisão for arquitetural |
-| pergunta em aberto sobre um termo     | [`questions/`](questions/README.md)           |
-| backlog e ata de rodada               | fila de decisões                              |
-
-Um termo resolvido chega ao glossário **já decidido**, com o link para onde a decisão
-foi tomada. O glossário não é um segundo repositório de decisões.
+Alto nível, sem data e sem link. Ele diz para onde o projeto vai; ele não inventaria o que
+já existe na árvore, e não decide nada. Uma etapa que mudou de pergunta ou de dificuldade
+muda aqui; uma etapa que apenas atrasou não muda nada, porque não há prazo declarado.
 
 ## Convenções de escrita
 
-As convenções gerais estão no [`AGENTS.md` da raiz](../AGENTS.md), e a lista de palavras
-proibidas em [`adr/README.md`](adr/README.md#convenções). Elas valem aqui sem alteração.
+As convenções gerais estão no [`AGENTS.md` da raiz](../AGENTS.md) e valem aqui sem
+alteração: linhas em aproximadamente 88 colunas, sem emojis, sem linguagem de marketing.
 
-Dois pontos que só aparecem nesta pasta:
-
-- **Todo fluxo descrito em prosa vai também como diagrama
-  Mermaid**, junto do parágrafo que
-  o descreve. `sequenceDiagram` para ordem no tempo, `flowchart` para topologia e
-  hierarquia, `erDiagram` para a forma de um schema. Excalidraw só para o que o Mermaid
-  não expressa, exportado como `.excalidraw.svg` em [`diagrams/`](diagrams/).
-- **Um diagrama que não acrescenta nada à prosa fica de
-  fora.** Repetir a mesma informação
-  em duas formas não é redundância útil quando as duas dizem exatamente o mesmo.
-
-## Antes de reduzir um documento
-
-**Rode a consulta reversa antes de apagar um heading, e nunca depois:**
-
-```bash
-python scripts/check_citations.py --root . --quem-cita docs/CONTEXT.md
-```
-
-Ela responde quem cita cada heading do alvo, e marca as duas origens que exigem cuidado
-próprio: `adr/arquivo/**`, que nunca é editado e por isso torna a citação inconsertável,
-e a âncora interna `[texto]` seguida de `(#slug)`, que o verificador **não** acusa. Nada
-é gravado na árvore — a resposta é recalculada a cada execução, e por isso não existe
-derivado a envelhecer. Decidido em 2026-08-08, na
-[fila](fila-de-decisoes.md#o-que-apura-a-âncora-citada-antes-de-uma-redução).
-
-Onde a consulta apontar citação, o heading permanece com lápide, pela regra do
-[lifecycle](adr/README.md#a-revogação-da-imutabilidade-decidida-em-2026-08-07). O
-verificador é a rede embaixo da consulta, e não substitui: ele acusa a âncora externa
-quebrada na execução **seguinte** à remoção, quando o estrago já está no commit.
+Sobre diagrama: **ele entra quando explicar algo que o texto não explica**. Mermaid inline
+— `sequenceDiagram` para ordem no tempo, `flowchart` para topologia, `erDiagram` para a
+forma de um schema. Excalidraw só para o que o Mermaid não expressa, exportado como
+`.excalidraw.svg` em `diagrams/`. Um diagrama que repete a prosa fica de fora.
 
 ## Antes de encerrar uma edição
 
-- Toda afirmação relevante tem evidência com **caminho e âncora GFM**; número de linha
-  só quando o alvo não tiver título que a alcance. O que não pôde ser confirmado está
-  como `Pergunta em aberto`, não como fato.
 - Os links relativos resolvem. Um link entre níveis de diretório erra com facilidade —
-  `docs/architecture/integrations.md` apontando para `../README.md` resolve para
-  `docs/README.md`, e não para a raiz.
-- O verificador de citações passa:
+  `architecture/README.md` apontando para `../README.md` resolve para `docs/README.md`, e
+  não para a raiz.
+- O que não pôde ser confirmado no código está escrito como pergunta em aberto, e não como
+  fato.
+- Os verificadores que o CI roda passam, com a invocação exata dele:
 
   ```bash
-  python scripts/check_citations.py --root . --baseline scripts/citations-baseline.txt
+  python scripts/verify_docs.py --root . --baseline scripts/verify-docs-baseline.txt
+  python scripts/check_schema_sync.py --root . --baseline scripts/schema-sync-baseline.txt
   ```
 
-- `check_artifact_limits.py` passa nos artefatos alterados. Ele é o único medidor.
-- A capacidade nova aparece no índice que é dono da lista,
-  [`features/README.md`](features/README.md), e em nenhum outro.
-- `git add` apenas dos arquivos relacionados, e um único commit em Conventional Commits (skill `commit`).
+  O `--baseline` **não tem valor padrão**: omiti-lo faz o verificador reportar como defeito
+  toda divergência que já era aceita.
+
+- Antes de apagar um heading, descubra quem o cita — a resposta é recalculada a cada
+  execução, e nada é gravado na árvore:
+
+  ```bash
+  python scripts/check_citations.py --root . --quem-cita docs/<arquivo>.md
+  ```
+
+- `git add` apenas dos arquivos relacionados, e um único commit em Conventional Commits
+  (skill `commit`).
