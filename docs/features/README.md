@@ -44,7 +44,7 @@ critério: a `R19` foi aprovada seis dias antes, e as cinco da detecção de div
 transcrevem decisões que a pessoa tomou antes de cada rodada de redação — três em
 2026-08-13, duas em 2026-08-14.
 Sessenta e sete regras
-apenas transcrevem decisão que já vivia em ADR aceito, em fecho da fila ou em guardrail
+apenas transcrevem decisão que já vivia em ADR aceito, em decisão já tomada ou em guardrail
 da raiz — aprová-las confirmou a fidelidade da transcrição, sem redecidir o mérito. As
 outras três não tinham dono a montante, e **cada uma exigiu que a pessoa decidisse
 antes**, no mesmo dia:

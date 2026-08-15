@@ -1,9 +1,8 @@
 # Feature Card — Detecção de divergência entre fontes
 
-Estado: `especificado, não implementado` · Origem: a decisão da pessoa de especificar
-esta capacidade em Feature Card e Example Mapping, **sem ADR** — a recomendação de
-escrever um foi recusada por escrito, e o corpo do ADR-0010 não é tocado; refinada em
-2026-08-14, registrado no [Example Mapping](example-mapping.md#regras).
+Estado: `especificado, não implementado` · Origem: a decisão de especificar esta
+capacidade **sem ADR** — escrever um foi recusado, e o corpo do ADR-0010 não é tocado.
+Refinada no [Example Mapping](example-mapping.md#regras).
 
 ## Problema e resultado esperado
 
@@ -84,9 +83,7 @@ Gatilho: o sistema medido chama o callback, fora da janela medida.
 - A forma concreta do endpoint e do callback — rota, método, payload — e qualquer
   contrato formal: nasce quando a interface existir
   ([`contracts/README.md`](../../contracts/README.md#estado-nenhum-contrato-existe)).
-- Quem verifica a órfã de `allocation`, que segue sem decisão e não é deste card. Sem
-  chave estrangeira, a integridade passou a ser do código, e a verificação ficou sem
-  lugar quando o Lab Plane perdeu o `SELECT` no schema do sistema medido. A órfã é
+- Quem verifica a órfã de `allocation`, que segue sem decisão e não é deste card. Ela é
   achado que entra no relatório, e não invalida a execução.
 - Qualquer alteração ao ADR-0010, e a contiguidade de LSN e a marca de fim — guardas de
   `R8`/`R9` de
@@ -107,25 +104,19 @@ Gatilho: o sistema medido chama o callback, fora da janela medida.
 
 Fronteira nova: `system-under-test` → `lab-plane`, aviso de conclusão HTTP, disparado e
 esquecido, fora da janela medida; e `lab-plane` → `system-under-test`, a consulta
-disparada ao recebê-lo. Estado na
-[matriz](../../architecture/integrations.md#matriz), sem contrato — nasce só quando a
-interface existir
+disparada ao recebê-lo. Sem contrato — ele nasce quando a interface existir
 ([`contracts/README.md`](../../contracts/README.md#estado-nenhum-contrato-existe)).
 
 **A letra do ADR-0010 não é contrariada** — quem lê o schema é o dono dele
 ([ADR-0010, Decisão](../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)).
 Quatro trechos dele ficam desatualizados e permanecem intocados: as consequências
 negativas, a justificativa, o primeiro item dos trade-offs e a alternativa "Chamada HTTP
-ao próprio system under test", descartada ali e adotada aqui. A forma de corrigi-los é o
-patch aditivo — a afirmação original permanece byte a byte, e uma marca depois dela diz
-que caiu e o que a derrubou —, porque uma frase falsificada não é raciocínio sendo
-reescrito, e sim afirmação sobre o estado do mundo, verdadeira quando escrita e falsa
-depois, por ato de terceiro.
+ao próprio system under test", descartada ali e adotada aqui.
 
-**`R4` tensionava a letra do ADR-0008; a tensão foi resolvida em 2026-08-14** pelo
-[ADR-0020](../../adr/0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md#decisão),
-que subsume a proibição: ela continua valendo por inteiro para a chamada de passo, e
-passa a admitir o aviso de conclusão nas três condições que a Decisão daquele ADR fixa.
+**`R4` tensionava a letra do ADR-0008, e o
+[ADR-0020](../../adr/0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md#decisão)
+subsume a proibição**: ela vale por inteiro para a chamada de passo, e passa a admitir o
+aviso de conclusão nas três condições que aquele ADR fixa.
 
 ```mermaid
 flowchart LR
@@ -143,10 +134,9 @@ flowchart LR
     OR -->|" mensagem terminal —<br/>veredito ou rótulo "| RB --> LJ -->|" SSE "| FE
 ```
 
-**O rótulo chega ao frontend pelo mesmo caminho do veredito, decidido em 2026-08-14**:
-mensagem terminal no RabbitMQ, persistida e emitida por SSE pelo `lab-journal`, sem
-`Backend For Frontend` nem aresta nova — detalhado no
-[Example Mapping](example-mapping.md#regras).
+**O rótulo chega ao frontend pelo mesmo caminho do veredito**: mensagem terminal no
+RabbitMQ, persistida e emitida por SSE pelo `lab-journal`, sem `Backend For Frontend`
+nem aresta nova — detalhado no [Example Mapping](example-mapping.md#regras).
 
 ## Riscos e decisões pendentes
 
@@ -154,10 +144,8 @@ mensagem terminal no RabbitMQ, persistida e emitida por SSE pelo `lab-journal`, 
   identidade a execução carrega** — mesmo discriminador do CDC, ou um segundo
   identificador. Ninguém decidiu; detalhado no
   [Example Mapping](example-mapping.md#perguntas-em-aberto).
-- **A objeção contra "Chamada HTTP" incide sobre `R3`, e o que `R3`/`R5` fazem com a
-  órfã de `R2`** seguem sem resposta — a segunda toca a pergunta, ainda aberta, de quem
-  verifica a órfã de `allocation`. Ambas no
-  [Example Mapping](example-mapping.md#perguntas-em-aberto).
+- **A objeção contra "Chamada HTTP" e o que `R3`/`R5` fazem com a órfã de `R2`** seguem
+  sem resposta, no [Example Mapping](example-mapping.md#perguntas-em-aberto).
 
 ## Critérios de pronto
 
@@ -179,4 +167,3 @@ consulta antes do aviso é registrada, catalogada, sem veredito.
 - [`ADR-0013`](../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md),
   `Aceito`
 - [`ADR-0020`](../../adr/0020-o-aviso-de-conclusao-e-a-subsuncao-do-adr-0008.md), `Aceito`
-- [`architecture/integrations.md`](../../architecture/integrations.md#matriz)
