@@ -19,8 +19,7 @@ tabelas de domínio ou consumidor de CDC implementados.
 O broker, o Debezium Server e os manifests de entrega ainda não existem na árvore.
 
 **A árvore é a única fonte do que existe.** Rode `git ls-files` e leia `pom.xml`,
-`compose.yaml` e `frontend/package.json`. O que falta definir está no
-[BACKLOG.md](BACKLOG.md).
+`compose.yaml` e `frontend/package.json`.
 
 ## Módulos e serviços presentes
 
@@ -59,20 +58,22 @@ ainda.
 
 ## Documentação
 
-**Três arquivos governam o repositório, e são só estes três:**
+**Dois arquivos governam o repositório:**
 
-| Arquivo                  | O que ele é                                          |
-|--------------------------|------------------------------------------------------|
-| [AGENTS.md](AGENTS.md)   | as regras de trabalho, para pessoas e para agentes   |
-| [BACKLOG.md](BACKLOG.md) | as pendências de definição, em tópicos de alto nível |
-| este `README.md`         | o que o projeto é e como rodá-lo                     |
+| Arquivo                | O que ele é                                        |
+|------------------------|----------------------------------------------------|
+| [AGENTS.md](AGENTS.md) | as regras de trabalho, para pessoas e para agentes |
+| este `README.md`       | o que o projeto é e como rodá-lo                   |
 
 O [CLAUDE.md](CLAUDE.md) apenas importa o `AGENTS.md`, para que o repositório permaneça
 agnóstico de agente.
 
-**`docs/` é histórico congelado.** Aquele diretório foi escrito sob um processo de
-especificação que não vale mais, e boa parte dele descreve comportamento que nunca foi
-implementado. Não o trate como contrato, não o mantenha sincronizado com o código e não o
-cite como evidência. Quando ele contradisser a árvore, a árvore está certa.
+**`docs/` tem estrutura fechada, e o índice dela é [`docs/README.md`](docs/README.md).**
+Cinco pastas — `architecture/`, `adr/`, `features/`, `contracts/` e `diagrams/` — mais o
+roadmap e o dicionário de dados. `docs/adr/` está congelado: ele registra o que já foi
+decidido, e nada novo é escrito lá.
+
+**Um documento não é contrato.** Quando `docs/` contradisser a árvore, a árvore está
+certa.
 
 **O código é a documentação.** Documento novo só nasce quando uma pessoa pedir por um.

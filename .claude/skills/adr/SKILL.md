@@ -7,7 +7,7 @@ description: "Template e ciclo de vida de Architecture Decision Records deste la
 > **implementação primeiro**, e está em [`AGENTS.md`](../../../AGENTS.md) — ele prevalece
 > sobre tudo o que esta página descreve. O ciclo abaixo **NÃO DEVE ser iniciado por
 > iniciativa própria**: ele só roda quando a pessoa o pedir pelo nome, nesta sessão, em
-> palavras. Pendência de definição vai para o `BACKLOG.md` da raiz, em uma linha, e não
+> palavras. Pendência de definição vai para o `docs/backlog.md`, em uma linha, e não
 > vira documento.
 
 # ADR

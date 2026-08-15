@@ -18,13 +18,19 @@ O que muda, em quatro regras:
    nem Example Mapping, nem seção nova em documento existente. A decisão de documentar é
    da pessoa, sempre, e ela precisa ser dita nesta sessão — em palavras, não inferida de
    uma regra deste arquivo nem do gatilho de uma skill.
-3. **Pendência de definição vai para o [`BACKLOG.md`](BACKLOG.md) da raiz, e para lugar
-   nenhum além dele.** Um tópico de alto nível, uma linha ou um parágrafo curto. Sem
-   data, sem identificador, sem alternativa enumerada, sem trade-off escrito — o git já
-   guarda quando e por quê.
+3. **Pendência de definição vai para o `docs/backlog.md`, e para lugar nenhum além
+   dele.** Um tópico de alto nível, uma linha ou um parágrafo curto. Sem data, sem
+   identificador, sem alternativa enumerada, sem trade-off escrito — o git já guarda
+   quando e por quê.
 4. **Bloqueio de implementação vira pergunta, e não documento.** Quando faltar uma
    definição para escrever código, use `AskUserQuestion`. Se a pessoa não responder
-   agora, registre o tópico no `BACKLOG.md` e implemente o resto.
+   agora, registre o tópico no `docs/backlog.md` e implemente o resto.
+
+**O `docs/backlog.md` é instável, e NÃO DEVE ser referenciado por documento nenhum.** Ele
+existe para uma coisa só: guardar o que está sendo feito, para que a próxima sessão
+continue de onde a anterior parou. Uma linha dele nasce e some conforme o trabalho anda,
+então um link para ele aponta para texto que não estará lá — cite-o pelo caminho, em
+texto puro, nunca como link, e nunca como evidência de nada.
 
 **Documentar vale a pena num caso raro, e ele tem uma marca: o conhecimento não cabe no
 código.** Um contrato com sistema externo, um motivo que só existe fora da árvore, uma
@@ -32,10 +38,31 @@ escolha que o código executa mas não explica. Comportamento, estrutura e fluxo
 esse caso — o código já os diz, e um `.md` que os repete nasce divergente. Na dúvida, não
 escreva: pergunte.
 
-**O que está em `docs/` é histórico, e não contrato.** Não o leia para descobrir o que
-fazer, não o cite como evidência, não o mantenha sincronizado com o código, e não o
-apague — a triagem daquele diretório é da pessoa, arquivo por arquivo. Se um documento de
-lá contradisser o código, o código está certo.
+## `docs/` tem uma estrutura fechada, e ela está sendo refatorada
+
+**Cinco pastas e quatro arquivos, e nada além disso.** Um documento que não couber em um
+deles não é escrito. A pasta está sendo enxugada — o que sobrou de um processo revogado é
+apagado ou migrado para dentro desta estrutura, e nenhum caminho novo é inventado.
+
+```
+docs/
+  README.md              índice: o que cada pasta guarda; só navegação
+  roadmap.md             o plano geral, em alto nível, sem data
+  dicionario-de-dados.md o de/para do vocabulário do laboratório
+  backlog.md             instável; nunca referenciado
+  architecture/          arquitetura, serviços e restrições arquiteturais
+  adr/                   decisões arquiteturais, congeladas no tempo
+  features/              comportamento de cada capacidade
+  contracts/             contrato formal entre processos, quando existir
+  diagrams/              o que o Mermaid não expressa, em `.excalidraw.svg`
+```
+
+**`docs/adr/` está congelado.** Ele serve para consultar o que já foi decidido, e nada
+novo é escrito ali — nem ADR, nem edição de ADR existente.
+
+**Um documento daqui não é contrato.** Se ele contradisser o código, o código está certo.
+Nenhum arquivo desta pasta é mantido em sincronia com a árvore por iniciativa de um
+agente.
 
 **Estas regras não são estado de projeto, e por isso não expiram.** Elas continuam
 valendo em toda sessão futura até que a pessoa as revogue neste arquivo, por escrito.
@@ -86,7 +113,7 @@ silencioso.
 As três primeiras alcançam pelo papel do valor, e não pelo plano que o produz: valem sobre
 todo valor que entra em veredito, em escalonamento ou em identidade derivada da semente,
 no sistema medido ou no Lab Plane. Elas são hoje **texto, não guarda executável** — a
-guarda é tópico do `BACKLOG.md`.
+guarda é tópico do `docs/backlog.md`.
 
 ## Este repositório é entregue no homelab
 
@@ -111,7 +138,7 @@ por um recurso do cluster.
   especificação, não proponha um artefato, não peça aprovação de regra escrita.
 - **Questione decisões quando fizer sentido, e explique trade-offs** — na conversa. A
   pessoa pediu mentoria arquitetural, e mentoria acontece falando, não versionando.
-- **Prefira uma linha no `BACKLOG.md` a inventar uma decisão para fechar uma lacuna.**
+- **Prefira uma linha no `docs/backlog.md` a inventar uma decisão para fechar uma lacuna.**
 - **Não invente integração, contrato ou regra.** O que não puder ser confirmado no código
   ou na configuração é pergunta, nunca fato. A regra antiga de citação por âncora nomeada
   vale apenas dentro de `docs/`, e você não escreve lá sem pedido.
