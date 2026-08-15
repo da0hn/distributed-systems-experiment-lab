@@ -43,6 +43,13 @@ compila, empacota e sobe contra PostgreSQL.
   fenômeno de consistência real. Falta escolher entre `Service` headless com DNS por pod,
   endereço da instância carregado no identificador da sessão, ou um discovery com
   metadados de instância. Isso não passa pelo `api-gateway`, que só serve o navegador.
+- **O término de uma execução, agora que o instrumento é dois serviços.** Um executa os
+  passos e escala; o outro admite, consome o stream e produz o veredito, em instância
+  única. O término é notificado aos dois, e cada um age no que lhe cabe. Quem julga não
+  pode somar quando a notificação chega — os eventos ainda estão em voo entre o WAL e a
+  fila —, e por isso ele espera a marca de fim do stream; a notificação serve para armar
+  o prazo que separa `fonte atrasada` de execução ainda rodando. Falta decidir quem
+  emite a parada antecipada, como a marca é escrita, e que nome os dois serviços recebem.
 
 ## Instruções do repositório
 
