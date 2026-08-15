@@ -20,7 +20,7 @@ docs/
     constraints/          uma restrição arquitetural por arquivo
     schemas/              a forma dos schemas, e as propostas de modelo
   adr/                    as decisões arquiteturais; congelado
-  features/               uma feature do sistema por diretório
+  features/               o comportamento de cada funcionalidade
   contracts/              o contrato formal entre processos
   diagrams/               o que o Mermaid não expressa
 ```
@@ -34,7 +34,7 @@ docs/
 | `backlog.md`                               | o que está sendo feito; instável, e nunca referenciado |
 | [`architecture/`](architecture/README.md)  | os serviços, a topologia e as restrições arquiteturais |
 | [`adr/`](adr/README.md)                    | as decisões arquiteturais já tomadas; congelado        |
-| [`features/`](features/README.md)          | cada feature do sistema, e o que ela faz               |
+| [`features/`](features/README.md)          | o comportamento pretendido de cada funcionalidade      |
 | [`contracts/`](contracts/README.md)        | o contrato formal entre processos, quando existir      |
 | [`diagrams/`](diagrams/)                   | o que o Mermaid não expressa, em `.excalidraw.svg`     |
 
