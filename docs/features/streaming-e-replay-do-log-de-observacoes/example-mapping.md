@@ -2,9 +2,8 @@
 
 Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
 [`ADR-0016`](../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md),
-`Aceito`. `R7` tem origem própria: o fecho de
-[`E-52`](../../fila-de-decisoes.md#e-52-fecha-em-a-ordem-vem-do-cursor-e-o-instante-é-rótulo-escolhida-em-2026-08-12)
-na fila de decisões.
+`Aceito`. `R7` tem origem própria: uma decisão da pessoa — o instante de parede existe
+para leitura humana, e quem ordena é o cursor monotônico.
 
 ## História
 
@@ -92,13 +91,13 @@ flowchart LR
 
 ## Perguntas em aberto
 
-| #  | Pergunta                                                                                                                                                                                          | Origem                                                                                                                                                                 |
-|----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| P1 | O que acontece quando `Last-Event-ID` aponta para um cursor que nunca existiu — maior que o último persistido, ou de outra execução? Devolver tudo, recusar ou um erro dedicado não foi decidido. | nova, 2026-08-10                                                                                                                                                       |
-| P2 | Como o `lab-journal` sabe que uma execução terminou, para `R4` fechar o stream? Nenhum ADR aceito decide o critério de encerramento.                                                              | nova, 2026-08-10                                                                                                                                                       |
-| P3 | Qual é o formato JSON de cada evento no stream — nomes de campo, tipo do cursor, os dois instantes?                                                                                               | [ADR-0016, negativas](../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#negativas)                                                                        |
-| P4 | Existe limite para o replay do histórico completo de uma execução muito longa, ou o `lab-journal` sempre lê a tabela inteira de uma vez?                                                          | nova, 2026-08-10                                                                                                                                                       |
-| P5 | `Q-0004-3` permanece `pendente` com escopo reduzido: a monotonicidade do instante saiu da pergunta com R7, mas qual relógio o produz e qual é a resolução dele continuam sem resposta.            | [`Q-0004-3`](../../questions/Q-0004-3.md) e [E-52, fecho](../../fila-de-decisoes.md#e-52-fecha-em-a-ordem-vem-do-cursor-e-o-instante-é-rótulo-escolhida-em-2026-08-12) |
+| #  | Pergunta                                                                                                                                                                                          | Origem                                                                                          |
+|----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| P1 | O que acontece quando `Last-Event-ID` aponta para um cursor que nunca existiu — maior que o último persistido, ou de outra execução? Devolver tudo, recusar ou um erro dedicado não foi decidido. | nova, 2026-08-10                                                                                |
+| P2 | Como o `lab-journal` sabe que uma execução terminou, para `R4` fechar o stream? Nenhum ADR aceito decide o critério de encerramento.                                                              | nova, 2026-08-10                                                                                |
+| P3 | Qual é o formato JSON de cada evento no stream — nomes de campo, tipo do cursor, os dois instantes?                                                                                               | [ADR-0016, negativas](../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#negativas) |
+| P4 | Existe limite para o replay do histórico completo de uma execução muito longa, ou o `lab-journal` sempre lê a tabela inteira de uma vez?                                                          | nova, 2026-08-10                                                                                |
+| P5 | `Q-0004-3` permanece `pendente` com escopo reduzido: a monotonicidade do instante saiu da pergunta com R7, mas qual relógio o produz e qual é a resolução dele continuam sem resposta.            | [`Q-0004-3`](../../questions/Q-0004-3.md)                                                       |
 
 ## Adiado de propósito
 

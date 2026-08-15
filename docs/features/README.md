@@ -8,16 +8,16 @@ O processo está em [`../specification-process.md`](../specification-process.md)
 
 ## Índice
 
-| Capacidade                                                                                           | O que ela responde                                                                                     | Origem                                                                                                                               | Regras                       | Estado                         |
-|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|------------------------------|--------------------------------|
-| [observacao-passo-a-passo](observacao-passo-a-passo/feature-card.md)                                 | como parar, falhar e observar **entre** dois passos de uma operação                                    | [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md), `Aceito`                                                              | 12, todas aprovadas          | especificado, não implementado |
-| [execucao-de-experimento](execucao-de-experimento/feature-card.md)                                   | o que um resultado zero significa, e quando ele é defeito do instrumento                               | [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md), `Aceito`                                      | 17, 15 aprovadas, 2 pendente | especificado, não implementado |
-| [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md)                   | quantos incrementos se perderam, e sob qual proteção — E1 e E3                                         | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                                                           | 19, todas aprovadas          | especificado, não implementado |
-| [deteccao-de-protecao-inerte](deteccao-de-protecao-inerte/feature-card.md)                           | por que uma proteção pode estar presente e não proteger nada — E5                                      | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                                                           | 11, todas aprovadas          | especificado, não implementado |
-| [streaming-e-replay-do-log-de-observacoes](streaming-e-replay-do-log-de-observacoes/feature-card.md) | como a tela vê o histórico completo e o que acontece ao vivo, sem perder nem repetir evento            | [`ADR-0016`](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md), `Aceito`                                                  | 7, todas aprovadas           | especificado, não implementado |
-| [distincao-entre-higiene-e-invalidacao](distincao-entre-higiene-e-invalidacao/feature-card.md)       | se um evento atrasado do broker invalida o veredito, ou é resíduo inofensivo de janela fechada         | [`ADR-0012`](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md), `Aceito`                                   | 7, todas aprovadas           | especificado, não implementado |
-| [comparacao-entre-niveis-de-isolamento](comparacao-entre-niveis-de-isolamento/feature-card.md)       | quais níveis de isolamento protegem a invariante do E5, e a que custo                                  | [`E-87`, fecho](../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12) | 3, todas pendente            | especificado, não implementado |
-| [deteccao-de-divergencia-entre-fontes](deteccao-de-divergencia-entre-fontes/feature-card.md)         | como o oráculo confirma o que o stream de CDC entregou, e o que fazer quando as duas leituras divergem | [`E-96`, fecho](../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13)                         | 5, todas aprovadas           | especificado, não implementado |
+| Capacidade                                                                                           | O que ela responde                                                                                     | Origem                                                                                             | Regras                       | Estado                         |
+|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|------------------------------|--------------------------------|
+| [observacao-passo-a-passo](observacao-passo-a-passo/feature-card.md)                                 | como parar, falhar e observar **entre** dois passos de uma operação                                    | [`ADR-0001`](../adr/0001-o-passo-como-unidade-de-execucao.md), `Aceito`                            | 12, todas aprovadas          | especificado, não implementado |
+| [execucao-de-experimento](execucao-de-experimento/feature-card.md)                                   | o que um resultado zero significa, e quando ele é defeito do instrumento                               | [`ADR-0004`](../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md), `Aceito`    | 17, 15 aprovadas, 2 pendente | especificado, não implementado |
+| [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md)                   | quantos incrementos se perderam, e sob qual proteção — E1 e E3                                         | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                         | 19, todas aprovadas          | especificado, não implementado |
+| [deteccao-de-protecao-inerte](deteccao-de-protecao-inerte/feature-card.md)                           | por que uma proteção pode estar presente e não proteger nada — E5                                      | [`ADR-0002`](../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`                         | 11, todas aprovadas          | especificado, não implementado |
+| [streaming-e-replay-do-log-de-observacoes](streaming-e-replay-do-log-de-observacoes/feature-card.md) | como a tela vê o histórico completo e o que acontece ao vivo, sem perder nem repetir evento            | [`ADR-0016`](../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md), `Aceito`                | 7, todas aprovadas           | especificado, não implementado |
+| [distincao-entre-higiene-e-invalidacao](distincao-entre-higiene-e-invalidacao/feature-card.md)       | se um evento atrasado do broker invalida o veredito, ou é resíduo inofensivo de janela fechada         | [`ADR-0012`](../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md), `Aceito` | 7, todas aprovadas           | especificado, não implementado |
+| [comparacao-entre-niveis-de-isolamento](comparacao-entre-niveis-de-isolamento/feature-card.md)       | quais níveis de isolamento protegem a invariante do E5, e a que custo                                  | decisão da pessoa, sem ADR; o `ADR-0002` recusa decidir o isolamento                               | 3, todas pendente            | especificado, não implementado |
+| [deteccao-de-divergencia-entre-fontes](deteccao-de-divergencia-entre-fontes/feature-card.md)         | como o oráculo confirma o que o stream de CDC entregou, e o que fazer quando as duas leituras divergem | decisão da pessoa, sem ADR; o `ADR-0010` segue intocado                                            | 5, todas aprovadas           | especificado, não implementado |
 
 **Nenhuma capacidade está implementada, e isso não quer dizer que não haja código.** Há
 um esqueleto executável: ele compila, empacota e sobe contra PostgreSQL, e **não tem
@@ -28,8 +28,8 @@ regras cada uma tem.
 **Setenta e seis regras foram aprovadas por pessoa**, em quatro datas. Setenta em
 2026-08-12; a
 `R19` de [deteccao-de-atualizacao-perdida](deteccao-de-atualizacao-perdida/feature-card.md#regras-de-negócio)
-em 2026-08-06
-([E-76, fecho](../fila-de-decisoes.md#e-76-fecha-em-a-regra-desce-para-o-feature-card-escolhida-em-2026-08-12));
+em 2026-08-06 (ela desceu para o card já decidida, e a data é a da decisão que ela
+transcreve, anterior ao card);
 as três primeiras de
 [deteccao-de-divergencia-entre-fontes](deteccao-de-divergencia-entre-fontes/feature-card.md#regras-de-negócio)
 em 2026-08-13; e as duas restantes da mesma capacidade, `R4` e `R5`, em 2026-08-14.
@@ -49,13 +49,13 @@ da raiz — aprová-las confirmou a fidelidade da transcrição, sem redecidir o
 outras três não tinham dono a montante, e **cada uma exigiu que a pessoa decidisse
 antes**, no mesmo dia:
 
-| Regra                                              | O que faltava                                                                 | Onde foi decidido                                                                                                               |
-|----------------------------------------------------|-------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| `R18` de `deteccao-de-atualizacao-perdida`         | de onde vem `initial_value`, já que a única evidência era o arquivo congelado | [`E-86`](../fila-de-decisoes.md#e-86-fecha-em-o-estado-inicial-é-escrito-com-a-captura-aberta-escolhida-em-2026-08-12)          |
-| `R7` de `deteccao-de-protecao-inerte`              | onde vive o nível de isolamento, que o ADR-0002 recusa por escrito decidir    | [`E-87`](../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12)   |
-| `R4` de `streaming-e-replay-do-log-de-observacoes` | como o fim de uma execução chega ao `lab-journal` e ao frontend               | [`E-88`](../fila-de-decisoes.md#e-88-fecha-em-evento-terminal-pelo-broker-e-o-stream-fecha-depois-dele-escolhida-em-2026-08-12) |
+| Regra                                              | O que faltava                                                                 | O que foi decidido                                                                                                                      |
+|----------------------------------------------------|-------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| `R18` de `deteccao-de-atualizacao-perdida`         | de onde vem `initial_value`, já que a única evidência era o arquivo congelado | o estado inicial é inserido com a replicação lógica já ativa, e `initial_value` vem do primeiro evento daquele `partition_id` no stream |
+| `R7` de `deteccao-de-protecao-inerte`              | onde vive o nível de isolamento, que o ADR-0002 recusa por escrito decidir    | a comparação sob os três níveis ganha card próprio: é comportamento verificável, e não decisão arquitetural                             |
+| `R4` de `streaming-e-replay-do-log-de-observacoes` | como o fim de uma execução chega ao `lab-journal` e ao frontend               | o runtime emite um evento terminal pelo mesmo broker das observações, e o `lab-journal` fecha o stream depois de entregá-lo             |
 
-**O fecho de `E-87` também criou a capacidade
+**A decisão que destravou a `R7` também criou a capacidade
 [comparacao-entre-niveis-de-isolamento](comparacao-entre-niveis-de-isolamento/feature-card.md)**,
 com três regras, todas `pendente` — a primeira capacidade deste índice cujas regras
 ainda não têm `Aprovada por` preenchido.
@@ -132,16 +132,17 @@ Também é comportamento do instrumento, comum aos dois oráculos já especifica
 O quinto é
 [comparacao-entre-niveis-de-isolamento](comparacao-entre-niveis-de-isolamento/feature-card.md),
 que também não cobre oráculo próprio: ele reusa o oráculo do experimento subjacente —
-hoje, o predicado do E5 — e acrescenta o eixo do nível de isolamento ao relatório, pelo
-fecho de
-[`E-87`](../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12).
+hoje, o predicado do E5 — e acrescenta o eixo do nível de isolamento ao relatório. O
+nível é propriedade da transação e a estratégia de concorrência é código da aplicação;
+comparar os dois eixos dentro do card de outro oráculo apagaria essa separação.
 
 O sexto é
 [deteccao-de-divergencia-entre-fontes](deteccao-de-divergencia-entre-fontes/feature-card.md),
 que também não cobre oráculo próprio: ele confirma, depois que a execução silencia, o
-consolidado que o stream de CDC já entregou a qualquer um dos dois oráculos, pelo fecho de
-[`E-96`](../fila-de-decisoes.md#e-96-fecha-em-card-e-example-mapping-sem-adr-escolhida-em-2026-08-13),
-sem ADR.
+consolidado que o stream de CDC já entregou a qualquer um dos dois oráculos. Ele nasce
+sem ADR: a recomendação de escrever um foi recusada pela pessoa, e o corpo do
+[`ADR-0010`](../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md) não é
+tocado.
 
 ## Capacidade conhecida e não especificada
 
