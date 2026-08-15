@@ -5,7 +5,7 @@ Nenhum é decisão, e esta página não recomenda nenhum: ela põe lado a lado o
 decide diferente, para que a escolha seja consciente. A forma deste schema não tem dono
 declarado, e a pasta que é dona da forma dos outros dois diz por escrito que ele fica
 fora dela, em
-[`schemas/README.md`](../../../architecture/schemas/README.md#a-ausência-de-linha-entre-os-dois-diagramas-é-a-decisão).
+[`schemas/README.md`](../../../README.md#a-ausência-de-linha-entre-os-dois-diagramas-é-a-decisão).
 
 - [Proposta 1 — O caderno que conhece cada veredito pelo nome](proposta-1-o-caderno-conhece-cada-veredito.md)
 - [Proposta 2 — O livro-razão apensável, endereçado por conteúdo](proposta-2-livro-razao-enderecado-por-conteudo.md)
@@ -17,7 +17,7 @@ O eixo não é quantas tabelas cada desenho tem. É **onde mora a semântica de 
 veredito** — quem sabe que `217` é uma contagem de operações perdidas, e o que impede
 que esse número seja gravado sem o denominador que o torna legível. A proposta 1 põe
 essa semântica no **DDL**: cada formato tem tabela própria, e a fórmula do
-[oráculo exato](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)
+[oráculo exato](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato)
 vira `CHECK`. A proposta 3 põe a semântica num **vocabulário que é dado**: o schema
 conhece a forma de uma medição, e o significado de cada grandeza mora em linhas de
 tabela. A proposta 2 põe a semântica **fora do banco**: o documento é opaco, e o que o
@@ -53,29 +53,29 @@ incompatíveis em vez de complementares.
 
 **As três concordam em quatro pontos, e a concordância vale tanto quanto a divergência.**
 Todas põem a definição de experimento no `lab_journal`, seguindo o
-[ADR-0011](../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git);
+[ADR-0011](../../../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git);
 todas mantêm cada chave estrangeira dentro do schema, e nenhuma atravessa a fronteira;
 todas recusam um caminho de `join` entre o log de observações e o veredito, que é a forma
 tabular da proibição do
-[ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações);
+[ADR-0002](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações);
 e todas atribuem o cursor pela aplicação, contíguo por execução, como o
-[ADR-0016](../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-cursor-é-campo-próprio-monotônico-por-execução)
+[ADR-0016](../../../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-cursor-é-campo-próprio-monotônico-por-execução)
 exige. Nenhum desses quatro pontos é ponto de escolha.
 
 ## O que a proposta 1 torna fácil, e o que torna caro
 
 **Fácil: o veredito malformado não chega a existir.** A regra de que o relatório DEVE
 exibir as três contagens e NÃO DEVE exibir apenas a razão, do
-[ADR-0004](../../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-veredito-de-uma-execução-medida-é-uma-taxa),
+[ADR-0004](../../../../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-veredito-de-uma-execução-medida-é-uma-taxa),
 deixa de ser prosa e vira três colunas `NOT NULL`. A `R3` da
-[comparação entre níveis](../../../features/comparacao-entre-niveis-de-isolamento/feature-card.md#regras-de-negócio),
+[comparação entre níveis](../../../../../features/comparacao-entre-niveis-de-isolamento/feature-card.md#regras-de-negócio),
 que proíbe um rótulo único colapsando os dois eixos, fica **inexprimível**: o par é a
 chave primária. Quem abre o schema descobre o que o laboratório publica sem ler código.
 
 **Caro: o esquema afirma uma resposta para uma pergunta que ninguém respondeu.** A
 composição global dos formatos segue sem decisão, e o índice de capacidades avisa que quem
 enumerar o conjunto hoje está errado, em
-[capacidade conhecida e não especificada](../../../features/README.md#capacidade-conhecida-e-não-especificada).
+[capacidade conhecida e não especificada](../../../../../features/README.md#capacidade-conhecida-e-não-especificada).
 Este desenho enumera. A forma da curva do E4 — retries, throughput e correção verde num
 eixo de workers — é invenção da proposta, e ela é estrutural: se a curva publicar outra
 coisa, duas tabelas mudam. Um quinto formato entra por migração, e montar um relatório
@@ -122,9 +122,9 @@ já que ela varia workers de ponto a ponto por construção.
 Nenhuma das três fecha estas, e escolher um desenho não as responde.
 
 1. **Onde a definição de experimento vive.** O
-   [ADR-0011](../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)
+   [ADR-0011](../../../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)
    a manda para o banco do `lab-journal`; o
-   [ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#as-colunas-de-tempo-e-a-fonte-do-relógio-por-papel-do-valor)
+   [ADR-0015](../../../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#as-colunas-de-tempo-e-a-fonte-do-relógio-por-papel-do-valor)
    trata o lado do instrumento como `lab_plane` ou `lab_journal`, em aberto. Os dois estão
    `Aceito`. As três propostas seguiram o primeiro, e nenhuma decidiu.
 2. **Qual é a composição global dos formatos de veredito.** As três a assumiram para
@@ -140,12 +140,12 @@ Nenhuma das três fecha estas, e escolher um desenho não as responde.
 6. **Onde vive a guarda de completude do stream**, e o que uma contagem sobre stream
    incompleto produz — recusa, número com ressalva, ou outro rótulo.
 7. **Qual relógio produz o instante de persistência.** O
-   [ADR-0016](../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#dois-instantes-nenhum-deles-é-ordem)
+   [ADR-0016](../../../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#dois-instantes-nenhum-deles-é-ordem)
    publica a diferença entre os dois instantes como medida da travessia, e não diz de onde
    vem o segundo.
 8. **Retenção e crescimento do log de observações**, que cresce por fronteira atravessada.
 9. **O contrato entre o frontend e o `lab-journal`**, ausente e registrado como `Q-INT-1`
-   em [`integrations.md`](../../../architecture/integrations.md#perguntas-em-aberto).
+   em [`integrations.md`](../../../../integrations.md#perguntas-em-aberto).
 
 ## A segunda pergunta não espera a escolha, ela a precede
 

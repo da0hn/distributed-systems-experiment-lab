@@ -2,7 +2,7 @@
 
 Nove desenhos de schema, três por sistema, escritos para serem debatidos e descartados.
 **Nada aqui é decisão.** O dono da forma vigente continua sendo
-[`architecture/schemas/`](../../architecture/schemas/README.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam),
+[`architecture/schemas/`](../../README.md#os-dois-esquemas-e-a-fronteira-que-eles-não-atravessam),
 e uma proposta adotada só muda alguma coisa quando virar migração escrita e artefato de
 decisão.
 

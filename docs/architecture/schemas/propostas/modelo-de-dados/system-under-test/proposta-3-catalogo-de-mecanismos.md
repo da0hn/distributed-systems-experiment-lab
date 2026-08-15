@@ -8,7 +8,7 @@ o problema e o que estuda a solução, e a forma da tabela deixa de ser variáve
 na comparação.
 
 Isto é proposta, e não decisão. O dono da forma vigente continua sendo
-[`schemas/sut.md`](../../../architecture/schemas/sut.md#o-schema-do-sistema-medido-sut).
+[`schemas/sut.md`](../../../sut.md#o-schema-do-sistema-medido-sut).
 
 ## O problema que este modelo resolve
 
@@ -47,15 +47,15 @@ medida NÃO DEVE emitir `SELECT *`, e NÃO DEVE nomear numa lista de `SET` colun
 estratégia em execução não use. Com listas de coluna explícitas, o texto do statement e
 os valores ligados não mudam por a coluna existir no catálogo, e o critério de igualdade
 de traço do
-[ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-critério-de-igualdade-entre-dois-traços-de-sql)
+[ADR-0002](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-critério-de-igualdade-entre-dois-traços-de-sql)
 não a enxerga. Sem essa regra, "inerte" é falso, e a
-[alternativa I daquele ADR](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#alternativa-i--manter-version-no-esquema-declarada-sem-política)
+[alternativa I daquele ADR](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#alternativa-i--manter-version-no-esquema-declarada-sem-política)
 volta a valer inteira.
 
 ### O que cada mecanismo faz aparecer no WAL quando ativo
 
 O oráculo não consulta este schema: ele lê o WAL por replicação lógica, pelo
-[ADR-0010](../../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
+[ADR-0010](../../../../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
 Por isso a coluna abaixo é restrição de primeira ordem, e não ilustração — o que não
 entrar no WAL não existe para o instrumento.
 
@@ -74,27 +74,27 @@ exato filtra por `resource` — uma linha de projeção não é uma linha de `re
 projetor nunca escreve `resource`, e por isso não move `initial_value` nem `final_value`.
 E a projeção **não** carrega `Σ amount`: materializar a soma numa coluna foi descartado
 pelo
-[ADR-0013](../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#o-sistema-medido-materializar-a-soma-numa-coluna),
+[ADR-0013](../../../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#o-sistema-medido-materializar-a-soma-numa-coluna),
 e esta proposta não a reabre.
 
 Quem mantém a projeção é um projetor **dentro do sistema medido**, em transação própria.
 O `lab-plane` escrevendo ali seria o instrumento gravando no schema medido, e derrubaria
 a fronteira do
-[ADR-0010](../../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
+[ADR-0010](../../../../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão).
 
 ## O que o diagrama não expressa
 
 **A ordem da chave composta.** As seis chaves são `(partition_id, <segunda coluna>)`,
 com o discriminador **primeiro**, pelo mesmo motivo das duas tabelas vigentes: ele é um
 UUIDv7, e o prefixo de instante põe toda inserção no fim da B-tree
-([`schemas/sut.md`](../../../architecture/schemas/sut.md#o-que-o-diagrama-do-sut-não-desenha)).
+([`schemas/sut.md`](../../../sut.md#o-que-o-diagrama-do-sut-não-desenha)).
 A ordem também deixa cada execução contígua na árvore, o que é o que torna barato apagar
 uma execução inteira. O nome `partition_id` é o do lado medido, e nunca `execution_id`
-([ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-nome-assimétrico-do-discriminador-e-a-tradução-num-ponto-único)).
+([ADR-0015](../../../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-nome-assimétrico-do-discriminador-e-a-tradução-num-ponto-único)).
 
 **A ausência de chave estrangeira, em todas as seis.** Nenhuma linha do desenho as liga,
 e a ausência de linha é a decisão. O motivo do
-[ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id)
+[ADR-0015](../../../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id)
 generaliza: o `FOR KEY SHARE` que um `INSERT` com chave estrangeira adquire colide com o
 `FOR UPDATE` de `PESSIMISTIC`. Uma chave estrangeira de `outbox` para `resource` é pior
 que a de `allocation`, porque o `INSERT` de outbox roda dentro da transação exata que o
@@ -115,7 +115,7 @@ escrita nomeia toda coluna, e a que esquecer falha alto. Isso alcança as inerte
 `version` e `fence_token` recebem o zero no `INSERT` de seeding, e não por `DEFAULT`.
 Alcança também o outbox: **nenhum trigger o escreve.** Um trigger de outbox roda dentro
 da janela medida, que é o argumento pelo qual o
-[ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#as-colunas-de-tempo-e-a-fonte-do-relógio-por-papel-do-valor)
+[ADR-0015](../../../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#as-colunas-de-tempo-e-a-fonte-do-relógio-por-papel-do-valor)
 já recusou trigger em `updated_at`. E alcança o relógio: `expires_at`, `published_at` e
 as dez colunas de tempo vêm do adaptador injetável, nunca de `now()` ou
 `clock_timestamp()`.
@@ -123,34 +123,34 @@ as dez colunas de tempo vêm do adaptador injetável, nunca de `now()` ou
 **A ausência de `CHECK` que impeça a violação.** Nenhuma constraint recusa
 `Σ amount > capacity`, nem uma segunda escrita sob `version` desatualizada. O laboratório
 existe para mostrar a anomalia acontecendo, e o
-[ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#alternativa-d--a-verificação-vive-no-banco)
+[ADR-0002](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#alternativa-d--a-verificação-vive-no-banco)
 já descartou o banco como oráculo. A única unicidade declarada é a chave primária de
 `inbox`, e ela **é** o mecanismo de deduplicação, e não uma proteção acessória.
 
 **A ausência de qualquer coluna que diga qual mecanismo está ligado.** Nenhuma tabela
 tem `mode`, `enabled` ou equivalente. A ativação é rótulo opaco de configuração do
 experimento, como a estratégia de concorrência do
-[ADR-0006](../../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão), e vive na
+[ADR-0006](../../../../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão), e vive na
 definição de experimento, fora do Git
-([ADR-0011](../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)).
+([ADR-0011](../../../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)).
 Uma coluna dessas poria vocabulário do instrumento dentro do sistema medido.
 
 **A ausência do outro schema neste canvas.** Nenhuma tabela do `lab_plane` aparece aqui,
 e nenhuma linha atravessa a fronteira: uma linha desenhada entre os dois renderiza
 exatamente a chave estrangeira que a fronteira proíbe
-([`schemas/README.md`](../../../architecture/schemas/README.md#a-ausência-de-linha-entre-os-dois-diagramas-é-a-decisão)).
+([`schemas/README.md`](../../../README.md#a-ausência-de-linha-entre-os-dois-diagramas-é-a-decisão)).
 
 ## Decisões assumidas
 
 | O que assumi                                                                                                                                                                               | Alternativa que ficou de fora                                                              | O que muda no modelo se a pessoa decidir o contrário                                                                                                                                                                          |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| O domínio medido deixa de ter só duas entidades: quatro tabelas de mecanismo entram, por um ADR que estende o [ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão) | uma migração por etapa do roadmap, criando cada tabela no commit que introduz o mecanismo  | a proposta inteira cai; o schema volta a mudar entre experimentos, e a forma da tabela volta a ser variável da comparação                                                                                                     |
-| `version` entra em `resource`, inerte em zero, pelo ADR que a exige — [ADR-0006](../../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão), que na versão final já existe        | `version` nasce só no commit que introduz `OPTIMISTIC`, na letra do ADR-0002 e do ADR-0006 | `resource` perde uma coluna, e `OPTIMISTIC` volta a exigir migração antes de rodar; a comparação entre `NONE` e `OPTIMISTIC` passa a ter duas variáveis                                                                       |
+| O domínio medido deixa de ter só duas entidades: quatro tabelas de mecanismo entram, por um ADR que estende o [ADR-0002](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#decisão) | uma migração por etapa do roadmap, criando cada tabela no commit que introduz o mecanismo  | a proposta inteira cai; o schema volta a mudar entre experimentos, e a forma da tabela volta a ser variável da comparação                                                                                                     |
+| `version` entra em `resource`, inerte em zero, pelo ADR que a exige — [ADR-0006](../../../../../adr/0006-a-forma-da-estrategia-de-concorrencia.md#decisão), que na versão final já existe        | `version` nasce só no commit que introduz `OPTIMISTIC`, na letra do ADR-0002 e do ADR-0006 | `resource` perde uma coluna, e `OPTIMISTIC` volta a exigir migração antes de rodar; a comparação entre `NONE` e `OPTIMISTIC` passa a ter duas variáveis                                                                       |
 | A operação medida NÃO DEVE emitir `SELECT *` nem nomear coluna que a estratégia não use                                                                                                    | liberar `SELECT *` e listas de `SET` amplas                                                | "inerte" deixa de ser verdade: a coluna entra no traço de SQL, e o argumento técnico contra a alternativa I do ADR-0002 volta a valer                                                                                         |
 | As seis tabelas entram na publicação de CDC                                                                                                                                                | publicar só `resource` e `allocation`                                                      | outbox, inbox, posse e projeção ficam inobserváveis sem `SELECT`, que o ADR-0010 proíbe; os fenômenos das etapas 6, 7, 9 e 11 perdem evidência                                                                                |
 | `fence_token` entra em `resource`, inerte em zero                                                                                                                                          | o token vive só em `lease`                                                                 | o fencing deixa de fenciar: sem o lado escrito guardar o maior token visto, o escritor com posse expirada não é recusado, e a etapa 11 fica sem experimento de token                                                          |
 | A projeção é mantida por um projetor **dentro** do sistema medido, em transação própria                                                                                                    | o `lab-plane` mantém a projeção                                                            | o instrumento passa a escrever no schema medido, e a fronteira do ADR-0010 cai; o defeito do projetor vira resultado de consistência                                                                                          |
-| `resource_projection` projeta `resource.value` e **não** carrega `Σ amount`                                                                                                                | projetar também a soma das alocações                                                       | contradiz o descarte de "o sistema medido materializar a soma numa coluna" no [ADR-0013](../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#o-sistema-medido-materializar-a-soma-numa-coluna) |
+| `resource_projection` projeta `resource.value` e **não** carrega `Σ amount`                                                                                                                | projetar também a soma das alocações                                                       | contradiz o descarte de "o sistema medido materializar a soma numa coluna" no [ADR-0013](../../../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#o-sistema-medido-materializar-a-soma-numa-coluna) |
 | Nenhuma coluna declara qual mecanismo está ligado; a ativação é rótulo opaco de configuração                                                                                               | uma coluna `mode` por tabela, ou uma tabela de configuração no `sut`                       | vocabulário do instrumento entra no schema medido, pelo mesmo motivo que `execution_id` foi recusado ali                                                                                                                      |
 | Nenhum `DEFAULT` em coluna nenhuma, inclusive nas inertes                                                                                                                                  | `DEFAULT 0` em `version` e `fence_token`                                                   | o `INSERT` de seeding para de nomeá-las, e fica byte a byte idêntico com e sem o catálogo — ganho real, recusado para manter a regra de que a escrita esquecida falha alto                                                    |
 | Nenhum trigger escreve o outbox                                                                                                                                                            | outbox por trigger `AFTER UPDATE` em `resource`                                            | o trigger roda dentro da janela medida, e o E1 passa a medir o trigger junto do lost update                                                                                                                                   |
@@ -180,7 +180,7 @@ experimentos**, que é onde ela ensina.
 lê, e o ADR-0002 recusou `version` por um segundo motivo que não é técnico: com a coluna
 no lugar, `OPTIMISTIC` vira a continuação natural do modelo e `ATOMIC_UPDATE` vira o
 desvio, quando os dois deveriam chegar ao E3 empatados
-([ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#justificativa)).
+([ADR-0002](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#justificativa)).
 Esse argumento sobrevive a esta proposta, e vale seis vezes: quem abrir a migração
 encontra `outbox`, `inbox`, `lease`, projeção, `version` e `fence_token` antes de ter
 visto anomalia nenhuma, e cada um deles sugere a resposta antes da pergunta.
@@ -205,12 +205,12 @@ da migração vale mais que isso deve recusar esta proposta inteira, e não uma 
   oráculo decidido", e nenhuma delas é fechada aqui. A divergência entre
   `resource_projection.value` e `resource.value` precisa de um oráculo próprio, e ele
   não é o da divergência entre fontes que a
-  [matriz](../../../architecture/integrations.md#matriz) já registra.
+  [matriz](../../../../integrations.md#matriz) já registra.
 - **Quem apaga uma execução, e quando.** O catálogo torna o descarte por partição
   barato, e não decide se ele acontece.
 - **O formato do relatório** quando um mecanismo ativo e um oráculo antigo convivem.
 - **A verificação da linha órfã**, que o
-  [ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id)
+  [ADR-0015](../../../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id)
   deixou em aberto e que esta proposta multiplica por quatro, ao criar três novas
   colunas que apontam para `resource.id` sem constraint.
 - **A ordem em que as tabelas são criadas**, que é irrelevante sem chave estrangeira.
@@ -225,7 +225,7 @@ da migração vale mais que isso deve recusar esta proposta inteira, e não uma 
   qual configuração, não sei afirmar.
 - **O que "contiguidade de LSN" significa quando a publicação tem seis relações?** A
   guarda do
-  [ADR-0013](../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
+  [ADR-0013](../../../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
   exige conferir a contiguidade antes de somar, e LSN é deslocamento em bytes no WAL, e
   não contador. Se o critério de contiguidade sobrevive a um stream com quatro relações
   a mais é fato sobre o PostgreSQL, e não escolha de desenho.

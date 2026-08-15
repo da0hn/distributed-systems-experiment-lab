@@ -8,7 +8,7 @@ paga com a perda de qualquer consulta sobre o interior de um veredito.
 Isto é **proposta**, e não decisão. Nenhum schema deste banco foi desenhado ainda: a pasta
 de esquemas não tem arquivo para o `lab_journal`, e nem em qual banco a definição de
 experimento vive está decidido
-([`schemas/lab-plane.md`](../../../architecture/schemas/lab-plane.md#o-que-o-diagrama-do-lab_plane-não-desenha)).
+([`schemas/lab-plane.md`](../../../lab-plane.md#o-que-o-diagrama-do-lab_plane-não-desenha)).
 
 ## O problema que este modelo resolve
 
@@ -16,19 +16,19 @@ O caderno guarda quatro coisas de naturezas diferentes: a definição de um expe
 declarada pelo frontend, o log de observações que alimenta o replay, o resultado de cada
 execução, e a leitura que agrupa vários resultados. Só a segunda tem forma fixada por ADR
 aceito
-([ADR-0007](../../../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#a-forma-de-um-evento)).
+([ADR-0007](../../../../../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#a-forma-de-um-evento)).
 
 O resultado é onde um modelo relacional se rompe. Um oráculo produz uma contagem de
 operações perdidas
-([ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato));
+([ADR-0002](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato));
 outro produz um booleano com dois números
-([ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-do-predicado));
+([ADR-0002](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-do-predicado));
 a execução medida produz três contagens, duas taxas e um limite de confiança
-([ADR-0004](../../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-veredito-de-uma-execução-medida-é-uma-taxa)),
+([ADR-0004](../../../../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-veredito-de-uma-execução-medida-é-uma-taxa)),
 mais uma classificação de cinco condições avaliadas em ordem
-([ADR-0004](../../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-zero-é-classificado-e-a-classificação-tem-quatro-valores));
+([ADR-0004](../../../../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-zero-é-classificado-e-a-classificação-tem-quatro-valores));
 e o formato curva do E4 não tem forma decidida
-([`features/README.md`](../../../features/README.md#capacidade-conhecida-e-não-especificada)).
+([`features/README.md`](../../../../../features/README.md#capacidade-conhecida-e-não-especificada)).
 Modelar isso em colunas exige adivinhar hoje a união dos formatos, e migrá-la a cada
 formato novo. Uma migração num caderno que já guarda resultado publicado reescreve o
 passado, e resultado reescrito não é evidência de nada. A pergunta que este modelo escolhe
@@ -37,12 +37,12 @@ gravado, e que nada saiu do meio".
 
 Duas regras do repositório dizem que o caderno **não tem caminho de volta**: o oráculo NÃO
 DEVE ler o log de observações, e nenhum serviço lê o schema de outro
-([ADR-0010](../../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)).
+([ADR-0010](../../../../../adr/0010-a-fronteira-de-schema-e-o-cdc-como-fonte-do-veredito.md#decisão)).
 Um banco que só recebe, e nunca alimenta a medição, não precisa de forma consultável —
 precisa de forma conferível.
 
 E há o custo nomeado no
-[ADR-0011](../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git):
+[ADR-0011](../../../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git):
 um resultado deixa de aparecer em diff, de ser revisado em PR e de sobreviver a um banco
 recriado. Esta proposta ataca os três.
 
@@ -56,21 +56,21 @@ fato apensado, e `form` registra as versões sob as quais um documento pôde ser
 **Existe um livro por execução, e um livro só para o caderno.** O `ledger_id` de um livro
 de execução **é** o discriminador do instrumento — o `execution_id`, nome que o
 instrumento dá ao valor que o sistema medido chama de `partition_id`
-([ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-nome-assimétrico-do-discriminador-e-a-tradução-num-ponto-único)).
+([ADR-0015](../../../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-nome-assimétrico-do-discriminador-e-a-tradução-num-ponto-único)).
 Não há coluna de execução na `entry`: a pertinência é o livro, e por isso "de qual
 execução veio" é o que o banco sabe sem abrir documento nenhum.
 
 **O cursor do replay e o número de sequência do livro são a mesma coluna.** O ADR-0016
 exige campo próprio, monotônico por execução, que não seja um timestamp
-([ADR-0016](../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-cursor-é-campo-próprio-monotônico-por-execução)),
+([ADR-0016](../../../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-cursor-é-campo-próprio-monotônico-por-execução)),
 e um livro-razão precisa exatamente disso para provar contiguidade. O `SELECT` do replay —
 entradas com cursor maior que `C`, na ordem do cursor
-([ADR-0016](../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-replay-por-cursor-é-o-único-mecanismo-com-ou-sem-histórico-completo))
+([ADR-0016](../../../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#o-replay-por-cursor-é-o-único-mecanismo-com-ou-sem-histórico-completo))
 — é a varredura do livro a partir de uma posição. Nada foi acrescentado para o streaming.
 
 **O evento terminal do stream é o selo.** A regra `R4` exige que uma execução encerrada
 devolva o histórico, depois um evento terminal, e só então feche
-([card](../../../features/streaming-e-replay-do-log-de-observacoes/feature-card.md#regras-de-negócio)).
+([card](../../../../../features/streaming-e-replay-do-log-de-observacoes/feature-card.md#regras-de-negócio)).
 O selo é a última entrada do livro, e fechá-lo não muda estado: não existe coluna de
 estado a atualizar.
 
@@ -78,9 +78,9 @@ estado a atualizar.
 denuncia entrada ausente; o `previous_hash` denuncia entrada trocada, quebrando o elo de
 todas as seguintes. O primeiro sozinho não enxerga substituição; o segundo sozinho não
 distingue fim de truncamento. É a guarda de contiguidade que o
-[ADR-0013](../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
+[ADR-0013](../../../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
 exige do WAL, aplicada ao transporte da observação, que não carrega LSN
-([ADR-0014](../../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#negativas)).
+([ADR-0014](../../../../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#negativas)).
 
 **Correção é entrada nova.** `superseded_hash` aponta para a entrada superada, e a superada
 permanece. Quem lê aplica a sucessão; o banco não a resolve.
@@ -89,7 +89,7 @@ permanece. Quem lê aplica a sucessão; o banco não a resolve.
 publicação é uma entrada no livro do caderno cujo documento lista os `entry_hash` que
 entraram naquela leitura, na ordem em que entraram. A curva do E4 e a comparação entre os
 três níveis de isolamento
-([card](../../../features/comparacao-entre-niveis-de-isolamento/feature-card.md#escopo))
+([card](../../../../../features/comparacao-entre-niveis-de-isolamento/feature-card.md#escopo))
 não ganham estrutura própria. Duas publicações da mesma execução são duas linhas, e ambas
 verdadeiras: a segunda sucede a primeira, e não a corrige.
 
@@ -102,7 +102,7 @@ leitura é por livro: o replay varre cursores de uma execução, e a conferênci
 livro do começo ao fim. Com o número de sequência à frente, as entradas de uma execução
 ficariam espalhadas pela B-tree. O `ledger_id` é um UUIDv7 derivado pelo instrumento, e o
 prefixo de instante põe cada livro novo no fim da árvore, como no sistema medido
-([`schemas/sut.md`](../../../architecture/schemas/sut.md#o-que-o-diagrama-do-sut-não-desenha)).
+([`schemas/sut.md`](../../../sut.md#o-que-o-diagrama-do-sut-não-desenha)).
 
 **Dois índices aditivos, e a ausência do terceiro é a decisão.** O `UNIQUE` sobre
 `entry_hash` é global ao schema, porque um endereço de conteúdo não pertence a um
@@ -123,9 +123,9 @@ banco, e quem confere o export fora dele verificaria uma regra que não enxerga.
 **Uma chave estrangeira existe, outra não.** `entry` referencia `ledger` e `form`; as
 duas ligações são internas ao `lab_journal` e nenhuma toca a janela medida — o caderno é
 alimentado depois do broker
-([ADR-0016](../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#no-lab-journal-a-ordem-é-serial-persiste-depois-emite)).
+([ADR-0016](../../../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#no-lab-journal-a-ordem-é-serial-persiste-depois-emite)).
 O lock que a tirou do sistema medido
-([ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id))
+([ADR-0015](../../../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id))
 não alcança um schema onde nada é medido. Já `superseded_hash` **não** tem chave
 estrangeira: a entrada superada PODE viver num livro ainda não reimportado.
 
@@ -177,7 +177,7 @@ do selo. Basta então versionar em Git **uma linha** por execução — `ledger_
 número e hash do selo — para o resultado voltar a aparecer em diff e a ser revisado em PR,
 sem que o volume do log de observações entre no repositório. Um banco recriado se reimporta
 do arquivo, e a linha versionada prova que o que voltou é o que saiu — os três custos que o
-[ADR-0011](../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#negativas)
+[ADR-0011](../../../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#negativas)
 nomeou.
 
 **E cobra caro.** A reimportação DEVE preservar `sequence_number` e `previous_hash`
@@ -193,21 +193,21 @@ declarada: um emissor que escrever lixo produz entrada íntegra e inútil.
 **O append estritamente apensável foi aceito em troca de contenção por livro.** Dois
 consumidores do mesmo livro colidem no `UNIQUE` da chave e um repete. Isso é aceitável
 enquanto o `lab-journal` persistir em série, como o
-[ADR-0016](../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#no-lab-journal-a-ordem-é-serial-persiste-depois-emite)
+[ADR-0016](../../../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#no-lab-journal-a-ordem-é-serial-persiste-depois-emite)
 já exige, e deixa de ser no dia em que ele rodar em mais de uma instância.
 
 ## O que esta proposta NÃO decide
 
 Nenhum formato de documento — nem o do veredito exato, nem o do predicado, nem o da taxa,
 nem o da curva do E4, que segue sem forma
-([`features/README.md`](../../../features/README.md#capacidade-conhecida-e-não-especificada)).
+([`features/README.md`](../../../../../features/README.md#capacidade-conhecida-e-não-especificada)).
 Ela decide onde o documento mora e como se prova que ele não mudou, e nada sobre o que ele
 diz.
 
 O contrato HTTP entre o frontend e o `lab-journal`, ausente na
-[matriz](../../../architecture/integrations.md#matriz); o formato JSON de cada evento no
+[matriz](../../../../integrations.md#matriz); o formato JSON de cada evento no
 stream e a contrapressão do broker, os dois em aberto no
-[ADR-0016](../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#negativas); e
+[ADR-0016](../../../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#negativas); e
 o que o stream faz quando o `Last-Event-ID` aponta para um cursor que não existe — a
 contiguidade da cadeia oferece resposta possível, e esta proposta não a escolhe.
 
@@ -224,11 +224,11 @@ repositório — o que aquele ADR tirou de lá.
 
 **O que conta como "o resultado" a exportar: o veredito, ou o livro inteiro com as
 observações?** Um livro do E1 carrega entre novecentas e mil e quinhentas observações
-([ADR-0014](../../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#justificativa)),
+([ADR-0014](../../../../../adr/0014-o-broker-na-travessia-da-observacao-e-o-cursor-monotonico-do-replay.md#justificativa)),
 e a escolha muda a ordem de grandeza do arquivo e o que a cadeia consegue provar.
 
 **Uma publicação pode incluir execuções rodadas sob definições diferentes?** A comparação
 entre níveis supõe que só o nível varia
-([card](../../../features/comparacao-entre-niveis-de-isolamento/feature-card.md#regras-de-negócio)),
+([card](../../../../../features/comparacao-entre-niveis-de-isolamento/feature-card.md#regras-de-negócio)),
 e o modelo não impede uma publicação que misture cargas incomparáveis — impedir exigiria
 saber o que o documento diz.

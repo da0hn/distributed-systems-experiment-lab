@@ -7,18 +7,18 @@ onde saiu — o que ela otimiza é auditabilidade e sobrevivência a queda, incl
 proposital que a etapa 6 provoca no próprio instrumento.
 
 Isto é proposta, e não decisão. O dono da forma vigente continua sendo
-[`schemas/lab-plane.md`](../../../architecture/schemas/lab-plane.md#o-schema-do-instrumento-lab_plane).
+[`schemas/lab-plane.md`](../../../lab-plane.md#o-schema-do-instrumento-lab_plane).
 
 ## O problema que este modelo resolve
 
 O schema está vazio, e a única tabela decidida para ele segue sem forma escolhida
-([`schemas/README.md`](../../../architecture/schemas/README.md#o-que-muda-esta-pasta)).
+([`schemas/README.md`](../../../README.md#o-que-muda-esta-pasta)).
 Enquanto isso, todo insumo do veredito viveria só em memória: `commits`, coincidências,
 descartes e a soma do predicado. Um reinício no meio da execução os apaga sem sinal, e a
 etapa 6 mata o `lab-plane` de propósito
-([ADR-0017](../../../adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#contexto)).
+([ADR-0017](../../../../../adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#contexto)).
 A guarda de contiguidade de LSN que o oráculo DEVE cumprir antes de somar
-([ADR-0013](../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão))
+([ADR-0013](../../../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão))
 agrava o caso: ela é prova sobre um stream que ninguém guardou, logo presumida em vez de
 provada. Aqui cada insumo é linha que permanece, e cada contagem é projeção dela.
 
@@ -26,7 +26,7 @@ provada. Aqui cada insumo é linha que permanece, e cada contagem é projeção 
 
 Dez tabelas, todas em `lab_plane`. Nenhuma chave estrangeira atravessa schema, e nenhum
 outro schema entra neste canvas. Os identificadores vão em inglês
-([ADR-0008](../../../adr/0008-os-dois-planos-em-processos-separados.md#decisão)).
+([ADR-0008](../../../../../adr/0008-os-dois-planos-em-processos-separados.md#decisão)).
 
 ![O livro-razão do veredito](diagramas/proposta-3-livro-razao-do-veredito-1.excalidraw.svg)
 
@@ -81,14 +81,14 @@ outro schema entra neste canvas. Os identificadores vão em inglês
 - Ganha-se **veredito re-derivável e contiguidade provada**; custa-se **I/O do
   instrumento no mesmo PostgreSQL do sistema medido**, a perturbação que o ADR-0017 já
   nomeia nas
-  [negativas](../../../adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#negativas).
+  [negativas](../../../../../adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#negativas).
 - Ganha-se **a lista de execuções ativas sobrevivendo ao reinício**; custa-se **uma
   projeção a manter no caminho de todo evento de CDC**, que só a réplica única do
-  [ADR-0012](../../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
+  [ADR-0012](../../../../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
   permite guardar em memória.
 - Ganha-se **o evento auditável, com o discriminador como chegou ao lado do traduzido**,
   na tradução de ponto único do
-  [ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-nome-assimétrico-do-discriminador-e-a-tradução-num-ponto-único);
+  [ADR-0015](../../../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-nome-assimétrico-do-discriminador-e-a-tradução-num-ponto-único);
   custa-se **uma sombra dos dados do sistema medido dentro do schema do instrumento**.
 - Ganha-se **nenhuma linha reescrita**; custa-se **o livro-razão crescer por tentativa, e
   nada aqui decidir quando ele é podado**.
@@ -98,25 +98,25 @@ outro schema entra neste canvas. Os identificadores vão em inglês
 A forma do `lab_journal`, nem onde a definição de experimento vive. O formato do
 relatório, nem como os formatos de veredito convivem nele. A capacidade do buffer e a
 vazão da thread de publicação, que o
-[ADR-0017](../../../adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#negativas)
+[ADR-0017](../../../../../adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#negativas)
 deixa sem número e este desenho herda. O tipo do evento de bloqueio no conjunto fechado
-do [ADR-0007](../../../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#a-forma-de-um-evento):
+do [ADR-0007](../../../../../adr/0007-o-log-de-observacoes-forma-ordem-e-onde-vive.md#a-forma-de-um-evento):
 `BUFFER_BLOCKED` é `kind` deste livro-razão, e não tipo daquele conjunto. Quando o
 livro-razão é podado, e por quem. Nenhuma migração nasce desta proposta.
 
 ## Perguntas que ela levanta
 
 **A colisão com regra aprovada por pessoa, e ela é dupla.** A `R6` de
-[distinção entre higiene e invalidação](../../../features/distincao-entre-higiene-e-invalidacao/feature-card.md#regras-de-negócio)
+[distinção entre higiene e invalidação](../../../../../features/distincao-entre-higiene-e-invalidacao/feature-card.md#regras-de-negócio)
 diz que a tabela de execuções ativas NÃO DEVE registrar o que uma execução mediu. Este
 desenho mantém a letra: `run` e `run_lifecycle_event` não carregam medida nenhuma, e toda
 medida vive em tabelas separadas. Ele colide com o motivo que a própria regra invoca — o
-[ADR-0011](../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#histórico-de-execução-dentro-do-lab-plane)
+[ADR-0011](../../../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#histórico-de-execução-dentro-do-lab-plane)
 descartou histórico de execução dentro do `lab-plane`, e um livro-razão do veredito é
 histórico de execução dentro do `lab-plane`. Não resolvo nenhuma das duas.
 
 **A proveniência sobrevive à transcrição?** O
-[ADR-0013](../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
+[ADR-0013](../../../../../adr/0013-a-proveniencia-da-fonte-como-criterio-da-proibicao-do-oraculo.md#decisão)
 fixou que a proibição alcança fonte produzida pelo instrumento, e que o WAL não é uma
 delas. `cdc_event` é cópia do WAL escrita pelo instrumento. Se o oráculo somar dali, ele
 soma de uma tabela que o instrumento escreveu, e nenhum documento diz se a proveniência
@@ -135,6 +135,6 @@ o banco aceita uma linha com metade de cada formato.
 
 **O elo de contiguidade existe?** `preceding_lsn` pressupõe que o conector exponha o LSN
 do evento imediatamente anterior. As
-[negativas do ADR-0012](../../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)
+[negativas do ADR-0012](../../../../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#negativas)
 registram que nem a sobrevivência do próprio LSN ao transporte foi provada por teste. Se
 o elo não existir, a coluna não é escrevível como desenhada.

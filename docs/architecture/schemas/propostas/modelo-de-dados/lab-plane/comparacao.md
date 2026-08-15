@@ -16,7 +16,7 @@ veredito evento a evento. Escolher entre elas é decidir se durabilidade no inst
 serve para **perguntar**, para **repetir** ou para **provar** — e as três respostas são
 mutuamente exclusivas, porque cada uma torna as outras duas ou insuficientes ou
 excessivas. Há um segundo eixo embutido, e ele não é livre: o
-[ADR-0011](../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#histórico-de-execução-dentro-do-lab-plane)
+[ADR-0011](../../../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#histórico-de-execução-dentro-do-lab-plane)
 recusou histórico de execução dentro do `lab-plane`, e quanto mais uma proposta se aproxima
 de "provar", mais perto ela chega daquilo que aquela decisão descartou.
 
@@ -60,7 +60,7 @@ o `lab_journal` precisa absorver definição, log, veredito e calibração, e a 
 schema não está decidida.
 
 **Proposta 2.** Ela torna barato recusar cedo e repetir sem redigitar: o
-[ADR-0003](../../../adr/0003-a-linguagem-do-agendamento.md#o-que-a-plataforma-recusa-antes-de-executar)
+[ADR-0003](../../../../../adr/0003-a-linguagem-do-agendamento.md#o-que-a-plataforma-recusa-antes-de-executar)
 manda recusar ciclo, papel não declarado e endereço que não resolve antes de executar, e
 com a intenção inteira em linhas o instrumento tem exatamente a estrutura que essa
 validação consome — a mesma que o escalonador depois executa. Ela torna barata também a
@@ -79,7 +79,7 @@ que a etapa 6 provoca no próprio instrumento deixa marca em vez de buraco silen
 barata a auditoria de um descarte, porque cada um tem linha com o LSN e a classificação, em
 vez de um contador que não permite reconstituir nada. O que ela torna caro é o I/O do
 instrumento no mesmo PostgreSQL do sistema medido — a perturbação que as
-[negativas do ADR-0017](../../../adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#negativas)
+[negativas do ADR-0017](../../../../../adr/0017-a-persistencia-antecipada-do-log-de-observacoes-e-o-buffer-que-a-alimenta.md#negativas)
 já nomeiam —, e o tamanho, porque o livro-razão cresce por tentativa e ninguém decidiu
 quando ele é podado. Ela paga ainda dois custos que não são de recurso: uma sombra dos
 dados do sistema medido passa a viver dentro do schema do instrumento, e o desenho depende
@@ -119,14 +119,14 @@ linha, e ninguém está encarregado dele.
 ## As perguntas que sobrevivem a qualquer escolha
 
 - **Onde a definição de experimento vive.** As três a empurram para fora de si, e o
-  [dono da forma do `lab_plane`](../../../architecture/schemas/lab-plane.md#o-que-o-diagrama-do-lab_plane-não-desenha)
+  [dono da forma do `lab_plane`](../../../lab-plane.md#o-que-o-diagrama-do-lab_plane-não-desenha)
   registra a pergunta sem decisão. Nenhuma escolha aqui a responde.
 - **A forma do `lab_journal`.** As três dependem dele para o que não guardam, e a
-  [matriz](../../../architecture/integrations.md#matriz) o registra vazio. Quanto menos o
+  [matriz](../../../../integrations.md#matriz) o registra vazio. Quanto menos o
   `lab_plane` guardar, mais aquele schema precisa absorver.
 - **Se a `R6` e o ADR-0011 admitem alguma durabilidade além do filtro.** As três esbarram
   na mesma regra aprovada, em
-  [higiene e invalidação](../../../features/distincao-entre-higiene-e-invalidacao/feature-card.md#regras-de-negócio),
+  [higiene e invalidação](../../../../../features/distincao-entre-higiene-e-invalidacao/feature-card.md#regras-de-negócio),
   por caminhos diferentes: a 1 não a toca, a 2 a contraria na letra, a 3 a mantém na letra
   e colide com o motivo que ela invoca. Só a pessoa desfaz a regra que aprovou, e essa
   resposta é anterior à escolha do modelo.
@@ -139,9 +139,9 @@ linha, e ninguém está encarregado dele.
 - **A retenção.** Nenhuma das três decide quando o schema do instrumento é podado, e as
   duas maiores crescem sem teto declarado.
 - **O contrato do comando de execução e o formato do relatório**, sem forma em
-  [`Q-INT-1`](../../../architecture/integrations.md#perguntas-em-aberto). As três supõem
+  [`Q-INT-1`](../../../../integrations.md#perguntas-em-aberto). As três supõem
   algo sobre como a execução é aberta, e nenhuma decide o contrato.
 - **A réplica única é condição, e não garantia.** As três dependem dela — a 1 no predicado
   de vida do processo, a 2 e a 3 na projeção mantida em memória —, e é o
-  [ADR-0012](../../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
+  [ADR-0012](../../../../../adr/0012-o-broker-no-caminho-do-veredito-e-a-dispensa-que-ele-exigiu.md#decisão)
   que a declara. Nenhuma das três a produz.

@@ -10,20 +10,20 @@ depois, na leitura de um relatório já publicado.
 Isto é uma **proposta**, e não decisão: nenhum schema deste banco foi desenhado ainda, e
 a pasta que é dona da forma dos outros dois declara por escrito que o `lab_journal` fica
 fora dela, em
-[`schemas/README.md`](../../../architecture/schemas/README.md#a-ausência-de-linha-entre-os-dois-diagramas-é-a-decisão).
+[`schemas/README.md`](../../../README.md#a-ausência-de-linha-entre-os-dois-diagramas-é-a-decisão).
 
 ## O problema que este modelo resolve
 
 Três formatos de veredito já estão decididos, um por oráculo, e nenhum é caso particular
 do outro: a
-[contagem exata](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato) do
+[contagem exata](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-exato) do
 contador, o
-[predicado booleano](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-do-predicado)
+[predicado booleano](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-do-predicado)
 da capacidade e a
-[taxa com limite superior de confiança](../../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-veredito-de-uma-execução-medida-é-uma-taxa).
+[taxa com limite superior de confiança](../../../../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#o-veredito-de-uma-execução-medida-é-uma-taxa).
 Um quarto, a curva do E4, tem estímulo e forma esperada, e nenhuma regra sobre como se
 declara ou se compara — em
-[capacidade conhecida e não especificada](../../../features/README.md#capacidade-conhecida-e-não-especificada).
+[capacidade conhecida e não especificada](../../../../../features/README.md#capacidade-conhecida-e-não-especificada).
 
 Um caderno que guardasse os quatro numa coluna `numeric` chamada `result`, ou num
 `jsonb` chamado `payload`, aceitaria uma taxa sem denominador, um predicado carregando o
@@ -55,7 +55,7 @@ E4 inexprimível, porque ali a rodada tem uma medida por valor do eixo.
 a escrita que esquecer a coluna falha alto. As duas exceções são `experiment.created_at`
 e `experiment.updated_at`, que carregam `DEFAULT now()` e **contrariam a regra do
 relógio injetável na letra**. A autorização é da tabela de fonte por papel do valor do
-[ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#as-colunas-de-tempo-e-a-fonte-do-relógio-por-papel-do-valor),
+[ADR-0015](../../../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#as-colunas-de-tempo-e-a-fonte-do-relógio-por-papel-do-valor),
 que atribui ao banco o metadado de CRUD da definição — e vale a pena porque a definição é
 declarada por pessoa, fora de qualquer janela medida.
 
@@ -68,11 +68,11 @@ schema tem trigger, e é por isso que as três regras do parágrafo final ficam 
 `curve_point.execution_id` e `level_arm.execution_id` apontam para `run`, do
 próprio `lab_journal`. O `partition_id` do sistema medido não aparece aqui, e não
 poderia: os dois nomes designam o mesmo valor e nenhuma constraint os liga, pelo
-[ADR-0015](../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-nome-assimétrico-do-discriminador-e-a-tradução-num-ponto-único).
+[ADR-0015](../../../../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#o-nome-assimétrico-do-discriminador-e-a-tradução-num-ponto-único).
 
 **Nenhuma coluna liga um slot de veredito a `observation`, e essa é a ausência mais cara
 do modelo.** Ela é a forma tabular da proibição do
-[ADR-0002](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações):
+[ADR-0002](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#o-oráculo-lê-o-banco-e-não-deve-ler-o-log-de-observações):
 o `lab-journal` recebe o veredito pronto e **não** o recompõe a partir do log que ele
 guarda. Um `JOIN` que o recompusesse continua escrevível a qualquer momento; o que este
 desenho garante é só que nenhuma chave o convide.
@@ -90,13 +90,13 @@ em código a espalhar procedimento pelo schema de um instrumento de medida.
 | A composição global é um **relatório composto**, com uma associação nomeada por formato de veredito                                 | uma coluna `format` mais um `jsonb` de payload; ou uma tabela `verdict` genérica com `numeric value` | o modelo colapsa em duas tabelas, os `CHECK` de fórmula somem, e a validação volta inteira para o código                                                                       |
 | A **curva do E4** é um cabeçalho com eixo e domínio, mais um ponto por abscissa, cada ponto ligado à execução medida que o produziu | a curva como um `jsonb` de pares; ou como uma coluna `numeric[]` por série                           | `verdict_curve` e `curve_point` viram uma coluna só, e a rastreabilidade de cada ponto até a execução desaparece                                                               |
 | A curva publica **retries por operação, throughput e correção verde** por ponto, com o eixo em `workers`                            | séries declaradas em tempo de execução, com nome e unidade em linha                                  | `curve_point` troca as três colunas por `(series, value)`, e o banco deixa de saber o que a curva publica                                                                      |
-| A **comparação entre níveis** é entidade própria, e o par nível mais estratégia é a chave primária de `level_arm`                   | agrupar as execuções por `round` e deduzir a comparação na consulta                                  | volta a ser possível o rótulo único que a `R3` de [comparação entre níveis](../../../features/comparacao-entre-niveis-de-isolamento/feature-card.md#regras-de-negócio) proíbe  |
+| A **comparação entre níveis** é entidade própria, e o par nível mais estratégia é a chave primária de `level_arm`                   | agrupar as execuções por `round` e deduzir a comparação na consulta                                  | volta a ser possível o rótulo único que a `R3` de [comparação entre níveis](../../../../../features/comparacao-entre-niveis-de-isolamento/feature-card.md#regras-de-negócio) proíbe  |
 | A **rodada** é a unidade de relatório, e agrupa uma ou mais execuções medidas com os controles de cada uma                          | o relatório pendurado direto na execução medida                                                      | curva e comparação perdem onde morar: nenhuma das duas é veredito de uma execução só                                                                                           |
 | Um controle aponta para a sua medida por `measured_run_id`, e um `CHECK` casa isso com o papel                                      | os quatro papéis como irmãos dentro da rodada, sem ligação entre eles                                | com mais de uma medida por rodada, ninguém sabe qual controle interpreta qual medida                                                                                           |
-| O **nível de isolamento é coluna de `run`**, e não da rodada nem do experimento                                                     | o nível declarado na definição, valendo para todas as execuções                                      | o [ADR-0018](../../../adr/0018-cada-controle-roda-sob-o-seu-proprio-nivel.md#decisão) fica inexprimível: o controle negativo roda sob nível diferente do medido                |
+| O **nível de isolamento é coluna de `run`**, e não da rodada nem do experimento                                                     | o nível declarado na definição, valendo para todas as execuções                                      | o [ADR-0018](../../../../../adr/0018-cada-controle-roda-sob-o-seu-proprio-nivel.md#decisão) fica inexprimível: o controle negativo roda sob nível diferente do medido                |
 | A **calibração reprovada não gera relatório**: ela gera linha em `rejection`                                                        | um relatório com uma coluna `valid` em falso                                                         | a consulta que lista relatórios passa a devolver medida que não vale, e todo consumidor precisa lembrar do filtro                                                              |
-| `completeness_attested` é coluna de `run`, e um slot sobre execução não atestada é defeito                                          | a completude conferida só em memória, dentro do consumidor                                           | a `R15` de [execução de experimento](../../../features/execucao-de-experimento/feature-card.md#regras-de-negócio) perde o lugar onde o atestado fica gravado                   |
-| O **evento terminal** do stream é derivado de `run.final_cursor`, e não é uma linha de `observation`                                | um quinto tipo de evento no log, com cursor próprio                                                  | a `R4` de [streaming e replay](../../../features/streaming-e-replay-do-log-de-observacoes/feature-card.md#regras-de-negócio) deixa de poder carregar o cursor do último evento |
+| `completeness_attested` é coluna de `run`, e um slot sobre execução não atestada é defeito                                          | a completude conferida só em memória, dentro do consumidor                                           | a `R15` de [execução de experimento](../../../../../features/execucao-de-experimento/feature-card.md#regras-de-negócio) perde o lugar onde o atestado fica gravado                   |
+| O **evento terminal** do stream é derivado de `run.final_cursor`, e não é uma linha de `observation`                                | um quinto tipo de evento no log, com cursor próprio                                                  | a `R4` de [streaming e replay](../../../../../features/streaming-e-replay-do-log-de-observacoes/feature-card.md#regras-de-negócio) deixa de poder carregar o cursor do último evento |
 | `observation.persisted_at` vem do **adaptador de relógio** do `lab-journal`, e não de `DEFAULT now()`                               | `DEFAULT now()`, tratando o instante como puro metadado de exibição                                  | a diferença entre os dois instantes, que mede o custo da travessia, passa a subtrair dois relógios diferentes                                                                  |
 | `raw_facts` é `jsonb` opaco, e o banco só verifica que ele existe onde o tipo o exige                                               | uma tabela de fatos com `(key, value)` em texto                                                      | o payload que o runtime não interpreta ganha esquema, e o `lab-journal` passa a interpretá-lo                                                                                  |
 | O **experimento é versionado por linha nova**, e a rodada congela a versão que referenciou                                          | editar a definição no lugar, como CRUD comum                                                         | um resultado publicado passa a poder mudar de premissa sem deixar rastro                                                                                                       |
@@ -111,7 +111,7 @@ O benefício **um veredito malformado não chega a existir** foi aceito em troca
 **cada formato novo cobra uma tabela e uma migração**. O preço é real, e não teórico: a
 composição global dos formatos continua sem decisão, e o próprio índice de capacidades
 avisa que quem enumerar o conjunto hoje está errado, em
-[capacidade conhecida e não especificada](../../../features/README.md#capacidade-conhecida-e-não-especificada).
+[capacidade conhecida e não especificada](../../../../../features/README.md#capacidade-conhecida-e-não-especificada).
 Se amanhã a pessoa decidir um quinto formato — um veredito contínuo no tempo, por
 exemplo —, ele não estava previsto aqui: entra por tabela nova, mais uma associação
 nomeada saindo de `report`, mais o código que a lê. Nenhum `ALTER` de coluna resolve.
@@ -129,7 +129,7 @@ do custo **nada nele é editável no lugar**. A definição é imutável depois 
 rodada, a versão nova é linha nova, e `report.digest` deixa conferir uma cópia
 publicada contra a origem. O que isso **não** devolve é a revisão em PR nem a
 sobrevivência a um banco recriado: os dois custos que o
-[ADR-0011](../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)
+[ADR-0011](../../../../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)
 nomeia continuam pagos por inteiro. O modelo só impede que um terceiro se acrescente a
 eles — o de um resultado publicado mudar de premissa em silêncio.
 
@@ -149,12 +149,12 @@ slots, seguem abertos.
 
 Ela não decide o contrato HTTP entre o `frontend` e o `lab-journal`, nem o formato JSON
 de cada evento no stream. Os dois seguem sem forma, e a matriz é dona desse estado, em
-[perguntas em aberto](../../../architecture/integrations.md#perguntas-em-aberto).
+[perguntas em aberto](../../../../integrations.md#perguntas-em-aberto).
 
 Ela não decide a política de contrapressão entre o broker e o `lab-journal`, nem o que o
 stream faz quando o `Last-Event-ID` aponta para um cursor que não existe. As duas lacunas
 são das
-[negativas do ADR-0016](../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#negativas),
+[negativas do ADR-0016](../../../../../adr/0016-o-streaming-e-o-replay-do-log-de-observacoes.md#negativas),
 e nenhuma coluna deste desenho as fecha.
 
 E ela não decide particionamento nem retenção de `observation`, que cresce por fronteira
@@ -173,7 +173,7 @@ entrar num número publicado, o que muda o papel do valor.
 
 **Uma rodada com mais de uma execução medida precisa de uma calibração por medida, ou de
 uma só para a rodada inteira?** A
-[calibração](../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador)
+[calibração](../../../../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md#a-calibração-do-denominador)
 é exigida antes de toda execução medida, e a curva do E4 tem uma medida por valor do
 eixo: quarenta e nove calibrações numa rodada é um número que ninguém pôs na mesa.
 
