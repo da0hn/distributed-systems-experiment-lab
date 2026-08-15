@@ -303,6 +303,20 @@ def is_table_row(line: str) -> bool:
     return stripped.startswith("|") and stripped.endswith("|") and len(stripped) > 1
 
 
+# Uma linha que é só uma imagem é diagrama, e não prosa. Até 2026-08-14 todo
+# diagrama deste repositório era bloco cercado ```mermaid```, e a exclusão de bloco
+# cercado já o alcançava sem que ninguém precisasse dizer nada. Naquele dia os 14
+# diagramas de `docs/propostas/modelo-de-dados` viraram `.excalidraw.svg`
+# referenciado por linha de imagem, e a mesma figura passou a contar como prosa
+# pelo texto alternativo dela: `proposta-2-livro-razao-enderecado-por-conteudo.md`
+# estourou o teto em 26 caracteres tendo PERDIDO 44 linhas. O que mudou foi a forma
+# do diagrama, e não a natureza dele — a exclusão acompanha a forma nova.
+#
+# Vale só para a linha que é SÓ a imagem. Uma imagem no meio de um parágrafo
+# continua contando, porque ali o texto em volta é prosa de verdade.
+IMAGE_ONLY_LINE = re.compile(r"^!\[[^\]]*\]\([^)\s]*(?:\s+\"[^\"]*\")?\)$")
+
+
 def is_adr(relative_path: Path) -> bool:
     """Um ADR é `docs/adr/NNNN-titulo.md`. O índice e o arquivo morto não são."""
     return (
@@ -343,6 +357,8 @@ def prose_lines(text: str, skip_header: bool = False) -> list[tuple[int, str]]:
             if line.strip() == PATCH_LEDGER:
                 break
             if is_table_row(line):
+                continue
+            if IMAGE_ONLY_LINE.match(line.strip()):
                 continue
             kept.append((number, line))
         elif match and match.group(1)[0] == fence:

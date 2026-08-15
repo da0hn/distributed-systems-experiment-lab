@@ -42,15 +42,7 @@ registro que o relatório pudesse citar. Esta proposta torna essa costura **inex
 
 ## O modelo
 
-```mermaid
-erDiagram
-    active_execution {
-        uuid execution_id PK "discriminador; UUIDv7; o nome do lado do instrumento"
-        uuid incarnation_id "UUIDv7 da vida do processo que admitiu a linha"
-        timestamptz admitted_at "NOT NULL, sem DEFAULT e sem trigger; adaptador de relogio"
-        timestamptz expires_at "NOT NULL, sem DEFAULT e sem trigger; limite de espera avaliado por leitura"
-    }
-```
+![O instrumento amnésico](diagramas/proposta-1-instrumento-amnesico-1.excalidraw.svg)
 
 Uma execução está ativa quando `incarnation_id` é o da vida corrente do processo **e** o
 instante do adaptador de relógio ainda não alcançou `expires_at`. A vida corrente nasce no

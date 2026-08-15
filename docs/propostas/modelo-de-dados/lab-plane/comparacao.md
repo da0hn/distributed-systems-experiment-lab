@@ -20,17 +20,7 @@ excessivas. Há um segundo eixo embutido, e ele não é livre: o
 recusou histórico de execução dentro do `lab-plane`, e quanto mais uma proposta se aproxima
 de "provar", mais perto ela chega daquilo que aquela decisão descartou.
 
-```mermaid
-flowchart LR
-    Q["o instrumento cai<br/>no meio da execução"] --> P1
-    Q --> P2
-    Q --> P3
-    P1["proposta 1<br/>a execução morreu"] --> D1["durabilidade serve para PERGUNTAR<br/>guarda o que outro processo consulta"]
-    P2["proposta 2<br/>a execução é refeita do zero"] --> D2["durabilidade serve para REPETIR<br/>guarda a intenção inteira"]
-    P3["proposta 3<br/>a execução segue comprovável"] --> D3["durabilidade serve para PROVAR<br/>guarda o insumo do veredito"]
-    D3 -.->|" quanto mais perto de provar "| R["mais perto do histórico<br/>que o ADR-0011 recusou"]
-    D2 -.-> R
-```
+![Para que serve a durabilidade](diagramas/comparacao-1.excalidraw.svg)
 
 ## O que cada uma decide diferente
 

@@ -48,36 +48,7 @@ recriado. Esta proposta ataca os três.
 
 ## O modelo
 
-```mermaid
-erDiagram
-    ledger ||--o{ entry : "apensa"
-    form ||--o{ entry : "declara a forma de"
-    ledger {
-        uuid ledger_id PK "execution_id do instrumento, ou a constante do caderno"
-        text nature "run ou journal; imutavel"
-        bytea genesis_hash "elo anterior da primeira entrada deste livro"
-        timestamptz opened_at "adaptador de relogio; sem DEFAULT"
-    }
-    entry {
-        uuid ledger_id PK "1a coluna da chave; e o livro a que a entrada pertence"
-        bigint sequence_number PK "2a coluna; e o cursor do replay, sem coluna a mais"
-        bytea entry_hash UK "identidade endereçada por conteudo; unica no schema"
-        bytea previous_hash "elo da cadeia; na primeira entrada, o genesis_hash"
-        text entry_kind FK "o envelope: observation, verdict, publication, seal"
-        int form_version FK "versao sob a qual o documento foi escrito"
-        text issuer "quem assinou: exact oracle, predicate oracle, frontend"
-        bytea document "os bytes exatos que o digest cobre; opaco ao banco"
-        bytea document_hash "digest so do documento, sem o envelope"
-        bytea superseded_hash "a entrada que esta sucede; sem chave estrangeira"
-        timestamptz recorded_at "adaptador de relogio; entra no digest da entrada"
-    }
-    form {
-        text entry_kind PK "1a coluna da chave"
-        int version PK "2a coluna; cresce, e nunca e reescrita"
-        bytea schema "a forma, nos bytes em que foi registrada"
-        bytea form_hash "o documento cita este digest para se dizer autodescritivo"
-    }
-```
+![O livro-razão endereçado por conteúdo](diagramas/proposta-2-livro-razao-enderecado-por-conteudo-1.excalidraw.svg)
 
 Três tabelas, e nenhuma descreve um experimento. `ledger` é o livro-razão, `entry` é o
 fato apensado, e `form` registra as versões sob as quais um documento pôde ser escrito.
@@ -122,18 +93,7 @@ três níveis de isolamento
 não ganham estrutura própria. Duas publicações da mesma execução são duas linhas, e ambas
 verdadeiras: a segunda sucede a primeira, e não a corrige.
 
-```mermaid
-flowchart TB
-    FE["frontend declara<br/>a definicao"] --> CAD
-    OC["oraculo exato"] --> LE
-    OP["oraculo do predicado"] --> LE
-    LP["lab-plane emite<br/>a observacao"] --> LE
-    LE[("livro da execucao<br/>observacoes, veredito, selo")]
-    CAD[("livro do caderno<br/>definicoes e publicacoes")]
-    LE -->|" hash de cada entrada incluida "| PUB
-    PUB["publicacao:<br/>entrada no livro do caderno"] --> CAD
-    LE -->|" cursor > C, na ordem "| SSE["stream SSE<br/>para o frontend"]
-```
+![Quem escreve em qual livro](diagramas/proposta-2-livro-razao-enderecado-por-conteudo-2.excalidraw.svg)
 
 ## O que o diagrama não expressa
 

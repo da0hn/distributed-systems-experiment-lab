@@ -48,86 +48,7 @@ A espinha tem três níveis: o plano declara a carga e a janela, cada braço fix
 nível-estratégia, e cada braço abre as quatro execuções do ciclo. As duas tabelas-folha
 guardam o agendamento e a injeção **já expandidos**.
 
-```mermaid
-erDiagram
-    EXPERIMENT_PLAN ||--|| WORKLOAD : "declara a carga que três execuções partilham"
-    WORKLOAD ||--|{ ROLE_INTENT : "papel nomeado, com cardinalidade"
-    EXPERIMENT_PLAN ||--|{ MEASURED_ARM : "um braço por par nível-estratégia"
-    MEASURED_ARM ||--|{ RUN_INTENT : "as quatro execuções do ciclo"
-    WORKLOAD ||--o{ RUN_INTENT : "carga sob a qual a execução roda"
-    RUN_INTENT ||--o{ PRECEDENCE_CONSTRAINT : "agendamento, já expandido"
-    RUN_INTENT ||--o{ FAULT_INJECTION_POINT : "injeção, já expandida"
-
-    EXPERIMENT_PLAN {
-        bigint plan_id PK
-        bigint workload_id FK
-        bigint seed
-        text operation_name
-        text resolution
-        bigint declared_attempts
-        text window_open_step
-        text window_open_side
-        int window_open_attempt
-        text window_close_step
-        text window_close_side
-        int window_close_attempt
-        text state
-        timestamptz created_at
-        timestamptz updated_at
-    }
-    WORKLOAD {
-        bigint workload_id PK
-        text declared_for
-    }
-    ROLE_INTENT {
-        bigint workload_id PK
-        text role_name PK
-        int cardinality
-    }
-    MEASURED_ARM {
-        bigint arm_id PK
-        bigint plan_id FK
-        text isolation_level
-        text strategy_label
-        int arm_ordinal
-    }
-    RUN_INTENT {
-        bigint run_id PK
-        bigint arm_id FK
-        bigint workload_id FK
-        text run_kind
-        text execution_id UK
-        text isolation_level
-        text state
-        int cycle_ordinal
-    }
-    PRECEDENCE_CONSTRAINT {
-        bigint run_id PK
-        int ordinal PK
-        text before_role
-        int before_role_index
-        text before_step
-        text before_side
-        int before_attempt
-        text before_event
-        text after_role
-        int after_role_index
-        text after_step
-        text after_side
-        int after_attempt
-        text after_event
-    }
-    FAULT_INJECTION_POINT {
-        bigint run_id PK
-        int ordinal PK
-        text role_name
-        text step_label
-        text side
-        int attempt_selector
-        text fault_kind
-        jsonb fault_payload
-    }
-```
+![O plano durável, a execução efêmera](diagramas/proposta-2-plano-duravel-execucao-efemera-1.excalidraw.svg)
 
 A máquina de estados de `RUN_INTENT` é o coração da aposta. Ela tem exatamente três saídas
 de `RUNNING`, e elas são as três da `R7` de
@@ -135,32 +56,11 @@ de `RUNNING`, e elas são as três da `R7` de
 a sentinela de fim, o limite de espera e o cancelamento pela pessoa. A lista de execuções
 ativas não é uma segunda tabela — ela é a projeção das linhas em `RUNNING`.
 
-```mermaid
-stateDiagram-v2
-    [*] --> PLANNED
-    PLANNED --> ADMITTED : validação do ADR-0003 passa
-    PLANNED --> REJECTED : ciclo, papel, endereço ou encontro inválido
-    ADMITTED --> RUNNING : o runtime assume a execução
-    RUNNING --> COMPLETED : sentinela de fim
-    RUNNING --> EXPIRED : limite de espera
-    RUNNING --> CANCELLED : cancelamento pela pessoa
-    REJECTED --> [*]
-    COMPLETED --> [*]
-    EXPIRED --> [*]
-    CANCELLED --> [*]
-```
+![O ciclo de vida de uma execução](diagramas/proposta-2-plano-duravel-execucao-efemera-2.excalidraw.svg)
 
 O plano tem uma máquina menor, e ela é só o portão de admissão do conjunto.
 
-```mermaid
-stateDiagram-v2
-    [*] --> DRAFT
-    DRAFT --> ADMITTED : todas as execuções do ciclo admitidas
-    DRAFT --> REJECTED : qualquer execução recusada
-    ADMITTED --> CLOSED : nenhuma execução em RUNNING
-    REJECTED --> [*]
-    CLOSED --> [*]
-```
+![O ciclo de vida do plano](diagramas/proposta-2-plano-duravel-execucao-efemera-3.excalidraw.svg)
 
 ## O que o diagrama não expressa
 

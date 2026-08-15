@@ -27,57 +27,7 @@ alguma coisa se ela rodar contra o mesmo banco das demais.
 
 ## O modelo
 
-```mermaid
-erDiagram
-    resource {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        bigint id PK "2a coluna da chave; funcao da semente"
-        bigint value "verdade materializada; unica fonte do oraculo exato"
-        bigint capacity "limite da verdade derivada"
-        bigint version "inerte em 0; so OPTIMISTIC le e escreve"
-        bigint fence_token "inerte em 0; so o experimento de fencing escreve"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-        timestamptz updated_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-    allocation {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        bigint id PK "2a coluna da chave; funcao da semente"
-        bigint resource_id "sem constraint; o join e a.partition_id = r.partition_id AND a.resource_id = r.id"
-        bigint amount "parcela da verdade derivada"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-        timestamptz updated_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-    outbox {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        bigint id PK "2a coluna da chave; funcao da semente"
-        bigint aggregate_id "sem constraint; aponta para resource.id"
-        jsonb payload "corpo do evento; o driver liga texto, o WAL carrega jsonb normalizado"
-        timestamptz published_at "UNICA coluna anulavel do schema; NULL ate o relay publicar"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-    inbox {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        text idempotency_key PK "2a coluna da chave; funcao da semente, nunca gerada pelo banco"
-        bigint aggregate_id "sem constraint; aponta para resource.id"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-    lease {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        bigint resource_id PK "2a coluna da chave; uma posse por recurso por execucao"
-        text holder "identidade do worker; funcao da semente"
-        bigint fencing_token "monotonico na execucao; comparado contra resource.fence_token"
-        timestamptz expires_at "adaptador de relogio; nunca now()"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-        timestamptz updated_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-    resource_projection {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        bigint resource_id PK "2a coluna da chave; uma linha por recurso por execucao"
-        bigint value "copia defasada de resource.value; NAO carrega soma alguma"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-        timestamptz updated_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-```
+![O catálogo de mecanismos](diagramas/proposta-3-catalogo-de-mecanismos-1.excalidraw.svg)
 
 ### O que "inerte" significa, em linhas e em escritas
 

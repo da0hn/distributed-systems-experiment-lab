@@ -39,55 +39,7 @@ procura por outro caminho.
 
 ## O modelo
 
-```mermaid
-erDiagram
-    resource {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        bigint id PK "2a coluna da chave; funcao da semente"
-        bigint value "verdade materializada; o estado mutavel permanece"
-        bigint capacity "limite da verdade derivada"
-        bigint version "entra com OPTIMISTIC; so essa estrategia le e escreve"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-        timestamptz updated_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-    allocation {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        bigint id PK "2a coluna da chave; funcao da semente"
-        bigint resource_id "sem constraint; join por partition_id mais resource_id"
-        bigint amount "parcela da verdade derivada"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-        timestamptz updated_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-    state_change {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        bigint writer_id PK "2a coluna; ordinal do escritor, funcao da semente"
-        bigint seq PK "3a coluna; contador local do escritor, comeca em 1"
-        bigint resource_id "sujeito da mudanca; sem constraint"
-        text truth "MATERIALIZED ou DERIVED; qual numero foi lido"
-        bigint observed "o numero lido antes de decidir"
-        bigint written "o numero que a escrita afirmou deixar no lugar"
-        bigint fencing_token "token apresentado; nulo quando nenhum lease guardou"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger; nao ordena nada"
-    }
-    resource_projection {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        bigint resource_id PK "2a coluna da chave"
-        bigint value "segunda representacao do mesmo numero"
-        bigint applied_writer_id "posicao aplicada: escritor da ultima mudanca"
-        bigint applied_seq "posicao aplicada: seq da ultima mudanca consumida"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-        timestamptz updated_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-    lease {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        bigint resource_id PK "2a coluna da chave"
-        bigint holder_id "escritor que detem o direito de escrever"
-        bigint fencing_token "monotonico por recurso; cresce a cada concessao"
-        timestamptz expires_at "NOT NULL; comparado pela aplicacao, nunca por now()"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-        timestamptz updated_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-```
+![O rastro append-only](diagramas/proposta-2-rastro-append-only-1.excalidraw.svg)
 
 ## O que o diagrama não expressa
 

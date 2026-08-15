@@ -30,15 +30,7 @@ sabe, mais barato é o formato novo — e menos resta de garantia que não seja 
 quem escreve. Não existe posição neutra nesse eixo, e é por isso que as três propostas são
 incompatíveis em vez de complementares.
 
-```mermaid
-flowchart TB
-    P1["proposta 1<br/>semântica no DDL<br/>CHECK, NOT NULL, tipo"]
-    P3["proposta 3<br/>semântica em vocabulário que é dado<br/>grandeza, eixo, valor admitido"]
-    P2["proposta 2<br/>semântica fora do banco<br/>documento opaco mais digest"]
-    P1 --> C1["formato novo custa migração<br/>o banco recusa na escrita e responde na leitura"]
-    P3 --> C3["formato novo custa uma linha<br/>o banco agrega, e não recusa"]
-    P2 --> C2["formato novo não custa nada<br/>o banco não recusa nem responde"]
-```
+![Onde cada proposta põe a semântica](diagramas/comparacao-1.excalidraw.svg)
 
 ## O que cada uma decide diferente
 

@@ -20,26 +20,7 @@ Este modelo recusa todas.
 
 ## O modelo
 
-```mermaid
-erDiagram
-    resource {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao, parametro ligado"
-        bigint id PK "2a coluna da chave; funcao da semente"
-        bigint value "verdade materializada"
-        bigint capacity "limite da verdade derivada; zerado fora da janela, e essa e a marca de fim"
-        bigint version "entra com a estrategia OPTIMISTIC, e nao antes"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-        timestamptz updated_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-    allocation {
-        uuid partition_id PK "1a coluna da chave; discriminador de execucao"
-        bigint id PK "2a coluna da chave; funcao da semente"
-        bigint resource_id "sem constraint; o join e a.partition_id = r.partition_id AND a.resource_id = r.id"
-        bigint amount "parcela da verdade derivada; inteiro, sempre acrescido"
-        timestamptz created_at "NOT NULL, sem DEFAULT e sem trigger"
-        timestamptz updated_at "NOT NULL, sem DEFAULT e sem trigger"
-    }
-```
+![O domínio nu](diagramas/proposta-1-dominio-nu-1.excalidraw.svg)
 
 Um canvas, um schema. O do instrumento não aparece aqui, e a ausência de linha entre os
 dois é a decisão, em

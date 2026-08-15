@@ -148,6 +148,18 @@ o revisor NÃO DEVE acionar o escritor.
 - Sem emojis. Sem linguagem de marketing.
 - Um link Markdown longo PODE ultrapassar 88 colunas — quebrá-lo no meio o inutiliza.
 
+**`docs/propostas/modelo-de-dados/` é exceção às duas metades da regra do Mermaid, por
+decisão da pessoa em 2026-08-14.** Ali os 14 diagramas foram convertidos em
+`.excalidraw.svg` e o bloco Mermaid foi **removido**, e não mantido ao lado; e o
+Excalidraw entrou onde o Mermaid expressava, acrescentando o que ele não expressa —
+ordem da coluna dentro da chave composta, índice, e as ausências deliberadas de
+`DEFAULT`, de trigger e de chave estrangeira. O custo está nomeado: **o diagrama sai do
+diff**, uma mudança de schema deixa de aparecer em revisão de PR, e editá-lo exige
+reabrir o `.excalidraw` que fica ao lado da imagem.
+
+**A exceção não foi generalizada, e a regra acima continua valendo em todo o resto.** Se
+ela deve mudar para o repositório inteiro é pergunta em aberto, sem dono e sem prazo.
+
 ## Arquitetura conceitual
 
 Ler só um documento não basta; estas ideias atravessam todo o projeto.
