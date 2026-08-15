@@ -54,6 +54,49 @@ compila, empacota e sobe contra PostgreSQL.
   o prazo que separa `fonte atrasada` de execução ainda rodando. Falta decidir quem
   emite a parada antecipada, como a marca é escrita, e que nome os dois serviços recebem.
 
+- **Os conjuntos de valores que as colunas de `CHECK` do plano não fecham.** Os lados de
+  fronteira, os níveis de isolamento aceitos, o destino da carga, a forma do identificador
+  de execução e quem atribui as chaves primárias. Sem eles a migração das tabelas do plano
+  não pode ser escrita, e o que depende dela fica parado.
+- **As colunas de tempo do schema.** Falta decidir se as tabelas do sistema medido ganham
+  criação e atualização, e se o início e o fim de uma execução entram no veredito por
+  curva — o segundo obriga relógio injetado em vez do relógio do banco.
+- **A rota `/api/runs` não leva a lugar nenhum.** O caminho existe no roteamento e não tem
+  implementação atrás dele.
+- **O contrato de iniciar uma execução.** Falta decidir se a requisição cria uma execução
+  ou uma sequência delas, e se a chave de idempotência é exigida do cliente.
+- **A vida de uma execução ativa.** Falta o limite, se a execução encerrada por limite
+  ainda produz veredito, e se cancelamento e abandono se distinguem no registro.
+- **O limite de espera do oráculo.** Falta o número a partir do qual a sentinela desiste e
+  a leitura é rotulada como fonte atrasada.
+- **Quem confere a alocação órfã.** Não há foreign key entre os dois schemas, e o
+  instrumento não pode consultar o schema do sistema medido para verificar integridade.
+- **O que a contagem base conta, e o que o relatório afirma sobre um zero.** A taxa de
+  aborto pode contar tentativas ou execuções de operação, e os dois números diferem;
+  falta também decidir quem escolhe o número de tentativas de uma execução medida.
+- **A forma do veredito por curva.** O segundo formato não tem forma concreta, e falta
+  decidir se a taxa com intervalo de confiança é um terceiro formato ou uma variação.
+- **O modelo de thread do worker.** Threads de plataforma ou threads virtuais, decidido
+  antes de escrever o runtime de execução.
+- **Onde o runtime fixa o nível de isolamento** de cada tentativa, já que ele é parâmetro
+  do experimento e não configuração global do serviço.
+- **O tipo de evento para o bloqueio de buffer.** Falta decidir se o conjunto fechado de
+  tipos do log de observações ganha mais um valor, ou se esse bloqueio é registrado fora
+  do log.
+- **Onde vive a configuração do Debezium Server**, e por onde a senha do banco chega até
+  ela.
+- **A transação que atravessa duas chamadas de passo.** A direção provisória é uma sessão
+  guardada pelo sistema medido, indexada por um identificador que carrega a instância que
+  a criou. A confiança registrada é baixa, e ela colide com a forma decidida do escopo
+  transacional.
+- **O serviço que ajusta o número de instâncias do sistema medido antes da janela
+  medida.** Falta decidir onde ele vive, qual credencial de cluster ele carrega — ela não
+  pode ficar no processo que produz o veredito — e se escalar dentro da janela é
+  permitido.
+- **A stack do frontend e o teto de eventos no navegador.** Framework de componentes,
+  forma de renderização, e paginação contra o servidor quando o stream cresce demais para
+  a tela.
+
 ## Instruções do repositório
 
 - **Onde vivem as regras estruturais de código.** Aleatoriedade semeada, relógio
@@ -85,3 +128,7 @@ compila, empacota e sobe contra PostgreSQL.
 - **O `Application` do ArgoCD segue em `ComparisonError`.** Os manifests vivem no
   `homelab-infrastructure`, e a implementação do lado de lá não foi feita. O pipeline não
   está completo.
+- **O prefixo `/api/lab-plane` nomeia um serviço que virou dois.** Falta decidir se ele se
+  divide em dois prefixos ou se os dois processos seguem publicando sob um só.
+- **A sessão do Access expira no meio de um stream de longa duração.** É modo de falha
+  real, e ninguém testou o caminho inteiro.
