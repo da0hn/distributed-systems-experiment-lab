@@ -9,15 +9,15 @@ que a pessoa tomou em 2026-08-14** — o resíduo exato da comparação, a rela�
 rótulo e veredito, o nome do rótulo, o desenho do aviso de conclusão e a consulta
 indevida.
 
-**As sete decisões foram tomadas na linha `E-96` da fila, e nenhum link desta página
-aponta para lá.** A regra da raiz admite três famílias como fonte citável —
-`docs/adr/`, `docs/features/**` e `docs/architecture/**` — e manda que quem precise de
-informação de fora dessas famílias traga o texto inteiro para dentro do próprio
-documento ([cortesia](../../../AGENTS.md#ao-trabalhar-aqui)). A fila é o pior caso
-dessa regra: o processo poda a narrativa de uma linha quando ela fecha, e um link para
-âncora podada quebra em silêncio — o verificador só o acusa na execução seguinte à
-poda, quando o estrago já está no commit. Por isso o conteúdo das sete decisões está
-trazido por inteiro nesta página, e a linha é referida pelo identificador, sem link.
+**As sete decisões foram tomadas fora das famílias que este repositório admite como
+fonte citável, e nenhum link desta página aponta para lá.** A regra da raiz admite três
+— `docs/adr/`, `docs/features/**` e `docs/architecture/**` — e manda que quem precise
+de informação de fora dessas famílias traga o texto inteiro para dentro do próprio
+documento ([cortesia](../../../AGENTS.md#ao-trabalhar-aqui)). O registro de deliberação
+é o pior caso dessa regra: a narrativa de uma decisão é podada quando ela fecha, e um
+link para âncora podada quebra em silêncio — o verificador só o acusa na execução
+seguinte à poda, quando o estrago já está no commit. Por isso o conteúdo das sete
+decisões está trazido por inteiro nesta página.
 
 ## História
 
@@ -61,9 +61,9 @@ flowchart TD
 ```
 
 **O caminho até o frontend, que bloqueava `R3` na rodada anterior, foi decidido em
-2026-08-14 — fora deste ciclo, e trazido aqui por inteiro, porque a fila não é família
-citável.** O `lab-plane` publica o rótulo, ou o veredito, como mensagem terminal no
-mesmo RabbitMQ que já leva a observação; o `lab-journal` persiste e emite por SSE, a
+2026-08-14 — fora deste ciclo, e trazido aqui por inteiro, porque a decisão não vive em
+família citável.** O `lab-plane` publica o rótulo, ou o veredito, como mensagem terminal
+no mesmo RabbitMQ que já leva a observação; o `lab-journal` persiste e emite por SSE, a
 mesma exigência de a definição e o resultado do experimento viverem no banco dele
 ([ADR-0011, O caderno de laboratório sai do
 Git](../../adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md#o-caderno-de-laboratório-sai-do-git)).
@@ -140,9 +140,9 @@ LSN corrompido, que derruba a desduplicação e a conferência de contiguidade j
 
 ### Contraexemplo — a objeção que a proposta não vence
 
-A linha `E-96` da fila registra uma objeção de 2026-08-09 contra uma segunda fonte de
-leitura do mesmo banco: "as duas leem o mesmo banco, e nenhuma detecta erro do banco".
-O texto da objeção está aqui por inteiro, e não há link para a fila.
+Uma objeção anterior a esta capacidade recusava uma segunda fonte de leitura do mesmo
+banco: "as duas leem o mesmo banco, e nenhuma detecta erro do banco". O texto da objeção
+está aqui por inteiro, e não há link para fora.
 O contraexemplo real é o oposto do que a leitura ingênua sugere, porque a segunda fonte
 não lê "o mesmo banco": o stream lê o **WAL**, e o endpoint lê o **schema atual**.
 Qualquer alteração que passe pelo caminho normal de escrita SQL — certa ou errada, por
@@ -173,10 +173,10 @@ flowchart LR
 
 ## Alternativas descartadas antes deste card
 
-> **O enunciado do `E-96` ofereceu três formas para o endpoint** — consolidado por
-> recurso, conjunto de identificadores, e as linhas —, cada uma com poder de detecção
-> diferente. A pessoa escolheu a primeira no fecho de 2026-08-13, e as outras duas não
-> aparecem na decisão; nenhum motivo foi dado por escrito para descartá-las.
+> **A proposta ofereceu três formas para o endpoint** — consolidado por recurso,
+> conjunto de identificadores, e as linhas —, cada uma com poder de detecção diferente.
+> A pessoa escolheu a primeira, e as outras duas não aparecem na decisão; nenhum motivo
+> foi dado por escrito para descartá-las.
 
 Registrado aqui porque `R2` fixa a forma escolhida sem explicar por que as outras duas
 ficaram de fora — sem este registro, a pergunta "por que não o conjunto de
@@ -303,10 +303,10 @@ admitir o aviso de conclusão de `R4`, nas três condições que a Decisão daqu
 - **O que `R3` e `R5` fazem com a contagem de órfãs de `R2` não foi decidido.** Ela
   entra no consolidado, mas se uma divergência só nela já produz o rótulo, ou se ela
   conta como algo distinto, não foi fixado — nem se uma consulta indevida que só toca
-  órfãs é catalogada do mesmo jeito. Toca a linha `E-74` da fila, que pergunta quem
-  verifica a órfã de `allocation` e segue aberta — quatro saídas foram propostas ao
-  longo dela, duas já contraditas pela resposta de 2026-08-13, e nenhuma foi
-  formalmente escolhida —, e a `Pergunta em aberto` do
+  órfãs é catalogada do mesmo jeito. Toca a pergunta, ainda aberta, de quem verifica a
+  órfã de `allocation` — quatro saídas foram propostas, duas já contraditas pela
+  decisão de que a órfã é achado que entra no relatório e não invalida a execução, e
+  nenhuma foi formalmente escolhida —, e a `Pergunta em aberto` do
   [ADR-0015](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#sem-chave-estrangeira-em-allocationresource_id)
   sobre quem verifica a órfã — `R2` introduz uma quinta saída possível sem decidi-la.
 

@@ -112,17 +112,15 @@ P1 e P3 foram respondidas por R14/R15 do ADR-0006, `Aceito`.
 ### `updated_at` existe no esquema, e nenhuma estratégia pode lê-la
 
 **Esta seção entrou aqui em 2026-08-07**, a partir de duas decisões fechadas em
-2026-08-06, e foi **corrigida em 2026-08-12** pelo fecho de
-[`E-76`](../../fila-de-decisoes.md#e-76-fecha-em-a-regra-desce-para-o-feature-card-escolhida-em-2026-08-12).
-O dono normativo de `created_at`/`updated_at` como colunas do esquema continua o
+2026-08-06, e foi corrigida depois. O dono normativo de `created_at`/`updated_at` como
+colunas do esquema continua o
 [`ADR-0015`](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#as-colunas-de-tempo-e-a-fonte-do-relógio-por-papel-do-valor).
 Mas a proibição de uma estratégia ler `updated_at` — R19 — nunca foi decidida por aquele
-ADR: ele mesmo cita a regra como sendo de
-[`E-25`](../../fila-de-decisoes.md#e-25--timestamps-nas-tabelas-medidas), "não do
-fecho de `E-27`". O fecho de `E-76` desceu a regra e o argumento pedagógico de `E-25`
-para este card, que **passa a hospedar a redação de referência dos dois** — a poda do
-corpo de `E-25` na fila deixa de estar travada com este commit, e é trabalho de um
-commit separado da sessão principal.
+ADR: ele a cita como decidida em outro lugar, e não a absorve. A regra e o argumento
+pedagógico desceram para este card, que **passa a hospedar a redação de referência dos
+dois**: a regra não é sobre a coluna, e sim sobre **estratégia de concorrência**, que é
+exatamente a proteção que este card mede — nenhum card novo precisou nascer para
+hospedá-la.
 
 `created_at` e `updated_at` existem em `resource` e `allocation`, quem as preenche é a
 aplicação pelo adaptador de relógio, e **a escrita que esquecer uma delas falha alto** em
@@ -130,16 +128,14 @@ vez de gravar um instante plausível e errado. A **forma** das duas colunas não
 aqui — ela vive em
 [`schemas/sut.md`](../../architecture/schemas/sut.md#o-que-o-diagrama-do-sut-não-desenha).
 
-**A transcrição abaixo é fiel ao corpo de `E-25`**, e não uma paráfrase — é o texto que
-sustenta R19, aprovado por pessoa em 2026-08-06:
+**A transcrição abaixo é fiel à redação original da decisão**, e não uma paráfrase — é o
+texto que sustenta R19, aprovado por pessoa em 2026-08-06:
 
 > A objeção mais forte não é técnica, é pedagógica. `updated_at` é um token de versão
 > clássico — `UPDATE resource SET value = ? WHERE id = ? AND updated_at = ?` é optimistic
 > locking escrito sem a palavra. A regra do AGENTS.md manda introduzir o problema antes da
 > solução, e é exatamente por isso que `version` não está no esquema. A coluna entrega de
 > graça metade do que o E1 deve construir do zero.
->
-> — [`E-25`, timestamps nas tabelas medidas](../../fila-de-decisoes.md#e-25--timestamps-nas-tabelas-medidas)
 
 A estratégia `OPTIMISTIC` introduz a sua própria coluna de versão, no ADR que a definir,
 depois de o experimento ter mostrado o problema — e não lendo `updated_at` emprestada.
@@ -169,11 +165,9 @@ não comportamento externo. R13 a R15 ainda não entraram em `behavior.feature` 
 arquivo já excede o próprio limite (débito anterior), e fica para uma passada dedicada.
 
 R19, embora deixe de ser `pendente` nesta rodada, também não ganha cenário aqui. Quem a
-aprovou foi a **pessoa**, em 2026-08-06, no fecho de
-[`E-25`](../../fila-de-decisoes.md#e-25--timestamps-nas-tabelas-medidas)
-— e não o ciclo de redação, que só a transportou para cá. O escopo desse transporte
-fechou em card e Example Mapping, e não tocou `behavior.feature`: R19 é candidata à
-próxima passada dedicada, junto de R13 a R15.
+aprovou foi a **pessoa**, em 2026-08-06 — e não o ciclo de redação, que só a transportou
+para cá. O escopo desse transporte fechou em card e Example Mapping, e não tocou
+`behavior.feature`: R19 é candidata à próxima passada dedicada, junto de R13 a R15.
 
 **Atualizado no ciclo de reativação de 2026-08-12.** `R16` (uma estratégia PODE exigir
 coluna além das que o ADR-0002 e o ADR-0015 já decidiram) não tem cenário: ela é uma
