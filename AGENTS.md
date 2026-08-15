@@ -84,7 +84,7 @@ docs/
   backlog.md             instável; nunca referenciado
   architecture/          arquitetura, serviços e restrições arquiteturais
   adr/                   decisões arquiteturais, congeladas no tempo
-  features/              comportamento de cada capacidade
+  features/              uma feature do sistema por diretório
   contracts/             contrato formal entre processos, quando existir
   diagrams/              o que o Mermaid não expressa, em `.excalidraw.svg`
 ```
@@ -108,8 +108,8 @@ não a impressão de que a página ficaria melhor.
 
 | A mudança no código                                                                                      | O destino                        | O que escrever ali                                                     |
 |----------------------------------------------------------------------------------------------------------|----------------------------------|------------------------------------------------------------------------|
-| uma capacidade nova ganha comportamento executável                                                       | `docs/features/<nome>/`          | o comportamento observável, e as regras que os testes provam           |
-| o comportamento de uma capacidade que já tem página muda                                                 | a página dela                    | só a parte que mudou                                                   |
+| uma feature do sistema nasce e ganha comportamento executável                                            | `docs/features/<nome>/`          | o que a feature faz, e as regras que os testes provam                  |
+| uma feature que já tem página muda de comportamento                                                      | a página dela                    | só a parte que mudou                                                   |
 | um módulo do reactor, um serviço do `compose.yaml` ou uma rota do gateway nasce, muda de papel ou some   | `docs/architecture/README.md`    | o papel do serviço e a posição dele na topologia                       |
 | uma restrição arquitetural nova passa a valer                                                            | `docs/architecture/constraints/` | um arquivo por restrição, dizendo o que ela proíbe e o que ela protege |
 | um contrato entre processos é fixado: forma de evento, payload de fila, endpoint que outro serviço chama | `docs/contracts/`                | a forma do contrato, e quem está de cada lado                          |

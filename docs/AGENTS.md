@@ -27,7 +27,7 @@ de conteúdo.
 | `architecture/constraints/` | uma restrição arquitetural por arquivo, dizendo o que ela proíbe e o que ela protege    | os arquivos da pasta                                               |
 | `architecture/schemas/`     | a forma do schema de cada serviço, e as propostas de modelo de dados                    | [`architecture/schemas/README.md`](architecture/schemas/README.md) |
 | `adr/`                      | as decisões arquiteturais já tomadas, congeladas no tempo                               | [`adr/README.md`](adr/README.md)                                   |
-| `features/`                 | o comportamento de cada capacidade, um diretório por capacidade                         | [`features/README.md`](features/README.md)                         |
+| `features/`                 | uma feature do sistema por diretório, e o que cada uma faz                              | [`features/README.md`](features/README.md)                         |
 | `contracts/`                | o contrato formal entre processos, quando existir                                       | [`contracts/README.md`](contracts/README.md)                       |
 | `diagrams/`                 | o que o Mermaid não expressa, exportado em `.excalidraw.svg`; hoje está vazia           | —                                                                  |
 
@@ -57,8 +57,8 @@ página ficaria melhor.
 
 | A mudança no código                                                                                      | O destino                   | O que escrever ali                                                     |
 |----------------------------------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|
-| uma capacidade nova ganha comportamento executável                                                       | `features/<slug>/`          | o comportamento observável, e as regras que os testes provam           |
-| o comportamento de uma capacidade que já tem página muda                                                 | a página dela               | só a parte que mudou                                                   |
+| uma feature do sistema nasce e ganha comportamento executável                                            | `features/<slug>/`          | o que a feature faz, e as regras que os testes provam                  |
+| uma feature que já tem página muda de comportamento                                                      | a página dela               | só a parte que mudou                                                   |
 | um módulo do reactor, um serviço do `compose.yaml` ou uma rota do gateway nasce, muda de papel ou some   | `architecture/README.md`    | o papel do serviço e a posição dele na topologia                       |
 | uma restrição arquitetural nova passa a valer                                                            | `architecture/constraints/` | um arquivo por restrição, dizendo o que ela proíbe e o que ela protege |
 | uma migração Flyway muda a forma de um schema                                                            | `architecture/schemas/`     | a forma nova, no arquivo do serviço dono do schema                     |
@@ -81,15 +81,15 @@ implemente o código e diga na conversa qual página ficou para trás.
 
 ## O que escrever em cada destino
 
-Uma capacidade ocupa um diretório em `features/`, nomeado em kebab-case, com três
+Uma feature do sistema ocupa um diretório em `features/`, nomeado em kebab-case, com três
 arquivos: `feature-card.md`, `example-mapping.md` e `behavior.feature`.
 
 ### Feature Card
 
 Caminho: `features/<slug>/feature-card.md`.
 
-- **Um card cobre uma capacidade**, nunca um endpoint, uma classe ou uma tarefa técnica. É
-  o oráculo que define o comportamento observável, e por isso E1 e E3 partilham um card.
+- **Um card cobre uma feature**, nunca um endpoint, uma classe ou uma tarefa técnica. É o
+  oráculo que delimita a feature, e por isso E1 e E3 partilham um card.
 - Seções, nesta ordem: problema e resultado esperado; atores e gatilho; escopo; fora de
   escopo; regras de negócio; integrações e contratos afetados; riscos e decisões
   pendentes; critérios de pronto; links.
@@ -105,7 +105,7 @@ Caminho: `features/<slug>/feature-card.md`.
 - **Toda regra leva evidência com caminho e âncora GFM**, numa coluna própria; número de
   linha só quando o alvo não tiver título que o alcance, dentro de um bloco Mermaid por
   exemplo. A coluna ao lado diz quem aprovou a regra.
-- Ao criar uma capacidade, acrescente a linha dela em
+- Ao criar uma feature, acrescente a linha dela em
   [`features/README.md`](features/README.md), que é o índice dono da lista — e **não** em
   [`README.md`](README.md), que é roteador e não carrega inventário.
 
