@@ -48,7 +48,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # A versão é lida de onde ela vive, e não declarada aqui: os três
+      # A versão é lida de onde ela vive, e não declarada aqui: os quatro
       # executáveis Java herdam a do reactor, e o frontend tem a própria no
       # `package.json`. Um número copiado para este arquivo seria um segundo
       # lugar de verdade, e os dois divergiriam na primeira release.
@@ -99,7 +99,7 @@ jobs:
           # sistema medido. Confundir os dois invalida qualquer conclusão.
           descrever() {
             case "$1" in
-              api-gateway)       echo 'A entrada única de HTTP, que não pertence a plano nenhum' ;;
+              api-gateway)       echo 'Reparte a API entre os serviços; não pertence a plano nenhum' ;;
               lab-plane)         echo 'Lab Plane: o instrumento que mede' ;;
               lab-journal)       echo 'Lab Plane: o caderno de laboratório' ;;
               system-under-test) echo 'System under test: o sistema medido' ;;
@@ -224,7 +224,7 @@ jobs:
       #
       # O número pula por imagem: se um commit toca só `lab-plane`, ele sobe
       # para `-42` enquanto `lab-journal` fica em `-37`. É o comportamento
-      # desejado. Nada exige que as quatro imagens existam na mesma versão,
+      # desejado. Nada exige que as cinco imagens existam na mesma versão,
       # porque nenhum manifesto as referencia por um identificador comum — o
       # Image Updater resolve cada imagem pela tag mais recente dela.
       # A data vem do COMMIT, e não do relógio do runner. Um `created` com a

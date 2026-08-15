@@ -12,8 +12,8 @@ WORKDIR /build
 
 # As dependências entram numa camada própria: elas mudam muito menos que o
 # código, e o cache do Docker só é reaproveitado se as camadas estáveis vierem
-# antes das voláteis. Os quatro `pom.xml` entram porque o Maven precisa do
-# reactor completo para resolver o parent e o agregador.
+# antes das voláteis. Os cinco `pom.xml` de módulo entram porque o Maven
+# precisa do reactor completo para resolver o parent e o agregador.
 COPY pom.xml .
 COPY shared/pom.xml shared/
 COPY api-gateway/pom.xml api-gateway/
@@ -31,7 +31,7 @@ COPY shared/src shared/src
 RUN mvn -B -q -pl shared -am -DskipTests install
 
 # Só agora entra o código do módulo pedido. É a primeira camada que difere
-# entre as três imagens, e é de propósito que ela seja a última.
+# entre as quatro imagens Java, e é de propósito que ela seja a última.
 ARG MODULE
 RUN test -n "${MODULE}" || (echo "MODULE é obrigatório" && exit 1)
 COPY ${MODULE}/src ${MODULE}/src
