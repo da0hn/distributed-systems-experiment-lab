@@ -82,8 +82,10 @@ jobs:
           fi
 
           # Uma mudança em `shared/`, no reactor, no `Dockerfile` ou neste
-          # workflow alcança os três executáveis Java: os três compilam a
-          # partir dos mesmos arquivos.
+          # workflow alcança todos os executáveis Java: eles compilam a partir
+          # dos mesmos arquivos. O `api-gateway` não depende de `shared`, mas
+          # entra aqui do mesmo jeito — o `Dockerfile` constrói `shared` antes
+          # de qualquer módulo, então a imagem dele muda junto.
           comum='^(pom\.xml|Dockerfile|shared/|\.github/workflows/build\.yml)'
 
           afeta() {
@@ -97,6 +99,7 @@ jobs:
           # sistema medido. Confundir os dois invalida qualquer conclusão.
           descrever() {
             case "$1" in
+              api-gateway)       echo 'A entrada única de HTTP, que não pertence a plano nenhum' ;;
               lab-plane)         echo 'Lab Plane: o instrumento que mede' ;;
               lab-journal)       echo 'Lab Plane: o caderno de laboratório' ;;
               system-under-test) echo 'System under test: o sistema medido' ;;
@@ -133,7 +136,7 @@ jobs:
             grep -m1 -oP '(?<="version": ")[^"]+' frontend/package.json
           )"
 
-          for modulo in lab-plane lab-journal system-under-test; do
+          for modulo in api-gateway lab-plane lab-journal system-under-test; do
             if afeta "${comum}|^${modulo}/"; then
               juntar "$modulo" '.' "$versao_jvm" "$base_jvm"
             fi

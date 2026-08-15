@@ -5,14 +5,14 @@ import react from '@vitejs/plugin-react';
 // 2026-08-06: comando no lab-plane, leitura e streaming no lab-journal.
 //
 // O que mudou em 2026-08-15 e que ele nao os endereca mais um a um. Existe um
-// gateway, o proprio Traefik que roteia no cluster, e o servico de destino e
-// escolhido pelo prefixo do caminho. Este proxy passou de duas entradas a
-// uma: tudo sob `/api` vai para o gateway, e quem sabe o mapa e ele.
+// modulo api-gateway neste reactor, e o servico de destino e escolhido pelo
+// prefixo do caminho. Este proxy passou de duas entradas a uma: tudo sob
+// `/api` vai para o gateway, e quem sabe o mapa e ele.
 //
 // O ganho e que o mapa de caminhos deixou de existir em tres lugares. Antes
 // estava aqui, no nginx da imagem e no recurso de exposicao do cluster, em
-// tres sintaxes; hoje esta no gateway, e os dois ambientes leem a mesma
-// declaracao. Este arquivo nao carrega mais nenhuma rota.
+// tres sintaxes; hoje esta no `application.yml` do gateway, e o mesmo
+// processo roteia nos dois ambientes. Este arquivo nao carrega mais rota.
 export default defineConfig({
   plugins: [react()],
   server: {

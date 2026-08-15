@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>dev.da0hn.lab</groupId>
+    <artifactId>distributed-consistency-lab</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>api-gateway</artifactId>
+  <name>api-gateway</name>
+  <description>
+    A entrada unica de HTTP. O navegador conhece uma origem, e o servico de
+    destino e escolhido pelo prefixo do caminho. Ele nao compoe resposta de
+    dois servicos, o que faria dele um BFF, e nao toca em banco nenhum.
+  </description>
+
+  <dependencies>
+    <!--
+      A variante WebFlux, e nao a `server-webmvc`. O caminho do lab-journal
+      carrega o stream de observacoes por SSE, e cada stream fica aberto pelo
+      tempo do experimento. Num gateway servlet, isso prende uma thread do
+      Tomcat por stream; no Netty, nao prende nenhuma.
+    -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

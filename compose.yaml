@@ -99,25 +99,29 @@ services:
       - lab-plane
       - lab-journal
 
-  # O gateway. Entrada unica: o navegador conhece um endereco, e o que muda e
-  # o prefixo do caminho. E o mesmo Traefik que roteia no homelab, e o mapa
-  # de rotas vive em local/traefik/dynamic.yml.
+  # A entrada unica: o navegador conhece um endereco, e o prefixo do caminho
+  # escolhe o servico. E um modulo deste reactor, e nao um roteador de
+  # prateleira, porque a regra especifica e a autenticacao vao morar aqui.
   #
-  # O system-under-test nao esta atras dele de proposito. Continua com porta
-  # publicada aqui porque este arquivo e so desenvolvimento local, onde bater
+  # No cluster ele nao substitui o Traefik, que continua terminando TLS e
+  # roteando o hostname; o Traefik entrega tudo a este processo, e a reparticao
+  # por prefixo acontece aqui.
+  #
+  # O system-under-test nao tem rota aqui de proposito. Continua com porta
+  # publicada acima porque este arquivo e so desenvolvimento local, onde bater
   # nele a mao e diagnostico; no cluster ele nao e exposto.
-  gateway:
-    image: traefik:v3.3
+  api-gateway:
+    build:
+      context: .
+      args:
+        MODULE: api-gateway
+    environment:
+      GATEWAY_LAB_PLANE_URI: http://lab-plane:8080
+      GATEWAY_LAB_JOURNAL_URI: http://lab-journal:8081
+      GATEWAY_FRONTEND_URI: http://frontend:80
+      SERVER_PORT: 8000
     ports:
-      - "${GATEWAY_PORT:-8000}:80"
-    volumes:
-      - ./local/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
-      - ./local/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
-    healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - "${GATEWAY_PORT:-8000}:8000"
     depends_on:
       - frontend
       - lab-plane

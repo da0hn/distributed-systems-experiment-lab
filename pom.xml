@@ -26,6 +26,7 @@
 
   <modules>
     <module>shared</module>
+    <module>api-gateway</module>
     <module>lab-plane</module>
     <module>lab-journal</module>
     <module>system-under-test</module>
@@ -35,6 +36,7 @@
     <java.version>25</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <testcontainers.version>2.0.5</testcontainers.version>
+    <spring-cloud.version>2025.1.2</spring-cloud.version>
   </properties>
 
   <dependencyManagement>
@@ -52,6 +54,19 @@
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-bom</artifactId>
         <version>${testcontainers.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!--
+        O train do Spring Cloud entrou por causa do api-gateway, e so por
+        causa dele. Ele nao e gerenciado pelo spring-boot-dependencies, e a
+        correspondencia entre train e versao do Boot e manual: 2025.1.x e o
+        train da linha 4.x.
+      -->
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

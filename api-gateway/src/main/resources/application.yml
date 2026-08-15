@@ -1,0 +1,78 @@
+# A entrada unica. O frontend conhece uma origem, e o prefixo do caminho
+# escolhe o servico — frontend e API dividem a mesma origem, entao nao ha CORS
+# nem preflight, e o SSE dispensa withCredentials.
+#
+# NENHUM filtro remove prefixo. Cada servico carrega o proprio prefixo em
+# `server.servlet.context-path`, entao o caminho publico e o interno sao o
+# mesmo. Com StripPrefix, o `Location` de um 201 e o link do stream sairiam
+# sem o prefixo, e a falha e silenciosa: nada acusa na subida, o cliente e que
+# segue para um caminho que o gateway nao conhece.
+#
+# O system-under-test NAO tem rota aqui, e a ausencia e deliberada. Ele e o
+# sistema medido: uma requisicao a mao durante a janela medida entra no
+# oraculo exato como commit real, e nada a distingue da carga do experimento.
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    # O InetUtils do Spring Cloud tenta descobrir o proprio endereco na subida,
+    # e num conteiner que nao resolve o proprio hostname cada tentativa espera
+    # o timeout inteiro. Com o default de 1s por chamada e varias chamadas, o
+    # processo levava 40s para subir — tempo que vira probe reprovado e rollout
+    # lento no cluster. Nada aqui usa service discovery do Spring Cloud, entao
+    # o valor descoberto nao serve para nada.
+    inetutils:
+      timeout-seconds: 1
+    # Sem service discovery. As rotas apontam para `http://`, e nunca para
+    # `lb://`, entao nenhum DiscoveryClient e consultado — mas ligado ele
+    # entrava no health como UNKNOWN, e um componente permanentemente
+    # indeterminado num health check treina quem o le a ignora-lo.
+    discovery:
+      enabled: false
+    gateway:
+      server:
+        webflux:
+          routes:
+            # A ordem e explicita de proposito. Sem ela a precedencia vem da
+            # posicao na lista, e uma rota movida por um motivo sem relacao
+            # nenhuma com precedencia mudaria o roteamento em silencio.
+            - id: lab-plane
+              uri: ${GATEWAY_LAB_PLANE_URI:http://localhost:8080}
+              order: 10
+              predicates:
+                - Path=/api/lab-plane/**
+
+            - id: lab-journal
+              uri: ${GATEWAY_LAB_JOURNAL_URI:http://localhost:8081}
+              order: 10
+              predicates:
+                - Path=/api/lab-journal/**
+
+            # O catch-all serve a interface. Um caminho sob /api que nao casou
+            # com as rotas acima cai aqui, e quem o recusa com 404 e o nginx
+            # do frontend — sem essa recusa o try_files entregaria o
+            # index.html com 200, e um `fetch` que espera JSON quebraria no
+            # parse, longe da causa.
+            - id: frontend
+              uri: ${GATEWAY_FRONTEND_URI:http://localhost:5173}
+              order: 100
+              predicates:
+                - Path=/**
+
+server:
+  port: ${SERVER_PORT:8000}
+
+management:
+  server:
+    # Porta propria, fora do caminho que o gateway publica. O Actuator do
+    # gateway na porta de trafego seria alcancavel de fora junto com as rotas.
+    port: ${MANAGEMENT_PORT:9000}
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always

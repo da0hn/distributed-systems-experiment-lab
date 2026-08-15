@@ -1,10 +1,10 @@
-# Um Dockerfile para os três executáveis Java. O módulo entra por argumento,
-# e não por copia-e-cola: três arquivos idênticos divergiriam em silêncio na
+# Um Dockerfile para todos os executáveis Java. O módulo entra por argumento,
+# e não por copia-e-cola: arquivos idênticos divergiriam em silêncio na
 # primeira vez que alguém editasse um só.
 #
 # Constrói `shared` e depois **apenas** o módulo pedido. Antes o reactor
-# inteiro era construído três vezes, uma por imagem, e uma mudança em
-# qualquer `src/` invalidava a camada de compilação das três.
+# inteiro era construído uma vez por imagem, e uma mudança em qualquer `src/`
+# invalidava a camada de compilação de todas.
 ARG JAVA_VERSION=25
 
 FROM maven:3.9-eclipse-temurin-${JAVA_VERSION} AS build
@@ -16,16 +16,17 @@ WORKDIR /build
 # reactor completo para resolver o parent e o agregador.
 COPY pom.xml .
 COPY shared/pom.xml shared/
+COPY api-gateway/pom.xml api-gateway/
 COPY lab-plane/pom.xml lab-plane/
 COPY lab-journal/pom.xml lab-journal/
 COPY system-under-test/pom.xml system-under-test/
 RUN mvn -B -q dependency:go-offline
 
-# `shared` vem antes, e sozinho. Os três executáveis dependem dele e nenhum
-# depende dos outros dois, então esta camada é idêntica nas três imagens e
-# sobrevive a qualquer mudança em `lab-plane/`, `lab-journal/` ou
-# `system-under-test/`. O `install` o publica no `~/.m2` local da camada, que
-# é como o `package` seguinte resolve a dependência sem `-am`.
+# `shared` vem antes, e sozinho. Nenhum executável depende de outro, então
+# esta camada é idêntica em todas as imagens e sobrevive a qualquer mudança em
+# `lab-plane/`, `lab-journal/`, `system-under-test/` ou `api-gateway/`. O
+# `install` o publica no `~/.m2` local da camada, que é como o `package`
+# seguinte resolve a dependência sem `-am`.
 COPY shared/src shared/src
 RUN mvn -B -q -pl shared -am -DskipTests install
 

@@ -22,7 +22,7 @@ server:
   servlet:
     # O gateway nao remove o prefixo, entao o caminho publico e o interno sao
     # o mesmo e o servico nao precisa saber que existe um gateway na frente.
-    # Se o Traefik removesse `/api/lab-plane`, toda URL absoluta gerada aqui
+    # Se o gateway removesse `/api/lab-plane`, toda URL absoluta gerada aqui
     # — o `Location` de um 201, o link do stream — sairia sem o prefixo, e o
     # cliente seguiria para um caminho inexistente sem nenhum erro na subida.
     #
