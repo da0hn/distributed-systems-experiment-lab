@@ -16,15 +16,11 @@ O repositório já possui um esqueleto executável, mas ainda não reproduz nenh
 Ele compila, empacota e sobe localmente com PostgreSQL; não há regras de negócio,
 tabelas de domínio ou consumidor de CDC implementados.
 
-O broker, o Debezium Server e o diretório `deploy/` são decisões ou pendências de
-arquitetura que ainda não existem na árvore.
+O broker, o Debezium Server e os manifests de entrega ainda não existem na árvore.
 
-Na entrega, o GitHub Actions publica as imagens no GHCR com tag igual ao SHA do
-commit, e nenhum Secret vive neste repositório. Os manifests Kustomize de `deploy/`,
-que o ArgoCD do homelab espera, ainda não existem: o pipeline está parcialmente
-implementado e bloqueado por essa decisão. A fonte para saber o que está implementado,
-decidido ou aberto é a
-[matriz de integrações](docs/architecture/integrations.md#matriz).
+**A árvore é a única fonte do que existe.** Rode `git ls-files` e leia `pom.xml`,
+`compose.yaml` e `frontend/package.json`. O que falta definir está no
+[BACKLOG.md](BACKLOG.md).
 
 ## Módulos e serviços presentes
 
@@ -61,28 +57,22 @@ npm --prefix frontend run build
 Esses comandos verificam o esqueleto; eles não executam experimentos de consistência
 ainda.
 
-## Como navegar pela documentação
+## Documentação
 
-**Há um roteador documental, e ele é um só:**
-[`docs/README.md`](docs/README.md#precedência-de-consulta). Entre por ele com a pergunta
-que você tem — estado de fronteira, decisão vigente, decisão aberta, comportamento,
-processo, vocabulário — e ele nomeia o documento dono e a âncora, em um salto.
+**Três arquivos governam o repositório, e são só estes três:**
 
-**Esta página não mantém tabela concorrente.** Um segundo mapa de navegação diverge do
-primeiro sem que ninguém perceba: cada cópia envelhece por conta própria, e nada avisa
-quando as duas passam a discordar.
+| Arquivo                  | O que ele é                                          |
+|--------------------------|------------------------------------------------------|
+| [AGENTS.md](AGENTS.md)   | as regras de trabalho, para pessoas e para agentes   |
+| [BACKLOG.md](BACKLOG.md) | as pendências de definição, em tópicos de alto nível |
+| este `README.md`         | o que o projeto é e como rodá-lo                     |
 
-O plano organiza o estudo, os ADRs registram decisões duráveis e os Feature Cards
-descrevem comportamento. Quando houver divergência, a decisão aceita e a configuração
-versionada prevalecem sobre resumos de onboarding — inclusive sobre esta página.
+O [CLAUDE.md](CLAUDE.md) apenas importa o `AGENTS.md`, para que o repositório permaneça
+agnóstico de agente.
 
-## Para agentes e contribuidores
+**`docs/` é histórico congelado.** Aquele diretório foi escrito sob um processo de
+especificação que não vale mais, e boa parte dele descreve comportamento que nunca foi
+implementado. Não o trate como contrato, não o mantenha sincronizado com o código e não o
+cite como evidência. Quando ele contradisser a árvore, a árvore está certa.
 
-As regras operacionais do repositório estão em [AGENTS.md](AGENTS.md). O
-[CLAUDE.md](CLAUDE.md) apenas roteia para essa mesma fonte, para que o repositório
-permaneça agnóstico de agente.
-
-Antes de propor uma mudança de comportamento, siga o
-[processo de especificação](docs/specification-process.md#a-decisão-vem-antes-do-artefato).
-Antes de alterar arquitetura, consulte os ADRs e a fila; não crie uma decisão para
-fechar uma lacuna sem aprovação humana.
+**O código é a documentação.** Documento novo só nasce quando uma pessoa pedir por um.

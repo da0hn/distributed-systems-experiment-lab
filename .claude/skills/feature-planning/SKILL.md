@@ -1,7 +1,14 @@
 ---
 name: feature-planning
-description: "Plan new features, behavior changes, and implementation updates for this laboratory. Use automatically whenever the user asks to plan, refine, scope, design, estimate, or prepare implementation work, including a new feature, experiment, API, event, integration, behavior change, planejamento, plano de implementação, nova feature, refinamento, or design técnico."
+description: "PROCESSO REVOGADO — NÃO use automaticamente. O modo vigente deste repositório é implementação primeiro, e planejar não gera documento. Só invoque esta skill quando a pessoa escrever `/feature-planning` ou pedir o ciclo de especificação pelo nome, nesta sessão."
 ---
+
+> **AVISO DE PROCESSO REVOGADO.** O modo de trabalho vigente deste repositório é
+> **implementação primeiro**, e está em [`AGENTS.md`](../../../AGENTS.md) — ele prevalece
+> sobre tudo o que esta página descreve. O ciclo abaixo **NÃO DEVE ser iniciado por
+> iniciativa própria**: ele só roda quando a pessoa o pedir pelo nome, nesta sessão, em
+> palavras. Pendência de definição vai para o `BACKLOG.md` da raiz, em uma linha, e não
+> vira documento.
 
 # Planeje a funcionalidade
 

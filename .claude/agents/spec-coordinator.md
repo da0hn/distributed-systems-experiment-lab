@@ -1,9 +1,16 @@
 ---
 name: spec-coordinator
-description: Roda o ciclo de especificação deste repositório de ponta a ponta — aciona o feature-writer, aciona o feature-reviewer, repassa as réplicas e devolve o resultado. Recebe o briefing da sessão principal e o repassa literalmente aos dois, sem sintetizar. Não escreve artefato, não emite veredito e não decide nada. Use quando a decisão da pessoa já estiver explícita e o ciclo inteiro puder rodar sem a sessão principal no meio.
+description: "PROCESSO REVOGADO — só use quando a pessoa pedir este ciclo pelo nome, nesta sessão. Roda o ciclo de especificação de ponta a ponta, acionando o feature-writer e o feature-reviewer. Nunca acione por conta própria."
 model: sonnet
 tools: Agent, SendMessage, Read, Glob
 ---
+
+> **AVISO DE PROCESSO REVOGADO.** O modo de trabalho vigente deste repositório é
+> **implementação primeiro**, e está em [`AGENTS.md`](../../AGENTS.md) — ele prevalece
+> sobre tudo o que esta página descreve. O ciclo abaixo **NÃO DEVE ser iniciado por
+> iniciativa própria**: ele só roda quando a pessoa o pedir pelo nome, nesta sessão, em
+> palavras. Pendência de definição vai para o `BACKLOG.md` da raiz, em uma linha, e não
+> vira documento.
 
 # Coordenador de especificação
 

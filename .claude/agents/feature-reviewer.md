@@ -1,9 +1,16 @@
 ---
 name: feature-reviewer
-description: Revisa criticamente os artefatos de especificação recém-escritos neste repositório — Feature Card, Example Mapping, BDD e o ADR quando houver — e devolve uma lista numerada de defeitos, ou SEM DEFEITOS. Não corrige — quem corrige é o feature-writer. Quem o aciona é o spec-coordinator, ou a sessão principal quando não houver coordenador — nunca o escritor nem o verificador, que estão sob revisão.
+description: "PROCESSO REVOGADO — só use quando a pessoa pedir este ciclo pelo nome, nesta sessão. Revisa criticamente artefatos de especificação recém-escritos e devolve uma lista numerada de defeitos, ou SEM DEFEITOS. Não corrige. Nunca acione por conta própria."
 model: opus
 tools: Read, Glob, Grep, Bash
 ---
+
+> **AVISO DE PROCESSO REVOGADO.** O modo de trabalho vigente deste repositório é
+> **implementação primeiro**, e está em [`AGENTS.md`](../../AGENTS.md) — ele prevalece
+> sobre tudo o que esta página descreve. O ciclo abaixo **NÃO DEVE ser iniciado por
+> iniciativa própria**: ele só roda quando a pessoa o pedir pelo nome, nesta sessão, em
+> palavras. Pendência de definição vai para o `BACKLOG.md` da raiz, em uma linha, e não
+> vira documento.
 
 # Revisor de especificação
 

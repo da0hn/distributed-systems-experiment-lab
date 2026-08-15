@@ -1,9 +1,16 @@
 ---
 name: feature-writer
-description: Redige os artefatos de especificação de uma capacidade cuja decisão já foi tomada por uma pessoa — Feature Card, Example Mapping, BDD e, quando o prompt o nomear, o ADR. Recebe a escolha, as alternativas descartadas com o motivo técnico de cada uma, e as evidências com caminho e âncora. Aciona o artifact-verifier ao terminar e devolve o relatório dele junto dos arquivos; quem aciona o revisor é o spec-coordinator, ou a sessão principal quando não houver coordenador. Use depois que a decisão estiver explícita — nunca para decidir.
+description: "PROCESSO REVOGADO — só use quando a pessoa pedir este ciclo pelo nome, nesta sessão. Redige os artefatos de especificação de uma capacidade cuja decisão já foi tomada por uma pessoa — Feature Card, Example Mapping, BDD e, quando o prompt o nomear, o ADR. Nunca acione por conta própria a partir de um pedido de planejamento."
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, Agent
 ---
+
+> **AVISO DE PROCESSO REVOGADO.** O modo de trabalho vigente deste repositório é
+> **implementação primeiro**, e está em [`AGENTS.md`](../../AGENTS.md) — ele prevalece
+> sobre tudo o que esta página descreve. O ciclo abaixo **NÃO DEVE ser iniciado por
+> iniciativa própria**: ele só roda quando a pessoa o pedir pelo nome, nesta sessão, em
+> palavras. Pendência de definição vai para o `BACKLOG.md` da raiz, em uma linha, e não
+> vira documento.
 
 # Escritor de especificação
 

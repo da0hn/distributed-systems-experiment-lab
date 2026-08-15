@@ -1,5 +1,20 @@
 # Documentação
 
+> **`docs/` É HISTÓRICO CONGELADO.** O modo de trabalho vigente do repositório é
+> **implementação primeiro**, e está no [`AGENTS.md` da raiz](../AGENTS.md) — ele
+> prevalece sobre tudo o que está nesta pasta. Este diretório foi escrito sob um processo
+> de especificação revogado, e boa parte dele descreve comportamento que nunca foi
+> implementado.
+>
+> Em consequência: **NÃO DEVE** criar nem editar arquivo aqui por iniciativa própria;
+> **NÃO DEVE** citar daqui como evidência de comportamento; **NÃO DEVE** manter isto
+> sincronizado com o código. Quando um documento daqui contradisser a árvore, a árvore
+> está certa. Pendência de definição vai para o [`BACKLOG.md`](../BACKLOG.md) da raiz, em
+> uma linha.
+>
+> A triagem desta pasta — apagar, encolher ou manter, arquivo por arquivo — é da pessoa.
+> Nada foi apagado.
+
 **Este arquivo é o roteador documental do repositório.** Ele responde a uma pergunta só:
 qual documento é dono do fato que você procura, e em que âncora.
 

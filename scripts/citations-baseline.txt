@@ -72,3 +72,21 @@ docs/adr/0009-a-classificacao-do-dual-write-e-a-regiao-de-pacote.md:docs/archite
 # alcança "o alvo foi apagado depois". A informação permanece no histórico do git.
 docs/adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md:plano-de-escrita-do-lote-e.md#o-que-a-redução-cortou-e-para-onde-cada-coisa-foi
 docs/adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md:plano-de-escrita-do-lote-e.md#adr-0015--a-chave-o-discriminador-de-execução-e-as-colunas-de-tempo
+
+# As tres secoes-lapide do `AGENTS.md` foram removidas quando o processo documental
+# foi revogado: "Como o planejamento funciona aqui", "Decisoes" e "Pendencias de
+# processo". As origens que ainda as citam vivem todas em `docs/`, que passou a ser
+# historico congelado, e nao sao mantidas. A informacao permanece no historico do git.
+docs/audits/2026-08-06-coerencia-e-limites-documentais.md:../../AGENTS.md#pendências-de-processo
+docs/features/distincao-entre-higiene-e-invalidacao/example-mapping.md:../../../AGENTS.md#pendências-de-processo
+docs/fila-de-decisoes.md:../AGENTS.md#decisões
+docs/fila-de-decisoes.md:../AGENTS.md#como-o-planejamento-funciona-aqui
+
+# As secoes "O que este projeto e" / "Os quatro servicos", "Arquitetura conceitual" e
+# "Regra pedagogica" sairam do `AGENTS.md` por escolha da pessoa, ao enxugar o arquivo.
+# As origens que ainda as citam vivem em `docs/`, historico congelado e nao mantido.
+docs/adr/0011-a-topologia-de-servicos-e-o-caderno-de-laboratorio-fora-do-git.md:../../AGENTS.md#os-quatro-serviços-e-a-regra-que-os-separa
+docs/features/deteccao-de-atualizacao-perdida/example-mapping.md:../../../AGENTS.md#o-que-este-projeto-é
+docs/fila-de-decisoes.md:../AGENTS.md#o-que-este-projeto-é
+docs/fila-de-decisoes.md:../AGENTS.md#regra-pedagógica
+docs/fila-de-decisoes.md:../AGENTS.md#arquitetura-conceitual

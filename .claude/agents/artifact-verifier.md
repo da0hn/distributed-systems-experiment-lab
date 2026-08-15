@@ -1,9 +1,16 @@
 ---
 name: artifact-verifier
-description: Roda os verificadores mecânicos deste repositório sobre um conjunto de arquivos — citações de evidência, orçamento de tamanho, padding de tabela, fim de linha e consulta reversa de citação — e devolve a saída literal. Não corrige, não julga mérito, não escreve nada e não aciona ninguém. No ciclo de especificação quem o aciona é o feature-writer, ao terminar a redação — medir não é julgar, e por isso quem produz pode acionar quem mede. Use diretamente para a consulta reversa, quando precisar saber quem cita um heading antes de apagá-lo.
+description: "Roda os verificadores mecânicos deste repositório sobre um conjunto de arquivos — citações de evidência, orçamento de tamanho, padding de tabela, fim de linha e consulta reversa de citação — e devolve a saída literal. Não corrige, não julga mérito e não escreve nada. Use quando precisar medir um `.md` que a pessoa pediu, ou para a consulta reversa, antes de apagar um heading citado."
 model: sonnet
 tools: Bash, Read, Glob
 ---
+
+> **AVISO DE PROCESSO REVOGADO.** O modo de trabalho vigente deste repositório é
+> **implementação primeiro**, e está em [`AGENTS.md`](../../AGENTS.md) — ele prevalece
+> sobre tudo o que esta página descreve. O ciclo abaixo **NÃO DEVE ser iniciado por
+> iniciativa própria**: ele só roda quando a pessoa o pedir pelo nome, nesta sessão, em
+> palavras. Pendência de definição vai para o `BACKLOG.md` da raiz, em uma linha, e não
+> vira documento.
 
 # Verificador de artefatos
 

@@ -1,7 +1,14 @@
 ---
 name: domain-modeling
-description: Constrói e afia o modelo de domínio de um projeto. Use quando o usuário quiser fixar terminologia de domínio ou uma linguagem ubíqua, registrar uma decisão arquitetural, ou quando outra skill precisar manter o modelo de domínio.
+description: "Constrói e afia o modelo de domínio de um projeto. Use quando a pessoa quiser fixar terminologia de domínio ou uma linguagem ubíqua. NÃO use para registrar decisão arquitetural em documento — no modo vigente a decisão vai para o código, e o `.md` só nasce por pedido explícito."
 ---
+
+> **AVISO DE PROCESSO REVOGADO.** O modo de trabalho vigente deste repositório é
+> **implementação primeiro**, e está em [`AGENTS.md`](../../../AGENTS.md) — ele prevalece
+> sobre tudo o que esta página descreve. O ciclo abaixo **NÃO DEVE ser iniciado por
+> iniciativa própria**: ele só roda quando a pessoa o pedir pelo nome, nesta sessão, em
+> palavras. Pendência de definição vai para o `BACKLOG.md` da raiz, em uma linha, e não
+> vira documento.
 
 # Modelagem de domínio
 

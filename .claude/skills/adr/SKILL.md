@@ -1,7 +1,14 @@
 ---
 name: adr
-description: Template e ciclo de vida de Architecture Decision Records (ADR) deste laboratório. Use sempre que uma decisão precisar virar ADR — ao planejar uma feature, ao refinar o modelo de domínio, ou quando o usuário pedir para registrar, aceitar, substituir ou subsumir uma decisão arquitetural.
+description: "Template e ciclo de vida de Architecture Decision Records deste laboratório. NÃO use automaticamente ao decidir algo: no modo vigente, uma decisão arquitetural é apresentada na conversa e vai para o código. Só invoque quando a pessoa pedir explicitamente para registrar um ADR."
 ---
+
+> **AVISO DE PROCESSO REVOGADO.** O modo de trabalho vigente deste repositório é
+> **implementação primeiro**, e está em [`AGENTS.md`](../../../AGENTS.md) — ele prevalece
+> sobre tudo o que esta página descreve. O ciclo abaixo **NÃO DEVE ser iniciado por
+> iniciativa própria**: ele só roda quando a pessoa o pedir pelo nome, nesta sessão, em
+> palavras. Pendência de definição vai para o `BACKLOG.md` da raiz, em uma linha, e não
+> vira documento.
 
 # ADR
 
