@@ -1,12 +1,13 @@
 # AGENTS.md — trabalhando dentro de `docs/`
 
 Este arquivo faz duas coisas: diz **o que cada caminho de `docs/` guarda**, para que a
-busca comece no lugar certo, e diz **quando uma mudança de código obriga a atualizar um
-deles**.
+busca comece no lugar certo, e diz **que forma cada documento tem** — o teto de um Feature
+Card, os blocos de um Example Mapping, o que entra num arquivo de restrição.
 
-O modo de trabalho do repositório é implementação primeiro, e ele vive no
-[`AGENTS.md` da raiz](../AGENTS.md), que prevalece sobre tudo o que está aqui. Este
-arquivo não o reexplica.
+**Ele não diz quando escrever.** Isso é da tabela de gatilhos do
+[`AGENTS.md` da raiz](../AGENTS.md), que prevalece sobre tudo o que está aqui e não é
+reproduzido aqui — regra que vale no repositório inteiro mora lá, e uma segunda cópia
+envelhece em silêncio.
 
 O [`README.md`](README.md) desta pasta é o índice de navegação, para quem **procura** um
 documento. Este arquivo é para quem vai **escrever** um.
@@ -31,13 +32,8 @@ de conteúdo.
 | `contracts/`                | o contrato formal entre processos, quando existir                                       | [`contracts/README.md`](contracts/README.md)                       |
 | `diagrams/`                 | o que o Mermaid não expressa, exportado em `.excalidraw.svg`; hoje está vazia           | —                                                                  |
 
-**`backlog.md` aparece acima sem link, e isso é deliberado.** Ele NÃO DEVE ser
-referenciado por documento nenhum: uma linha dele nasce e some conforme o trabalho anda,
-então um link para ele aponta para texto que não estará lá. Cite-o pelo caminho, em texto
-puro.
-
-**Um documento desta pasta não é contrato.** Se ele contradisser o código, o código está
-certo — e a contradição é defeito a corrigir, e não estado aceito.
+**`backlog.md` aparece acima sem link, e isso é deliberado** — a raiz proíbe referenciá-lo,
+e a proibição alcança esta tabela.
 
 **Se o que você quer escrever não couber em nenhuma linha, ele não vira documento.**
 Nenhum caminho novo é inventado nesta pasta — o assunto vai para a conversa, e a pendência
@@ -47,45 +43,24 @@ quê está em [Feature Card](#feature-card), [Example Mapping](#example-mapping)
 
 ## O que nunca é editado
 
-Nenhum arquivo de `adr/` é criado, editado, emendado, dividido, patcheado ou substituído.
-A pasta existe para consultar o que já foi decidido, e para nada além disso. **Nenhum
-gatilho deste arquivo alcança ela.**
+`adr/`. Nenhum arquivo dela é criado, editado, emendado, dividido, patcheado ou
+substituído — nem por um gatilho da raiz, nem por iniciativa própria.
 
-Decisão arquitetural nova acontece na conversa, e vai para o código. Quando um ADR
-contradisser a árvore, a árvore está certa, e a divergência **não** se conserta ali: ela
-se conserta no destino que a tabela da próxima seção indicar.
+Quando um ADR contradisser a árvore, a divergência **não** se conserta ali: ela se
+conserta no destino que a tabela de gatilhos da raiz indicar.
 
-## Quando o código muda, o destino aqui muda junto
+## Quando escrever aqui
 
-**Atualizar o destino de uma linha desta tabela é obrigatório, e não conta como iniciativa
-própria.** O gatilho é código concreto que entrou na árvore — nunca a impressão de que a
-página ficaria melhor.
+**Quem decide isso é o `AGENTS.md` da raiz**, na tabela de
+[gatilhos](../AGENTS.md#a-documentação-que-restou-acompanha-o-código): ela diz qual
+mudança de código obriga a atualizar qual caminho desta pasta, e que a atualização vai no
+mesmo commit da mudança que a disparou. Ela não é reproduzida aqui — o gatilho nasce no
+código, e quem mexe em código lê aquele arquivo, não este.
 
-| A mudança no código                                                                                      | O destino                   | O que escrever ali                                                     |
-|----------------------------------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|
-| uma funcionalidade do sistema nasce e ganha comportamento executável                                     | `features/<slug>/`          | o que a funcionalidade faz, e as regras que os testes provam           |
-| uma funcionalidade que já tem página muda de comportamento                                               | a página dela               | só a parte que mudou                                                   |
-| um módulo do reactor, um serviço do `compose.yaml` ou uma rota do gateway nasce, muda de papel ou some   | `architecture/README.md`    | o papel do serviço e a posição dele na topologia                       |
-| uma restrição arquitetural nova passa a valer                                                            | `architecture/constraints/` | um arquivo por restrição, dizendo o que ela proíbe e o que ela protege |
-| uma migração Flyway muda a forma de um schema                                                            | `architecture/schemas/`     | a forma nova, no arquivo do serviço dono do schema                     |
-| um contrato entre processos é fixado: forma de evento, payload de fila, endpoint que outro serviço chama | `contracts/`                | a forma do contrato, e quem está de cada lado                          |
-| um termo do vocabulário do laboratório entra no código, ou muda de nome                                  | `data-dictionary.md`        | a linha de/para, em português e em inglês                              |
-| o plano geral muda de rumo                                                                               | `roadmap.md`                | em alto nível, sem data e sem link                                     |
+Este arquivo responde a outra pergunta: **uma vez que o gatilho disparou, que forma o
+destino tem.**
 
-**A atualização vai no MESMO commit da mudança de código que a disparou.** Um commit
-depois ela é esquecida, e uma página que descreve a árvore de ontem é pior que página
-nenhuma: ela é lida como se descrevesse a de hoje.
-
-**O que NÃO dispara nada:** refatoração que não muda comportamento observável; correção de
-defeito que restaura o comportamento já descrito; mudança de dependência, de versão ou de
-configuração de build; teste novo sobre comportamento que a página já descreve; e qualquer
-coisa em `adr/`.
-
-**Se a atualização exigir uma definição que você não tem, não invente.** Use
-`AskUserQuestion`. Se a resposta não vier agora, registre o tópico no `backlog.md`,
-implemente o código e diga na conversa qual página ficou para trás.
-
-## O que escrever em cada destino
+## Que forma cada destino tem
 
 Uma funcionalidade do sistema ocupa um diretório em `features/`, nomeado em kebab-case, com três
 arquivos: `feature-card.md`, `example-mapping.md` e `behavior.feature`.
@@ -213,6 +188,3 @@ forma de um schema. Excalidraw só para o que o Mermaid não expressa, exportado
   ```bash
   python scripts/check_citations.py --root . --quem-cita docs/<arquivo>.md
   ```
-
-- `git add` apenas dos arquivos relacionados, e um único commit em Conventional Commits
-  (skill `commit`).

@@ -95,20 +95,10 @@ mudança vai numa migração nova.
 ## `docs/` tem uma estrutura fechada
 
 **Cinco pastas e quatro arquivos, e nada além disso.** Um documento que não couber em um
-deles não é escrito, e nenhum caminho novo é inventado.
-
-```
-docs/
-  README.md              índice: o que cada pasta guarda; só navegação
-  roadmap.md             o plano geral, em alto nível, sem data
-  data-dictionary.md     o de/para do vocabulário do laboratório
-  backlog.md             instável; nunca referenciado
-  architecture/          arquitetura, serviços e restrições arquiteturais
-  adr/                   decisões arquiteturais, congeladas no tempo
-  features/              uma funcionalidade do sistema por diretório
-  contracts/             contrato formal entre processos, quando existir
-  diagrams/              o que o Mermaid não expressa, em `.excalidraw.svg`
-```
+deles não é escrito, e nenhum caminho novo é inventado. O mapa da pasta — o que cada
+caminho guarda, e o `README.md` que é dono de cada um — está em
+[`docs/AGENTS.md`](docs/AGENTS.md#o-que-cada-caminho-guarda-e-onde-aprofundar), que é o
+único lugar onde ele vive.
 
 **`docs/adr/` está congelado.** Ele serve para consultar o que já foi decidido, e nada
 novo é escrito ali — nem ADR, nem edição de ADR existente. Nenhum gatilho da seção
@@ -133,6 +123,7 @@ não a impressão de que a página ficaria melhor.
 | uma funcionalidade que já tem página muda de comportamento                                               | a página dela                    | só a parte que mudou                                                   |
 | um módulo do reactor, um serviço do `compose.yaml` ou uma rota do gateway nasce, muda de papel ou some   | `docs/architecture/README.md`    | o papel do serviço e a posição dele na topologia                       |
 | uma restrição arquitetural nova passa a valer                                                            | `docs/architecture/constraints/` | um arquivo por restrição, dizendo o que ela proíbe e o que ela protege |
+| uma migração Flyway muda a forma de um schema                                                            | `docs/architecture/schemas/`     | a forma nova, no arquivo do serviço dono do schema                     |
 | um contrato entre processos é fixado: forma de evento, payload de fila, endpoint que outro serviço chama | `docs/contracts/`                | a forma do contrato, e quem está de cada lado                          |
 | um termo do vocabulário do laboratório entra no código, ou muda de nome                                  | `docs/data-dictionary.md`        | a linha de/para, em português e em inglês                              |
 | o plano geral muda de rumo                                                                               | `docs/roadmap.md`                | em alto nível, sem data e sem link                                     |
@@ -152,6 +143,10 @@ nenhuma: ela é lida como se descrevesse a de hoje.
 **Se a atualização exigir uma definição que você não tem, não invente.** Use
 `AskUserQuestion`. Se a resposta não vier agora, registre o tópico no `docs/backlog.md`,
 implemente o código e diga na conversa qual página ficou para trás.
+
+**Esta tabela diz quando escrever, e não como.** A forma de cada destino — o teto de prosa
+de um Feature Card, os blocos de um Example Mapping, o que entra num arquivo de restrição —
+está em [`docs/AGENTS.md`](docs/AGENTS.md), e só lá. Abra-o antes de escrever em `docs/`.
 
 ## Convenções gerais de escrita
 
