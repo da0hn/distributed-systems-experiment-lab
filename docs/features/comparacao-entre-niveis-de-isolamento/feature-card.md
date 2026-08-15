@@ -1,6 +1,7 @@
 # Feature Card — Comparação entre níveis de isolamento
 
-Estado: `especificado, não implementado` · Origem: [`E-87`, fecho](../../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12)
+Estado: `especificado, não implementado` · Origem: decisão da pessoa, sem ADR —
+comparar os três níveis é comportamento verificável, e não decisão arquitetural
 
 Cobre o eixo do nível de isolamento como parâmetro de execução, hoje exercido pelo **E5**
 (`write-skew-inert-protection`).
@@ -61,11 +62,11 @@ flowchart TD
 
 ## Regras de negócio
 
-| #  | Regra                                                                                                                                                                                                                                                    | Evidência                                                                                                                               | Aprovada por |
-|----|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| R1 | A capacidade DEVE comparar o mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e `SERIALIZABLE`, e DEVE dizer quais níveis protegem a invariante e a que custo.                                                                                  | [`E-87`, fecho](../../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12) | pendente     |
-| R2 | A plataforma NÃO DEVE recusar nenhuma combinação de nível de isolamento e estratégia de concorrência, mesmo quando a combinação quebra a invariante sem lançar exceção.                                                                                  | [`E-87`, fecho](../../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12) | pendente     |
-| R3 | O relatório de uma execução comparada DEVE exibir o par declarado — nível de isolamento e estratégia de concorrência — ao lado do veredito. Um rótulo único que colapse os dois eixos, escondendo qual deles produziu o efeito, NÃO satisfaz esta regra. | [`E-87`, fecho](../../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12) | pendente     |
+| #  | Regra                                                                                                                                                                                                                                                    | Evidência                                                                                                                                           | Aprovada por |
+|----|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| R1 | A capacidade DEVE comparar o mesmo experimento sob `READ COMMITTED`, `REPEATABLE READ` e `SERIALIZABLE`, e DEVE dizer quais níveis protegem a invariante e a que custo.                                                                                  | decisão da pessoa, sem ADR; o `ADR-0002` recusa decidir o nível de isolamento por escrito                                                           | pendente     |
+| R2 | A plataforma NÃO DEVE recusar nenhuma combinação de nível de isolamento e estratégia de concorrência, mesmo quando a combinação quebra a invariante sem lançar exceção.                                                                                  | decisão da pessoa: `OPTIMISTIC` sob `READ COMMITTED` quebra a invariante sem exceção, e recusar a combinação apagaria o fenômeno antes de mostrá-lo | pendente     |
+| R3 | O relatório de uma execução comparada DEVE exibir o par declarado — nível de isolamento e estratégia de concorrência — ao lado do veredito. Um rótulo único que colapse os dois eixos, escondendo qual deles produziu o efeito, NÃO satisfaz esta regra. | decisão da pessoa: sem o par declarado ao lado do veredito, o número não é interpretável                                                            | pendente     |
 
 Os exemplos de cada nível, e o diagrama dos dois eixos, estão no
 [Example Mapping](example-mapping.md).
@@ -86,8 +87,8 @@ relatório, em [`integrations.md`](../../architecture/integrations.md#perguntas-
 
 - **Onde o nível é declarado.** Herdado de `deteccao-de-protecao-inerte`; `ADR-0002`
   recusou decidir por escrito.
-- **Absorção ou ponteiro da `R7`.** Escolha da redação, pelo fecho de `E-87`; `R7`
-  intocada, custo no Example Mapping.
+- **Absorção ou ponteiro da `R7`.** Escolha da redação, e não da decisão que criou este
+  card; `R7` intocada, custo no Example Mapping.
 - **Generalização além do E5.** Nada aplica isto ao oráculo exato do E1/E3.
 - **A métrica de "custo".** A taxa de aborto de `execucao-de-experimento` é candidata,
   sem confirmação.
@@ -108,7 +109,6 @@ colapse os dois eixos.
 ## Links
 
 - [Example Mapping](example-mapping.md)
-- [`E-87`, fecho](../../fila-de-decisoes.md#e-87-fecha-em-card-novo-para-a-comparação-entre-níveis-de-isolamento-escolhida-em-2026-08-12)
 - [`deteccao-de-protecao-inerte`](../deteccao-de-protecao-inerte/feature-card.md) — o E5,
   única instância hoje
 - [`execucao-de-experimento`](../execucao-de-experimento/feature-card.md) — relatório

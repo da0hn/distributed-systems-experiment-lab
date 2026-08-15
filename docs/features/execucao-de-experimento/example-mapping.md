@@ -4,9 +4,8 @@ Companheiro de [`feature-card.md`](feature-card.md). As regras vêm do
 [`ADR-0004`](../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md),
 `Aceito`, e da calibração do
 [`ADR-0002`](../../adr/0002-o-dominio-minimo-e-os-dois-oraculos.md), `Aceito`. `R15` tem
-origem própria: o fecho de
-[`E-51`](../../fila-de-decisoes.md#e-51-fecha-em-guarda-de-completude-escolhida-em-2026-08-12)
-na fila de decisões.
+origem própria: uma decisão da pessoa, sem ADR, que condiciona a contagem de
+coincidências a um stream atestado como completo.
 
 ## História
 
@@ -81,11 +80,9 @@ flowchart LR
 A contagem de coincidências é derivada do **log de observações**
 ([ADR-0004, A plataforma conta coincidências](../../adr/0004-o-estatuto-da-barreira-e-o-diagnostico-da-nao-ocorrencia.md#a-plataforma-conta-coincidências)),
 não do WAL: o evento sai do passo, atravessa o broker e é persistido no `lab-journal`
-antes do push ao vivo — o caminho que
-[`E-36`, fecho](../../fila-de-decisoes.md#e-36-fecha-no-broker-com-persistência-antes-da-emissão-escolhida-em-2026-08-10)
-fixou, sem Debezium Server e sem LSN envolvidos; a ordem daquele stream é o cursor
-monotônico do ADR-0016, e não LSN. Quem conta é o **runtime**, em toda execução — o
-sistema sob teste não participa.
+antes do push ao vivo — o caminho que uma decisão da pessoa fixou, sem Debezium Server e
+sem LSN envolvidos; a ordem daquele stream é o cursor monotônico do ADR-0016, e não LSN.
+Quem conta é o **runtime**, em toda execução — o sistema sob teste não participa.
 
 - **Exemplo 15.1** — Nenhum evento do log de observações se perde entre o passo e o
   `lab-journal`. O runtime conta as coincidências (R9) sobre esse stream, e o número
@@ -95,12 +92,9 @@ sistema sob teste não participa.
   contaria uma coincidência a menos do que realmente ocorreu, e o relatório mostraria
   `protegido` sobre uma execução que, na verdade, teve exposição não contada — o mesmo
   defeito que a regra de conexão por worker existe para impedir, agora dentro do próprio
-  veredito
-  ([E-51, fecho](../../fila-de-decisoes.md#e-51-fecha-em-guarda-de-completude-escolhida-em-2026-08-12)).
-- **Exemplo 15.3, o que a guarda ainda não decide** — O fecho de `E-51` reusa "o mesmo
-  mecanismo" que
-  [`E-46`, fecho](../../fila-de-decisoes.md#e-46-fecha-no-consumidor-do-broker-escolhida-em-2026-08-10)
-  deu à soma do oráculo do predicado (`R8` de
+  veredito.
+- **Exemplo 15.3, o que a guarda ainda não decide** — A guarda reusa "o mesmo mecanismo"
+  que atesta a soma do oráculo do predicado (`R8` de
   [deteccao-de-protecao-inerte](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio)),
   mas aquele mecanismo confere contiguidade de **LSN** no consumidor do stream de CDC —
   um stream diferente do log de observações, que não tem LSN. Se a guarda de R15 lê um
@@ -161,22 +155,22 @@ um defeito que torna a de baixo ilegível.
 
 ## Perguntas em aberto
 
-| #   | Pergunta                                                                                                                                                                                                                                                    | Origem                                                                                                                                                                                                      |
-|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| P1  | O limite `3/commits` pressupõe independência que a execução não tem. O que o número publicado afirma?                                                                                                                                                       | [`Q-0004-8`](../../questions/Q-0004-8.md)                                                                                                                                                                   |
-| P2  | Quem escolhe `N`, e o experimento roda no pipeline, sob demanda, ou os dois com `N` diferente?                                                                                                                                                              | [`Q-0004-4`](../../questions/Q-0004-4.md)                                                                                                                                                                   |
-| P3  | Como a taxa com incerteza cabe ao lado do booleano e da curva?                                                                                                                                                                                              | [`Q-0004-5`](../../questions/Q-0004-5.md)                                                                                                                                                                   |
-| P4  | Quem declara que a execução terminou, e o oráculo lê antes ou depois?                                                                                                                                                                                       | [`Q-0002-2`](../../questions/Q-0002-2.md)                                                                                                                                                                   |
-| P5  | Quem estabelece o estado inicial, e como o banco volta ao ponto de partida entre execuções?                                                                                                                                                                 | [`Q-0002-4`](../../questions/Q-0002-4.md)                                                                                                                                                                   |
-| P6  | O que obriga um passo a reportar a chave de contenção que R10 consome?                                                                                                                                                                                      | [`Q-0004-2`](../../questions/Q-0004-2.md)                                                                                                                                                                   |
-| P7  | Os instantes de dois workers precisam ser ordenáveis entre si. Qual relógio, e com que resolução?                                                                                                                                                           | [`Q-0004-3`](../../questions/Q-0004-3.md)                                                                                                                                                                   |
-| P8  | A tabela do E3 põe três estratégias com taxa zero e limites diferentes lado a lado. O que ela permite concluir?                                                                                                                                             | [`Q-0004-5`](../../questions/Q-0004-5.md)                                                                                                                                                                   |
-| P9  | Um experimento cujo veredito **não** pode ser zero está dispensado de declarar janela. Qual experimento é esse, e quem decide?                                                                                                                              | nova, 2026-08-01                                                                                                                                                                                            |
-| P10 | R11 exige mesma carga para comparar. "Mesma carga" é mesmo `N`, mesmos workers e mesma operação — a estratégia difere por construção. A semente entra nessa igualdade?                                                                                      | nova, 2026-08-01                                                                                                                                                                                            |
-| P11 | O `ADR-0003` foi aceito e nenhum cenário cobre o agendamento. Quais das sete recusas viram cenário, e este card é o dono delas ou a capacidade pede card próprio?                                                                                           | nova, 2026-08-01                                                                                                                                                                                            |
-| P12 | A janela é marcada pelo relógio do Lab Plane e os eventos são ordenados por LSN do sistema medido. Como as duas fontes de tempo se alinham num relatório só?                                                                                                | nova, com uma decisão de 2026-08-06                                                                                                                                                                         |
-| P13 | A guarda de completude da contagem de coincidências lê o atestado que o consumidor do broker do stream de CDC já produz para R8 de `deteccao-de-protecao-inerte`, ganha conferência equivalente sobre o cursor do log de observações, ou é outro mecanismo? | [E-51, fecho](../../fila-de-decisoes.md#e-51-fecha-em-guarda-de-completude-escolhida-em-2026-08-12) e [`deteccao-de-protecao-inerte`, R8](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio) |
-| P14 | O que uma contagem de coincidências sobre stream incompleto produz — recusa, número com ressalva, ou o rótulo `fonte atrasada`?                                                                                                                             | [E-51, fecho](../../fila-de-decisoes.md#e-51-fecha-em-guarda-de-completude-escolhida-em-2026-08-12)                                                                                                         |
+| #   | Pergunta                                                                                                                                                                                                                                                    | Origem                                                                                                |
+|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| P1  | O limite `3/commits` pressupõe independência que a execução não tem. O que o número publicado afirma?                                                                                                                                                       | [`Q-0004-8`](../../questions/Q-0004-8.md)                                                             |
+| P2  | Quem escolhe `N`, e o experimento roda no pipeline, sob demanda, ou os dois com `N` diferente?                                                                                                                                                              | [`Q-0004-4`](../../questions/Q-0004-4.md)                                                             |
+| P3  | Como a taxa com incerteza cabe ao lado do booleano e da curva?                                                                                                                                                                                              | [`Q-0004-5`](../../questions/Q-0004-5.md)                                                             |
+| P4  | Quem declara que a execução terminou, e o oráculo lê antes ou depois?                                                                                                                                                                                       | [`Q-0002-2`](../../questions/Q-0002-2.md)                                                             |
+| P5  | Quem estabelece o estado inicial, e como o banco volta ao ponto de partida entre execuções?                                                                                                                                                                 | [`Q-0002-4`](../../questions/Q-0002-4.md)                                                             |
+| P6  | O que obriga um passo a reportar a chave de contenção que R10 consome?                                                                                                                                                                                      | [`Q-0004-2`](../../questions/Q-0004-2.md)                                                             |
+| P7  | Os instantes de dois workers precisam ser ordenáveis entre si. Qual relógio, e com que resolução?                                                                                                                                                           | [`Q-0004-3`](../../questions/Q-0004-3.md)                                                             |
+| P8  | A tabela do E3 põe três estratégias com taxa zero e limites diferentes lado a lado. O que ela permite concluir?                                                                                                                                             | [`Q-0004-5`](../../questions/Q-0004-5.md)                                                             |
+| P9  | Um experimento cujo veredito **não** pode ser zero está dispensado de declarar janela. Qual experimento é esse, e quem decide?                                                                                                                              | nova, 2026-08-01                                                                                      |
+| P10 | R11 exige mesma carga para comparar. "Mesma carga" é mesmo `N`, mesmos workers e mesma operação — a estratégia difere por construção. A semente entra nessa igualdade?                                                                                      | nova, 2026-08-01                                                                                      |
+| P11 | O `ADR-0003` foi aceito e nenhum cenário cobre o agendamento. Quais das sete recusas viram cenário, e este card é o dono delas ou a capacidade pede card próprio?                                                                                           | nova, 2026-08-01                                                                                      |
+| P12 | A janela é marcada pelo relógio do Lab Plane e os eventos são ordenados por LSN do sistema medido. Como as duas fontes de tempo se alinham num relatório só?                                                                                                | nova, com uma decisão de 2026-08-06                                                                   |
+| P13 | A guarda de completude da contagem de coincidências lê o atestado que o consumidor do broker do stream de CDC já produz para R8 de `deteccao-de-protecao-inerte`, ganha conferência equivalente sobre o cursor do log de observações, ou é outro mecanismo? | [`deteccao-de-protecao-inerte`, R8](../deteccao-de-protecao-inerte/feature-card.md#regras-de-negócio) |
+| P14 | O que uma contagem de coincidências sobre stream incompleto produz — recusa, número com ressalva, ou o rótulo `fonte atrasada`?                                                                                                                             | a decisão que criou a guarda de completude, que deixou isto em aberto                                 |
 
 ### As duas fontes de tempo da execução, e o relógio que produz cada uma
 
@@ -185,21 +179,19 @@ O dono normativo das **quatro** colunas passou a ser o
 [`ADR-0015`](../../adr/0015-a-chave-o-discriminador-de-execucao-e-as-colunas-de-tempo.md#as-colunas-de-tempo-e-a-fonte-do-relógio-por-papel-do-valor),
 que fixa `created_at`/`updated_at` da definição no relógio do banco e
 `executed_at`/`concluded_at` no adaptador. Esta seção passa a **ilustrá-lo**, e não é
-fonte de nenhuma das quatro; o que
-[`E-53`, fecho](../../fila-de-decisoes.md#e-53-fecha-em-created_atupdated_at-e-metade-de-e-26-continua-aberta)
-deixou aberto está no parágrafo seguinte.
+fonte de nenhuma das quatro; o que a decisão sobre `created_at`/`updated_at` deixou
+aberto está no parágrafo seguinte.
 
 `executed_at`, `concluded_at`, `created_at` e `updated_at` existem nas tabelas do Lab
-Plane, e a decisão de 2026-08-06 pôs os quatro sob o adaptador de relógio injetável. **O
-fecho de
-[`E-53`](../../fila-de-decisoes.md#e-53-fecha-em-created_atupdated_at-e-metade-de-e-26-continua-aberta)
-corrigiu esse alcance para dois campos**: `created_at`/`updated_at` são metadado de CRUD e
-passam a vir do relógio do banco. `executed_at` e `concluded_at` continuam sob o
-adaptador: pelo alcance por papel do valor, se o veredito em formato curva do grupo D for
-construído sobre eles, entram no papel **veredito**, e a regra do relógio os alcança — é a
-metade de `E-26` que `E-53` deixou aberta. **O recorte "só esses dois" é leitura do fecho,
-e não da pessoa — e é revisável por ela**; a confirmação do alcance fica registrada como
-pendência na própria linha `E-53`.
+Plane, e a decisão de 2026-08-06 pôs os quatro sob o adaptador de relógio injetável.
+**Uma decisão posterior da pessoa corrigiu esse alcance para dois campos**:
+`created_at`/`updated_at` são metadado de CRUD — registram quando o registro nasceu ou
+mudou, e nada além disso — e passam a vir do relógio do banco. `executed_at` e
+`concluded_at` continuam sob o adaptador: pelo alcance por papel do valor, se o veredito
+em formato curva do grupo D for construído sobre eles, entram no papel **veredito**, e a
+regra do relógio os alcança — e essa metade continua sem decisão. **O recorte "só esses
+dois" é leitura aplicada ao fechar aquela decisão, e não uma segunda frase da pessoa — e
+é revisável por ela**; a confirmação do alcance continua pendente.
 
 `P12` é o que a decisão deixou aberto. `executed_at` e `concluded_at` marcam a fronteira
 da janela medida pelo relógio do **instrumento**; o oráculo ordena eventos por LSN do WAL
