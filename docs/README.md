@@ -14,10 +14,10 @@ configuração são a fonte da verdade.
 docs/
   README.md               este índice
   roadmap.md              o plano geral, em alto nível
-  dicionario-de-dados.md  o de/para do vocabulário do laboratório
+  data-dictionary.md      o de/para do vocabulário do laboratório
   backlog.md              o que está sendo feito; instável
   architecture/           a arquitetura, os serviços e as restrições
-    restricoes/           uma restrição arquitetural por arquivo
+    constraints/          uma restrição arquitetural por arquivo
     schemas/              a forma dos schemas, e as propostas de modelo
   adr/                    as decisões arquiteturais; congelado
   features/               o comportamento de cada capacidade
@@ -27,16 +27,16 @@ docs/
 
 ## O que cada caminho guarda
 
-| Caminho                                            | O que vive ali                                         |
-|----------------------------------------------------|--------------------------------------------------------|
-| [`roadmap.md`](roadmap.md)                         | o plano geral do laboratório, em alto nível            |
-| [`dicionario-de-dados.md`](dicionario-de-dados.md) | o de/para do vocabulário, português e inglês           |
-| `backlog.md`                                       | o que está sendo feito; instável, e nunca referenciado |
-| [`architecture/`](architecture/README.md)          | os serviços, a topologia e as restrições arquiteturais |
-| [`adr/`](adr/README.md)                            | as decisões arquiteturais já tomadas; congelado        |
-| [`features/`](features/README.md)                  | o comportamento pretendido de cada capacidade          |
-| [`contracts/`](contracts/README.md)                | o contrato formal entre processos, quando existir      |
-| [`diagrams/`](diagrams/)                           | o que o Mermaid não expressa, em `.excalidraw.svg`     |
+| Caminho                                    | O que vive ali                                         |
+|--------------------------------------------|--------------------------------------------------------|
+| [`roadmap.md`](roadmap.md)                 | o plano geral do laboratório, em alto nível            |
+| [`data-dictionary.md`](data-dictionary.md) | o de/para do vocabulário, português e inglês           |
+| `backlog.md`                               | o que está sendo feito; instável, e nunca referenciado |
+| [`architecture/`](architecture/README.md)  | os serviços, a topologia e as restrições arquiteturais |
+| [`adr/`](adr/README.md)                    | as decisões arquiteturais já tomadas; congelado        |
+| [`features/`](features/README.md)          | o comportamento pretendido de cada capacidade          |
+| [`contracts/`](contracts/README.md)        | o contrato formal entre processos, quando existir      |
+| [`diagrams/`](diagrams/)                   | o que o Mermaid não expressa, em `.excalidraw.svg`     |
 
 ## Três coisas que valem antes de abrir qualquer arquivo
 

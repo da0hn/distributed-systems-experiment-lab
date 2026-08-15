@@ -17,19 +17,19 @@ Quando o destino for pasta, o `README.md` dela é a autoridade — abra-o antes 
 qualquer coisa dentro dela. A tabela abaixo é ponto de partida de busca, e não descrição
 de conteúdo.
 
-| Caminho                    | O que guarda                                                                            | Onde aprofundar                                                    |
-|----------------------------|-----------------------------------------------------------------------------------------|--------------------------------------------------------------------|
-| `README.md`                | o índice de navegação da pasta; ele não carrega regra, estado nem inventário            | o próprio arquivo                                                  |
-| `roadmap.md`               | o plano geral em alto nível: a abstração, os cinco grupos de fenômenos e as doze etapas | o próprio arquivo                                                  |
-| `dicionario-de-dados.md`   | o de/para do vocabulário do laboratório: termo em inglês, explicação em português       | o próprio arquivo                                                  |
-| `backlog.md`               | o que está sendo feito, para a próxima sessão continuar; instável                       | o próprio arquivo                                                  |
-| `architecture/`            | os processos que o repositório sobe, o papel de cada um, os schemas e as restrições     | [`architecture/README.md`](architecture/README.md)                 |
-| `architecture/restricoes/` | uma restrição arquitetural por arquivo, dizendo o que ela proíbe e o que ela protege    | os arquivos da pasta                                               |
-| `architecture/schemas/`    | a forma do schema de cada serviço, e as propostas de modelo de dados                    | [`architecture/schemas/README.md`](architecture/schemas/README.md) |
-| `adr/`                     | as decisões arquiteturais já tomadas, congeladas no tempo                               | [`adr/README.md`](adr/README.md)                                   |
-| `features/`                | o comportamento de cada capacidade, um diretório por capacidade                         | [`features/README.md`](features/README.md)                         |
-| `contracts/`               | o contrato formal entre processos, quando existir                                       | [`contracts/README.md`](contracts/README.md)                       |
-| `diagrams/`                | o que o Mermaid não expressa, exportado em `.excalidraw.svg`; hoje está vazia           | —                                                                  |
+| Caminho                     | O que guarda                                                                            | Onde aprofundar                                                    |
+|-----------------------------|-----------------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| `README.md`                 | o índice de navegação da pasta; ele não carrega regra, estado nem inventário            | o próprio arquivo                                                  |
+| `roadmap.md`                | o plano geral em alto nível: a abstração, os cinco grupos de fenômenos e as doze etapas | o próprio arquivo                                                  |
+| `data-dictionary.md`        | o de/para do vocabulário do laboratório: termo em inglês, explicação em português       | o próprio arquivo                                                  |
+| `backlog.md`                | o que está sendo feito, para a próxima sessão continuar; instável                       | o próprio arquivo                                                  |
+| `architecture/`             | os processos que o repositório sobe, o papel de cada um, os schemas e as restrições     | [`architecture/README.md`](architecture/README.md)                 |
+| `architecture/constraints/` | uma restrição arquitetural por arquivo, dizendo o que ela proíbe e o que ela protege    | os arquivos da pasta                                               |
+| `architecture/schemas/`     | a forma do schema de cada serviço, e as propostas de modelo de dados                    | [`architecture/schemas/README.md`](architecture/schemas/README.md) |
+| `adr/`                      | as decisões arquiteturais já tomadas, congeladas no tempo                               | [`adr/README.md`](adr/README.md)                                   |
+| `features/`                 | o comportamento de cada capacidade, um diretório por capacidade                         | [`features/README.md`](features/README.md)                         |
+| `contracts/`                | o contrato formal entre processos, quando existir                                       | [`contracts/README.md`](contracts/README.md)                       |
+| `diagrams/`                 | o que o Mermaid não expressa, exportado em `.excalidraw.svg`; hoje está vazia           | —                                                                  |
 
 **`backlog.md` aparece acima sem link, e isso é deliberado.** Ele NÃO DEVE ser
 referenciado por documento nenhum: uma linha dele nasce e some conforme o trabalho anda,
@@ -55,16 +55,16 @@ se conserta no destino que a tabela da próxima seção indicar.
 própria.** O gatilho é código concreto que entrou na árvore — nunca a impressão de que a
 página ficaria melhor.
 
-| A mudança no código                                                                                      | O destino                  | O que escrever ali                                                     |
-|----------------------------------------------------------------------------------------------------------|----------------------------|------------------------------------------------------------------------|
-| uma capacidade nova ganha comportamento executável                                                       | `features/<slug>/`         | o comportamento observável, e as regras que os testes provam           |
-| o comportamento de uma capacidade que já tem página muda                                                 | a página dela              | só a parte que mudou                                                   |
-| um módulo do reactor, um serviço do `compose.yaml` ou uma rota do gateway nasce, muda de papel ou some   | `architecture/README.md`   | o papel do serviço e a posição dele na topologia                       |
-| uma restrição arquitetural nova passa a valer                                                            | `architecture/restricoes/` | um arquivo por restrição, dizendo o que ela proíbe e o que ela protege |
-| uma migração Flyway muda a forma de um schema                                                            | `architecture/schemas/`    | a forma nova, no arquivo do serviço dono do schema                     |
-| um contrato entre processos é fixado: forma de evento, payload de fila, endpoint que outro serviço chama | `contracts/`               | a forma do contrato, e quem está de cada lado                          |
-| um termo do vocabulário do laboratório entra no código, ou muda de nome                                  | `dicionario-de-dados.md`   | a linha de/para, em português e em inglês                              |
-| o plano geral muda de rumo                                                                               | `roadmap.md`               | em alto nível, sem data e sem link                                     |
+| A mudança no código                                                                                      | O destino                   | O que escrever ali                                                     |
+|----------------------------------------------------------------------------------------------------------|-----------------------------|------------------------------------------------------------------------|
+| uma capacidade nova ganha comportamento executável                                                       | `features/<slug>/`          | o comportamento observável, e as regras que os testes provam           |
+| o comportamento de uma capacidade que já tem página muda                                                 | a página dela               | só a parte que mudou                                                   |
+| um módulo do reactor, um serviço do `compose.yaml` ou uma rota do gateway nasce, muda de papel ou some   | `architecture/README.md`    | o papel do serviço e a posição dele na topologia                       |
+| uma restrição arquitetural nova passa a valer                                                            | `architecture/constraints/` | um arquivo por restrição, dizendo o que ela proíbe e o que ela protege |
+| uma migração Flyway muda a forma de um schema                                                            | `architecture/schemas/`     | a forma nova, no arquivo do serviço dono do schema                     |
+| um contrato entre processos é fixado: forma de evento, payload de fila, endpoint que outro serviço chama | `contracts/`                | a forma do contrato, e quem está de cada lado                          |
+| um termo do vocabulário do laboratório entra no código, ou muda de nome                                  | `data-dictionary.md`        | a linha de/para, em português e em inglês                              |
+| o plano geral muda de rumo                                                                               | `roadmap.md`                | em alto nível, sem data e sem link                                     |
 
 **A atualização vai no MESMO commit da mudança de código que a disparou.** Um commit
 depois ela é esquecida, e uma página que descreve a árvore de ontem é pior que página
@@ -138,7 +138,7 @@ na rede. Cada afirmação dele foi conferida na árvore — `pom.xml`, `compose.
 `Dockerfile`, os `application.yml`, as migrações Flyway e `local/`. Mantenha essa
 propriedade: o que não puder ser confirmado ali não entra.
 
-Uma **restrição** ganha arquivo próprio em `restricoes/`, e ela diz o que proíbe e o que
+Uma **restrição** ganha arquivo próprio em `constraints/`, e ela diz o que proíbe e o que
 protege. Uma restrição sem consequência observável não é restrição.
 
 Os **schemas** têm verificador próprio, que compara a forma desenhada com as migrações
@@ -159,7 +159,7 @@ python scripts/check_schema_sync.py --root . --baseline scripts/schema-sync-base
 - Ao criar o primeiro, atualize [`contracts/README.md`](contracts/README.md), que é o dono
   do inventário e dos gatilhos.
 
-### `dicionario-de-dados.md`
+### `data-dictionary.md`
 
 Uma linha por termo, com o par português/inglês e uma frase dizendo o que ele é. **Os
 termos são em inglês, e as explicações em português**, porque todo identificador de código

@@ -80,7 +80,7 @@ deles não é escrito, e nenhum caminho novo é inventado.
 docs/
   README.md              índice: o que cada pasta guarda; só navegação
   roadmap.md             o plano geral, em alto nível, sem data
-  dicionario-de-dados.md o de/para do vocabulário do laboratório
+  data-dictionary.md     o de/para do vocabulário do laboratório
   backlog.md             instável; nunca referenciado
   architecture/          arquitetura, serviços e restrições arquiteturais
   adr/                   decisões arquiteturais, congeladas no tempo
@@ -106,15 +106,15 @@ mudança de código dispara uma linha desta tabela, atualizar o destino é obrig
 não conta como iniciativa própria** — o gatilho é código concreto que entrou na árvore, e
 não a impressão de que a página ficaria melhor.
 
-| A mudança no código                                                                                      | O destino                       | O que escrever ali                                                     |
-|----------------------------------------------------------------------------------------------------------|---------------------------------|------------------------------------------------------------------------|
-| uma capacidade nova ganha comportamento executável                                                       | `docs/features/<nome>/`         | o comportamento observável, e as regras que os testes provam           |
-| o comportamento de uma capacidade que já tem página muda                                                 | a página dela                   | só a parte que mudou                                                   |
-| um módulo do reactor, um serviço do `compose.yaml` ou uma rota do gateway nasce, muda de papel ou some   | `docs/architecture/README.md`   | o papel do serviço e a posição dele na topologia                       |
-| uma restrição arquitetural nova passa a valer                                                            | `docs/architecture/restricoes/` | um arquivo por restrição, dizendo o que ela proíbe e o que ela protege |
-| um contrato entre processos é fixado: forma de evento, payload de fila, endpoint que outro serviço chama | `docs/contracts/`               | a forma do contrato, e quem está de cada lado                          |
-| um termo do vocabulário do laboratório entra no código, ou muda de nome                                  | `docs/dicionario-de-dados.md`   | a linha de/para, em português e em inglês                              |
-| o plano geral muda de rumo                                                                               | `docs/roadmap.md`               | em alto nível, sem data e sem link                                     |
+| A mudança no código                                                                                      | O destino                        | O que escrever ali                                                     |
+|----------------------------------------------------------------------------------------------------------|----------------------------------|------------------------------------------------------------------------|
+| uma capacidade nova ganha comportamento executável                                                       | `docs/features/<nome>/`          | o comportamento observável, e as regras que os testes provam           |
+| o comportamento de uma capacidade que já tem página muda                                                 | a página dela                    | só a parte que mudou                                                   |
+| um módulo do reactor, um serviço do `compose.yaml` ou uma rota do gateway nasce, muda de papel ou some   | `docs/architecture/README.md`    | o papel do serviço e a posição dele na topologia                       |
+| uma restrição arquitetural nova passa a valer                                                            | `docs/architecture/constraints/` | um arquivo por restrição, dizendo o que ela proíbe e o que ela protege |
+| um contrato entre processos é fixado: forma de evento, payload de fila, endpoint que outro serviço chama | `docs/contracts/`                | a forma do contrato, e quem está de cada lado                          |
+| um termo do vocabulário do laboratório entra no código, ou muda de nome                                  | `docs/data-dictionary.md`        | a linha de/para, em português e em inglês                              |
+| o plano geral muda de rumo                                                                               | `docs/roadmap.md`                | em alto nível, sem data e sem link                                     |
 
 **A atualização vai no MESMO commit da mudança de código que a disparou.** Um commit
 depois ela é esquecida, e uma página que descreve a árvore de ontem é pior que página

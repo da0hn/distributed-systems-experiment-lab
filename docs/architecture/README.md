@@ -129,19 +129,19 @@ dependência no `pom.xml` e o WAL como origem do número.
 Cada uma tem página própria, com o que a árvore mostra e o que quebraria em silêncio se
 ela fosse violada.
 
-- [O sistema medido não conhece o instrumento](restricoes/o-sistema-medido-nao-conhece-o-instrumento.md)
+- [O sistema medido não conhece o instrumento](constraints/o-sistema-medido-nao-conhece-o-instrumento.md)
   — sem dependência, sem rota na borda, sem prefixo público.
-- [Cada serviço tem o próprio schema](restricoes/cada-servico-tem-o-proprio-schema.md)
+- [Cada serviço tem o próprio schema](constraints/cada-servico-tem-o-proprio-schema.md)
   — um papel e um schema por serviço, e nenhum `SELECT` no schema do vizinho.
-- [Quem lê o WAL não é quem produz o veredito](restricoes/quem-le-o-wal-nao-produz-o-veredito.md)
+- [Quem lê o WAL não é quem produz o veredito](constraints/quem-le-o-wal-nao-produz-o-veredito.md)
   — o atributo `REPLICATION` fica num papel que serviço nenhum usa.
-- [O mapa de caminhos vive num lugar só](restricoes/o-mapa-de-caminhos-vive-num-lugar-so.md)
+- [O mapa de caminhos vive num lugar só](constraints/o-mapa-de-caminhos-vive-num-lugar-so.md)
   — o gateway roteia, e nenhum filtro remove prefixo.
-- [Os cabeçalhos de proxy só são confiáveis nas faixas privadas](restricoes/os-cabecalhos-de-proxy-e-as-faixas-privadas.md)
+- [Os cabeçalhos de proxy só são confiáveis nas faixas privadas](constraints/os-cabecalhos-de-proxy-e-as-faixas-privadas.md)
   — `trusted-proxies` e `forward-headers-strategy` trabalham em par.
-- [O Actuator não fica na porta de tráfego](restricoes/o-actuator-fora-da-porta-de-trafego.md)
+- [O Actuator não fica na porta de tráfego](constraints/o-actuator-fora-da-porta-de-trafego.md)
   — porta de gestão própria, que o gateway não roteia.
-- [Contrato é o que atravessa uma fronteira de processo](restricoes/o-que-e-contrato.md)
+- [Contrato é o que atravessa uma fronteira de processo](constraints/o-que-e-contrato.md)
   — DDL, tabela e rota de proxy não são contrato.
 
 **Seis regras de código valem sobre tudo daqui, e esta pasta não as repete.**

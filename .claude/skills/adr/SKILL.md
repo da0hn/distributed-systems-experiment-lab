@@ -12,7 +12,7 @@ description: "Template e ciclo de vida de Architecture Decision Records deste la
 
 > **`docs/` FOI REFATORADA, e a estrutura agora é fechada.** Cinco pastas —
 > `architecture/`, `adr/`, `features/`, `contracts/` e `diagrams/` — mais `README.md`,
-> `roadmap.md`, `dicionario-de-dados.md` e `backlog.md`. Nenhum caminho novo é inventado,
+> `roadmap.md`, `data-dictionary.md` e `backlog.md`. Nenhum caminho novo é inventado,
 > e vários arquivos que esta página cita já não existem: `specification-process.md`,
 > `fila-de-decisoes.md`, `plano-do-laboratorio.md`, `CONTEXT.md`, `questions/` e
 > `audits/`. O índice da pasta é `docs/README.md`.
