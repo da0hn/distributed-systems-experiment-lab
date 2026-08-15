@@ -53,7 +53,7 @@ que ela nomeia. A terceira coluna diz o que aquele documento **não** prova.
 | um contrato formal entre processos    | [contratos](contracts/README.md#estado-nenhum-contrato-existe)                                    | um contrato nasce com a interface, nunca antes dela            |
 | taxonomia, pedagogia e roadmap        | [plano do laboratório](plano-do-laboratorio.md#3-taxonomia-refinada)                              | o plano não decide nada; ele define o que precisa ser decidido |
 | o limite de tamanho de um artefato    | `.claude/skills/feature-planning/scripts/check_artifact_limits.py`                                | nenhum número citado de memória vale; rode o script            |
-| um desenho de schema ainda em debate  | [propostas de modelo de dados](propostas/modelo-de-dados/README.md#índice)                        | proposta não é decisão, e assumir não é decidir                |
+| um desenho de schema ainda em debate  | [propostas de modelo de dados](architecture/schemas/propostas/modelo-de-dados/README.md#índice)                        | proposta não é decisão, e assumir não é decidir                |
 
 ```mermaid
 flowchart TD

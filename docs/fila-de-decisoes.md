@@ -5726,7 +5726,7 @@ um arquivo cujo teto próprio estourou, e a saída escolhida ali não foi teto n
 
 ### A classe `proposta de modelagem`, decidida pelo agente e registrada aqui
 
-**A pasta `docs/propostas/**` ganhou classe própria, com teto de 11.000 caracteres de
+**A pasta `architecture/schemas/propostas/**` ganhou classe própria, com teto de 11.000 caracteres de
 prosa.** Antes ela caía no genérico, cujos 4.000 são calibrados para o Feature Card.
 
 O gatilho foi concreto. A pessoa pediu três propostas de modelo de dados por sistema e
@@ -6225,33 +6225,52 @@ flowchart TD
 
 ### `E-95` — um experimento com segunda instância deliberada roda sob um orquestrador com `selfHeal`
 
-**Aberta em 2026-08-13, ao fechar `E-3` e `E-21`.** A pendência já era nomeada em
+**Aberta em 2026-08-13, ao fechar `E-3` e `E-21`. O alvo foi corrigido em 2026-08-15.** A
+pendência já era nomeada em
 [`../AGENTS.md`](../AGENTS.md#este-repositório-é-entregue-no-homelab): "um experimento
 que sobe deliberadamente uma segunda instância roda sob um `Application` com `selfHeal`",
-e isso "não tem solução decidida". Ela ganha identificador próprio agora porque
+e isso "não tem solução decidida".
+
+**A segunda instância é do `system-under-test`, e não do `lab-plane`.** A linha nasceu
+atribuindo-a ao instrumento, e o experimento que ela própria cita desmente isso:
+`JVM_LOCK` é estratégia de concorrência, e as estratégias vivem no sistema medido — o
+[ADR-0008](adr/0008-os-dois-planos-em-processos-separados.md#decisão) põe "as operações,
+as estratégias e o acesso ao banco" naquele plano, e a regra estrutural que proíbe
+sincronização de JVM abre exceção para `JVM_LOCK` exatamente ali
+([`../AGENTS.md`](../AGENTS.md#regras-estruturais-que-valem-sempre)).
+
+**O que a correção desfaz.** O conflito com o `DEVE` de réplica única deixa de existir:
+aquele `DEVE` é do `lab-plane`, "e só dele", grifado assim tanto pelo
 [ADR-0019](adr/0019-a-entrega-sai-do-deploy-e-a-imagem-ganha-tag-semantica.md#a-réplica-única-do-lab-plane-passa-a-ser-critério-de-aceite-na-issue-2)
-torna `replicas: 1` do `lab-plane` critério de aceite normativo na issue #2, e o
-experimento que precisaria da segunda réplica para provar o `JVM_LOCK` falhando
-([`../AGENTS.md`](../AGENTS.md#regras-estruturais-que-valem-sempre)) roda, se rodar no
-cluster, sob esse mesmo `Application`.
+quanto pelo cabeçalho do
+[ADR-0008](adr/0008-os-dois-planos-em-processos-separados.md#decisão). **Nenhum ADR fixa
+número de réplicas do `system-under-test`**, e escalá-lo não viola norma nenhuma.
 
-**O problema.** Se alguém subir uma segunda réplica do `lab-plane` no cluster de
-propósito, para o experimento, o `selfHeal` do ArgoCD reconcilia o `Deployment` de volta
-ao manifest — que declara `replicas: 1` — e desfaz a segunda instância antes ou durante
-a medição. O experimento passaria a medir o orquestrador junto com o fenômeno, a mesma
-confusão system under test / Lab Plane um nível abaixo que o
+**O que sobra, e continua real.** O `selfHeal` reconcilia o `Deployment` do
+`system-under-test` de volta ao manifest, qualquer que seja o número que ele declare —
+uma escala feita fora do Git é desfeita antes ou durante a medição, e o experimento
+passaria a medir o orquestrador junto com o fenômeno. É a mesma confusão system under
+test / Lab Plane um nível abaixo que o
 [plano, "Quatro riscos"](plano-do-laboratorio.md#quatro-riscos-que-nenhum-dos-dois-repositórios-registrou)
-já registra para a etapa 6.
+já registra para a etapa 6. A diferença que a correção traz é de natureza: reversão de
+dimensionamento, e não violação de norma.
 
-| Alternativa                                                 | A favor                                       | Contra                                                                                     |
-|-------------------------------------------------------------|-----------------------------------------------|--------------------------------------------------------------------------------------------|
-| 1. `ignoreDifferences` no campo `replicas` do Deployment    | simples, sem tocar o `Application` em runtime | o cluster aceita divergência de réplica permanentemente, não só durante o experimento      |
-| 2. Desligar `selfHeal` antes do experimento, religar depois | preciso, escopo só à janela do experimento    | depende de automação externa ao runtime medido; erro humano deixa o cluster sem `selfHeal` |
-| 3. Rodar o `JVM_LOCK` fora do cluster, só localmente        | zero mudança de infraestrutura                | não prova a réplica única do ambiente que a issue #2 declara                               |
+| Alternativa                                                                     | A favor                                                                                  | Contra                                                                                                            |
+|---------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| 1. `ignoreDifferences` no campo `replicas` do Deployment do `system-under-test` | o número vira eixo do experimento, ajustável em runtime, sem commit em outro repositório | o cluster aceita divergência de réplica permanentemente naquele campo                                             |
+| 2. O número declarado no manifest versionado, por experimento                   | o `selfHeal` passa a garantir as instâncias em vez de desfazê-las                        | variar o número exige commit no `homelab-infrastructure`, e o experimento deixa de ser declarado só pelo frontend |
+| 3. Rodar o `JVM_LOCK` fora do cluster, só localmente                            | zero mudança de infraestrutura                                                           | não prova nada sobre o ambiente que a entrega declara                                                             |
 
-**Nenhuma alternativa foi escolhida.** Nenhum experimento do grupo A com segunda
-instância deliberada foi executado até hoje; a linha aguarda a etapa em que o `JVM_LOCK`
-precisar rodar contra o ambiente do cluster, e não só localmente.
+**A pessoa escolheu, em 2026-08-15, um serviço de provisionamento próprio** — um processo
+que lê a definição do experimento e ajusta o número de instâncias do sistema medido antes
+de a janela medida abrir. A escolha **não dispensa a alternativa 1**: um ator que muda o
+número de réplicas pela API do cluster exige que o ArgoCD pare de comparar aquele campo,
+sob pena de reverter a escala.
+
+**O que continua aberto.** Onde esse serviço vive, qual credencial de cluster ele carrega
+— e ela não pode viver no processo que produz o veredito, pelo mesmo raciocínio que tirou
+o privilégio de ler o WAL de lá —, se a escala durante a janela medida é permitida, e se
+a dispensa da regra que proíbe tecnologia entrar por conveniência foi escrita por inteiro.
 
 ## O fim de linha na árvore de trabalho, levantado em 2026-08-12
 
