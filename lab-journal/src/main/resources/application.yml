@@ -25,6 +25,10 @@ server:
     # servico gera — sem o prefixo, o `EventSource` do frontend assinaria um
     # caminho que o gateway nao conhece.
     context-path: ${SERVER_CONTEXT_PATH:/api/lab-journal}
+  # Ver o comentario equivalente no lab-plane. Aqui pesa mais: o link do stream
+  # de observacoes e uma URL que este servico gera, e o `EventSource` do
+  # frontend assina exatamente o que receber.
+  forward-headers-strategy: framework
 
 management:
   server:

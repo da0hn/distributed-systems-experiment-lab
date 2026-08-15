@@ -18,12 +18,21 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
+      // O alvo e o proxy de borda, e nao o gateway direto. Assim o `npm run
+      // dev` atravessa os mesmos dois saltos que o navegador atravessa no
+      // cluster, com os X-Forwarded-* que so aparecem quando ha proxy no
+      // caminho.
+      //
+      // O host precisa ser `lab.localhost`, e nao `localhost`: o Traefik casa
+      // por `Host()`, e `changeOrigin` reescreve o cabecalho Host para o do
+      // alvo. Com `localhost` puro o pedido bateria no 404 do Traefik.
+      //
       // A porta esta escrita aqui, e nao lida do ambiente. Ler exigiria
       // `process.env` e, com ele, `@types/node` — dependencia nova para um
-      // numero que muda quando alguem edita `GATEWAY_PORT` no compose, o que
-      // nao acontece. O acoplamento e este: se aquele default mudar, este
-      // numero muda junto.
-      '/api': { target: 'http://localhost:8000', changeOrigin: true },
+      // numero que muda quando alguem edita `LAB_PORT` no compose, o que nao
+      // acontece. O acoplamento e este: se aquele default mudar, este numero
+      // muda junto.
+      '/api': { target: 'http://lab.localhost:8000', changeOrigin: true },
     },
   },
 });

@@ -32,7 +32,10 @@ compila, empacota e sobe contra PostgreSQL.
 - **Autenticação e regras próprias no `api-gateway`.** O gateway entrou como módulo Spring
   justamente para ser o ponto único disso, e hoje ele só encaminha por prefixo. Falta
   escolher o mecanismo, e decidir se ele convive com o Cloudflare Access na frente ou o
-  substitui.
+  substitui. Quando isso for feito, atenção ao `redirect_uri`: o Traefik local roda em
+  HTTP por escolha, então o único cenário que a stack local **não** reproduz é o de TLS
+  terminado antes do gateway — que é justamente onde um `redirect_uri` com esquema errado
+  se manifesta.
 - **O SSE atrás do Cloudflare.** O gateway é reativo e não bufferiza o corpo, mas o
   Cloudflare pode: um stream bufferizado vira lote sem produzir erro nenhum. Falta o
   `Cache-Control: no-transform` no servidor, e ninguém testou o caminho inteiro.

@@ -121,11 +121,36 @@ services:
       GATEWAY_FRONTEND_URI: http://frontend:80
       SERVER_PORT: 8000
     ports:
-      - "${GATEWAY_PORT:-8000}:8000"
+      # Porta de diagnostico, e nao a entrada. A entrada e o traefik abaixo,
+      # como no cluster; esta existe para separar "o proxy de borda errou" de
+      # "o gateway errou" sem ter de ler log dos dois.
+      - "${GATEWAY_PORT:-8001}:8000"
     depends_on:
       - frontend
       - lab-plane
       - lab-journal
+
+  # O proxy de borda, e a entrada unica desta stack. No cluster este papel e do
+  # Traefik do homelab: ele termina TLS, casa o hostname e entrega ao gateway.
+  # Aqui ele existe para que o caminho tenha a mesma FORMA — dois saltos ate o
+  # servico, com X-Forwarded-* no meio — em vez de um salto so.
+  #
+  # Acesso: http://lab.localhost:8000. Outro hostname bate no 404 do Traefik,
+  # e nao chega ao gateway.
+  traefik:
+    image: traefik:v3.3
+    ports:
+      - "${LAB_PORT:-8000}:80"
+    volumes:
+      - ./local/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./local/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      - api-gateway
 
 volumes:
   postgres-data:

@@ -29,6 +29,12 @@ server:
     # O `/api` faz parte do prefixo: frontend e API dividem a mesma origem,
     # e e o `/api` que separa a chamada de servico do arquivo estatico.
     context-path: ${SERVER_CONTEXT_PATH:/api/lab-plane}
+  # Dois proxies ficam entre o navegador e este processo, e nenhum deles
+  # preserva o esquema nem o host do pedido original. Sem esta linha, uma URL
+  # absoluta gerada aqui sai com `http://lab-plane:8080`, que nao existe para
+  # o cliente. So e seguro porque nada alcanca esta porta sem passar pelo
+  # gateway.
+  forward-headers-strategy: framework
 
 management:
   server:

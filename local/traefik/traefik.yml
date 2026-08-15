@@ -1,0 +1,38 @@
+# Configuracao estatica do Traefik local. Ele existe para que a stack local
+# tenha a mesma FORMA da do cluster: um proxy de borda que roteia por hostname
+# e entrega tudo ao api-gateway, que reparte por prefixo de caminho.
+#
+# O que isso pega e o que nenhum teste local pegava antes: os cabecalhos
+# X-Forwarded-*. Em producao o gateway nunca ve o pedido original — ve o que o
+# proxy encaminhou —, e um servico que ignora esses cabecalhos gera URL
+# absoluta com o host errado. Sem um proxy local, esse defeito so aparece
+# depois do deploy.
+#
+# TLS nao e terminado aqui, por escolha. Em producao ele termina antes, e o
+# X-Forwarded-Proto chega como `https`; localmente chega como `http`. A
+# consequencia esta nomeada: o cenario que quebra o redirect_uri de OIDC nao e
+# exercitado por esta stack.
+#
+# O provider e o de arquivo, e nao o do Docker. O do Docker leria os rotulos de
+# cada conteiner e exigiria montar o socket do daemon aqui dentro; o de arquivo
+# mantem o mapa num lugar so, legivel de cima a baixo e comparavel com o
+# IngressRoute do cluster.
+entryPoints:
+  web:
+    address: ":80"
+
+providers:
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: true
+
+# Sem dashboard e sem API: este processo roteia, e nada mais.
+api:
+  dashboard: false
+
+ping: {}
+
+log:
+  level: INFO
+
+accessLog: {}

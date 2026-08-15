@@ -1,0 +1,37 @@
+# O mapa de rotas do proxy de borda local. Ele e o par do IngressRoute do
+# cluster, e tem a mesma forma: UMA regra de hostname, apontando para o
+# api-gateway. A reparticao por prefixo de caminho nao acontece aqui — ela e do
+# gateway, e duplica-la neste arquivo criaria dois mapas para divergir.
+#
+#   cluster:  match: Host(`lab.ghonda.dev`)   -> Service api-gateway
+#   local:    rule:  Host(`lab.localhost`)    -> http://api-gateway:8000
+#
+# `lab.localhost` resolve para 127.0.0.1 sem entrada no arquivo hosts: o
+# sufixo `.localhost` e reservado pela RFC 6761, e os resolvedores o tratam
+# como loopback. Verificado no Windows.
+#
+# Um pedido com outro Host cai no 404 do proprio Traefik, e nao chega ao
+# gateway — que e o comportamento do cluster, onde um hostname sem
+# IngressRoute nao alcanca workload nenhum.
+http:
+  routers:
+
+    lab:
+      rule: "Host(`lab.localhost`)"
+      entryPoints:
+        - web
+      service: api-gateway
+
+  services:
+
+    api-gateway:
+      loadBalancer:
+        servers:
+          - url: "http://api-gateway:8000"
+        responseForwarding:
+          # A timeline chega por Server-Sent Events, e o stream atravessa este
+          # proxy. O intervalo de flush decide de quanto em quanto tempo o
+          # Traefik empurra o que ja tem; no valor default um evento fica
+          # retido ate o proximo tick, e "ao vivo" vira "em lote" sem erro
+          # nenhum aparecer.
+          flushInterval: "1ms"

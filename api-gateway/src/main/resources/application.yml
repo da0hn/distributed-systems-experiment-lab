@@ -32,6 +32,24 @@ spring:
     gateway:
       server:
         webflux:
+          # Sem esta regex o gateway nao confia em proxy nenhum, e o efeito e
+          # silencioso: ele descarta os X-Forwarded-* que recebe e nao emite os
+          # que deveria emitir. O servico de destino recebe a requisicao sem
+          # saber quem pediu nem por qual esquema, e nada acusa — o roteamento
+          # funciona e o status e 200. Medido nesta stack: o backend via so
+          # `X-Real-Ip`, posto pelo Traefik.
+          #
+          # O default vazio e uma escolha de seguranca do Spring Cloud Gateway:
+          # confiar em X-Forwarded-* de qualquer origem deixa qualquer cliente
+          # forjar o proprio endereco. A regex cobre as tres faixas privadas da
+          # RFC 1918, que e onde vivem tanto a rede do compose quanto a do
+          # cluster; nada vindo da internet casa com ela.
+          # Em aspas simples, e sem `${...}`. O YAML sem aspas nao processa
+          # escape, entao `\\.` viraria barra literal mais ponto e a regex
+          # nunca casaria; e um default dentro de `${...}` teria o placeholder
+          # fechado pelo primeiro `}` de `{1,3}`. Para sobrescrever, use a
+          # variavel SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_TRUSTED_PROXIES.
+          trusted-proxies: '10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}'
           routes:
             # A ordem e explicita de proposito. Sem ela a precedencia vem da
             # posicao na lista, e uma rota movida por um motivo sem relacao
@@ -61,6 +79,27 @@ spring:
 
 server:
   port: ${SERVER_PORT:8000}
+  # Este processo nunca ve o pedido original: um proxy de borda o encaminha, e
+  # em producao ha o Cloudflare antes dele. Sem esta linha o Spring monta URL a
+  # partir do que enxerga — `http://api-gateway:8000` —, e nao do que o
+  # navegador pediu. O primeiro lugar onde isso quebra e o `redirect_uri` de
+  # OIDC, que o provedor recusa por nao casar com o registrado.
+  #
+  # Ela trabalha junto com `trusted-proxies` acima, e nao no lugar dela. Medido
+  # nesta stack, com um echo no fim da cadeia:
+  #
+  #   sem trusted-proxies          o backend recebe so X-Real-Ip
+  #   so trusted-proxies           X-Forwarded-Host: lab.localhost,lab.localhost
+  #   trusted-proxies + framework  X-Forwarded-Host: lab.ghonda.dev
+  #
+  # O valor unico e o correto: o transformer aplica os cabecalhos recebidos a
+  # requisicao e os consome, e o filtro do gateway os reemite a partir dela ja
+  # corrigida — em vez de anexar mais um item a uma lista.
+  #
+  # Confiar em X-Forwarded-* so e seguro porque `trusted-proxies` restringe a
+  # origem as faixas privadas. Publicar este processo direto na internet
+  # exigiria rever as duas linhas juntas.
+  forward-headers-strategy: framework
 
 management:
   server:
